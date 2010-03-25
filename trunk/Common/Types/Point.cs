@@ -5,6 +5,7 @@ namespace AXToolbox.Common
     /// <summary>
     /// 3D point (UTM) with timestamp (UTC)
     /// </summary>
+    [Serializable]
     public class Point : IPositionTime
     {
         private double easting;

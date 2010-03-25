@@ -2,7 +2,7 @@
 
 namespace AXToolbox.Common
 {
-
+    [Serializable]
     public class Waypoint : Point
     {
         private string name;

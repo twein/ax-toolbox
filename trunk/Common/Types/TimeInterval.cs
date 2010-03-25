@@ -2,6 +2,7 @@
 
 namespace AXToolbox.Common
 {
+    [Serializable]
     public class TimeInterval
     {
         protected DateTime? from;

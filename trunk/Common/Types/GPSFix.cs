@@ -3,6 +3,7 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common
 {
+    [Serializable]
     public class GPSFix
     {
         private DateTime time;

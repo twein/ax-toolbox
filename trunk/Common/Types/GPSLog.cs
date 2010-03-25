@@ -7,6 +7,8 @@ using Netline.BalloonLogger.SignatureLib;
 namespace AXToolbox.Common
 {
     public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
+
+    [Serializable]
     public class GPSLog
     {
         private string originalFilePath;

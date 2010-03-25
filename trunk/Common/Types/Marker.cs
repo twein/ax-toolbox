@@ -3,6 +3,7 @@
 namespace AXToolbox.Common
 {
     //TODO: rework
+    [Serializable]
     public class Marker
     {
         private int number;
