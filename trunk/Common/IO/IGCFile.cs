@@ -58,6 +58,7 @@ namespace AXToolbox.Common.IO
                         log.Date = ParseDateAt(line, 11);
                         break;
                     case 'B':
+                        //Track point
                         log.Track.Add(ParseFixAt(line, 7, log.Date));
                         break;
                     case 'E':

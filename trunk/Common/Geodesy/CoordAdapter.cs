@@ -21,9 +21,9 @@ namespace AXToolbox.Common.Geodesy
 		private const double deg2rad = Math.PI / 180;
 		private const double rad2deg = 180 / Math.PI;
 
-		private bool _performHelmert;
-		private Datum _datum1;
-		private Datum _datum2;
+		private bool performHelmert;
+		private Datum datum1;
+		private Datum datum2;
 
 		public CoordAdapter(string sourceDatumName, string targetDatumName)
 		{
@@ -46,7 +46,7 @@ namespace AXToolbox.Common.Geodesy
 		{
 			try
 			{
-				_datum1 = datums.First(d => d.Name == sourceDatumName);
+				datum1 = datums.First(d => d.Name == sourceDatumName);
 			}
 			catch (InvalidOperationException)
 			{
@@ -54,27 +54,27 @@ namespace AXToolbox.Common.Geodesy
 			}
 			try
 			{
-				_datum2 = datums.First(d => d.Name == targetDatumName);
+				datum2 = datums.First(d => d.Name == targetDatumName);
 			}
 			catch (InvalidOperationException)
 			{
 				throw new InvalidOperationException("Datum not supported: " + targetDatumName);
 			}
 
-			_performHelmert = _datum1.Name != _datum2.Name;
+			performHelmert = datum1.Name != datum2.Name;
 		}
 
 		public UTMPoint ConvertToUTM(LatLongPoint p1)
 		{
 			LatLongPoint p2;
 
-			if (_performHelmert)
+			if (performHelmert)
 			{
 				//[4] p.33
-				var p_xyz1 = LatLongToXYZ(p1, _datum1);
-				var p_xyz2 = Helmert_LocalToWGS84(p_xyz1, _datum1);
-				var p_xyz3 = Helmert_WGS84ToLocal(p_xyz2, _datum2);
-				p2 = XYZToLatLong(p_xyz3, _datum2);
+				var p_xyz1 = LatLongToXYZ(p1, datum1);
+				var p_xyz2 = Helmert_LocalToWGS84(p_xyz1, datum1);
+				var p_xyz3 = Helmert_WGS84ToLocal(p_xyz2, datum2);
+				p2 = XYZToLatLong(p_xyz3, datum2);
 				p2.Altitude = p1.Altitude;
 			}
 			else
@@ -82,14 +82,14 @@ namespace AXToolbox.Common.Geodesy
 				p2 = p1;
 			}
 
-			return LatLongToUTM(p2, _datum2);
+			return LatLongToUTM(p2, datum2);
 		}
 		public UTMPoint ConvertToUTM(UTMPoint p1)
 		{
 			UTMPoint p2;
 
-			if (_performHelmert)
-				return ConvertToUTM(UTMtoLatLong(p1, _datum1));
+			if (performHelmert)
+				return ConvertToUTM(UTMtoLatLong(p1, datum1));
 			else
 				p2 = p1;
 
@@ -99,13 +99,13 @@ namespace AXToolbox.Common.Geodesy
 		{
 			LatLongPoint p2;
 
-			if (_performHelmert)
+			if (performHelmert)
 			{
 				//[4] p.33
-				var p_xyz1 = LatLongToXYZ(p1, _datum1);
-				var p_xyz2 = Helmert_LocalToWGS84(p_xyz1, _datum1);
-				var p_xyz3 = Helmert_WGS84ToLocal(p_xyz2, _datum2);
-				p2 = XYZToLatLong(p_xyz3, _datum2);
+				var p_xyz1 = LatLongToXYZ(p1, datum1);
+				var p_xyz2 = Helmert_LocalToWGS84(p_xyz1, datum1);
+				var p_xyz3 = Helmert_WGS84ToLocal(p_xyz2, datum2);
+				p2 = XYZToLatLong(p_xyz3, datum2);
 				p2.Altitude = p1.Altitude;
 			}
 			else
@@ -117,7 +117,7 @@ namespace AXToolbox.Common.Geodesy
 		}
 		public LatLongPoint ConvertToLatLong(UTMPoint p1)
 		{
-			return ConvertToLatLong(UTMtoLatLong(p1, _datum1));
+			return ConvertToLatLong(UTMtoLatLong(p1, datum1));
 		}
 
 		private static XYZPoint LatLongToXYZ(LatLongPoint p1, Datum datum)
@@ -180,9 +180,6 @@ namespace AXToolbox.Common.Geodesy
 		{
 			var p2 = new XYZPoint();
 			double s = (1 + datum.ds * 10e-6);
-			//p2.Easting = s * p1.Easting - datum.rz * p1.Northing + datum.ry * p1.Altitude + datum.dx;
-			//p2.Northing = datum.rz * p1.Easting + s * p1.Northing - datum.rx * p1.Altitude + datum.dy;
-			//p2.Altitude = -datum.ry * p1.Easting + datum.rx * p1.Northing + s * p1.Altitude + datum.dz;
 			p2.X = s * (p1.X - datum.rz * p1.Y + datum.ry * p1.Z) + datum.dx;
 			p2.Y = s * (datum.rz * p1.X + p1.Y - datum.rx * p1.Z) + datum.dy;
 			p2.Z = s * (-datum.ry * p1.X + datum.rx * p1.Y + p1.Z) + datum.dz;
@@ -194,9 +191,6 @@ namespace AXToolbox.Common.Geodesy
 		{
 			var p2 = new XYZPoint();
 			double s = (1 - datum.ds * 10e-6);
-			//p2.Easting = s * p1.Easting + datum.rz * p1.Northing - datum.ry * p1.Altitude - datum.dx;
-			//p2.Northing = -datum.rz * p1.Easting + s * p1.Northing + datum.rx * p1.Altitude - datum.dy;
-			//p2.Altitude = datum.ry * p1.Easting - datum.rx * p1.Northing + s * p1.Altitude - datum.dz;
 			p2.X = s * (p1.X + datum.rz * p1.Y - datum.ry * p1.Z) - datum.dx;
 			p2.Y = s * (-datum.rz * p1.X + p1.Y + datum.rx * p1.Z) - datum.dy;
 			p2.Z = s * (datum.ry * p1.X - datum.rx * p1.Y + p1.Z) - datum.dz;
