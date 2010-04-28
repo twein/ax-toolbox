@@ -2,22 +2,25 @@
 
 namespace AXToolbox.Common
 {
-    //TODO: rework
     [Serializable]
     public class Marker
     {
         private int number;
-        private GPSFix fix;
+        private Point point;
 
         public int Number
         {
             get { return number; }
-            set { number = value; }
         }
-        public GPSFix Fix
+        public Point Point
         {
-            get { return fix; }
-            set { fix = value; }
+            get { return point; }
+        }
+
+        public Marker(int number, Point point)
+        {
+            this.number = number;
+            this.point = point;
         }
     }
 }

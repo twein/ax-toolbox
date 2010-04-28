@@ -38,7 +38,7 @@ namespace AXToolbox.Tests
         private void buttonModify_Click(object sender, RoutedEventArgs e)
         {
             Print("Modifying Data...");
-            Print("<fake action>");
+            Print("<This is a fake action intended to show the column width algorithm working with long text lines>");
             Print("Done.");
         }
         private void buttonDisplay_Click(object sender, RoutedEventArgs e)

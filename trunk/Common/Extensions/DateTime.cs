@@ -8,5 +8,10 @@ namespace AXToolbox.Common
         {
             return date.TimeOfDay.TotalHours < 12 ? "AM" : "PM";
         }
+
+        public static DateTime DateAmPm(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, date.Day, (date.TimeOfDay.TotalHours < 12 ? 0 : 12), 0, 0);
+        }
     }
 }

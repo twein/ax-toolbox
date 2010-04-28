@@ -6,14 +6,18 @@ using System.IO;
 
 namespace AXToolbox.Common.IO
 {
-    public static class WPTFile
+    public class WPTFile
     {
-        public static List<Waypoint> ReadWaypoints(string filePath)
+        protected string datum;
+        protected List<Waypoint> waypoints = new List<Waypoint>();
+
+
+        public WPTFile(string filePath)
         {
             throw new NotImplementedException();
         }
 
-        static public void Export(string filePath, List<Waypoint> waypoints, string datum, string utmZone)
+        public static void Save(List<Waypoint> waypoints, string filePath, string datum, string utmZone)
         {
             StreamWriter sw = new StreamWriter(filePath, false);
 
