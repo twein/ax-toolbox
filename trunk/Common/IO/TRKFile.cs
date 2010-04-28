@@ -8,14 +8,59 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common.IO
 {
-    public static class TRKFile
+    public class TRKFile : IGPSLog
     {
-        public static GPSLog ReadLog(string filePath)
+        protected string loggerModel;
+        protected DateTime date;
+        protected string datum;
+        protected List<GPSFix> track = new List<GPSFix>();
+
+        public SignatureStatus Signature
+        {
+            get { return SignatureStatus.NotSigned; }
+        }
+        public string LoggerSerialNumber
+        {
+            get { return ""; }
+        }
+        public string LoggerModel
+        {
+            get { return loggerModel; }
+        }
+        public int PilotNumber
+        {
+            get { return 0; }
+        }
+        public int PilotQnh
+        {
+            get { return 0; }
+        }
+        public DateTime Date
+        {
+            get { return date; }
+        }
+        public string Datum
+        {
+            get { return datum; }
+        }
+        public List<GPSFix> Track
+        {
+            get { return track; }
+        }
+        public List<LoggerMarker> Markers
+        {
+            get { return new List<LoggerMarker>(); }
+        }
+        public List<LoggerGoalDeclaration> GoalDeclarations
+        {
+            get { return new List<LoggerGoalDeclaration>(); }
+        }
+
+        public TRKFile(string filePath)
         {
             CoordAdapter ca = null;
             bool utm = false;
 
-            var log = new GPSLog(filePath);
             var content = from line in File.ReadAllLines(filePath)
                           where line.Length > 0
                           select line;
@@ -27,11 +72,11 @@ namespace AXToolbox.Common.IO
                 {
                     case 'G':
                         //Datum
-                        log.Datum = "WGS84";
-                        var datum = line.Substring(2).Trim();
-                        if (datum == "WGS 84") //Dirty hack!!!
-                            datum = "WGS84";
-                        ca = new CoordAdapter(datum, log.Datum);
+                        datum = "WGS84"; //fixed by design
+                        var fileDatum = line.Substring(2).Trim();
+                        if (fileDatum == "WGS 84") //Dirty hack!!!
+                            fileDatum = "WGS84";
+                        ca = new CoordAdapter(fileDatum, datum);
                         break;
                     case 'U':
                         //Coordinate units
@@ -39,7 +84,7 @@ namespace AXToolbox.Common.IO
                         break;
                     case 'P':
                         //Logger info
-                        log.LoggerModel = line.Substring(2).Trim();
+                        loggerModel = line.Substring(2).Trim();
                         break;
                     case 'T':
                         //Track point
@@ -75,7 +120,7 @@ namespace AXToolbox.Common.IO
                             fix.Latitude = llp.Latitude;
                             fix.Longitude = llp.Longitude;
                         }
-                        log.Track.Add(fix);
+                        track.Add(fix);
                         break;
                     //case 'L':
                     //    //Timezone
@@ -85,10 +130,27 @@ namespace AXToolbox.Common.IO
                 }
             }
 
-            return log;
+            date = track.Last().Time.DateAmPm();
         }
 
-        public static void Export(string filePath, List<Point> track, string datum, string utmZone)
+        public static List<Point> LoadTrack(string filePath, string datum, string utmZone)
+        {
+            var trkFile = new TRKFile(filePath);
+
+            var ca = new CoordAdapter(trkFile.Datum, datum);
+            var track = new List<Point>();
+
+            foreach (var f in trkFile.track)
+            {
+                var p = ca.ConvertToUTM(f.ToLatLongPoint(trkFile.PilotQnh));
+                if (p.Zone != utmZone)
+                    throw new InvalidDataException("Wrong utm zone!");
+                track.Add(new Point(p.Easting, p.Northing, p.Altitude, f.Time));
+            }
+
+            return track;
+        }
+        public static void SaveTrack(List<Point> track, string filePath, string datum, string utmZone)
         {
             var sw = new StreamWriter(filePath, false);
 

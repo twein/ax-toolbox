@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
@@ -6,11 +7,63 @@ using Netline.BalloonLogger.SignatureLib;
 
 namespace AXToolbox.Common.IO
 {
-    public static class IGCFile
+    public class IGCFile : IGPSLog
     {
-        private static GPSLog ReadLog(string filePath)
+        protected SignatureStatus signature;
+        protected string loggerSerialNumber;
+        protected string loggerModel;
+        protected int pilotNumber;
+        protected int pilotQnh;
+        protected DateTime date;
+        protected string datum;
+        protected List<GPSFix> track = new List<GPSFix>();
+        protected List<LoggerMarker> markers = new List<LoggerMarker>();
+        protected List<LoggerGoalDeclaration> goalDeclarations = new List<LoggerGoalDeclaration>();
+
+        public SignatureStatus Signature
         {
-            var log = new GPSLog(filePath);
+            get { return signature; }
+        }
+        public string LoggerSerialNumber
+        {
+            get { return loggerSerialNumber; }
+        }
+        public string LoggerModel
+        {
+            get { return loggerModel; }
+        }
+        public int PilotNumber
+        {
+            get { return pilotNumber; }
+        }
+        public int PilotQnh
+        {
+            get { return pilotQnh; }
+        }
+        public DateTime Date
+        {
+            get { return date; }
+        }
+        public string Datum
+        {
+            get { return datum; }
+        }
+        public List<GPSFix> Track
+        {
+            get { return track; }
+        }
+        public List<LoggerMarker> Markers
+        {
+            get { return markers; }
+        }
+        public List<LoggerGoalDeclaration> GoalDeclarations
+        {
+            get { return goalDeclarations; }
+        }
+
+        public IGCFile(string filePath)
+        {
+
             var content = from line in File.ReadAllLines(filePath)
                           where line.Length > 0
                           select line;
@@ -23,8 +76,8 @@ namespace AXToolbox.Common.IO
                         //Logger info
                         if (line.Substring(0, 4) == "AXXX")
                         {
-                            log.LoggerSerialNumber = line.Substring(4, 3);
-                            log.LoggerModel = line.Substring(7);
+                            loggerSerialNumber = line.Substring(4, 3);
+                            loggerModel = line.Substring(7);
                         }
                         break;
                     case 'H':
@@ -35,47 +88,45 @@ namespace AXToolbox.Common.IO
                                 //Pilot id
                                 int pilotNumber = 0;
                                 int.TryParse(line.Substring(5), out pilotNumber);
-                                log.PilotNumber = pilotNumber;
                                 break;
                             case "HFATS":
                                 //Qnh entered by the pilot
                                 int pilotQnh = 0;
                                 int.TryParse(line.Substring(5), out pilotQnh);
-                                log.PilotQnh = pilotQnh;
                                 break;
                             case "HFDTM":
                                 //Datum
-                                log.Datum = line.Substring(8);
+                                datum = line.Substring(8);
                                 break;
                             case "HFDTE":
                                 //Date
-                                log.Date = ParseDateAt(line, 9);
+                                date = ParseDateAt(line, 9);
                                 break;
                         }
                         break;
                     case 'K':
                         //Date update
-                        log.Date = ParseDateAt(line, 11);
+                        date = ParseDateAt(line, 11);
                         break;
                     case 'B':
                         //Track point
-                        log.Track.Add(ParseFixAt(line, 7, log.Date));
+                        track.Add(ParseFixAt(line, 7, date));
                         break;
                     case 'E':
                         switch (line.Substring(7, 3))
                         {
                             case "XX0":
                                 //marker
-                                var marker = new Marker();
+                                var marker = new LoggerMarker();
                                 marker.Number = int.Parse(line.Substring(10, 2));
-                                marker.Fix = ParseFixAt(line, 12, log.Date);
+                                marker.Fix = ParseFixAt(line, 12, date);
 
-                                log.Markers.Add(marker);
+                                markers.Add(marker);
                                 break;
                             case "XX1":
                                 //goal declaration
-                                var declaration = new GoalDeclaration();
-                                declaration.Time = ParseTimeAt(line, 1, log.Date);
+                                var declaration = new LoggerGoalDeclaration();
+                                declaration.Time = ParseTimeAt(line, 1, date);
                                 declaration.Number = int.Parse(line.Substring(10, 2));
                                 declaration.Goal = line.Substring(12).Split(',')[0];
                                 var altitude = line.Substring(12).Split(',')[1];
@@ -95,16 +146,14 @@ namespace AXToolbox.Common.IO
                                     declaration.Altitude = double.NaN;
                                 }
 
-                                log.GoalDeclarations.Add(declaration);
+                                goalDeclarations.Add(declaration);
                                 break;
                         }
                         break;
                 }
             }
 
-            log.Signature = VerifySignature(filePath);
-
-            return log;
+            signature = VerifySignature(filePath);
         }
 
         //Aux functions

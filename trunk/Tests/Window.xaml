@@ -11,8 +11,8 @@
             <Button Name="buttonDisplay" VerticalAlignment="Top" Height="23" Width="75" Click="buttonDisplay_Click">Display Data</Button>
             <Button Name="buttonClear" VerticalAlignment="Top" Height="23" Width="75" Click="buttonClear_Click">Clear Screen</Button>
         </StackPanel>
-        <FlowDocumentReader ClipToBounds="True" Margin="0,25,0,0">
-            <FlowDocument Name="output" FontFamily="Lucida Console" FontSize="10" TextAlignment="Left" ColumnWidth="300" ColumnRuleBrush="Black" ColumnRuleWidth="1" />
-        </FlowDocumentReader>
+        <FlowDocumentPageViewer ClipToBounds="True" Margin="0,25,0,0">
+            <FlowDocument Name="output" FontFamily="Lucida Console" FontSize="10" TextAlignment="Left" ColumnRuleBrush="Black" ColumnRuleWidth="1" IsOptimalParagraphEnabled="True" />
+        </FlowDocumentPageViewer>
     </Grid>
 </Window>
