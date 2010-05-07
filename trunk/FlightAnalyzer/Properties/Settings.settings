@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FlightAnalyzer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="TimeZone" Type="System.String" Scope="User">
+      <Value Profile="(Default)">02:00:00</Value>
+    </Setting>
+    <Setting Name="Datum" Type="System.String" Scope="User">
+      <Value Profile="(Default)">European 1950</Value>
+    </Setting>
+    <Setting Name="UTMZone" Type="System.String" Scope="User">
+      <Value Profile="(Default)">31T</Value>
+    </Setting>
+    <Setting Name="QNH" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1013.25</Value>
+    </Setting>
+    <Setting Name="MinVelocity" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.3</Value>
+    </Setting>
+    <Setting Name="MaxAcceleration" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="InterpolationInterval" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,36 @@
+Quick guide:
+============
+Prerequisites: 
+	Needs the .NET Framework 3.5 in order to run: download from Microsoft at:
+	http://www.microsoft.com/downloads/details.aspx?FamilyId=AB99342F-5D1A-413D-8319-81DA479AB0D7
+	It's a big package, but if you keep your computer updated I bet you already have it installed.
+
+Use:
+	Drag track files from windows explorer over the list box to analyze them
+
+	The new logger tracks can have any file name you want, just download from the SD card and drag over the window. 
+	The older logger tracks must be saved with CompeGPS in UTM and named as follows:
+		yyyyMMddXXppp.trk
+		yyyy=year
+		MM=month
+		dd=day
+		XX=AM or PM
+		ppp=pilot number
+		all padded with zeros if lower than 10
+	Example: 20091109PM003.trk: Flight flown on 9 nov 2009 afternoon by pilot 3
+
+Mouse:
+	Click and drag over map to move
+	Use the wheel to zoom in/out
+
+Keys:
+	+: Zoom in
+	-: Zoom out
+	.: Default zoom
+	Delete/Backspace: Remove selected track from list (the file won't be erased!)
+	M: Change map type
+
+Controls:
+	Logger/Clean radio buttons: choose betwen unmodified track log and computer cleaned track
+	Slider: Select track point
+	Lock: lock the focus over the selected point
