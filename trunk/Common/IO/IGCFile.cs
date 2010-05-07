@@ -32,7 +32,7 @@ namespace AXToolbox.Common.IO
         {
             get { return loggerModel; }
         }
-        public int PilotNumber
+        public int PilotId
         {
             get { return pilotNumber; }
         }

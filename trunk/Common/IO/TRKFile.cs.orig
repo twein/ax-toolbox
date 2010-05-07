@@ -27,7 +27,7 @@ namespace AXToolbox.Common.IO
         {
             get { return loggerModel; }
         }
-        public int PilotId
+        public int PilotNumber
         {
             get { return 0; }
         }
@@ -134,6 +134,11 @@ namespace AXToolbox.Common.IO
         }
 
         public static List<Point> LoadTrack(string filePath, string datum, string utmZone)
+
+            //remove out of date points
+            //TODO: use local time instead of UTC
+            DateTime from, to;
+            if (log.Date.AmPm() == "AM")
         {
             var trkFile = new TRKFile(filePath);
 
@@ -147,6 +152,7 @@ namespace AXToolbox.Common.IO
                     throw new InvalidDataException("Wrong utm zone!");
                 track.Add(new Point(p.Easting, p.Northing, p.Altitude, f.Time));
             }
+            log.Track.RemoveAll(f => f.Time < from || f.Time > to);
 
             return track;
         }
