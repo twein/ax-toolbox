@@ -103,6 +103,11 @@ namespace AXToolbox.Common.IO
                         break;
                 }
             }
+            if (report.Track.Count > 0)
+            {
+                report.Date = report.Track.Last().Time.StripTimePart();
+                report.TimeOfDay = report.Track.Last().Time.GetTimeOfDay();
+            }
 
             report.Signature = VerifySignature(filePath);
             return report;

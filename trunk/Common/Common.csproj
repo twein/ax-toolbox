@@ -95,6 +95,7 @@
     <Compile Include="IO\ObjectSerializer.cs" />
     <Compile Include="Geodesy\CoordAdapter.cs" />
     <Compile Include="Interfaces\IPositionTime.cs" />
+    <Compile Include="Types\TimeOfDay.cs" />
     <Compile Include="Types\Waypoint.cs" />
     <Compile Include="IO\IGCFile.cs" />
     <Compile Include="Types\Point.cs" />

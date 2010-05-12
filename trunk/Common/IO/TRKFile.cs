@@ -62,7 +62,10 @@ namespace AXToolbox.Common.IO
             }
 
             if (report.Track.Count > 0)
-                report.Date = report.Track.Last().Time.ToDateAmPm();
+            {
+                report.Date = report.Track.Last().Time.StripTimePart();
+                report.TimeOfDay = report.Track.Last().Time.GetTimeOfDay();
+            }
 
             return report;
         }

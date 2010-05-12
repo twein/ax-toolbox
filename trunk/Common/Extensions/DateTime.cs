@@ -9,10 +9,16 @@ namespace AXToolbox.Common
             return utcDate.ToLocalTime().TimeOfDay.TotalHours < 12 ? "AM" : "PM";
         }
 
-        public static DateTime ToDateAmPm(this DateTime utcDate)
+        public static TimeOfDay GetTimeOfDay(this DateTime utcDate)
         {
-            var date = utcDate.ToLocalTime();
-            return new DateTime(date.Year, date.Month, date.Day, (date.TimeOfDay.TotalHours < 12 ? 0 : 12), 0, 0);
+            if (utcDate.ToLocalTime().TimeOfDay.TotalHours < 12)
+            {
+                return TimeOfDay.Morning;
+            }
+            else
+            {
+                return TimeOfDay.Afternoon;
+            }
         }
 
         public static DateTime StripTimePart(this DateTime utcDate)
