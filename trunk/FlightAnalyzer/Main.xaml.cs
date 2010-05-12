@@ -30,7 +30,7 @@ namespace FlightAnalyzer
         private FlightSettings flightSettings;
         private CoordAdapter coordAdapter;
         private ObservableCollection<FlightReport> flightReports = new ObservableCollection<FlightReport>();
-        private List<TrackPoint> visibleTrack = new List<TrackPoint>();
+        private List<AXToolbox.Common.Point> visibleTrack = new List<AXToolbox.Common.Point>();
         private GMapMarker trackMarker;
         private GMapMarker pointerMarker;
         private int mapTypeIdx = 0;
@@ -78,11 +78,11 @@ namespace FlightAnalyzer
                         }
 
                         FlightReport fd = null;
-                        FlightReport current = new FlightReport(droppedFilePath, flightSettings, new List<Waypoint>()); //TODO: fix the waypoint list 
+                        FlightReport current = FlightReport.LoadFromFile(droppedFilePath, flightSettings, new List<Waypoint>()); //TODO: fix the waypoint list 
 
                         try
                         {
-                            fd = flightReports.First(i => string.Compare(i.Tag, current.Tag) >= 0);
+                            fd = flightReports.First(i => string.Compare(i.ToString(), current.ToString()) >= 0);
                         }
                         catch (InvalidOperationException) { }
 
@@ -96,7 +96,7 @@ namespace FlightAnalyzer
                                 selectionChanged = true;
                             }
                         }
-                        else if (fd.Tag != current.Tag)
+                        else if (fd.ToString() != current.ToString())
                         {
                             // insert
                             var i = flightReports.IndexOf(fd);
@@ -109,7 +109,7 @@ namespace FlightAnalyzer
                         }
                         else
                         {
-                            //already in collection
+                            //already in collection: do nothing
                         }
                     }
                 }
@@ -220,12 +220,14 @@ namespace FlightAnalyzer
 
             //TODO: check for errors and/or use a constructor
             //TODO: consider using a date and am-pm for further flight checking
-            flightSettings = new FlightSettings()
+            flightSettings =     new FlightSettings()
             {
-                TimeZone = TimeSpan.Parse(Settings.Default.TimeZone),
+                Date=Settings.Default.Date,
+                TimeZone = Settings.Default.TimeZone,
                 Datum = Settings.Default.Datum,
-                UtmZone = Settings.Default.UTMZone,
-                Qnh = Settings.Default.QNH,
+                UtmZone = Settings.Default.UtmZone,
+                Qnh = Settings.Default.Qnh,
+                DefaultAltitude=Settings.Default.DefaultAltitude,
                 MinVelocity = Settings.Default.MinVelocity,
                 MaxAcceleration = Settings.Default.MaxAcceleration,
                 InterpolationInterval = Settings.Default.InterpolationInterval
@@ -240,7 +242,7 @@ namespace FlightAnalyzer
             if (pointerMarker != null)
             {
                 var p = visibleTrack[idx];
-                var llp = coordAdapter.ConvertToLatLong(new UTMPoint() { Zone = Settings.Default.UTMZone, Easting = p.Easting, Northing = p.Northing });
+                var llp = coordAdapter.ConvertToLatLong(new UTMPoint() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing });
                 pointerMarker.Position = new PointLatLng() { Lat = llp.Latitude, Lng = llp.Longitude };
                 ((Tag)pointerMarker.Shape).SetTooltip(p.ToString());
                 textblockTime.Text = p.Time.ToString("HH:mm:ss");
@@ -303,7 +305,7 @@ namespace FlightAnalyzer
             foreach (var p in visibleTrack)
             {
                 var llp = ca.ConvertToLatLong(
-                    new UTMPoint() { Zone = Settings.Default.UTMZone, Easting = p.Easting, Northing = p.Northing }
+                    new UTMPoint() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing }
                     );
                 points.Add(new PointLatLng(llp.Latitude, llp.Longitude));
             }

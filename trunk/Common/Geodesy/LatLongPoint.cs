@@ -1,9 +1,9 @@
 ﻿namespace AXToolbox.Common.Geodesy
 {
-	public struct LatLongPoint
-	{
-		public double Latitude;
-		public double Longitude;
-		public double Altitude;
-	}
+    public class LatLongPoint
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Altitude { get; set; }
+    }
 }

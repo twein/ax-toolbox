@@ -1,10 +1,10 @@
 ﻿namespace AXToolbox.Common.Geodesy
 {
-	public struct UTMPoint
-	{
-		public string Zone;
-		public double Easting;
-		public double Northing;
-		public double Altitude;
-	}
+    public class UTMPoint
+    {
+        public string Zone { get; set; }
+        public double Easting { get; set; }
+        public double Northing { get; set; }
+        public double Altitude { get; set; }
+    }
 }

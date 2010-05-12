@@ -6,64 +6,23 @@ namespace AXToolbox.Common
     [Serializable]
     public class GPSFix
     {
-        private DateTime time;
-        private double latitude;
-        private double longitude;
-        private double barometricAltitude = double.NaN;
-        private double gpsAltitude;
-        private bool isValid;
-        private int accuracy;
-        private int satellites;
-
-        public DateTime Time
-        {
-            get { return time; }
-            set { time = value; }
-        }
-        public double Latitude
-        {
-            get { return latitude; }
-            set { latitude = value; }
-        }
-        public double Longitude
-        {
-            get { return longitude; }
-            set { longitude = value; }
-        }
-        public double BarometricAltitude
-        {
-            get { return barometricAltitude; }
-            set { barometricAltitude = value; }
-        }
-        public double GpsAltitude
-        {
-            get { return gpsAltitude; }
-            set { gpsAltitude = value; }
-        }
-        public bool IsValid
-        {
-            get { return isValid; }
-            set { isValid = value; }
-        }
-        public int Accuracy
-        {
-            get { return accuracy; }
-            set { accuracy = value; }
-        }
-        public int Satellites
-        {
-            get { return satellites; }
-            set { satellites = value; }
-        }
+        public DateTime Time { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double BarometricAltitude { get; set; }
+        public double GpsAltitude { get; set; }
+        public bool IsValid { get; set; }
+        public int Accuracy { get; set; }
+        public int Satellites { get; set; }
 
         public double Altitude(double qnh)
         {
             double altitude;
 
-            if (double.IsNaN(barometricAltitude))
-                altitude = gpsAltitude;
+            if (qnh == 0 || double.IsNaN(BarometricAltitude))
+                altitude = GpsAltitude;
             else
-                altitude = CorrectQnh(barometricAltitude, qnh);
+                altitude = CorrectQnh(BarometricAltitude, qnh);
 
             return altitude;
         }
