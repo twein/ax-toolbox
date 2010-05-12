@@ -15,6 +15,7 @@ namespace AXToolbox.Common
     public class FlightReport
     {
         public DateTime Date { get; set; }
+        public TimeOfDay TimeOfDay {get;set;} 
         public int PilotId { get; set; }
 
         public SignatureStatus Signature { get; set; }
@@ -70,7 +71,7 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return string.Format("{0:MM/dd} {1} - {2:000}", Date, Date.GetAmPm(), PilotId);
+            return string.Format("{0:MM/dd} {1} - {2:000}", Date, TimeOfDay.ToString(), PilotId);
         }
     }
 

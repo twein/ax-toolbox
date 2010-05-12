@@ -2,15 +2,83 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:props="clr-namespace:FlightAnalyzer.Properties"        
-    xmlns:common="clr-namespace:AXToolbox.Model.ValidationRules;assembly=AXToolbox.Model"        
+    xmlns:validation="clr-namespace:AXToolbox.Model.ValidationRules;assembly=AXToolbox.Model"        
+    xmlns:converters="clr-namespace:AXToolbox.Model.Converters;assembly=AXToolbox.Model"        
     Title="Flight settings" 
 		SizeToContent="WidthAndHeight" ShowInTaskbar="False" Topmost="True"
 		WindowStartupLocation="CenterOwner" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize" 
-		Closing="Window_Closed" >
+		Closing="Window_Closed" mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        >
     <Window.Resources>
         <props:Settings x:Key="settings" />
+        <converters:NotConverter x:Key="notConverter" />
+        <Style x:Key="defaultStyle">
+            <Setter Property="Control.Margin" Value="5"/>
+            <Setter Property="Control.Width" Value="200"/>
+            <Setter Property="Control.VerticalAlignment" Value="Center"/>
+        </Style>
     </Window.Resources>
+
     <Grid DataContext="{StaticResource settings}">
+        <StackPanel Orientation="Vertical">
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Date:</Label>
+                <TextBox Style="{StaticResource defaultStyle}"  Text="{Binding Path=Default.Date}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Time of day:</Label>
+                <RadioButton Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Default.Am}" Content="AM"  />
+                <RadioButton Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Default.Am, Converter={StaticResource notConverter}}" Content="PM" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Time zone:</Label>
+                <TextBox Style="{StaticResource defaultStyle}">
+                    <TextBox.Text>
+                        <Binding Path="Default.TimeZone">
+                            <Binding.ValidationRules>
+                                <validation:TimeSpanValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Datum:</Label>
+                <TextBox Style="{StaticResource defaultStyle}"  Text="{Binding Path=Default.Datum}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">UTM Zone:</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.UtmZone}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">QNH:</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.Qnh}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Minimum velocity (m/s):</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.MinVelocity}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Maximum acceleration (m/s2):</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.MaxAcceleration}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Interpolation interval (s):</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.InterpolationInterval}"/>
+            </StackPanel>
+        </StackPanel>
+        <!--
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*" MinWidth="150"/>
@@ -30,7 +98,7 @@
             <TextBox.Text>
                 <Binding Path="Default.TimeZone">
                     <Binding.ValidationRules>
-                        <common:TimeSpanValidationRule/>
+                        <validation:TimeSpanValidationRule/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
@@ -59,5 +127,6 @@
             <Button Name="buttonReset" Margin="5" MinWidth="75" Click="buttonReset_Click">Default</Button>
             <Button Name="buttonCancel"  IsCancel="True" Margin="5" MinWidth="75" Click="buttonCancel_Click">Cancel</Button>
         </StackPanel>
+            -->
     </Grid>
 </Window>

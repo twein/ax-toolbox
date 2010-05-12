@@ -8,6 +8,7 @@ namespace AXToolbox.Common
     public class FlightSettings
     {
         public DateTime Date { get; set; }
+        public TimeOfDay TimeOfDay { get; set; }
         public TimeSpan TimeZone{ get; set; }
         public string Datum{ get; set; }
         public string UtmZone{ get; set; }
@@ -19,7 +20,8 @@ namespace AXToolbox.Common
 
         public FlightSettings()
         {
-            Date = DateTime.Now.ToUniversalTime().ToDateAmPm();
+            Date = DateTime.Now.ToUniversalTime();
+            TimeOfDay = TimeOfDay.Morning;
             TimeZone = new TimeSpan(2, 0, 0);
             Datum = "European 1950";
             UtmZone = "31T";

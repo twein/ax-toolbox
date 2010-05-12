@@ -29,5 +29,8 @@
     <Setting Name="InterpolationInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
+    <Setting Name="TimeOfDay" Type="AXToolbox.Common.TimeOfDay" Scope="User">
+      <Value Profile="(Default)">Morning</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

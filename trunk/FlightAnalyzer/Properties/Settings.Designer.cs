@@ -130,5 +130,17 @@ namespace FlightAnalyzer.Properties {
                 this["InterpolationInterval"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Morning")]
+        public global::AXToolbox.Common.TimeOfDay TimeOfDay {
+            get {
+                return ((global::AXToolbox.Common.TimeOfDay)(this["TimeOfDay"]));
+            }
+            set {
+                this["TimeOfDay"] = value;
+            }
+        }
     }
 }

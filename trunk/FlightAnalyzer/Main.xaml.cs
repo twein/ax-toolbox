@@ -220,14 +220,14 @@ namespace FlightAnalyzer
 
             //TODO: check for errors and/or use a constructor
             //TODO: consider using a date and am-pm for further flight checking
-            flightSettings =     new FlightSettings()
+            flightSettings = new FlightSettings()
             {
-                Date=Settings.Default.Date,
+                Date = Settings.Default.Date,
                 TimeZone = Settings.Default.TimeZone,
                 Datum = Settings.Default.Datum,
                 UtmZone = Settings.Default.UtmZone,
                 Qnh = Settings.Default.Qnh,
-                DefaultAltitude=Settings.Default.DefaultAltitude,
+                DefaultAltitude = Settings.Default.DefaultAltitude,
                 MinVelocity = Settings.Default.MinVelocity,
                 MaxAcceleration = Settings.Default.MaxAcceleration,
                 InterpolationInterval = Settings.Default.InterpolationInterval
