@@ -9,17 +9,17 @@ namespace AXToolbox.Common
             return utcDate.ToLocalTime().TimeOfDay.TotalHours < 12 ? "AM" : "PM";
         }
 
-        public static TimeOfDay GetTimeOfDay(this DateTime utcDate)
-        {
-            if (utcDate.ToLocalTime().TimeOfDay.TotalHours < 12)
-            {
-                return TimeOfDay.Morning;
-            }
-            else
-            {
-                return TimeOfDay.Afternoon;
-            }
-        }
+        //public static TimeOfDay GetTimeOfDay(this DateTime utcDate)
+        //{
+        //    if (utcDate.ToLocalTime().TimeOfDay.TotalHours < 12)
+        //    {
+        //        return TimeOfDay.Morning;
+        //    }
+        //    else
+        //    {
+        //        return TimeOfDay.Afternoon;
+        //    }
+        //}
 
         public static DateTime StripTimePart(this DateTime utcDate)
         {

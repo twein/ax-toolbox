@@ -106,7 +106,7 @@ namespace AXToolbox.Common.IO
             if (report.Track.Count > 0)
             {
                 report.Date = report.Track.Last().Time.StripTimePart();
-                report.TimeOfDay = report.Track.Last().Time.GetTimeOfDay();
+                report.Am = report.Track.Last().Time.GetAmPm() == "AM";
             }
 
             report.Signature = VerifySignature(filePath);

@@ -133,13 +133,13 @@ namespace FlightAnalyzer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Morning")]
-        public global::AXToolbox.Common.TimeOfDay TimeOfDay {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Am {
             get {
-                return ((global::AXToolbox.Common.TimeOfDay)(this["TimeOfDay"]));
+                return ((bool)(this["Am"]));
             }
             set {
-                this["TimeOfDay"] = value;
+                this["Am"] = value;
             }
         }
     }
