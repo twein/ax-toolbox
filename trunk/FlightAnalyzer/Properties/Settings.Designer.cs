@@ -25,10 +25,22 @@ namespace FlightAnalyzer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("02:00:00")]
-        public string TimeZone {
+        [global::System.Configuration.DefaultSettingValueAttribute("2010-06-15")]
+        public global::System.DateTime Date {
             get {
-                return ((string)(this["TimeZone"]));
+                return ((global::System.DateTime)(this["Date"]));
+            }
+            set {
+                this["Date"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("02:00:00")]
+        public global::System.TimeSpan TimeZone {
+            get {
+                return ((global::System.TimeSpan)(this["TimeZone"]));
             }
             set {
                 this["TimeZone"] = value;
@@ -50,33 +62,45 @@ namespace FlightAnalyzer.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("31T")]
-        public string UTMZone {
+        public string UtmZone {
             get {
-                return ((string)(this["UTMZone"]));
+                return ((string)(this["UtmZone"]));
             }
             set {
-                this["UTMZone"] = value;
+                this["UtmZone"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1013")]
-        public int QNH {
+        public int Qnh {
             get {
-                return ((int)(this["QNH"]));
+                return ((int)(this["Qnh"]));
             }
             set {
-                this["QNH"] = value;
+                this["Qnh"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double DefaultAltitude {
+            get {
+                return ((double)(this["DefaultAltitude"]));
+            }
+            set {
+                this["DefaultAltitude"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.3")]
-        public float MinVelocity {
+        public double MinVelocity {
             get {
-                return ((float)(this["MinVelocity"]));
+                return ((double)(this["MinVelocity"]));
             }
             set {
                 this["MinVelocity"] = value;
@@ -97,10 +121,10 @@ namespace FlightAnalyzer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public double InterpolationInterval {
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int InterpolationInterval {
             get {
-                return ((double)(this["InterpolationInterval"]));
+                return ((int)(this["InterpolationInterval"]));
             }
             set {
                 this["InterpolationInterval"] = value;

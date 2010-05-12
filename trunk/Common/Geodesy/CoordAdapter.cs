@@ -7,6 +7,10 @@
  * [5] http://www.mctainsh.com/Articles/Csharp/LLUTMWebForm.aspx
  * 
  */
+
+// ignore altitude in helmert transformation
+#undef USEALTITUDEINHELMERT
+
 using System;
 using System.Linq;
 
@@ -17,7 +21,6 @@ namespace AXToolbox.Common.Geodesy
 
 	public class CoordAdapter
 	{
-		private const bool IgnoreAltitude = true; // ignore altitude in helmert transformation
 		private const double deg2rad = Math.PI / 180;
 		private const double rad2deg = 180 / Math.PI;
 
@@ -132,8 +135,11 @@ namespace AXToolbox.Common.Geodesy
 
 			var latrad = p1.Latitude * deg2rad;
 			var longrad = p1.Longitude * deg2rad;
-			var altitude = IgnoreAltitude ? 0 : p1.Altitude;
-
+#if USEALTITUDEINHELMERT
+            var altitude = p1.altitude
+#else
+			var altitude =  0;
+#endif
 			var nu = datum.a / Math.Sqrt(1 - datum.e2 * Math.Sin(latrad) * Math.Sin(latrad));
 
 			var p2 = new XYZPoint();

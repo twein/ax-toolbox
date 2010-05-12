@@ -4,14 +4,21 @@ namespace AXToolbox.Common
 {
     public static class DateTimeExtensions
     {
-        public static string AmPm(this DateTime date)
+        public static string GetAmPm(this DateTime utcDate)
         {
-            return date.TimeOfDay.TotalHours < 12 ? "AM" : "PM";
+            return utcDate.ToLocalTime().TimeOfDay.TotalHours < 12 ? "AM" : "PM";
         }
 
-        public static DateTime DateAmPm(this DateTime date)
+        public static DateTime ToDateAmPm(this DateTime utcDate)
         {
+            var date = utcDate.ToLocalTime();
             return new DateTime(date.Year, date.Month, date.Day, (date.TimeOfDay.TotalHours < 12 ? 0 : 12), 0, 0);
+        }
+
+        public static DateTime StripTimePart(this DateTime utcDate)
+        {
+            var date = utcDate.ToLocalTime();
+            return new DateTime(date.Year, date.Month, date.Day);
         }
     }
 }

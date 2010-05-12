@@ -1,0 +1,3 @@
+﻿FlightReport class needs proposing launch and landing points
+
+Make an error log to output all recoverable error causes
