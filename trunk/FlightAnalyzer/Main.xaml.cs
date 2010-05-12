@@ -223,6 +223,7 @@ namespace FlightAnalyzer
             flightSettings = new FlightSettings()
             {
                 Date = Settings.Default.Date,
+                Am = Settings.Default.Am,
                 TimeZone = Settings.Default.TimeZone,
                 Datum = Settings.Default.Datum,
                 UtmZone = Settings.Default.UtmZone,

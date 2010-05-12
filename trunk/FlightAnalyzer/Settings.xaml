@@ -31,8 +31,8 @@
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Time of day:</Label>
-                <RadioButton Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Default.Am}" Content="AM"  />
-                <RadioButton Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Default.Am, Converter={StaticResource notConverter}}" Content="PM" />
+                <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Default.Am,Mode=TwoWay}" Content="AM"  />
+                <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto"  IsChecked="{Binding Path=Default.Am, Converter={StaticResource notConverter}}" Content="PM" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
@@ -76,6 +76,11 @@
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Interpolation interval (s):</Label>
                 <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.InterpolationInterval}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="buttonSave" IsDefault="True" Margin="5" MinWidth="75" Click="buttonSave_Click">OK</Button>
+                <Button Name="buttonReset" Margin="5" MinWidth="75" Click="buttonReset_Click">Default</Button>
+                <Button Name="buttonCancel"  IsCancel="True" Margin="5" MinWidth="75" Click="buttonCancel_Click">Cancel</Button>
             </StackPanel>
         </StackPanel>
         <!--
