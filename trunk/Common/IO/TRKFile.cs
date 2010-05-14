@@ -13,6 +13,7 @@ namespace AXToolbox.Common.IO
         private FlightSettings settings;
         private CoordAdapter coordAdapter = null;
         private bool utm = false;
+        private FlightReport report = new FlightReport();
 
         public TRKFile(FlightSettings settings)
         {
@@ -21,8 +22,6 @@ namespace AXToolbox.Common.IO
 
         public FlightReport ReadLog(string filePath)
         {
-            var report = new FlightReport();
-
             var content = from line in File.ReadAllLines(filePath)
                           where line.Length > 0
                           select line;
@@ -106,7 +105,7 @@ namespace AXToolbox.Common.IO
             }
 
             if (p.Zone != settings.UtmZone)
-                ErrorLog.Add("Wrong UTM zone: " + line);
+                report.Notes.Add("Wrong UTM zone: " + line);
             else
                 point = new Point() { Time = time, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
 

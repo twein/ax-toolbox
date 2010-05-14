@@ -11,43 +11,43 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using FlightAnalyzer.Properties;
+using AXToolbox.Model.Validation;
 
 namespace FlightAnalyzer
 {
-	/// <summary>
-	/// Interaction logic for SettingsWindow.xaml
-	/// </summary>
-	public partial class SettingsWindow : Window
-	{
-		public SettingsWindow()
-		{
-			InitializeComponent();
-		}
+    /// <summary>
+    /// Interaction logic for SettingsWindow.xaml
+    /// </summary>
+    public partial class SettingsWindow : Window
+    {
+        public SettingsWindow()
+        {
+            InitializeComponent();
+        }
 
 
-		private void buttonSave_Click(object sender, RoutedEventArgs e)
-		{
-			Settings.Default.Save();
-			DialogResult = true;
-			Close();
-		}
+        private void buttonSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (Validator.IsValid(this))
+            {
+                Settings.Default.Save();
+                Close();
+            }
+        }
 
-		private void buttonReset_Click(object sender, RoutedEventArgs e)
-		{
-			Settings.Default.Reset();
-		}
+        private void buttonReset_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Reset();
+        }
 
-		private void buttonCancel_Click(object sender, RoutedEventArgs e)
-		{
-			Settings.Default.Reload();
-			DialogResult = false;
-			Close();
-		}
+        private void buttonCancel_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
 
-		private void Window_Closed(object sender, EventArgs e)
-		{
-			Settings.Default.Reload();
-			DialogResult = false;
-		}
-	}
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Settings.Default.Reload();
+        }
+    }
 }
