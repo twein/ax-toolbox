@@ -1,15 +1,15 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
+﻿using System;
+using System.Globalization;
 using System.Windows.Controls;
 
-namespace AXToolbox.Model.ValidationRules
+namespace AXToolbox.Model.Validation
 {
     public class TimeSpanValidationRule : ValidationRule
     {
-        private static Regex pattern = new Regex(@"^\b*-?\d{2}:\d{2}:\d{2}\b*$");
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            if (pattern.IsMatch(value.ToString()))
+            TimeSpan ts;
+            if (TimeSpan.TryParse((string)value, out ts))
             {
                 return new ValidationResult(true, null);
             }
