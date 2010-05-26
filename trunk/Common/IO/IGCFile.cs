@@ -8,21 +8,19 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common.IO
 {
-    public class IGCFile
+    public class IGCFile : ILogFile
     {
         private FlightSettings settings;
-        private List<Waypoint> allowedGoals;
         private CoordAdapter coordAdapter = null;
         private FlightReport report = new FlightReport();
 
-        public IGCFile(FlightSettings settings, List<Waypoint> allowedGoals)
+        public IGCFile(FlightSettings settings)
         {
             this.settings = settings;
-            if (allowedGoals == null || allowedGoals.Count == 0)
+            if (settings.AllowedGoals.Count == 0)
             {
                 throw new InvalidDataException("The allowed goals list cannot be empty");
             }
-            this.allowedGoals = allowedGoals;
         }
 
         public FlightReport ReadLog(string filePath)
@@ -162,7 +160,7 @@ namespace AXToolbox.Common.IO
                 //Type 000
                 try
                 {
-                    var desiredGoal = allowedGoals.Find(g => g.Name == goal);
+                    var desiredGoal = settings.AllowedGoals.Find(g => g.Name == goal);
                     declaration = new Waypoint(number.ToString())
                     {
                         Easting = desiredGoal.Easting,
@@ -180,8 +178,8 @@ namespace AXToolbox.Common.IO
             {
                 // type 0000/0000
                 // use the first allowed goal as a template
-                var easting = allowedGoals[0].Easting % 100000 + 10 * double.Parse(goal.Substring(0, 4));
-                var northing = allowedGoals[0].Northing % 100000 + 10 * double.Parse(goal.Substring(5, 4));
+                var easting = settings.AllowedGoals[0].Easting % 100000 + 10 * double.Parse(goal.Substring(0, 4));
+                var northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(goal.Substring(5, 4));
                 declaration = new Waypoint(number.ToString())
                 {
                     Easting = easting,

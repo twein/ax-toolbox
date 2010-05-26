@@ -2,9 +2,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
    	xmlns:map="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
-    Title="Flight Analyzer" Width="800"
-ResizeMode="CanResizeWithGrip"
-KeyDown="MainWindow_KeyDown" ShowActivated="False" Height="412">
+    Title="Flight Analyzer" Width="800" Height="600"
+    ResizeMode="CanResizeWithGrip" WindowState="Maximized"
+    KeyDown="MainWindow_KeyDown" Loaded="Window_Loaded">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
@@ -43,7 +43,7 @@ KeyDown="MainWindow_KeyDown" ShowActivated="False" Height="412">
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
-                        
+
                         <Grid Grid.Row="0" Grid.Column="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -58,7 +58,7 @@ KeyDown="MainWindow_KeyDown" ShowActivated="False" Height="412">
                                        Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}">
                             </TextBlock>
                         </Grid>
-                        
+
                         <Grid Grid.Row="0" Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -88,7 +88,7 @@ KeyDown="MainWindow_KeyDown" ShowActivated="False" Height="412">
                                        Text="{Binding Path=LaunchPoint, Mode=OneWay}">
                             </TextBlock>
                         </Grid>
-                        
+
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -171,9 +171,9 @@ KeyDown="MainWindow_KeyDown" ShowActivated="False" Height="412">
                         </RadioButton>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
-                    <Slider Name="sliderTime" Grid.Column="1"
+                        <Slider Name="sliderTime" Grid.Column="1"
                             Margin="5" ValueChanged="slider_ValueChanged" SmallChange="1" LargeChange="10">
-                    </Slider>
+                        </Slider>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
                         <TextBlock Name="textblockTime"

@@ -32,5 +32,8 @@
     <Setting Name="Am" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="GoalsFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%HOMEDRIVE%%HOMEPATH%\goals.wpt</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

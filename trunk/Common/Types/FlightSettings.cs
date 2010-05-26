@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using AXToolbox.Common.IO;
 
 namespace AXToolbox.Common
 {
@@ -13,6 +12,7 @@ namespace AXToolbox.Common
         public string Datum{ get; set; }
         public string UtmZone{ get; set; }
         public int Qnh{ get; set; }
+        public List<Waypoint> AllowedGoals { get; set; }
         public double DefaultAltitude{ get; set; }
         public double MinVelocity{ get; set; }
         public double MaxAcceleration{ get; set; }
@@ -30,6 +30,7 @@ namespace AXToolbox.Common
             MinVelocity = 0.3; // m/s
             MaxAcceleration = 5; // m/s2
             InterpolationInterval = 2; // s
+            AllowedGoals = new List<Waypoint>();
         }
     }
 }

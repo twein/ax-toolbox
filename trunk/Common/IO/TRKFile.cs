@@ -8,7 +8,7 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common.IO
 {
-    public class TRKFile
+    public class TRKFile : ILogFile
     {
         private FlightSettings settings;
         private CoordAdapter coordAdapter = null;
@@ -73,10 +73,10 @@ namespace AXToolbox.Common.IO
         {
             Point point = null;
 
-            var fields = line.Split(' ');
+            var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var time = DateTime.Parse(fields[4] + " " + fields[5]).ToUniversalTime();
-            var altitude = double.Parse(fields[7]);
+            var time = DateTime.Parse(fields[4] + " " + fields[5]);
+            var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
             UTMPoint p;
 
             if (utm)
@@ -85,8 +85,8 @@ namespace AXToolbox.Common.IO
                 p = coordAdapter.ConvertToUTM(new UTMPoint()
                 {
                     Zone = fields[1],
-                    Easting = double.Parse(fields[2]),
-                    Northing = double.Parse(fields[3]),
+                    Easting = double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
+                    Northing = double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
                     Altitude = altitude
                 });
             }
@@ -97,8 +97,8 @@ namespace AXToolbox.Common.IO
                 var strLongitude = fields[3].Split('º');
                 p = coordAdapter.ConvertToUTM(new LatLongPoint()
                 {
-                    Latitude = double.Parse(strLatitude[0]) * (strLatitude[1] == "S" ? -1 : 1),
-                    Longitude = double.Parse(strLongitude[0]) * (strLongitude[1] == "W" ? -1 : 1),
+                    Latitude = double.Parse(strLatitude[0], NumberFormatInfo.InvariantInfo) * (strLatitude[1] == "S" ? -1 : 1),
+                    Longitude = double.Parse(strLongitude[0], NumberFormatInfo.InvariantInfo) * (strLongitude[1] == "W" ? -1 : 1),
                     Altitude = altitude
                 });
 
