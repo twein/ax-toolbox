@@ -51,6 +51,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validation\DateValidationRule.cs" />
+    <Compile Include="Validation\FileNameValidationRule.cs" />
     <Compile Include="Validation\TimeSpanValidationRule.cs" />
     <Compile Include="Validation\Validator.cs" />
   </ItemGroup>

@@ -73,6 +73,20 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Allowed goals file:</Label>
+                <TextBox Name="textBoxWptFileName" Style="{StaticResource defaultStyle}" IsReadOnly="True">
+                    <TextBox.Text>
+                        <Binding Path="Default.GoalsFile">
+                            <Binding.ValidationRules>
+                                <validation:FileNameValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                <Button Name="buttonWptFile" Style="{StaticResource defaultStyle}" Width="26" Click="buttonWptFile_Click">...</Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Minimum velocity (m/s):</Label>
                 <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.MinVelocity}"/>
             </StackPanel>
@@ -89,7 +103,7 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Name="buttonSave" IsDefault="True" Margin="5" MinWidth="75" Click="buttonSave_Click">OK</Button>
                 <Button Name="buttonReset" Margin="5" MinWidth="75" Click="buttonReset_Click">Default</Button>
-                <Button Name="buttonCancel"  IsCancel="True" Margin="5" MinWidth="75" Click="buttonCancel_Click">Cancel</Button>
+                <Button Name="buttonCancel" IsCancel="True" Margin="5" MinWidth="75" Click="buttonCancel_Click">Cancel</Button>
             </StackPanel>
         </StackPanel>
         <!--

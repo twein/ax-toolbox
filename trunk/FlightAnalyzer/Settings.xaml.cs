@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using FlightAnalyzer.Properties;
 using AXToolbox.Model.Validation;
+using FlightAnalyzer.Properties;
+using Microsoft.Win32;
 
 namespace FlightAnalyzer
 {
@@ -20,17 +11,19 @@ namespace FlightAnalyzer
     /// </summary>
     public partial class SettingsWindow : Window
     {
+        private bool isOk = false;
+
         public SettingsWindow()
         {
             InitializeComponent();
         }
-
 
         private void buttonSave_Click(object sender, RoutedEventArgs e)
         {
             if (Validator.IsValid(this))
             {
                 Settings.Default.Save();
+                isOk = true;
                 Close();
             }
         }
@@ -48,6 +41,18 @@ namespace FlightAnalyzer
         private void Window_Closed(object sender, EventArgs e)
         {
             Settings.Default.Reload();
+            DialogResult = isOk;
+        }
+
+        private void buttonWptFile_Click(object sender, RoutedEventArgs e)
+        {
+            var x = new OpenFileDialog();
+            x.Filter = "Waypoint files (*.wpt)|*.wpt";
+            x.FileName = textBoxWptFileName.Text;
+            if (x.ShowDialog(this) == true)
+            {
+                textBoxWptFileName.ToolTip = textBoxWptFileName.Text = x.FileName;
+            }
         }
     }
 }

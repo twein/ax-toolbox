@@ -142,5 +142,17 @@ namespace FlightAnalyzer.Properties {
                 this["Am"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%HOMEDRIVE%%HOMEPATH%\\goals.wpt")]
+        public string GoalsFile {
+            get {
+                return ((string)(this["GoalsFile"]));
+            }
+            set {
+                this["GoalsFile"] = value;
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ using FlightAnalyzer.Properties;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using AXToolbox.Model;
+using AXToolbox.Common.IO;
 
 namespace FlightAnalyzer
 {
@@ -38,26 +39,34 @@ namespace FlightAnalyzer
         public MainWindow()
         {
             InitializeComponent();
-
-            // config gmaps
-            GMaps.Instance.UseRouteCache = true;
-            GMaps.Instance.UseGeocoderCache = true;
-            GMaps.Instance.UsePlacemarkCache = true;
-            GMaps.Instance.Mode = AccessMode.ServerAndCache;
-
-            // config map
-            MainMap.MapType = allowedMaptypes[mapTypeIdx];
-            MainMap.DragButton = MouseButton.Left;
-            MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionAndCenter;
-            MainMap.MaxZoom = 20; //tiles available up to zoom 17
-            MainMap.MinZoom = 10;
-            MainMap.Zoom = 12;
-            //MainMap.CurrentPosition = new PointLatLng(42.005, 3.005);
-
-            InitSettings();
-
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (new SettingsWindow().ShowDialog() == true)
+            {
+                // config gmaps
+                GMaps.Instance.UseRouteCache = true;
+                GMaps.Instance.UseGeocoderCache = true;
+                GMaps.Instance.UsePlacemarkCache = true;
+                GMaps.Instance.Mode = AccessMode.ServerAndCache;
+
+                // config map
+                MainMap.MapType = allowedMaptypes[mapTypeIdx];
+                MainMap.DragButton = MouseButton.Left;
+                MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionAndCenter;
+                MainMap.MaxZoom = 20; //tiles available up to zoom 17
+                MainMap.MinZoom = 10;
+                MainMap.Zoom = 12;
+                MainMap.CurrentPosition = new PointLatLng(41.97, 2.78);
+
+                InitSettings();
+            }
+            else
+            {
+                Close();
+            }
+        }
         private void DropListBox_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -78,7 +87,7 @@ namespace FlightAnalyzer
                         }
 
                         FlightReport fd = null;
-                        FlightReport current = FlightReport.LoadFromFile(droppedFilePath, flightSettings, new List<Waypoint>()); //TODO: fix the waypoint list 
+                        FlightReport current = FlightReport.LoadFromFile(droppedFilePath, flightSettings);
 
                         try
                         {
@@ -216,10 +225,7 @@ namespace FlightAnalyzer
 
         private void InitSettings()
         {
-            new SettingsWindow().ShowDialog();
-
             //TODO: check for errors and/or use a constructor
-            //TODO: consider using a date and am-pm for further flight checking
             flightSettings = new FlightSettings()
             {
                 Date = Settings.Default.Date,
@@ -228,6 +234,7 @@ namespace FlightAnalyzer
                 Datum = Settings.Default.Datum,
                 UtmZone = Settings.Default.UtmZone,
                 Qnh = Settings.Default.Qnh,
+                AllowedGoals = WPTFile.Load(Settings.Default.GoalsFile, Settings.Default.Datum, Settings.Default.UtmZone),
                 DefaultAltitude = Settings.Default.DefaultAltitude,
                 MinVelocity = Settings.Default.MinVelocity,
                 MaxAcceleration = Settings.Default.MaxAcceleration,

@@ -15,7 +15,7 @@ namespace AXToolbox.Common
     public class FlightReport
     {
         public DateTime Date { get; set; }
-        public bool Am {get;set;} 
+        public bool Am { get; set; }
         public int PilotId { get; set; }
 
         public SignatureStatus Signature { get; set; }
@@ -48,24 +48,23 @@ namespace AXToolbox.Common
             AcceptedByDebriefer = false;
         }
 
-        public static FlightReport LoadFromFile(string filePath, FlightSettings settings, List<Waypoint> allowedGoals)
+        public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {
-            FlightReport fr = null;
+            ILogFile file;
 
             switch (Path.GetExtension(filePath).ToLower())
             {
                 case ".igc":
-                    var igcFile = new IGCFile(settings, allowedGoals);
-                    fr = igcFile.ReadLog(filePath);
+                    file = new IGCFile(settings);
                     break;
                 case ".trk":
-                    var trkFile = new TRKFile(settings);
-                    fr = trkFile.ReadLog(filePath);
+                    file = new TRKFile(settings);
                     break;
                 default:
                     throw new InvalidOperationException("Logger file type not supported");
             }
 
+            var fr = file.ReadLog(filePath);
             return fr;
         }
 
