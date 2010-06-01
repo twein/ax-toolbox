@@ -65,7 +65,7 @@ namespace AXToolbox.Common.IO
         private static Waypoint ParseWaypoint(string line, CoordAdapter coordAdapter, string utmZone)
         {
             Waypoint wp;
-            UTMPoint p;
+            Point p;
 
             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -77,7 +77,7 @@ namespace AXToolbox.Common.IO
             if (fields[2].Length == 3) //utm zone
             {
                 //file with utm coordinates
-                p = coordAdapter.ConvertToUTM(new UTMPoint()
+                p = coordAdapter.ConvertToUTM(new Point()
                 {
                     Zone = fields[2],
                     Easting = double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
@@ -91,7 +91,7 @@ namespace AXToolbox.Common.IO
                 time = DateTime.Parse(fields[5] + " " + fields[6]);
                 var strLatitude = fields[3].Split('º');
                 var strLongitude = fields[4].Split('º');
-                p = coordAdapter.ConvertToUTM(new LatLongPoint()
+                p = coordAdapter.ConvertToUTM(new LLPoint()
                 {
                     Latitude = double.Parse(strLatitude[0], NumberFormatInfo.InvariantInfo) * (strLatitude[1] == "S" ? -1 : 1),
                     Longitude = double.Parse(strLongitude[0], NumberFormatInfo.InvariantInfo) * (strLongitude[1] == "W" ? -1 : 1),

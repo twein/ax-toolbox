@@ -13,14 +13,24 @@ namespace AXToolbox.Common.IO
         private FlightSettings settings;
         private CoordAdapter coordAdapter = null;
         private bool utm = false;
-        private FlightReport report = new FlightReport();
 
-        public TRKFile(FlightSettings settings)
+
+        private string loggerModel = "";
+
+        private List<Point> track = new List<Point>();
+        private List<Waypoint> markers = new List<Waypoint>();
+        private List<Waypoint> declaredGoals = new List<Waypoint>();
+        private List<string> notes = new List<string>();
+        private DateTime date;
+        private bool am;
+
+        public TRKFile(string filePath, FlightSettings settings)
         {
             this.settings = settings;
+            ReadLog(filePath);
         }
 
-        public FlightReport ReadLog(string filePath)
+        private void ReadLog(string filePath)
         {
             var content = from line in File.ReadAllLines(filePath)
                           where line.Length > 0
@@ -28,6 +38,7 @@ namespace AXToolbox.Common.IO
 
             foreach (var line in content)
             {
+
                 switch (line[0])
                 {
                     case 'G':
@@ -35,8 +46,7 @@ namespace AXToolbox.Common.IO
                         var fileDatum = line.Substring(2).Trim();
                         if (fileDatum == "WGS 84") //Dirty hack!!!
                             fileDatum = "WGS84";
-                        report.LoggerDatum = fileDatum;
-                        coordAdapter = new CoordAdapter(report.LoggerDatum, settings.Datum);
+                        coordAdapter = new CoordAdapter(fileDatum, settings.Datum);
                         break;
                     //case 'L':
                     //    //Timezone
@@ -44,50 +54,45 @@ namespace AXToolbox.Common.IO
                     //    break;
                     case 'P':
                         //Logger info
-                        report.LoggerModel = line.Substring(2).Trim();
+                        loggerModel = line.Substring(2).Trim();
                         break;
                     case 'T':
                         //Track point
-                        var p = ParseTrackPoint(line);
-                        if (p != null)
-                            report.Track.Add(p);
+                        ParseTrackPoint(line);
                         break;
                     case 'U':
                         //file coordinate units
-                        var fields = line.Split(' ');
+                        var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         utm = (fields[1] == "0");
                         break;
                 }
             }
 
-            if (report.Track.Count > 0)
+            if (track.Count > 0)
             {
-                report.Date = report.Track.Last().Time.StripTimePart();
-                report.Am = report.Track.Last().Time.GetAmPm() == "AM";
+                date = track[track.Count - 1].Time.StripTimePart();
+                am = track[track.Count - 1].Time.GetAmPm() == "AM";
             }
-
-            return report;
         }
 
-        private Point ParseTrackPoint(string line)
+        private void ParseTrackPoint(string line)
         {
-            Point point = null;
-
             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             var time = DateTime.Parse(fields[4] + " " + fields[5]);
             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
-            UTMPoint p;
+            Point p;
 
             if (utm)
             {
                 //file with utm coordinates
-                p = coordAdapter.ConvertToUTM(new UTMPoint()
+                p = coordAdapter.ConvertToUTM(new Point()
                 {
                     Zone = fields[1],
                     Easting = double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
                     Northing = double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
-                    Altitude = altitude
+                    Altitude = altitude,
+                    Time=time
                 });
             }
             else
@@ -95,61 +100,73 @@ namespace AXToolbox.Common.IO
                 //file with latlon coordinates
                 var strLatitude = fields[2].Split('º');
                 var strLongitude = fields[3].Split('º');
-                p = coordAdapter.ConvertToUTM(new LatLongPoint()
+                p = coordAdapter.ConvertToUTM(new LLPoint()
                 {
                     Latitude = double.Parse(strLatitude[0], NumberFormatInfo.InvariantInfo) * (strLatitude[1] == "S" ? -1 : 1),
                     Longitude = double.Parse(strLongitude[0], NumberFormatInfo.InvariantInfo) * (strLongitude[1] == "W" ? -1 : 1),
-                    Altitude = altitude
+                    Altitude = altitude,
+                    Time=time
                 });
 
             }
 
-            if (p.Zone != settings.UtmZone)
-                report.Notes.Add("Wrong UTM zone: " + line);
-            else
-                point = new Point() { Time = time, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
+            track.Add(p);
 
-            return point;
         }
 
-        /*
-        public static List<Point> LoadTrack(string filePath, string datum, string utmZone)
+        public DateTime Date
         {
-            var trkFile = new TRKFile(filePath);
-
-            var ca = new CoordAdapter(trkFile.Datum, datum);
-            var track = new List<Point>();
-
-            foreach (var f in trkFile.track)
-            {
-                var p = ca.ConvertToUTM(f.ToLatLongPoint(trkFile.PilotQnh));
-                if (p.Zone != utmZone)
-                    throw new InvalidDataException("Wrong utm zone!");
-                track.Add(new Point(p.Easting, p.Northing, p.Altitude, f.Time));
-            }
-
-            return track;
+            get { return date; }
         }
-        public static void SaveTrack(List<Point> track, string filePath, string datum, string utmZone)
+
+        public bool Am
         {
-            var sw = new StreamWriter(filePath, false);
-
-            sw.WriteLine("G {0}", datum);
-            sw.WriteLine("U 0"); //UTM
-            sw.WriteLine("C 255 0 0 3");  //TODO: PointList.SaveTrack: Set track color & thickness
-            bool first = true;
-            foreach (var point in track)
-            {
-                sw.WriteLine("T {0} {1} {2} {3} {4} {5} 0.0 0.0 0.0 0 -1000.0 -1.0  -1.0 -1.0",
-                    utmZone,
-                    point.Easting.ToString("0.0", NumberFormatInfo.InvariantInfo),
-                    point.Northing.ToString("0.0", NumberFormatInfo.InvariantInfo),
-                    point.Time.ToString("dd-MMM-yy HH:mm:ss", NumberFormatInfo.InvariantInfo).ToUpper(), (first) ? "N" : "s",
-                    point.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo));
-                first = false;
-            }
-            sw.Close();
+            get { return am; }
         }
-        */
+
+        public int PilotId
+        {
+            get { return 0; }
+        }
+
+        public SignatureStatus Signature
+        {
+            get { return SignatureStatus.NotSigned; }
+        }
+
+        public string LoggerSerialNumber
+        {
+            get { return ""; }
+        }
+
+        public string LoggerModel
+        {
+            get { return loggerModel; }
+        }
+
+        public double LoggerQnh
+        {
+            get { return double.NaN; }
+        }
+
+        public List<string> Notes
+        {
+            get { return notes; }
+        }
+
+        public List<Point> Track
+        {
+            get { return track; }
+        }
+
+        public List<Waypoint> Markers
+        {
+            get { return markers; }
+        }
+
+        public List<Waypoint> DeclaredGoals
+        {
+            get { return declaredGoals; }
+        }
     }
 }

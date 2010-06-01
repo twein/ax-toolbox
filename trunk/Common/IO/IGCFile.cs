@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
+using AXToolbox.Common;
 using AXToolbox.Common.Geodesy;
 
 
@@ -12,18 +13,73 @@ namespace AXToolbox.Common.IO
     {
         private FlightSettings settings;
         private CoordAdapter coordAdapter = null;
-        private FlightReport report = new FlightReport();
 
-        public IGCFile(FlightSettings settings)
+        private string loggerModel;
+        private string loggerSerialNumber;
+        private int pilotId;
+        private int loggerQnh;
+        private DateTime date;
+        private List<Point> track = new List<Point>();
+        private List<Waypoint> markers = new List<Waypoint>();
+        private List<Waypoint> declaredGoals = new List<Waypoint>();
+        private bool am;
+        private SignatureStatus signature;
+        private List<string> notes = new List<string>();
+
+
+        public DateTime Date
         {
-            this.settings = settings;
-            if (settings.AllowedGoals.Count == 0)
-            {
-                throw new InvalidDataException("The allowed goals list cannot be empty");
-            }
+            get { return date; }
+        }
+        public bool Am
+        {
+            get { return am; }
+        }
+        public int PilotId
+        {
+            get { return pilotId; }
+        }
+        public SignatureStatus Signature
+        {
+            get { return signature; }
+        }
+        public string LoggerSerialNumber
+        {
+            get { return loggerSerialNumber; }
+        }
+        public string LoggerModel
+        {
+            get { return loggerModel; }
+        }
+        public double LoggerQnh
+        {
+            get { return loggerQnh; }
+        }
+        public List<string> Notes
+        {
+            get { return notes; }
+        }
+        public List<Point> Track
+        {
+            get { return track; }
+        }
+        public List<Waypoint> Markers
+        {
+            get { return markers; }
+        }
+        public List<Waypoint> DeclaredGoals
+        {
+            get { return declaredGoals; }
         }
 
-        public FlightReport ReadLog(string filePath)
+
+        public IGCFile(string filePath, FlightSettings settings)
+        {
+            this.settings = settings;
+            ReadLog(filePath);
+        }
+
+        private void ReadLog(string filePath)
         {
             var content = from line in File.ReadAllLines(filePath)
                           where line.Length > 0
@@ -37,8 +93,8 @@ namespace AXToolbox.Common.IO
                         //Logger info
                         if (line.Substring(0, 4) == "AXXX")
                         {
-                            report.LoggerSerialNumber = line.Substring(4, 3);
-                            report.LoggerModel = line.Substring(7);
+                            loggerModel = line.Substring(7);
+                            loggerSerialNumber = line.Substring(4, 3);
                         }
                         break;
                     case 'H':
@@ -47,120 +103,85 @@ namespace AXToolbox.Common.IO
                         {
                             case "HFPID":
                                 //Pilot id
-                                int pilotNumber = 0;
-                                int.TryParse(line.Substring(5), out pilotNumber);
+                                pilotId = int.Parse(line.Substring(5));
                                 break;
                             case "HFATS":
                                 //Qnh entered by the pilot
-                                int pilotQnh = 0;
-                                int.TryParse(line.Substring(5), out pilotQnh);
+                                loggerQnh = int.Parse(line.Substring(5));
                                 break;
                             case "HFDTM":
                                 //Datum
-                                report.LoggerDatum = line.Substring(8);
-                                coordAdapter = new CoordAdapter(report.LoggerDatum, settings.Datum);
+                                var loggerDatum = line.Substring(8);
+                                coordAdapter = new CoordAdapter(loggerDatum, settings.Datum);
                                 break;
                             case "HFDTE":
                                 //Date
-                                report.Date = ParseDateAt(line, 9);
+                                date = ParseDateAt(line, 9);
                                 break;
                         }
                         break;
                     case 'K':
                         //Date update
-                        report.Date = ParseDateAt(line, 11);
+                        date = ParseDateAt(line, 11);
                         break;
                     case 'B':
                         //Track point
-                        var trackPoint = ParseTrackPoint(line);
-                        if (trackPoint != null)
-                        {
-                            report.Track.Add(trackPoint);
-                        }
+                        ParseTrackPoint(line);
                         break;
                     case 'E':
                         switch (line.Substring(7, 3))
                         {
                             case "XX0":
                                 //marker
-                                var marker = ParseMarker(line);
-                                if (marker != null)
-                                {
-                                    report.Markers.Add(marker);
-                                }
+                                ParseMarker(line);
                                 break;
                             case "XX1":
                                 //goal declaration
-                                var declaration = ParseDeclaration(line);
-                                if (declaration != null)
-                                {
-                                    report.GoalDeclarations.Add(declaration);
-                                }
+                                ParseDeclaration(line);
                                 break;
                         }
                         break;
                 }
             }
-            if (report.Track.Count > 0)
+            if (track.Count > 0)
             {
-                report.Date = report.Track.Last().Time.StripTimePart();
-                report.Am = report.Track.Last().Time.GetAmPm() == "AM";
+                date = track.Last().Time.StripTimePart();
+                am = track.Last().Time.GetAmPm() == "AM";
             }
 
-            report.Signature = VerifySignature(filePath);
-            return report;
+            signature = VerifySignature(filePath);
         }
 
         //main parser functions
-        private Point ParseTrackPoint(string line)
+        private void ParseTrackPoint(string line)
         {
-            Point point = null;
+            var p = ParseFixAt(line, 7);
 
-            var fix = ParseFixAt(line, 7);
-            if (fix.IsValid)
-            {
-                var llp = fix.ToLatLongPoint(settings.Qnh);
-                var p = coordAdapter.ConvertToUTM(llp);
-                if (p.Zone != settings.UtmZone)
-                    report.Notes.Add("Wrong UTM zone: " + line);
-                else
-                    point = new Point() { Time = fix.Time, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
-            }
-
-            return point;
+            if (p != null)
+                track.Add(p);
         }
-        private Waypoint ParseMarker(string line)
+        private void ParseMarker(string line)
         {
             var number = int.Parse(line.Substring(10, 2));
-            Waypoint waypoint = null;
+            var p = ParseFixAt(line, 12);
 
-            var fix = ParseFixAt(line, 12);
-            if (fix.IsValid)
-            {
-                var llp = fix.ToLatLongPoint(settings.Qnh);
-                var p = coordAdapter.ConvertToUTM(llp);
-                if (p.Zone != settings.UtmZone)
-                    throw new InvalidOperationException("Wrong Timezone");
-                else
-                    waypoint = new Waypoint(number.ToString()) { Time = fix.Time, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
-            }
-
-            return waypoint;
+            if (p != null)
+                markers.Add(new Waypoint(number.ToString()) { Time = p.Time, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude });
         }
-        private Waypoint ParseDeclaration(string line)
+        private void ParseDeclaration(string line)
         {
             Waypoint declaration = null;
 
             var time = ParseTimeAt(line, 1);
             var number = int.Parse(line.Substring(10, 2));
-            var goal = line.Substring(12).Split(',')[0];
+            var strGoal = line.Substring(12).Split(',')[0];
 
-            if (goal.Length == 3)
+            if (strGoal.Length == 3)
             {
                 //Type 000
                 try
                 {
-                    var desiredGoal = settings.AllowedGoals.Find(g => g.Name == goal);
+                    var desiredGoal = settings.AllowedGoals.Find(g => g.Name == strGoal);
                     declaration = new Waypoint(number.ToString())
                     {
                         Easting = desiredGoal.Easting,
@@ -171,25 +192,26 @@ namespace AXToolbox.Common.IO
                 }
                 catch (ArgumentNullException)
                 {
-                    report.Notes.Add("Goal not found: " + line);
+                    notes.Add("Goal not found: " + line);
                 }
             }
-            else if (goal.Length == 9)
+            else if (strGoal.Length == 9)
             {
                 // type 0000/0000
                 // use the first allowed goal as a template
-                var easting = settings.AllowedGoals[0].Easting % 100000 + 10 * double.Parse(goal.Substring(0, 4));
-                var northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(goal.Substring(5, 4));
+                if (settings.AllowedGoals.Count == 0)
+                    throw new InvalidDataException("The allowed goals list cannot be empty");
+
                 declaration = new Waypoint(number.ToString())
                 {
-                    Easting = easting,
-                    Northing = northing,
+                    Easting = settings.AllowedGoals[0].Easting % 100000 + 10 * double.Parse(strGoal.Substring(0, 4)),
+                    Northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(strGoal.Substring(5, 4)),
                     Time = time
                 };
             }
             else
             {
-                report.Notes.Add("Unknown goal declaration format: " + line);
+                notes.Add("Unknown goal declaration format: " + line);
             }
 
             if (declaration != null)
@@ -211,22 +233,23 @@ namespace AXToolbox.Common.IO
                     //no valid altitude
                     if (declaration.Altitude == 0)
                     {
-                        report.Notes.Add("Using default goal declaration altitude: " + line);
+                        notes.Add("Using default goal declaration altitude: " + line);
                         declaration.Altitude = settings.DefaultAltitude;
                     }
                 }
 
                 declaration.Description = line.Substring(10);
+
+                declaredGoals.Add(declaration);
             }
-            return declaration;
         }
 
         //aux parser functions
         private DateTime ParseDateAt(string line, int pos)
         {
             int year = int.Parse(line.Substring(pos, 2));
-            int month = int.Parse(line.Substring(pos + 2, 2));
-            int day = int.Parse(line.Substring(pos + 4, 2));
+            int month = int.Parse(line.Substring(pos - 2, 2));
+            int day = int.Parse(line.Substring(pos - 4, 2));
             return new DateTime(year + ((year > 69) ? 1900 : 2000), month, day, 0, 0, 0, DateTimeKind.Utc);
         }
         private DateTime ParseTimeAt(string line, int pos)
@@ -236,24 +259,45 @@ namespace AXToolbox.Common.IO
             int second = int.Parse(line.Substring(pos + 4, 2));
             return new DateTime(settings.Date.Year, settings.Date.Month, settings.Date.Day, hour, minute, second, DateTimeKind.Utc);
         }
-        private GPSFix ParseFixAt(string line, int pos)
+        private Point ParseFixAt(string line, int pos)
         {
-            var fix = new GPSFix();
+            var isValid = line.Substring(pos + 17, 1) == "A";
+            if (isValid)
+            {
+                var fix = new LLPoint();
+                fix.IsValid = true;
+                fix.Time = ParseTimeAt(line, 1); // the time is always at pos 1
+                fix.Latitude = (double.Parse(line.Substring(pos, 2)) +
+                    double.Parse(line.Substring(pos + 2, 5)) / 60000)
+                    * (line.Substring(pos + 7, 1) == "S" ? -1 : 1);
+                fix.Longitude = (double.Parse(line.Substring(pos + 8, 3)) +
+                    double.Parse(line.Substring(pos + 11, 5)) / 60000)
+                    * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
+                fix.Altitude = CorrectQnh(double.Parse(line.Substring(pos + 18, 5)));
+                //GpsAltitude = double.Parse(line.Substring(pos + 23, 5));
+                //Accuracy = int.Parse(line.Substring(pos + 28, 4));
+                //Satellites = int.Parse(line.Substring(pos + 32, 2));
 
-            fix.IsValid = line.Substring(17, 1) == "A";
-            fix.Time = ParseTimeAt(line, 1); // the time is always at pos 1
-            fix.Latitude = (int.Parse(line.Substring(pos, 2)) +
-                int.Parse(line.Substring(pos + 2, 5)) / 60000)
-                * (line.Substring(pos + 7, 1) == "S" ? -1 : 1);
-            fix.Longitude = (int.Parse(line.Substring(pos + 8, 3)) +
-                int.Parse(line.Substring(pos + 11, 5)) / 60000)
-                * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
-            fix.BarometricAltitude = int.Parse(line.Substring(18, 5));
-            fix.GpsAltitude = int.Parse(line.Substring(23, 5));
-            fix.Accuracy = int.Parse(line.Substring(28, 4));
-            fix.Satellites = int.Parse(line.Substring(32, 2));
+                return coordAdapter.ConvertToUTM(fix);
+            }
+            else
+                return null;
+        }
 
-            return fix;
+        private double CorrectQnh(double altitude)
+        {
+            const double correctAbove = 0.121;
+            const double correctBelow = 0.119;
+            const double standardQNH = 1013.25;
+
+            double newAltitude;
+
+            if (settings.Qnh > standardQNH)
+                newAltitude = altitude + (settings.Qnh - standardQNH) / correctAbove;
+            else
+                newAltitude = altitude + (settings.Qnh - standardQNH) / correctBelow;
+
+            return newAltitude;
         }
 
         private static SignatureStatus VerifySignature(string fileName)
