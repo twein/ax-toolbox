@@ -37,8 +37,11 @@ namespace AXToolbox.Common
 
         public bool AcceptedByDebriefer { get; set; }
 
-        public FlightReport()
+        private FlightSettings settings;
+
+        public FlightReport(ILogFile log, FlightSettings settings)
         {
+            this.settings = settings;
             Signature = SignatureStatus.NotSigned;
             Track = new List<Point>();
             OriginalTrack = new List<Point>();
@@ -50,22 +53,22 @@ namespace AXToolbox.Common
 
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {
-            ILogFile file;
+            ILogFile log;
 
             switch (Path.GetExtension(filePath).ToLower())
             {
                 case ".igc":
-                    file = new IGCFile(settings);
+                    log = new IGCFile(filePath, settings);
                     break;
                 case ".trk":
-                    file = new TRKFile(settings);
+                    log = new TRKFile(filePath, settings);
                     break;
                 default:
                     throw new InvalidOperationException("Logger file type not supported");
             }
 
-            var fr = file.ReadLog(filePath);
-            return fr;
+            var report = new FlightReport(log, settings);
+            throw new NotImplementedException("Implement common log file processing");
         }
 
         public override string ToString()

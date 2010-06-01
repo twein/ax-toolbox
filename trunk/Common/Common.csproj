@@ -80,8 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\DateTime.cs" />
-    <Compile Include="Geodesy\LatLongPoint.cs" />
-    <Compile Include="Geodesy\UTMPoint.cs" />
+    <Compile Include="Types\LLPoint.cs" />
+    <Compile Include="Types\Point.cs" />
     <Compile Include="Interfaces\ILogFile.cs" />
     <Compile Include="Interfaces\IPosition.cs" />
     <Compile Include="Interfaces\ITime.cs" />
@@ -92,13 +92,11 @@
     <Compile Include="Types\ErrorLog.cs" />
     <Compile Include="Types\FlightReport.cs" />
     <Compile Include="Types\FlightSettings.cs" />
-    <Compile Include="Types\GPSFix.cs" />
     <Compile Include="IO\ObjectSerializer.cs" />
     <Compile Include="Geodesy\CoordAdapter.cs" />
     <Compile Include="Interfaces\IPositionTime.cs" />
     <Compile Include="Types\Waypoint.cs" />
     <Compile Include="IO\IGCFile.cs" />
-    <Compile Include="Types\Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

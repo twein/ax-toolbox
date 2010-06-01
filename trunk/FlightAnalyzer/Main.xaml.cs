@@ -10,11 +10,10 @@ using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using AXToolbox.Common;
 using AXToolbox.Common.Geodesy;
+using AXToolbox.Common.IO;
 using FlightAnalyzer.Properties;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
-using AXToolbox.Model;
-using AXToolbox.Common.IO;
 
 namespace FlightAnalyzer
 {
@@ -29,7 +28,7 @@ namespace FlightAnalyzer
         };
 
         private FlightSettings flightSettings;
-        private CoordAdapter coordAdapter;
+        private CoordAdapter caToGMap;
         private ObservableCollection<FlightReport> flightReports = new ObservableCollection<FlightReport>();
         private List<AXToolbox.Common.Point> visibleTrack = new List<AXToolbox.Common.Point>();
         private GMapMarker trackMarker;
@@ -93,7 +92,7 @@ namespace FlightAnalyzer
                         {
                             fd = flightReports.First(i => string.Compare(i.ToString(), current.ToString()) >= 0);
                         }
-                        catch (InvalidOperationException) { }
+                        catch (InvalidOperationException exc) { }
 
                         if (fd == null)
                         {
@@ -241,7 +240,7 @@ namespace FlightAnalyzer
                 InterpolationInterval = Settings.Default.InterpolationInterval
             };
 
-            coordAdapter = new CoordAdapter(flightSettings.Datum, "WGS84");
+            caToGMap = new CoordAdapter(flightSettings.Datum, "WGS84");
         }
         private void UpdatePointer(int idx)
         {
@@ -250,7 +249,7 @@ namespace FlightAnalyzer
             if (pointerMarker != null)
             {
                 var p = visibleTrack[idx];
-                var llp = coordAdapter.ConvertToLatLong(new UTMPoint() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing });
+                var llp = caToGMap.ConvertToLatLong(new AXToolbox.Common.Point() { Zone = p.Zone, Easting = p.Easting, Northing = p.Northing });
                 pointerMarker.Position = new PointLatLng() { Lat = llp.Latitude, Lng = llp.Longitude };
                 ((Tag)pointerMarker.Shape).SetTooltip(p.ToString());
                 textblockTime.Text = p.Time.ToString("HH:mm:ss");
@@ -313,7 +312,7 @@ namespace FlightAnalyzer
             foreach (var p in visibleTrack)
             {
                 var llp = ca.ConvertToLatLong(
-                    new UTMPoint() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing }
+                    new AXToolbox.Common.Point() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing }
                     );
                 points.Add(new PointLatLng(llp.Latitude, llp.Longitude));
             }
@@ -343,7 +342,7 @@ namespace FlightAnalyzer
         }
         private GMapMarker GetMarker(IPosition p, string text, string toolTip, Brush brush)
         {
-            var llp = coordAdapter.ConvertToLatLong(new UTMPoint() { Zone = flightSettings.UtmZone, Easting = p.Easting, Northing = p.Northing });
+            var llp = caToGMap.ConvertToLatLong(new AXToolbox.Common.Point() { Zone = flightSettings.UtmZone, Easting = p.Easting, Northing = p.Northing });
             var marker = new GMapMarker(new PointLatLng(llp.Latitude, llp.Longitude));
             marker.Shape = new Tag(text, toolTip, brush);
             marker.ForceUpdateLocalPosition(MainMap);

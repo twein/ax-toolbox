@@ -8,15 +8,15 @@ namespace AXToolbox.Common
     {
         public DateTime Date { get; set; }
         public bool Am { get; set; }
-        public TimeSpan TimeZone{ get; set; }
-        public string Datum{ get; set; }
-        public string UtmZone{ get; set; }
-        public int Qnh{ get; set; }
+        public TimeSpan TimeZone { get; set; }
+        public string Datum { get; set; }
+        public string UtmZone { get; set; }
+        public int Qnh { get; set; }
         public List<Waypoint> AllowedGoals { get; set; }
-        public double DefaultAltitude{ get; set; }
-        public double MinVelocity{ get; set; }
-        public double MaxAcceleration{ get; set; }
-        public double InterpolationInterval{ get; set; }
+        public double DefaultAltitude { get; set; }
+        public double MinVelocity { get; set; }
+        public double MaxAcceleration { get; set; }
+        public double InterpolationInterval { get; set; }
 
         public FlightSettings()
         {
@@ -31,6 +31,23 @@ namespace AXToolbox.Common
             MaxAcceleration = 5; // m/s2
             InterpolationInterval = 2; // s
             AllowedGoals = new List<Waypoint>();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is FlightSettings)
+            {
+                var other = (FlightSettings)obj;
+                return Date == other.Date
+                    && Am == other.Am
+                    && TimeZone == other.TimeZone
+                    && Datum == other.Datum
+                    && Qnh == other.Qnh
+                    && DefaultAltitude == other.DefaultAltitude
+                    && AllowedGoals.GetHashCode() == other.AllowedGoals.GetHashCode();
+            }
+            else
+                return false;
         }
     }
 }

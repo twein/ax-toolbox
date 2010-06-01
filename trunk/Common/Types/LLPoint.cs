@@ -1,16 +1,15 @@
 ﻿using System;
 namespace AXToolbox.Common
 {
-    public class Point : IPositionTime
+    public class LLPoint
     {
-        public string Zone { get; set; }
-        public double Easting { get; set; }
-        public double Northing { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public double Altitude { get; set; }
         public DateTime Time { get; set; }
         public bool IsValid { get; set; }
 
-        public Point()
+        public LLPoint()
         {
             IsValid = true;
         }
