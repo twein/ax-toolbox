@@ -23,7 +23,6 @@ namespace AXToolbox.Common
         public string LoggerSerialNumber { get; set; }
         public string LoggerModel { get; set; }
         public int LoggerQnh { get; set; }
-        public string LoggerDatum { get; set; }
 
         public Point LaunchPoint { get; set; }
         public Point LandingPoint { get; set; }
@@ -31,23 +30,37 @@ namespace AXToolbox.Common
         public List<Point> Track { get; set; }
         public List<Point> OriginalTrack { get; set; }
         public List<Waypoint> Markers { get; set; }
-        public List<Waypoint> GoalDeclarations { get; set; }
+        public List<Waypoint> DeclaredGoals { get; set; }
 
         public List<string> Notes { get; set; }
-
         public bool AcceptedByDebriefer { get; set; }
+
+        public string Tag
+        {
+            get
+            {
+                return ToString();
+            }
+        }
+
 
         private FlightSettings settings;
 
         public FlightReport(ILogFile log, FlightSettings settings)
         {
-            this.settings = settings;
-            Signature = SignatureStatus.NotSigned;
-            Track = new List<Point>();
-            OriginalTrack = new List<Point>();
-            Markers = new List<Waypoint>();
-            GoalDeclarations = new List<Waypoint>();
-            Notes = new List<string>();
+            Date = log.Date;
+            Am = log.Am;
+            PilotId = log.PilotId;
+            Signature = log.Signature;
+            LoggerSerialNumber = log.LoggerSerialNumber;
+            LoggerModel = log.LoggerModel;
+            LoggerQnh = log.LoggerQnh;
+
+            Track = log.Track;
+            OriginalTrack = log.Track;
+            Markers = log.Markers;
+            DeclaredGoals = log.DeclaredGoals;
+            Notes = log.Notes;
             AcceptedByDebriefer = false;
         }
 
@@ -68,7 +81,8 @@ namespace AXToolbox.Common
             }
 
             var report = new FlightReport(log, settings);
-            throw new NotImplementedException("Implement common log file processing");
+            //throw new NotImplementedException("Implement common log file processing");
+            return report;
         }
 
         public override string ToString()

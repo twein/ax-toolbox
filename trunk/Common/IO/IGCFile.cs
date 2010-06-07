@@ -51,7 +51,7 @@ namespace AXToolbox.Common.IO
         {
             get { return loggerModel; }
         }
-        public double LoggerQnh
+        public int LoggerQnh
         {
             get { return loggerQnh; }
         }
@@ -166,7 +166,14 @@ namespace AXToolbox.Common.IO
             var p = ParseFixAt(line, 12);
 
             if (p != null)
-                markers.Add(new Waypoint(number.ToString()) { Time = p.Time, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude });
+                markers.Add(new Waypoint(number.ToString())
+                {
+                    Time = p.Time,
+                    Zone = p.Zone,
+                    Easting = p.Easting,
+                    Northing = p.Northing,
+                    Altitude = p.Altitude
+                });
         }
         private void ParseDeclaration(string line)
         {
@@ -181,13 +188,14 @@ namespace AXToolbox.Common.IO
                 //Type 000
                 try
                 {
-                    var desiredGoal = settings.AllowedGoals.Find(g => g.Name == strGoal);
+                    var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
                     declaration = new Waypoint(number.ToString())
                     {
-                        Easting = desiredGoal.Easting,
-                        Northing = desiredGoal.Northing,
-                        Altitude = desiredGoal.Altitude,
-                        Time = time
+                        Time = time,
+                        Zone = p.Zone,
+                        Easting = p.Easting,
+                        Northing = p.Northing,
+                        Altitude = p.Altitude
                     };
                 }
                 catch (ArgumentNullException)
@@ -204,9 +212,10 @@ namespace AXToolbox.Common.IO
 
                 declaration = new Waypoint(number.ToString())
                 {
+                    Time = time,
+                    Zone=settings.AllowedGoals[0].Zone,
                     Easting = settings.AllowedGoals[0].Easting % 100000 + 10 * double.Parse(strGoal.Substring(0, 4)),
-                    Northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(strGoal.Substring(5, 4)),
-                    Time = time
+                    Northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(strGoal.Substring(5, 4))
                 };
             }
             else

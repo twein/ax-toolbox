@@ -14,5 +14,10 @@ namespace AXToolbox.Common
         {
             IsValid = true;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0:0000}/{1:0000} {2:#.} {3:HH:mm:ss}", ((Easting % 100000) / 10.0), ((Northing % 100000) / 10.0), Altitude, Time);
+        }
     }
 }

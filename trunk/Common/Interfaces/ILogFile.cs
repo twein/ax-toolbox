@@ -12,7 +12,7 @@ namespace AXToolbox.Common
         SignatureStatus Signature { get; }
         string LoggerSerialNumber { get; }
         string LoggerModel { get; }
-        double LoggerQnh { get; }
+        int LoggerQnh { get; }
         List<string> Notes { get; }
 
         List<Point> Track { get; }

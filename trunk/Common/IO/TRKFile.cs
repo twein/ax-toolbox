@@ -144,9 +144,9 @@ namespace AXToolbox.Common.IO
             get { return loggerModel; }
         }
 
-        public double LoggerQnh
+        public int LoggerQnh
         {
-            get { return double.NaN; }
+            get { return int.MinValue; }
         }
 
         public List<string> Notes
