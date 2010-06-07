@@ -337,7 +337,7 @@ namespace AXToolbox.Common.Geodesy
                     + 500000.0,
                 Northing = k0 * (M + N * Math.Tan(LatRad) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A * A * A * A / 24
                     + (61 - 58 * T + T * T + 600 * C - 330 * ep2) * A * A * A * A * A * A / 720))
-                    + p1.Latitude < 0 ? 10000000.0 : 0.0, //10000000 meter offset for southern hemisphere
+                    + (p1.Latitude < 0 ? 10000000.0 : 0.0), //10000000 meter offset for southern hemisphere
                 Altitude = p1.Altitude,
                 Time = p1.Time,
                 IsValid = p1.IsValid

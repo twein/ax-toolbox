@@ -29,7 +29,7 @@ namespace FlightAnalyzer
 
         private FlightSettings flightSettings;
         private CoordAdapter caToGMap;
-        private ObservableCollection<FlightReport> flightReports = new ObservableCollection<FlightReport>();
+        private FlightReport report;
         private List<AXToolbox.Common.Point> visibleTrack = new List<AXToolbox.Common.Point>();
         private GMapMarker trackMarker;
         private GMapMarker pointerMarker;
@@ -40,7 +40,7 @@ namespace FlightAnalyzer
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (new SettingsWindow().ShowDialog() == true)
             {
@@ -66,60 +66,39 @@ namespace FlightAnalyzer
                 Close();
             }
         }
-        private void DropListBox_Drop(object sender, DragEventArgs e)
+        private void MainWindow_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] droppedFilePaths = e.Data.GetData(DataFormats.FileDrop, true) as string[];
-                bool selectionChanged = false;
 
                 Cursor = Cursors.Wait;
 
                 try
                 {
-                    foreach (string droppedFilePath in droppedFilePaths)
-                    {
-                        if (DataContext == null)
-                        {
-                            DropListBox.Items.Clear();
-                            DataContext = flightReports;
-                        }
+                    report = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
+                    report.Notes.Add("This is a note");
+                    DataContext = report;
+                    visibleTrack = report.Track;
 
-                        FlightReport fd = null;
-                        FlightReport current = FlightReport.LoadFromFile(droppedFilePath, flightSettings);
+                    //Add track to map
+                    trackMarker = GetTrackMarker();
+                    MainMap.Markers.Add(trackMarker);
 
-                        try
-                        {
-                            fd = flightReports.First(i => string.Compare(i.ToString(), current.ToString()) >= 0);
-                        }
-                        catch (InvalidOperationException exc) { }
+                    //Add movable pointer
+                    pointerMarker = GetMarker(report.OriginalTrack[0], "*", report.OriginalTrack[0].ToString(), Brushes.Orange);
+                    MainMap.Markers.Add(pointerMarker);
 
-                        if (fd == null)
-                        {
-                            // append
-                            flightReports.Add(current);
-                            if (!selectionChanged)
-                            {
-                                DropListBox.SelectedIndex = flightReports.Count - 1;
-                                selectionChanged = true;
-                            }
-                        }
-                        else if (fd.ToString() != current.ToString())
-                        {
-                            // insert
-                            var i = flightReports.IndexOf(fd);
-                            flightReports.Insert(i, current);
-                            if (!selectionChanged)
-                            {
-                                DropListBox.SelectedIndex = i;
-                                selectionChanged = true;
-                            }
-                        }
-                        else
-                        {
-                            //already in collection: do nothing
-                        }
-                    }
+                    //// Add launch and landing to map
+                    //MainMap.Markers.Add(GetMarker(report.LaunchPoint, "↗", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
+                    //MainMap.Markers.Add(GetMarker(report.LandingPoint, "↘", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
+
+                    // Add dropped markers to map
+                    foreach (var m in report.Markers)
+                        MainMap.Markers.Add(GetMarker(m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
+
+                    MainMap.CurrentPosition = pointerMarker.Position;
+
                 }
                 catch (InvalidOperationException)
                 {
@@ -137,8 +116,6 @@ namespace FlightAnalyzer
         }
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            FlightReport current = DropListBox.SelectedItem as FlightReport;
-
             switch (e.Key)
             {
                 case Key.OemPlus:
@@ -152,21 +129,6 @@ namespace FlightAnalyzer
                 case Key.OemPeriod:
                     MainMap.Zoom = 12;
                     break;
-                case Key.Delete:
-                case Key.Back:
-                    try
-                    {
-                        var i = flightReports.IndexOf(current);
-
-                        if (i >= 0)
-                            flightReports.RemoveAt(i);
-
-                        if (i < flightReports.Count || --i >= 0)
-                            DropListBox.SelectedIndex = i;
-
-                    }
-                    catch (InvalidOperationException) { }
-                    break;
                 case Key.P:
                     PrefetchTiles();
                     break;
@@ -175,40 +137,13 @@ namespace FlightAnalyzer
                     break;
             }
         }
-        private void DropListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SetVisibleTrack();
-            MainMap.Markers.Clear();
-
-            var fr = DropListBox.SelectedItem as FlightReport;
-            if (fr != null)
-            {
-                //Add track to map
-                trackMarker = GetTrackMarker();
-                MainMap.Markers.Add(trackMarker);
-
-                //Add movable pointer
-                pointerMarker = GetMarker(fr.OriginalTrack[0], "*", fr.OriginalTrack[0].ToString(), Brushes.Orange);
-                MainMap.Markers.Add(pointerMarker);
-
-                // Add launch and landing to map
-                MainMap.Markers.Add(GetMarker(fr.LaunchPoint, "↗", "Launch Point: " + fr.LaunchPoint.ToString(), Brushes.Lime));
-                MainMap.Markers.Add(GetMarker(fr.LandingPoint, "↘", "Landing Point: " + fr.LandingPoint.ToString(), Brushes.Lime));
-
-                // Add dropped markers to map
-                foreach (var m in fr.Markers)
-                    MainMap.Markers.Add(GetMarker(m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
-
-                MainMap.CurrentPosition = pointerMarker.Position;
-            }
-        }
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             UpdatePointer((int)e.NewValue);
         }
         private void radio_Checked(object sender, RoutedEventArgs e)
         {
-            if (DropListBox.SelectedItem != null)
+            if (report != null)
             {
                 SetVisibleTrack();
                 MainMap.Markers.Remove(trackMarker);
@@ -244,8 +179,6 @@ namespace FlightAnalyzer
         }
         private void UpdatePointer(int idx)
         {
-            var fr = DropListBox.SelectedItem as FlightReport;
-
             if (pointerMarker != null)
             {
                 var p = visibleTrack[idx];
@@ -260,11 +193,13 @@ namespace FlightAnalyzer
         }
         private void SetVisibleTrack()
         {
-            var fr = DropListBox.SelectedItem as FlightReport;
-            if (radioLogger.IsChecked.Value)
-                visibleTrack = fr.OriginalTrack;
-            else
-                visibleTrack = fr.Track;
+            if (report != null)
+            {
+                if (radioLogger.IsChecked.Value)
+                    visibleTrack = report.OriginalTrack;
+                else
+                    visibleTrack = report.Track;
+            }
         }
         private void PrefetchTiles()
         {
