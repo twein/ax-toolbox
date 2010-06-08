@@ -12,156 +12,112 @@ namespace AXToolbox.Common
 {
     public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
 
-    public class FlightReport
+    public abstract class FlightReport
     {
-        public DateTime Date { get; set; }
-        public bool Am { get; set; }
-        public int PilotId { get; set; }
+        protected FlightSettings settings;
+        protected string[] logFile;
 
-        public SignatureStatus Signature { get; set; }
-
-        public string LoggerSerialNumber { get; set; }
-        public string LoggerModel { get; set; }
-        public int LoggerQnh { get; set; }
-
-        public Point LaunchPoint { get; set; }
-        public Point LandingPoint { get; set; }
-
-        public List<Point> Track { get; set; }
-        public List<Point> OriginalTrack { get; set; }
-        public List<Waypoint> Markers { get; set; }
-        public List<Waypoint> DeclaredGoals { get; set; }
-
-        public List<string> Notes { get; set; }
-        public bool AcceptedByDebriefer { get; set; }
+        public DateTime Date
+        {
+            get { return settings.Date; }
+        }
+        public bool Am
+        {
+            get { return settings.Am; }
+        }
+        protected int pilotId;
+        public int PilotId
+        {
+            get { return pilotId; }
+            set { pilotId = value; }
+        }
+        protected SignatureStatus signature;
+        public SignatureStatus Signature
+        {
+            get { return signature; }
+        }
+        protected string loggerModel;
+        public string LoggerModel
+        {
+            get { return loggerModel; }
+        }
+        protected string loggerSerialNumber;
+        public string LoggerSerialNumber
+        {
+            get { return loggerSerialNumber; }
+        }
+        protected int loggerQnh;
+        public int LoggerQnh
+        {
+            get { return loggerQnh; }
+        }
+        protected List<Point> track;
+        public List<Point> Track
+        {
+            get { return track; }
+        }
+        protected List<Waypoint> markers;
+        public List<Waypoint> Markers
+        {
+            get { return markers; }
+        }
+        protected List<Waypoint> declaredGoals;
+        public List<Waypoint> DeclaredGoals
+        {
+            get { return declaredGoals; }
+        }
+        protected List<string> notes;
+        public List<string> Notes
+        {
+            get { return notes; }
+        }
 
         public string Tag
         {
-            get
-            {
-                return ToString();
-            }
+            get { return ToString(); }
         }
 
 
-        private FlightSettings settings;
-
-        public FlightReport(ILogFile log, FlightSettings settings)
+        public FlightReport(string filePath, FlightSettings settings)
         {
-            Date = log.Date;
-            Am = log.Am;
-            PilotId = log.PilotId;
-            Signature = log.Signature;
-            LoggerSerialNumber = log.LoggerSerialNumber;
-            LoggerModel = log.LoggerModel;
-            LoggerQnh = log.LoggerQnh;
+            this.settings = settings;
+            logFile = File.ReadAllLines(filePath);
+            Clear();
+        }
 
-            Track = log.Track;
-            OriginalTrack = log.Track;
-            Markers = log.Markers;
-            DeclaredGoals = log.DeclaredGoals;
-            Notes = log.Notes;
-            AcceptedByDebriefer = false;
+        public abstract void Reset();
+
+        public void Clear()
+        {
+            pilotId = 0;
+            signature = SignatureStatus.NotSigned;
+            loggerModel = "";
+            loggerSerialNumber = "";
+            loggerQnh = 0;
+            track = new List<Point>();
+            markers = new List<Waypoint>();
+            declaredGoals = new List<Waypoint>();
+            notes = new List<string>();
         }
 
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {
-            ILogFile log;
+            FlightReport report;
 
             switch (Path.GetExtension(filePath).ToLower())
             {
                 case ".igc":
-                    log = new IGCFile(filePath, settings);
+                    report = new IGCFile(filePath, settings);
                     break;
                 case ".trk":
-                    log = new TRKFile(filePath, settings);
+                    report = new TRKFile(filePath, settings);
                     break;
                 default:
                     throw new InvalidOperationException("Logger file type not supported");
             }
 
-            var report = new FlightReport(log, settings);
             //throw new NotImplementedException("Implement common log file processing");
             return report;
         }
-
-        public override string ToString()
-        {
-            return string.Format("{0:MM/dd} {1} - {2:000}", Date, Date.GetAmPm(), PilotId);
-        }
     }
-
-
-    /*
-    public class FlightReport : INotifyPropertyChanged
-    {
-
-        [NonSerialized]
-        protected FlightSettings settings;
-        [NonSerialized]
-        protected IGPSLog gpsLog;
-        [NonSerialized]
-        protected CoordAdapter ca;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(String propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-
-
-        public void MoveLauncPoint(TrackDirection direction)
-        {
-            var idx=MovePointer(launchPointIndex, direction);
-            if (idx != launchPointIndex)
-            {
-                launchPointIndex = idx;
-                NotifyPropertyChanged("LaunchPoint");
-            }
-        }
-        public void MoveLandingPoint(TrackDirection direction)
-        {
-            var idx=MovePointer(landingPointIndex, direction);
-            if (idx != launchPointIndex)
-            {
-                landingPointIndex = idx;
-                NotifyPropertyChanged("LaunchPoint");
-            }
-        }
-
-        private int MovePointer(int pointer, TrackDirection direction)
-        {
-            if (direction == TrackDirection.Backward)
-            {
-                do
-                {
-                    --pointer;
-                    if (pointer < 0)
-                    {
-                        pointer = 0;
-                        break;
-                    }
-                } while (!track[--pointer].IsValid);
-            }
-            else
-            {
-                do
-                {
-                    ++pointer;
-                    if (pointer >= track.Count)
-                    {
-                        pointer = track.Count - 1;
-                        break;
-                    }
-                } while (!track[--pointer].IsValid);
-            }
-            return pointer;
-        }
-
-    }
-*/
 }
