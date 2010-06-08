@@ -156,8 +156,8 @@ namespace AXToolbox.Common.IO
                 {
                     Time = time,
                     Zone = settings.AllowedGoals[0].Zone,
-                    Easting = settings.AllowedGoals[0].Easting % 100000 + 10 * double.Parse(strGoal.Substring(0, 4)),
-                    Northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(strGoal.Substring(5, 4))
+                    Easting = Math.Floor(settings.AllowedGoals[0].Easting / 10000) * 10000 + 10 * double.Parse(strGoal.Substring(0, 4)),
+                    Northing = Math.Floor(settings.AllowedGoals[0].Northing / 100000) * 100000 + 10 * double.Parse(strGoal.Substring(5, 4))
                 };
             }
             else

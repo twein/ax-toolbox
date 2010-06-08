@@ -17,6 +17,16 @@ namespace AXToolbox.Common
         protected FlightSettings settings;
         protected string[] logFile;
 
+        protected int pilotId;
+        protected SignatureStatus signature;
+        protected string loggerModel;
+        protected string loggerSerialNumber;
+        protected int loggerQnh;
+        protected List<Point> track;
+        protected List<Waypoint> markers;
+        protected List<Waypoint> declaredGoals;
+        protected List<string> notes;
+        
         public DateTime Date
         {
             get { return settings.Date; }
@@ -25,48 +35,43 @@ namespace AXToolbox.Common
         {
             get { return settings.Am; }
         }
-        protected int pilotId;
         public int PilotId
         {
             get { return pilotId; }
             set { pilotId = value; }
         }
-        protected SignatureStatus signature;
         public SignatureStatus Signature
         {
             get { return signature; }
         }
-        protected string loggerModel;
         public string LoggerModel
         {
             get { return loggerModel; }
         }
-        protected string loggerSerialNumber;
         public string LoggerSerialNumber
         {
             get { return loggerSerialNumber; }
         }
-        protected int loggerQnh;
         public int LoggerQnh
         {
             get { return loggerQnh; }
         }
-        protected List<Point> track;
         public List<Point> Track
         {
             get { return track; }
         }
-        protected List<Waypoint> markers;
+        public List<Point> OriginalTrack
+        {
+            get { return track; }
+        }
         public List<Waypoint> Markers
         {
             get { return markers; }
         }
-        protected List<Waypoint> declaredGoals;
         public List<Waypoint> DeclaredGoals
         {
             get { return declaredGoals; }
         }
-        protected List<string> notes;
         public List<string> Notes
         {
             get { return notes; }
@@ -85,8 +90,6 @@ namespace AXToolbox.Common
             Clear();
         }
 
-        public abstract void Reset();
-
         public void Clear()
         {
             pilotId = 0;
@@ -99,6 +102,13 @@ namespace AXToolbox.Common
             declaredGoals = new List<Waypoint>();
             notes = new List<string>();
         }
+        public override string ToString()
+        {
+            return string.Format("{0:MM/dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
+        }
+
+        public abstract void Reset();
+
 
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {

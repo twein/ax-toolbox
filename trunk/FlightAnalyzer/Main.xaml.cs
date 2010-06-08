@@ -30,7 +30,6 @@ namespace FlightAnalyzer
         private FlightSettings flightSettings;
         private CoordAdapter caToGMap;
         private FlightReport report;
-        private List<AXToolbox.Common.Point> visibleTrack = new List<AXToolbox.Common.Point>();
         private GMapMarker trackMarker;
         private GMapMarker pointerMarker;
         private int mapTypeIdx = 0;
@@ -79,23 +78,31 @@ namespace FlightAnalyzer
                     report = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
                     report.Notes.Add("This is a note");
                     DataContext = report;
-                    visibleTrack = report.Track;
+
+                    SetSlider();
+
+                    //Clear Map
+                    MainMap.Markers.Clear();
 
                     //Add track to map
                     trackMarker = GetTrackMarker();
                     MainMap.Markers.Add(trackMarker);
 
                     //Add movable pointer
-                    pointerMarker = GetMarker(report.OriginalTrack[0], "*", report.OriginalTrack[0].ToString(), Brushes.Orange);
+                    pointerMarker = GetMarker(GetVisibleTrack()[0], "*", GetVisibleTrack()[0].ToString(), Brushes.Orange);
                     MainMap.Markers.Add(pointerMarker);
 
                     //// Add launch and landing to map
-                    //MainMap.Markers.Add(GetMarker(report.LaunchPoint, "↗", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
-                    //MainMap.Markers.Add(GetMarker(report.LandingPoint, "↘", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
+                    //MainMap.Markers.Add(GetMarker(report.LaunchPoint, "↑", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
+                    //MainMap.Markers.Add(GetMarker(report.LandingPoint, "↓", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
 
                     // Add dropped markers to map
                     foreach (var m in report.Markers)
                         MainMap.Markers.Add(GetMarker(m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
+
+                    // Add goal declarations to map
+                    foreach (var m in report.DeclaredGoals)
+                        MainMap.Markers.Add(GetMarker(m, m.Name, "Declaration " + m.ToString(), Brushes.Red));
 
                     MainMap.CurrentPosition = pointerMarker.Position;
 
@@ -139,22 +146,25 @@ namespace FlightAnalyzer
         }
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            UpdatePointer((int)e.NewValue);
+            UpdatePointer();
         }
         private void radio_Checked(object sender, RoutedEventArgs e)
         {
             if (report != null)
             {
-                SetVisibleTrack();
+
+                SetSlider();
+
                 MainMap.Markers.Remove(trackMarker);
                 trackMarker = GetTrackMarker();
                 MainMap.Markers.Add(trackMarker);
-                UpdatePointer(0);
+
+                UpdatePointer();
             }
         }
         private void checkLock_Checked(object sender, RoutedEventArgs e)
         {
-            UpdatePointer((int)sliderTime.Value);
+            UpdatePointer();
         }
 
         private void InitSettings()
@@ -177,29 +187,80 @@ namespace FlightAnalyzer
 
             caToGMap = new CoordAdapter(flightSettings.Datum, "WGS84");
         }
-        private void UpdatePointer(int idx)
+
+        private GMapMarker GetTrackMarker()
+        {
+            List<PointLatLng> points = new List<PointLatLng>();
+
+            var ca = new CoordAdapter(Settings.Default.Datum, "WGS84");
+            foreach (var p in GetVisibleTrack())
+            {
+                var llp = ca.ConvertToLatLong(
+                    new AXToolbox.Common.Point() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing }
+                    );
+                points.Add(new PointLatLng(llp.Latitude, llp.Longitude));
+            }
+
+            GMapMarker marker = new GMapMarker(points[0]);
+            marker.Route.AddRange(points);
+            marker.RegenerateRouteShape(MainMap);
+
+            // Override default shape
+            var myPath = new System.Windows.Shapes.Path()
+            {
+                Data = (marker.Shape as Path).Data, //use the generated geometry
+                Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 },
+                Stroke = (radioLogger.IsChecked.Value) ? Brushes.Red : Brushes.Blue,
+                StrokeThickness = 2
+            };
+            marker.Shape = myPath;
+            marker.ZIndex = -1;
+            marker.ForceUpdateLocalPosition(MainMap);
+
+            return marker;
+        }
+        private GMapMarker GetMarker(IPosition p, string text, string toolTip, Brush brush)
+        {
+            var llp = caToGMap.ConvertToLatLong(new AXToolbox.Common.Point() { Zone = flightSettings.UtmZone, Easting = p.Easting, Northing = p.Northing });
+            var marker = new GMapMarker(new PointLatLng(llp.Latitude, llp.Longitude));
+            marker.Shape = new Tag(text, toolTip, brush);
+            marker.ForceUpdateLocalPosition(MainMap);
+            return marker;
+        }
+
+        private IList<AXToolbox.Common.Point> GetVisibleTrack()
+        {
+            return (radioLogger.IsChecked.Value) ? report.Track : report.OriginalTrack;
+        }
+        private void UpdatePointer()
         {
             if (pointerMarker != null)
             {
-                var p = visibleTrack[idx];
-                var llp = caToGMap.ConvertToLatLong(new AXToolbox.Common.Point() { Zone = p.Zone, Easting = p.Easting, Northing = p.Northing });
-                pointerMarker.Position = new PointLatLng() { Lat = llp.Latitude, Lng = llp.Longitude };
+                var t = (int)sliderTime.Value;
+                var p = GetVisibleTrack()[t];
+                var llp = caToGMap.ConvertToLatLong(p);
+
+                pointerMarker.Position = new PointLatLng()
+                {
+                    Lat = llp.Latitude,
+                    Lng = llp.Longitude
+                };
                 ((Tag)pointerMarker.Shape).SetTooltip(p.ToString());
-                textblockTime.Text = p.Time.ToString("HH:mm:ss");
                 pointerMarker.ForceUpdateLocalPosition(MainMap);
+                
                 if (checkLock.IsChecked.Value)
                     MainMap.CurrentPosition = pointerMarker.Position;
+
+                textblockTime.Text = p.Time.ToString("HH:mm:ss");
             }
         }
-        private void SetVisibleTrack()
+        private void SetSlider()
         {
-            if (report != null)
-            {
-                if (radioLogger.IsChecked.Value)
-                    visibleTrack = report.OriginalTrack;
-                else
-                    visibleTrack = report.Track;
-            }
+            var visibleTrack = GetVisibleTrack();
+
+            sliderTime.Minimum = 0;
+            sliderTime.Maximum = visibleTrack.Count - 1;
+            sliderTime.Value = 0;
         }
         private void PrefetchTiles()
         {
@@ -237,51 +298,6 @@ namespace FlightAnalyzer
             {
                 MessageBox.Show("Select map area holding right mouse button + ALT", "PrefetchTiles map", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
-        }
-
-        private GMapMarker GetTrackMarker()
-        {
-            List<PointLatLng> points = new List<PointLatLng>();
-
-            var ca = new CoordAdapter(Settings.Default.Datum, "WGS84");
-            foreach (var p in visibleTrack)
-            {
-                var llp = ca.ConvertToLatLong(
-                    new AXToolbox.Common.Point() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing }
-                    );
-                points.Add(new PointLatLng(llp.Latitude, llp.Longitude));
-            }
-
-            GMapMarker route = new GMapMarker(points[0]);
-            route.Route.AddRange(points);
-            route.RegenerateRouteShape(MainMap);
-
-            // Override default shape
-            var myPath = new System.Windows.Shapes.Path()
-            {
-                Data = (route.Shape as Path).Data, //use the generated geometry
-                Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 },
-                Stroke = (radioLogger.IsChecked.Value) ? Brushes.Red : Brushes.Blue,
-                StrokeThickness = 2
-            };
-            route.Shape = myPath;
-            route.ZIndex = -1;
-            route.ForceUpdateLocalPosition(MainMap);
-
-            sliderTime.Minimum = 0;
-            sliderTime.Maximum = visibleTrack.Count - 1;
-            sliderTime.Value = 0;
-            textblockTime.Text = visibleTrack[0].Time.ToString("HH:mm:ss");
-
-            return route;
-        }
-        private GMapMarker GetMarker(IPosition p, string text, string toolTip, Brush brush)
-        {
-            var llp = caToGMap.ConvertToLatLong(new AXToolbox.Common.Point() { Zone = flightSettings.UtmZone, Easting = p.Easting, Northing = p.Northing });
-            var marker = new GMapMarker(new PointLatLng(llp.Latitude, llp.Longitude));
-            marker.Shape = new Tag(text, toolTip, brush);
-            marker.ForceUpdateLocalPosition(MainMap);
-            return marker;
         }
     }
 }
