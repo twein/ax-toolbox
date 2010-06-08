@@ -9,79 +9,28 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common.IO
 {
-    public class IGCFile : ILogFile
+    public class IGCFile : FlightReport
     {
-        private FlightSettings settings;
+
         private CoordAdapter coordAdapter = null;
-
-        private string loggerModel;
-        private string loggerSerialNumber;
-        private int pilotId;
-        private int loggerQnh;
-        private DateTime date;
-        private List<Point> track = new List<Point>();
-        private List<Waypoint> markers = new List<Waypoint>();
-        private List<Waypoint> declaredGoals = new List<Waypoint>();
-        private bool am;
-        private SignatureStatus signature;
-        private List<string> notes = new List<string>();
-
-
-        public DateTime Date
-        {
-            get { return date; }
-        }
-        public bool Am
-        {
-            get { return am; }
-        }
-        public int PilotId
-        {
-            get { return pilotId; }
-        }
-        public SignatureStatus Signature
-        {
-            get { return signature; }
-        }
-        public string LoggerSerialNumber
-        {
-            get { return loggerSerialNumber; }
-        }
-        public string LoggerModel
-        {
-            get { return loggerModel; }
-        }
-        public int LoggerQnh
-        {
-            get { return loggerQnh; }
-        }
-        public List<string> Notes
-        {
-            get { return notes; }
-        }
-        public List<Point> Track
-        {
-            get { return track; }
-        }
-        public List<Waypoint> Markers
-        {
-            get { return markers; }
-        }
-        public List<Waypoint> DeclaredGoals
-        {
-            get { return declaredGoals; }
-        }
-
+        private DateTime tmpDate;
 
         public IGCFile(string filePath, FlightSettings settings)
+            : base(filePath, settings)
         {
-            this.settings = settings;
-            ReadLog(filePath);
+            ReadLog();
+            signature = VerifySignature(filePath);
         }
 
-        private void ReadLog(string filePath)
+        public override void Reset()
         {
-            var content = from line in File.ReadAllLines(filePath)
+            Clear();
+            ReadLog();
+        }
+
+        private void ReadLog()
+        {
+            var content = from line in logFile
                           where line.Length > 0
                           select line;
 
@@ -116,13 +65,13 @@ namespace AXToolbox.Common.IO
                                 break;
                             case "HFDTE":
                                 //Date
-                                date = ParseDateAt(line, 9);
+                                tmpDate = ParseDateAt(line, 9);
                                 break;
                         }
                         break;
                     case 'K':
                         //Date update
-                        date = ParseDateAt(line, 11);
+                        tmpDate = ParseDateAt(line, 11);
                         break;
                     case 'B':
                         //Track point
@@ -143,13 +92,6 @@ namespace AXToolbox.Common.IO
                         break;
                 }
             }
-            if (track.Count > 0)
-            {
-                date = track.Last().Time.StripTimePart();
-                am = track.Last().Time.GetAmPm() == "AM";
-            }
-
-            signature = VerifySignature(filePath);
         }
 
         //main parser functions
@@ -213,7 +155,7 @@ namespace AXToolbox.Common.IO
                 declaration = new Waypoint(number.ToString())
                 {
                     Time = time,
-                    Zone=settings.AllowedGoals[0].Zone,
+                    Zone = settings.AllowedGoals[0].Zone,
                     Easting = settings.AllowedGoals[0].Easting % 100000 + 10 * double.Parse(strGoal.Substring(0, 4)),
                     Northing = settings.AllowedGoals[0].Northing % 100000 + 10 * double.Parse(strGoal.Substring(5, 4))
                 };
@@ -266,7 +208,7 @@ namespace AXToolbox.Common.IO
             int hour = int.Parse(line.Substring(pos, 2));
             int minute = int.Parse(line.Substring(pos + 2, 2));
             int second = int.Parse(line.Substring(pos + 4, 2));
-            return new DateTime(settings.Date.Year, settings.Date.Month, settings.Date.Day, hour, minute, second, DateTimeKind.Utc);
+            return new DateTime(tmpDate.Year, tmpDate.Month, tmpDate.Day, hour, minute, second, DateTimeKind.Utc);
         }
         private Point ParseFixAt(string line, int pos)
         {
