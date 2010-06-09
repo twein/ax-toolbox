@@ -175,7 +175,7 @@ namespace AXToolbox.Common.IO
                 if (strAltitude.EndsWith("ft"))
                 {
                     //altitude in feet
-                    declaration.Altitude = double.Parse(strAltitude.Replace("ft", "")) / 0.3048;
+                    declaration.Altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
                 }
                 else if (strAltitude.EndsWith("m"))
                 {
@@ -262,7 +262,7 @@ namespace AXToolbox.Common.IO
         {
             double[] offsets = { 1e5, -1e5 }; //1e5 m = 100 Km
 
-            var proposed = Math.Floor(origin / 1e5) * 1e5 + coord4Figures * 10;
+            var proposed = origin - origin % 1e5 + coord4Figures * 10; 
             var best = proposed;
             foreach (var offset in offsets)
             {
