@@ -11,7 +11,6 @@ namespace AXToolbox.Common.IO
 {
     public class IGCFile : FlightReport
     {
-
         private CoordAdapter coordAdapter = null;
         private DateTime tmpDate;
 
@@ -152,12 +151,16 @@ namespace AXToolbox.Common.IO
                 if (settings.AllowedGoals.Count == 0)
                     throw new InvalidDataException("The allowed goals list cannot be empty");
 
+                // place the declaration in the correct map zone
+                var origin = settings.AllowedGoals[0];
+                var easting = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(0, 4)), origin.Easting);
+                var northing = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(5, 4)), origin.Northing);
                 declaration = new Waypoint(number.ToString())
                 {
                     Time = time,
-                    Zone = settings.AllowedGoals[0].Zone,
-                    Easting = Math.Floor(settings.AllowedGoals[0].Easting / 10000) * 10000 + 10 * double.Parse(strGoal.Substring(0, 4)),
-                    Northing = Math.Floor(settings.AllowedGoals[0].Northing / 100000) * 100000 + 10 * double.Parse(strGoal.Substring(5, 4))
+                    Zone = origin.Zone,
+                    Easting = easting,
+                    Northing = northing
                 };
             }
             else
@@ -249,6 +252,24 @@ namespace AXToolbox.Common.IO
                 newAltitude = altitude + (settings.Qnh - standardQNH) / correctBelow;
 
             return newAltitude;
+        }
+        /// <summary>Compute the correct UTM coordinate given a 4 figures competition one
+        /// </summary>
+        /// <param name="coord4Figures">competition coordinate in 4 figures format</param>
+        /// <param name="origin">complete UTM coordinate used as origin</param>
+        /// <returns>correct complete UTM coordinate</returns>
+        private static double ComputeCorrectCoordinate(double coord4Figures, double origin)
+        {
+            double[] offsets = { 1e5, -1e5 }; //1e5 m = 100 Km
+
+            var proposed = Math.Floor(origin / 1e5) * 1e5 + coord4Figures * 10;
+            var best = proposed;
+            foreach (var offset in offsets)
+            {
+                if (Math.Abs(proposed + offset - origin) < Math.Abs(best - origin))
+                    best = proposed + offset;
+            }
+            return best;
         }
 
         private static SignatureStatus VerifySignature(string fileName)
