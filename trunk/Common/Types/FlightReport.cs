@@ -25,8 +25,8 @@ namespace AXToolbox.Common
         protected List<Point> track;
         protected List<Waypoint> markers;
         protected List<Waypoint> declaredGoals;
-        private Point launchPoint;
-        private Point landingPoint;
+        protected Point launchPoint;
+        protected Point landingPoint;
         protected List<string> notes;
         
         public DateTime Date
@@ -74,12 +74,12 @@ namespace AXToolbox.Common
         {
             get { return declaredGoals; }
         }
-        protected Point LaunchPoint
+        public Point LaunchPoint
         {
             get { return launchPoint; }
             set { launchPoint = value; }
         }
-        protected Point LandingPoint
+        public Point LandingPoint
         {
             get { return landingPoint; }
             set { landingPoint = value; }
@@ -146,9 +146,15 @@ namespace AXToolbox.Common
             }
 
             //throw new NotImplementedException("Implement common log file processing");
+            //report.CleanTrack();
             report.DetectLaunchAndLanding();
 
             return report;
+        }
+
+        private void CleanTrack()
+        {
+            throw new NotImplementedException();
         }
     }
 }
