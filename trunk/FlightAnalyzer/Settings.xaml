@@ -87,6 +87,11 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
+                <Label Style="{StaticResource defaultStyle}">Default altitude (m):</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.DefaultAltitude}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Minimum velocity (m/s):</Label>
                 <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.MinVelocity}"/>
             </StackPanel>

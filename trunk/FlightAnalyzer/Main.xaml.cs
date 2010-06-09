@@ -76,7 +76,6 @@ namespace FlightAnalyzer
                 try
                 {
                     report = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
-                    report.Notes.Add("This is a note");
                     DataContext = report;
 
                     SetSlider();
