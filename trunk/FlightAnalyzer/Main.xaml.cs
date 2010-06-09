@@ -92,8 +92,8 @@ namespace FlightAnalyzer
                     MainMap.Markers.Add(pointerMarker);
 
                     //// Add launch and landing to map
-                    //MainMap.Markers.Add(GetMarker(report.LaunchPoint, "↑", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
-                    //MainMap.Markers.Add(GetMarker(report.LandingPoint, "↓", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
+                    MainMap.Markers.Add(GetMarker(report.LaunchPoint, "↑", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
+                    MainMap.Markers.Add(GetMarker(report.LandingPoint, "↓", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
 
                     // Add dropped markers to map
                     foreach (var m in report.Markers)
@@ -256,7 +256,7 @@ namespace FlightAnalyzer
                 if (checkLock.IsChecked.Value)
                     MainMap.CurrentPosition = pointerMarker.Position;
 
-                textblockTime.Text = p.Time.ToString("HH:mm:ss");
+                textblockCursor.Text = "Pointer: " + p.ToString();
             }
         }
         private void SetSlider()
