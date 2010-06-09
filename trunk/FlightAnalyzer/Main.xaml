@@ -110,7 +110,9 @@
                         <ListBox Grid.Row="1" Grid.Column="0"
                                      Margin="5" MinHeight="50" Height="Auto"
                                      Background="LightGray"
-                                     ItemsSource="{Binding Path=Markers, Mode=OneWay}">
+                                     ItemsSource="{Binding Path=Markers, Mode=OneWay}"
+                                     MouseLeftButtonUp="ListBox_MouseLeftButtonUp"
+                                     >
                         </ListBox>
                         <TextBlock Grid.Row="0" Grid.Column="1"
                                        Margin="5,5,5,0">
@@ -119,7 +121,8 @@
                         <ListBox Grid.Row="1" Grid.Column="1"
                                      Margin="5" MinHeight="50" Height="Auto"
                                      Background="LightGray"
-                                     ItemsSource="{Binding Path=DeclaredGoals, Mode=OneWay}">
+                                     ItemsSource="{Binding Path=DeclaredGoals, Mode=OneWay}" 
+                                     MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
                         </ListBox>
                     </Grid>
 

@@ -25,6 +25,8 @@ namespace AXToolbox.Common
         protected List<Point> track;
         protected List<Waypoint> markers;
         protected List<Waypoint> declaredGoals;
+        private Point launchPoint;
+        private Point landingPoint;
         protected List<string> notes;
         
         public DateTime Date
@@ -72,6 +74,16 @@ namespace AXToolbox.Common
         {
             get { return declaredGoals; }
         }
+        protected Point LaunchPoint
+        {
+            get { return launchPoint; }
+            set { launchPoint = value; }
+        }
+        protected Point LandingPoint
+        {
+            get { return landingPoint; }
+            set { landingPoint = value; }
+        }
         public List<string> Notes
         {
             get { return notes; }
@@ -102,6 +114,13 @@ namespace AXToolbox.Common
             declaredGoals = new List<Waypoint>();
             notes = new List<string>();
         }
+
+        public void DetectLaunchAndLanding()
+        {
+            launchPoint = track[0];
+            landingPoint = track[track.Count - 1];
+        }
+
         public override string ToString()
         {
             return string.Format("{0:MM/dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
@@ -127,6 +146,8 @@ namespace AXToolbox.Common
             }
 
             //throw new NotImplementedException("Implement common log file processing");
+            report.DetectLaunchAndLanding();
+
             return report;
         }
     }

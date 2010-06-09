@@ -101,7 +101,7 @@ namespace FlightAnalyzer
 
                     // Add goal declarations to map
                     foreach (var m in report.DeclaredGoals)
-                        MainMap.Markers.Add(GetMarker(m, m.Name, "Declaration " + m.ToString(), Brushes.Red));
+                        MainMap.Markers.Add(GetMarker(m, m.Name, "Declaration " + m.ToString() + " - " + m.Description, Brushes.Red));
 
                     MainMap.CurrentPosition = pointerMarker.Position;
 
@@ -142,6 +142,12 @@ namespace FlightAnalyzer
                     MainMap.MapType = allowedMaptypes[++mapTypeIdx % allowedMaptypes.Length];
                     break;
             }
+        }
+        private void ListBox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var wp = ((ListBox)sender).SelectedItem as Waypoint;
+            var llp = caToGMap.ConvertToLatLong(wp);
+            MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
         }
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -246,7 +252,7 @@ namespace FlightAnalyzer
                 };
                 ((Tag)pointerMarker.Shape).SetTooltip(p.ToString());
                 pointerMarker.ForceUpdateLocalPosition(MainMap);
-                
+
                 if (checkLock.IsChecked.Value)
                     MainMap.CurrentPosition = pointerMarker.Position;
 
