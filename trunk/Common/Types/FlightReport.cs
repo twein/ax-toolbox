@@ -110,20 +110,73 @@ namespace AXToolbox.Common
         {
             this.settings = settings;
             logFile = File.ReadAllLines(filePath);
-            Clear();
+            signature = SignatureStatus.NotSigned;
+            Reset();
         }
 
-        public abstract void Reset();
+        public virtual void Reset()
+        {
+            pilotId = 0;
+            loggerModel = "";
+            loggerSerialNumber = "";
+            loggerQnh = 0;
+            track = new List<Point>();
+            markers = new List<Waypoint>();
+            declaredGoals = new List<Waypoint>();
+            launchPoint = null;
+            landingPoint = null;
+            notes = new List<string>();
+        }
         public void CleanTrack()
         {
-            throw new NotImplementedException();
+
+            // remove points before/after valid times
+            DateTime minTime, maxTime;
+            if (Am)
+            {
+                minTime = Date.ToUniversalTime() + new TimeSpan(6, 0, 0);
+                maxTime = Date.ToUniversalTime() + new TimeSpan(12, 0, 0);
+            }
+            else
+            {
+                minTime = Date.ToUniversalTime() + new TimeSpan(16, 0, 0);
+                maxTime = Date.ToUniversalTime() + new TimeSpan(22, 0, 0);
+            }
+
+            foreach (var point in track.Where(p => p.Time < minTime || p.Time > maxTime))
+                point.IsValid = false;
+
+
+            // remove spikes and dupes
+
+            Point point_m1 = null;
+            Point point_m2 = null;
+            foreach (var point in track.Where(p => p.IsValid))
+            {
+                // remove dupe
+                if (point_m1 != null && Physics.TimeDiff(point, point_m1).TotalSeconds == 0)
+                {
+                    point.IsValid = false;
+                    continue;
+                }
+
+                // remove spike
+                if (point_m2 != null && Physics.Acceleration3D(point, point_m1, point_m2) > settings.MaxAcceleration)
+                {
+                    point.IsValid = false;
+                    continue;
+                }
+
+                point_m2 = point_m1;
+                point_m1 = point;
+            }
         }
         public void DetectLaunchAndLanding()
         {
             launchPoint = track[0];
             landingPoint = track[track.Count - 1];
         }
-        
+
         public override string ToString()
         {
             return string.Format("{0:yyyy-MM-dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
@@ -148,27 +201,12 @@ namespace AXToolbox.Common
             }
 
             //throw new NotImplementedException("Implement common log file processing");
-            //report.CleanTrack();
-            report.DetectLaunchAndLanding();
 
             return report;
         }
         public void Save(string filePath)
         {
             ObjectSerializer<FlightReport>.Save(this, filePath, serializationFormat);
-        }
-
-        protected void Clear()
-        {
-            pilotId = 0;
-            signature = SignatureStatus.NotSigned;
-            loggerModel = "";
-            loggerSerialNumber = "";
-            loggerQnh = 0;
-            track = new List<Point>();
-            markers = new List<Waypoint>();
-            declaredGoals = new List<Waypoint>();
-            notes = new List<string>();
         }
     }
 }

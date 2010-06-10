@@ -14,7 +14,7 @@
         </Style>
         <Style x:Key="valueStyle">
             <Setter Property="Control.Margin" Value="5,0,5,5"/>
-            <Setter Property="Control.Width" Value="350"/>
+            <Setter Property="Control.Width" Value="400"/>
             <Setter Property="Control.VerticalAlignment" Value="Top"/>
             <Setter Property="Control.Background" Value="LightGray"/>
             <Setter Property="Control.HorizontalAlignment" Value="Left"/>

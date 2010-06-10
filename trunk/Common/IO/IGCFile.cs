@@ -18,17 +18,18 @@ namespace AXToolbox.Common.IO
         public IGCFile(string filePath, FlightSettings settings)
             : base(filePath, settings)
         {
-            ReadLog();
             signature = VerifySignature(filePath);
+            Reset();
         }
 
         public override void Reset()
         {
-            Clear();
-            ReadLog();
+            base.Reset();
+            ParseLog();
+            DetectLaunchAndLanding();
         }
 
-        private void ReadLog()
+        private void ParseLog()
         {
             var content = from line in logFile
                           where line.Length > 0
