@@ -272,8 +272,10 @@ namespace FlightAnalyzer
                             textblockCursor.Text = "Pointer: " + p.ToString();
                             break;
                         case "launch":
+                            textblockLaunch.Tag = p;
                             break;
                         case "landing":
+                            textblockLanding.Tag = p;
                             break;
                     }
                 }
@@ -307,7 +309,7 @@ namespace FlightAnalyzer
         }
         private IList<AXToolbox.Common.Point> GetVisibleTrack()
         {
-            return (radioLogger.IsChecked.Value) ? report.Track : report.OriginalTrack;
+            return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
         }
         private void PrefetchTiles()
         {

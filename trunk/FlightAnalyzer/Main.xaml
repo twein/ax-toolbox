@@ -103,12 +103,12 @@
                         <RadioButton Name="radioLogger"
                                      Margin="5,0,5,0" GroupName="track" IsChecked="True"
                                      Checked="radio_Checked">
-                            Logger
+                            All
                         </RadioButton>
-                        <RadioButton Name="radioClean"
+                        <RadioButton Name="radioFlight"
                                      Margin="5,0,5,0" GroupName="track"
                                      Checked="radio_Checked">
-                            Clean
+                            Flight
                         </RadioButton>
                     </StackPanel>
                     <StackPanel Grid.Column="1">

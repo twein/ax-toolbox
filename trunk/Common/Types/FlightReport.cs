@@ -61,13 +61,17 @@ namespace AXToolbox.Common
         {
             get { return loggerQnh; }
         }
-        public List<Point> Track
-        {
-            get { return track.Where(p => p.IsValid == true).ToList(); }
-        }
         public List<Point> OriginalTrack
         {
             get { return track; }
+        }
+        public List<Point> CleanTrack
+        {
+            get { return track.Where(p => p.IsValid == true).ToList(); }
+        }
+        public List<Point> FlightTrack
+        {
+            get { return track.Where(p => p.IsValid == true).Where(p => p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
         }
         public List<Waypoint> Markers
         {
@@ -106,7 +110,7 @@ namespace AXToolbox.Common
             get { return notes; }
         }
 
-        public FlightReport(string filePath, FlightSettings settings)
+        protected FlightReport(string filePath, FlightSettings settings)
         {
             this.settings = settings;
             logFile = File.ReadAllLines(filePath);
@@ -127,9 +131,8 @@ namespace AXToolbox.Common
             landingPoint = null;
             notes = new List<string>();
         }
-        public void CleanTrack()
+        public void RemoveInvalidPoints()
         {
-
             // remove points before/after valid times
             DateTime minTime, maxTime;
             if (Am)
@@ -147,8 +150,7 @@ namespace AXToolbox.Common
                 point.IsValid = false;
 
 
-            // remove spikes and dupes
-
+            // remove dupes and spikes
             Point point_m1 = null;
             Point point_m2 = null;
             foreach (var point in track.Where(p => p.IsValid))
@@ -170,11 +172,57 @@ namespace AXToolbox.Common
                 point_m2 = point_m1;
                 point_m1 = point;
             }
+            //TODO: consider removing spikes by change in direction
         }
         public void DetectLaunchAndLanding()
         {
-            launchPoint = track[0];
-            landingPoint = track[track.Count - 1];
+            // find the highest point in flight
+            Point highest = null;
+            foreach (Point point in track.Where(p => p.IsValid))
+            {
+                if (highest == null || point.Altitude > highest.Altitude)
+                    highest = point;
+            }
+
+            // find launch point
+            launchPoint = FindGroundContact(track.Where(p => p.IsValid).Where(p => p.Time <= highest.Time).Reverse());
+            if (launchPoint == null)
+            {
+                launchPoint = CleanTrack.First();
+                notes.Add("Launch point not found");
+            }
+
+            // find landing point
+            landingPoint = FindGroundContact(track.Where(p => p.IsValid).Where(p => p.Time >= highest.Time));
+            if (landingPoint == null)
+            {
+                landingPoint = CleanTrack.Last();
+                notes.Add("Landing point not found");
+            }
+        }
+        private Point FindGroundContact(IEnumerable<Point> track)
+        {
+            Point groundContact = null;
+            Point point_m1 = null;
+            double smoothedSpeed = double.NaN;
+            foreach (var point in track)
+            {
+                if (point_m1 != null)
+                {
+                    if (double.IsNaN(smoothedSpeed))
+                        smoothedSpeed = Physics.Velocity3D(point, point_m1);
+                    else
+                        smoothedSpeed = (Physics.Velocity3D(point, point_m1) + smoothedSpeed * 2) / 3;
+
+                    if (smoothedSpeed < settings.MinVelocity)
+                    {
+                        groundContact = point;
+                        break;
+                    }
+                }
+                point_m1 = point;
+            }
+            return groundContact;
         }
 
         public override string ToString()
@@ -199,9 +247,6 @@ namespace AXToolbox.Common
                 default:
                     throw new InvalidOperationException("Logger file type not supported");
             }
-
-            //throw new NotImplementedException("Implement common log file processing");
-
             return report;
         }
         public void Save(string filePath)
