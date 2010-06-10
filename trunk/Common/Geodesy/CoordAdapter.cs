@@ -19,6 +19,7 @@ namespace AXToolbox.Common.Geodesy
     //IMPORTANT: Keep same order in DatumTypes and CoordAdapter.datums
     public enum DatumTypes { CorregoAlegre = 0, European1950, OrdnanceGB1936, WGS84 };
 
+    [Serializable]
     public class CoordAdapter
     {
         private const double deg2rad = Math.PI / 180;
@@ -433,6 +434,7 @@ namespace AXToolbox.Common.Geodesy
 			#endregion
 		};
 
+        [Serializable]
         private struct Datum
         {
             public string Name;

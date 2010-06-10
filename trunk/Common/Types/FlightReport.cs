@@ -12,8 +12,11 @@ namespace AXToolbox.Common
 {
     public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
 
+    [Serializable]
     public abstract class FlightReport
     {
+        private const SerializationFormat serializationFormat = SerializationFormat.Binary;
+
         protected FlightSettings settings;
         protected string[] logFile;
 
@@ -28,7 +31,7 @@ namespace AXToolbox.Common
         protected Point launchPoint;
         protected Point landingPoint;
         protected List<string> notes;
-        
+
         public DateTime Date
         {
             get { return settings.Date; }
@@ -60,7 +63,7 @@ namespace AXToolbox.Common
         }
         public List<Point> Track
         {
-            get { return track; }
+            get { return track.Where(p => p.IsValid == true).ToList(); }
         }
         public List<Point> OriginalTrack
         {
@@ -77,23 +80,31 @@ namespace AXToolbox.Common
         public Point LaunchPoint
         {
             get { return launchPoint; }
-            set { launchPoint = value; }
+            set
+            {
+                if (value != launchPoint)
+                {
+                    launchPoint = value;
+                    //NotifyPropertyChanged("LaunchPoint");
+                }
+            }
         }
         public Point LandingPoint
         {
             get { return landingPoint; }
-            set { landingPoint = value; }
+            set
+            {
+                if (value != landingPoint)
+                {
+                    landingPoint = value;
+                    //NotifyPropertyChanged("LandingPoint");
+                }
+            }
         }
         public List<string> Notes
         {
             get { return notes; }
         }
-
-        public string Tag
-        {
-            get { return ToString(); }
-        }
-
 
         public FlightReport(string filePath, FlightSettings settings)
         {
@@ -102,33 +113,21 @@ namespace AXToolbox.Common
             Clear();
         }
 
-        public void Clear()
+        public abstract void Reset();
+        public void CleanTrack()
         {
-            pilotId = 0;
-            signature = SignatureStatus.NotSigned;
-            loggerModel = "";
-            loggerSerialNumber = "";
-            loggerQnh = 0;
-            track = new List<Point>();
-            markers = new List<Waypoint>();
-            declaredGoals = new List<Waypoint>();
-            notes = new List<string>();
+            throw new NotImplementedException();
         }
-
         public void DetectLaunchAndLanding()
         {
             launchPoint = track[0];
             landingPoint = track[track.Count - 1];
         }
-
+        
         public override string ToString()
         {
-            return string.Format("{0:MM/dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
+            return string.Format("{0:yyyy-MM-dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
         }
-
-        public abstract void Reset();
-
-
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {
             FlightReport report;
@@ -141,6 +140,9 @@ namespace AXToolbox.Common
                 case ".trk":
                     report = new TRKFile(filePath, settings);
                     break;
+                case ".rep":
+                    report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+                    break;
                 default:
                     throw new InvalidOperationException("Logger file type not supported");
             }
@@ -151,10 +153,22 @@ namespace AXToolbox.Common
 
             return report;
         }
-
-        private void CleanTrack()
+        public void Save(string filePath)
         {
-            throw new NotImplementedException();
+            ObjectSerializer<FlightReport>.Save(this, filePath, serializationFormat);
+        }
+
+        protected void Clear()
+        {
+            pilotId = 0;
+            signature = SignatureStatus.NotSigned;
+            loggerModel = "";
+            loggerSerialNumber = "";
+            loggerQnh = 0;
+            track = new List<Point>();
+            markers = new List<Waypoint>();
+            declaredGoals = new List<Waypoint>();
+            notes = new List<string>();
         }
     }
 }

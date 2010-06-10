@@ -1,6 +1,7 @@
 ﻿using System;
 namespace AXToolbox.Common
 {
+    [Serializable]
     public class LLPoint
     {
         public double Latitude { get; set; }

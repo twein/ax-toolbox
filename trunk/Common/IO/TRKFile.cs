@@ -8,6 +8,7 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common.IO
 {
+    [Serializable]
     public class TRKFile : FlightReport
     {
         private CoordAdapter coordAdapter = null;
