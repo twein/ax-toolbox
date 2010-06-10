@@ -10,7 +10,8 @@ namespace AXToolbox.Common
         Time = 2,
         Altitude = 4,
         UTMCoords = 8,
-        CompetitionCoords = 16
+        CompetitionCoords = 16,
+        Validity = 32
     }
 
     [Serializable]
@@ -51,6 +52,9 @@ namespace AXToolbox.Common
 
             if ((data & PointData.Altitude) > 0)
                 str.Append(Altitude.ToString("0 "));
+
+            if ((data & PointData.Validity) > 0)
+                str.Append(IsValid ? "OK" : "NO");
 
             return str.ToString();
         }
