@@ -9,13 +9,12 @@
     <Window.Resources>
         <Style x:Key="labelStyle">
             <Setter Property="Control.Margin" Value="5"/>
-            <Setter Property="Control.Width" Value="150"/>
             <Setter Property="Control.VerticalAlignment" Value="Top"/>
             <Setter Property="Control.HorizontalAlignment" Value="Left"/>
         </Style>
         <Style x:Key="valueStyle">
             <Setter Property="Control.Margin" Value="5,0,5,5"/>
-            <Setter Property="Control.Width" Value="300"/>
+            <Setter Property="Control.Width" Value="350"/>
             <Setter Property="Control.VerticalAlignment" Value="Top"/>
             <Setter Property="Control.Background" Value="LightGray"/>
             <Setter Property="Control.HorizontalAlignment" Value="Left"/>
@@ -32,7 +31,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Expander Grid.Column="0" ExpandDirection="Left" IsExpanded="True" Width="Auto" >
+            <Expander Grid.Column="0" ExpandDirection="Right" IsExpanded="True" Width="Auto" >
                 <StackPanel Orientation="Vertical">
                     <TextBlock Style="{StaticResource labelStyle}">Date:</TextBlock>
                     <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
@@ -42,14 +41,23 @@
                     <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
                                        Text="{Binding Path=PilotId, Mode=TwoWay}">
                     </TextBlock>
-
-                    <TextBlock Style="{StaticResource labelStyle}">Launch point:</TextBlock>
-                    <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
-                                       Text="{Binding Path=LaunchPoint, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource labelStyle}">Launch point:</TextBlock>
+                        <Button Click="buttonSetLaunch_Click">Set</Button>
+                    </StackPanel>
+                    <TextBlock x:Name="textblockLaunch" Style="{StaticResource valueStyle}" Background="LightGray" 
+                               Text="{Binding Path=LaunchPoint, Mode=OneWay}" 
+                               Tag="{Binding Path=LaunchPoint, Mode=OneWay}" 
+                               MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
                     </TextBlock>
-                    <TextBlock Style="{StaticResource labelStyle}">Landing point:</TextBlock>
-                    <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
-                                       Text="{Binding Path=LandingPoint, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource labelStyle}">Landing point:</TextBlock>
+                        <Button Click="buttonSetLanding_Click">Set</Button>
+                    </StackPanel>
+                    <TextBlock x:Name="textblockLanding" Style="{StaticResource valueStyle}" Background="LightGray" 
+                               Text="{Binding Path=LandingPoint, Mode=OneWay}" 
+                               Tag="{Binding Path=LandingPoint, Mode=OneWay}" 
+                               MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
                     </TextBlock>
 
                     <TextBlock Style="{StaticResource labelStyle}">Markers:</TextBlock>
@@ -70,6 +78,7 @@
                                  ItemsSource="{Binding Path=Notes, Mode=OneWay}"
                                  MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
                     </ListBox>
+                    <Button Click="buttonSave_Click">Save</Button>
                 </StackPanel>
             </Expander>
 
@@ -78,7 +87,9 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
+
                 <TextBlock Grid.Row="0" Name="textblockCursor" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto">Pointer</TextBlock>
+
                 <map:GMapControl x:Name="MainMap" Grid.Row="1"
                                  BorderBrush="Gray" BorderThickness="0.5"
                                  Height="Auto"/>
@@ -101,12 +112,12 @@
                         </RadioButton>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
-                        <Slider Name="sliderTime" Grid.Column="1"
+                        <Slider Name="sliderCursor" Grid.Column="1"
                             Margin="5" ValueChanged="slider_ValueChanged" SmallChange="1" LargeChange="10">
                         </Slider>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
-                        <CheckBox Name="checkLock" 
+                        <CheckBox Name="checkLock" IsChecked="True"
                                   Margin="5" HorizontalAlignment="Center" 
                                   Checked="checkLock_Checked">
                             Lock

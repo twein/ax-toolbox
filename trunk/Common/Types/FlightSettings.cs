@@ -4,6 +4,7 @@ using AXToolbox.Common.IO;
 
 namespace AXToolbox.Common
 {
+    [Serializable]
     public class FlightSettings
     {
         public DateTime Date { get; set; }
@@ -26,28 +27,28 @@ namespace AXToolbox.Common
             Datum = "European 1950";
             UtmZone = "31T";
             Qnh = 1013;
-            DefaultAltitude = 0;// m
+            DefaultAltitude = 0; // m
             MinVelocity = 0.3; // m/s
             MaxAcceleration = 5; // m/s2
             InterpolationInterval = 2; // s
             AllowedGoals = new List<Waypoint>();
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is FlightSettings)
-            {
-                var other = (FlightSettings)obj;
-                return Date == other.Date
-                    && Am == other.Am
-                    && TimeZone == other.TimeZone
-                    && Datum == other.Datum
-                    && Qnh == other.Qnh
-                    && DefaultAltitude == other.DefaultAltitude
-                    && AllowedGoals.GetHashCode() == other.AllowedGoals.GetHashCode();
-            }
-            else
-                return false;
-        }
+        //public override bool Equals(object obj)
+        //{
+        //    if (obj is FlightSettings)
+        //    {
+        //        var other = (FlightSettings)obj;
+        //        return Date == other.Date
+        //            && Am == other.Am
+        //            && TimeZone == other.TimeZone
+        //            && Datum == other.Datum
+        //            && Qnh == other.Qnh
+        //            && DefaultAltitude == other.DefaultAltitude
+        //            && AllowedGoals.GetHashCode() == other.AllowedGoals.GetHashCode();
+        //    }
+        //    else
+        //        return false;
+        //}
     }
 }

@@ -3,18 +3,24 @@ using System.IO;
 using System.IO.IsolatedStorage;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
+using System.IO.Compression;
 
 namespace AXToolbox.Common.IO
 {
     /// <summary>
     /// Serialization format types.
     /// </summary>
-    public enum PersistedFormat
+    public enum SerializationFormat
     {
         /// <summary>
         /// Binary serialization format.
         /// </summary>
         Binary,
+
+        /// <summary>
+        /// Compressed binary serialization format.
+        /// </summary>
+        CompressedBinary,
 
         /// <summary>
         /// Document serialization format.
@@ -27,8 +33,10 @@ namespace AXToolbox.Common.IO
     /// 
     /// References: XML Serialization at http://samples.gotdotnet.com/:
     /// http://samples.gotdotnet.com/QuickStart/howto/default.aspx?url=/quickstart/howto/doc/xmlserialization/rwobjfromxml.aspx
+    /// 
+    /// CompressedBinary serialization format by toni@balloonerds.com 06/2010
     /// </summary>
-    public static class ObjectPersister<T> where T : class // Specify that T must be a class.
+    public static class ObjectSerializer<T> where T : class // Specify that T must be a class.
     {
         #region Load methods
 
@@ -59,17 +67,21 @@ namespace AXToolbox.Common.IO
         /// <param name="path">Path of the file to load the object from.</param>
         /// <param name="serializedFormat">XML serialized format used to load the object.</param>
         /// <returns>Object loaded from an XML file using the specified serialized format.</returns>
-        public static T Load(string path, PersistedFormat serializedFormat)
+        public static T Load(string path, SerializationFormat serializedFormat)
         {
             T serializableObject = null;
 
             switch (serializedFormat)
             {
-                case PersistedFormat.Binary:
+                case SerializationFormat.Binary:
                     serializableObject = LoadFromBinaryFormat(path, null);
                     break;
 
-                case PersistedFormat.XML:
+                case SerializationFormat.CompressedBinary:
+                    serializableObject = LoadFromCompressedBinaryFormat(path, null);
+                    break;
+
+                case SerializationFormat.XML:
                 default:
                     serializableObject = LoadFromDocumentFormat(null, path, null);
                     break;
@@ -124,17 +136,21 @@ namespace AXToolbox.Common.IO
         /// <param name="isolatedStorageDirectory">Isolated storage area directory containing the XML file to load the object from.</param>
         /// <param name="serializedFormat">XML serialized format used to load the object.</param>        
         /// <returns>Object loaded from an XML file located in a specified isolated storage area, using a specified serialized format.</returns>
-        public static T Load(string fileName, IsolatedStorageFile isolatedStorageDirectory, PersistedFormat serializedFormat)
+        public static T Load(string fileName, IsolatedStorageFile isolatedStorageDirectory, SerializationFormat serializedFormat)
         {
             T serializableObject = null;
 
             switch (serializedFormat)
             {
-                case PersistedFormat.Binary:
+                case SerializationFormat.Binary:
                     serializableObject = LoadFromBinaryFormat(fileName, isolatedStorageDirectory);
                     break;
 
-                case PersistedFormat.XML:
+                case SerializationFormat.CompressedBinary:
+                    serializableObject = LoadFromCompressedBinaryFormat(fileName, isolatedStorageDirectory);
+                    break;
+
+                case SerializationFormat.XML:
                 default:
                     serializableObject = LoadFromDocumentFormat(null, fileName, isolatedStorageDirectory);
                     break;
@@ -195,15 +211,19 @@ namespace AXToolbox.Common.IO
         /// <param name="serializableObject">Serializable object to be saved to file.</param>
         /// <param name="path">Path of the file to save the object to.</param>
         /// <param name="serializedFormat">XML serialized format used to save the object.</param>
-        public static void Save(T serializableObject, string path, PersistedFormat serializedFormat)
+        public static void Save(T serializableObject, string path, SerializationFormat serializedFormat)
         {
             switch (serializedFormat)
             {
-                case PersistedFormat.Binary:
+                case SerializationFormat.Binary:
                     SaveToBinaryFormat(serializableObject, path, null);
                     break;
 
-                case PersistedFormat.XML:
+                case SerializationFormat.CompressedBinary:
+                    SaveToCompressedBinaryFormat(serializableObject, path, null);
+                    break;
+
+                case SerializationFormat.XML:
                 default:
                     SaveToDocumentFormat(serializableObject, null, path, null);
                     break;
@@ -260,15 +280,19 @@ namespace AXToolbox.Common.IO
         /// <param name="fileName">Name of the file in the isolated storage area to save the object to.</param>
         /// <param name="isolatedStorageDirectory">Isolated storage area directory containing the XML file to save the object to.</param>
         /// <param name="serializedFormat">XML serialized format used to save the object.</param>        
-        public static void Save(T serializableObject, string fileName, IsolatedStorageFile isolatedStorageDirectory, PersistedFormat serializedFormat)
+        public static void Save(T serializableObject, string fileName, IsolatedStorageFile isolatedStorageDirectory, SerializationFormat serializedFormat)
         {
             switch (serializedFormat)
             {
-                case PersistedFormat.Binary:
+                case SerializationFormat.Binary:
                     SaveToBinaryFormat(serializableObject, fileName, isolatedStorageDirectory);
                     break;
 
-                case PersistedFormat.XML:
+                case SerializationFormat.CompressedBinary:
+                    SaveToCompressedBinaryFormat(serializableObject, fileName, isolatedStorageDirectory);
+                    break;
+
+                case SerializationFormat.XML:
                 default:
                     SaveToDocumentFormat(serializableObject, null, fileName, isolatedStorageDirectory);
                     break;
@@ -318,6 +342,20 @@ namespace AXToolbox.Common.IO
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 serializableObject = binaryFormatter.Deserialize(fileStream) as T;
+            }
+
+            return serializableObject;
+        }
+
+        private static T LoadFromCompressedBinaryFormat(string path, IsolatedStorageFile isolatedStorageFolder)
+        {
+            T serializableObject = null;
+
+            using (FileStream fileStream = CreateFileStream(isolatedStorageFolder, path))
+            using (var stream = new GZipStream(fileStream, CompressionMode.Decompress))
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                serializableObject = binaryFormatter.Deserialize(stream) as T;
             }
 
             return serializableObject;
@@ -390,6 +428,16 @@ namespace AXToolbox.Common.IO
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(fileStream, serializableObject);
+            }
+        }
+
+        private static void SaveToCompressedBinaryFormat(T serializableObject, string path, IsolatedStorageFile isolatedStorageFolder)
+        {
+            using (FileStream fileStream = CreateFileStream(isolatedStorageFolder, path))
+            using (var stream = new GZipStream(fileStream, CompressionMode.Compress))
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(stream, serializableObject);
             }
         }
 

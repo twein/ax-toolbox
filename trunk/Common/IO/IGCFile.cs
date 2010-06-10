@@ -9,6 +9,7 @@ using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common.IO
 {
+    [Serializable]
     public class IGCFile : FlightReport
     {
         private CoordAdapter coordAdapter = null;
