@@ -26,6 +26,7 @@ namespace AXToolbox.Common.IO
         {
             base.Reset();
             ParseLog();
+            RemoveInvalidPoints();
             DetectLaunchAndLanding();
         }
 

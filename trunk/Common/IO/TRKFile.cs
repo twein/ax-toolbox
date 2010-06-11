@@ -24,6 +24,7 @@ namespace AXToolbox.Common.IO
         {
             base.Reset();
             ParseLog();
+            RemoveInvalidPoints();
             DetectLaunchAndLanding();
         }
 
@@ -89,20 +90,21 @@ namespace AXToolbox.Common.IO
             else
             {
                 //file with latlon coordinates
-                var strLatitude = fields[2].Split('º');
-                var strLongitude = fields[3].Split('º');
+                // WARNING: 'º' is out of ASCII table: don't use split
+                var strLatitude = fields[2].Left(fields[2].Length - 2);
+                var ns = fields[2].Right(1);
+                var strLongitude = fields[3].Left(fields[3].Length - 2);
+                var ew = fields[3].Right(1);
                 p = coordAdapter.ConvertToUTM(new LLPoint()
                 {
-                    Latitude = double.Parse(strLatitude[0], NumberFormatInfo.InvariantInfo) * (strLatitude[1] == "S" ? -1 : 1),
-                    Longitude = double.Parse(strLongitude[0], NumberFormatInfo.InvariantInfo) * (strLongitude[1] == "W" ? -1 : 1),
+                    Latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1),
+                    Longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1),
                     Altitude = altitude,
                     Time = time
                 });
-
             }
 
             track.Add(p);
-
         }
     }
 }

@@ -15,11 +15,14 @@ namespace AXToolbox.Common
     [Serializable]
     public abstract class FlightReport
     {
+        /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
+        /// <summary>Smoothness factor for speed used in launch and landing detection</summary>
+        private const double Smoothness = 3;
 
-        protected FlightSettings settings;
         protected string[] logFile;
 
+        protected FlightSettings settings;
         protected int pilotId;
         protected SignatureStatus signature;
         protected string loggerModel;
@@ -32,6 +35,10 @@ namespace AXToolbox.Common
         protected Point landingPoint;
         protected List<string> notes;
 
+        public FlightSettings Settings
+        {
+            get { return settings; }
+        }
         public DateTime Date
         {
             get { return settings.Date; }
@@ -113,7 +120,7 @@ namespace AXToolbox.Common
         protected FlightReport(string filePath, FlightSettings settings)
         {
             this.settings = settings;
-            logFile = File.ReadAllLines(filePath);
+            logFile = File.ReadAllLines(filePath, Encoding.ASCII);
             signature = SignatureStatus.NotSigned;
             Reset();
         }
@@ -185,7 +192,7 @@ namespace AXToolbox.Common
             }
 
             // find launch point
-            launchPoint = FindGroundContact(track.Where(p => p.IsValid).Where(p => p.Time <= highest.Time).Reverse());
+            launchPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time <= highest.Time), true);
             if (launchPoint == null)
             {
                 launchPoint = CleanTrack.First();
@@ -193,32 +200,47 @@ namespace AXToolbox.Common
             }
 
             // find landing point
-            landingPoint = FindGroundContact(track.Where(p => p.IsValid).Where(p => p.Time >= highest.Time));
+            landingPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time >= highest.Time), false);
             if (landingPoint == null)
             {
                 landingPoint = CleanTrack.Last();
                 notes.Add("Landing point not found");
             }
         }
-        private Point FindGroundContact(IEnumerable<Point> track)
+        private Point FindGroundContact(IEnumerable<Point> track, bool backwards)
         {
+            Point reference;
             Point groundContact = null;
             Point point_m1 = null;
             double smoothedSpeed = double.NaN;
+
+            if (backwards)
+            {
+                reference = markers.First();
+                track = track.Reverse();
+            }
+            else
+            {
+                reference = markers.Last();
+            }
+
             foreach (var point in track)
             {
                 if (point_m1 != null)
                 {
                     if (double.IsNaN(smoothedSpeed))
-                        smoothedSpeed = Physics.Velocity3D(point, point_m1);
+                        smoothedSpeed = Math.Abs(Physics.Velocity3D(point, point_m1));
                     else
-                        smoothedSpeed = (Physics.Velocity3D(point, point_m1) + smoothedSpeed * 2) / 3;
+                        smoothedSpeed = (Math.Abs(Physics.Velocity3D(point, point_m1)) + smoothedSpeed * (Smoothness - 1)) / Smoothness;
 
-                    if (smoothedSpeed < settings.MinVelocity)
+                    if (smoothedSpeed < settings.MinVelocity &&
+                        // heuristics: launch can't be after first marker and landing can't be before last marker
+                        (reference == null || (backwards && point.Time < reference.Time) || (!backwards && point.Time > reference.Time)))
                     {
                         groundContact = point;
                         break;
                     }
+
                 }
                 point_m1 = point;
             }
@@ -229,6 +251,11 @@ namespace AXToolbox.Common
         {
             return string.Format("{0:yyyy-MM-dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
         }
+        public void Save(string filePath)
+        {
+            ObjectSerializer<FlightReport>.Save(this, filePath, serializationFormat);
+        }
+
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {
             FlightReport report;
@@ -248,10 +275,6 @@ namespace AXToolbox.Common
                     throw new InvalidOperationException("Logger file type not supported");
             }
             return report;
-        }
-        public void Save(string filePath)
-        {
-            ObjectSerializer<FlightReport>.Save(this, filePath, serializationFormat);
         }
     }
 }

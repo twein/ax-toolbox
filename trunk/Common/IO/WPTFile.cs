@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using AXToolbox.Common.Geodesy;
+using System.Text;
 
 
 namespace AXToolbox.Common.IO
@@ -15,7 +16,7 @@ namespace AXToolbox.Common.IO
             var waypoints = new List<Waypoint>();
             CoordAdapter coordAdapter = null;
 
-            var content = from line in File.ReadAllLines(filePath)
+            var content = from line in File.ReadAllLines(filePath, Encoding.ASCII)
                           where line.Length > 0
                           select line;
 
@@ -88,13 +89,15 @@ namespace AXToolbox.Common.IO
             else
             {
                 //file with latlon coordinates
-                time = DateTime.Parse(fields[5] + " " + fields[6]);
-                var strLatitude = fields[3].Split('º');
-                var strLongitude = fields[4].Split('º');
+                // WARNING: 'º' is out of ASCII table: don't use split
+                var strLatitude = fields[3].Left(fields[3].Length - 2);
+                var ns = fields[3].Right(1);
+                var strLongitude = fields[4].Left(fields[4].Length - 2);
+                var ew = fields[4].Right(1);
                 p = coordAdapter.ConvertToUTM(new LLPoint()
                 {
-                    Latitude = double.Parse(strLatitude[0], NumberFormatInfo.InvariantInfo) * (strLatitude[1] == "S" ? -1 : 1),
-                    Longitude = double.Parse(strLongitude[0], NumberFormatInfo.InvariantInfo) * (strLongitude[1] == "W" ? -1 : 1),
+                    Latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1),
+                    Longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1),
                     Altitude = altitude
                 });
             }
@@ -102,7 +105,7 @@ namespace AXToolbox.Common.IO
             if (p.Zone != utmZone)
                 throw new InvalidDataException(string.Format("Wrong UTM zone in waypoint: {0}", line));
             else
-                wp = new Waypoint(name) { Time = time, Zone=p.Zone, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
+                wp = new Waypoint(name) { Time = time, Zone = p.Zone, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
 
             return wp;
         }
