@@ -121,12 +121,12 @@ namespace AXToolbox.Common
         protected FlightReport(string filePath, FlightSettings settings)
         {
             this.settings = settings;
+            signature = VerifySignature(filePath);
             logFile = File.ReadAllLines(filePath, Encoding.ASCII);
-            signature = SignatureStatus.NotSigned;
             Reset();
         }
 
-        public virtual void Reset()
+        public void Reset()
         {
             pilotId = 0;
             loggerModel = "";
@@ -138,9 +138,30 @@ namespace AXToolbox.Common
             launchPoint = null;
             landingPoint = null;
             notes = new List<string>();
+
+            switch (signature)
+            {
+                case SignatureStatus.NotSigned:
+                    notes.Add("The log file is not signed.");
+                    break;
+                case SignatureStatus.Genuine:
+                    notes.Add("The log file is signed and OK.");
+                    break;
+                case SignatureStatus.Counterfeit:
+                    notes.Add("THE LOG FILE HAS BEEN TAMPERED WITH!");
+                    break;
+            }
+
+            ParseLog();
+            RemoveInvalidPoints();
+            DetectLaunchAndLanding();
         }
+        protected abstract void ParseLog();
+
         public void RemoveInvalidPoints()
         {
+            int nInvalid = 0, nDupes = 0, nSpikes = 0;
+
             // remove points before/after valid times
             DateTime minTime, maxTime;
             if (Am)
@@ -155,8 +176,10 @@ namespace AXToolbox.Common
             }
 
             foreach (var point in track.Where(p => p.Time < minTime || p.Time > maxTime))
+            {
+                nInvalid++;
                 point.IsValid = false;
-
+            }
 
             // remove dupes and spikes
             Point point_m1 = null;
@@ -166,6 +189,7 @@ namespace AXToolbox.Common
                 // remove dupe
                 if (point_m1 != null && Physics.TimeDiff(point, point_m1).TotalSeconds == 0)
                 {
+                    nDupes++;
                     point.IsValid = false;
                     continue;
                 }
@@ -173,6 +197,7 @@ namespace AXToolbox.Common
                 // remove spike
                 if (point_m2 != null && Physics.Acceleration3D(point, point_m1, point_m2) > settings.MaxAcceleration)
                 {
+                    nSpikes++;
                     point.IsValid = false;
                     continue;
                 }
@@ -181,6 +206,13 @@ namespace AXToolbox.Common
                 point_m1 = point;
             }
             //TODO: consider removing spikes by change in direction
+
+            if (nInvalid > 0)
+                notes.Add(string.Format("{0} out-of-time points removed", nInvalid));
+            if (nDupes > 0)
+                notes.Add(string.Format("{0} duplicated points removed", nDupes));
+            if (nSpikes > 0)
+                notes.Add(string.Format("{0} spike points removed", nSpikes));
         }
         public void DetectLaunchAndLanding()
         {
@@ -280,5 +312,6 @@ namespace AXToolbox.Common
             }
             return report;
         }
+        protected abstract SignatureStatus VerifySignature(string fileName);
     }
 }

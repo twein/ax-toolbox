@@ -17,18 +17,9 @@ namespace AXToolbox.Common.IO
         public TRKFile(string filePath, FlightSettings settings)
             : base(filePath, settings)
         {
-            Reset();
         }
 
-        public override void Reset()
-        {
-            base.Reset();
-            ParseLog();
-            RemoveInvalidPoints();
-            DetectLaunchAndLanding();
-        }
-
-        private void ParseLog()
+        protected override void ParseLog()
         {
             var content = from line in logFile
                           where line.Length > 0
@@ -105,6 +96,10 @@ namespace AXToolbox.Common.IO
             }
 
             track.Add(p);
+        }
+        protected override SignatureStatus VerifySignature(string fileName)
+        {
+            return SignatureStatus.NotSigned;
         }
     }
 }

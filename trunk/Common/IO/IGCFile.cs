@@ -18,19 +18,9 @@ namespace AXToolbox.Common.IO
         public IGCFile(string filePath, FlightSettings settings)
             : base(filePath, settings)
         {
-            signature = VerifySignature(filePath);
-            Reset();
         }
 
-        public override void Reset()
-        {
-            base.Reset();
-            ParseLog();
-            RemoveInvalidPoints();
-            DetectLaunchAndLanding();
-        }
-
-        private void ParseLog()
+        protected override void ParseLog()
         {
             var content = from line in logFile
                           where line.Length > 0
@@ -173,6 +163,9 @@ namespace AXToolbox.Common.IO
 
             if (declaration != null)
             {
+                //Add the secription
+                declaration.Description = "\"" + line.Substring(10) + "\"";
+
                 //Override altitude
                 var strAltitude = line.Substring(12).Split(',')[1];
                 if (strAltitude.EndsWith("ft"))
@@ -190,12 +183,10 @@ namespace AXToolbox.Common.IO
                     //no valid altitude
                     if (declaration.Altitude == 0)
                     {
-                        notes.Add("Using default goal declaration altitude: " + line);
                         declaration.Altitude = settings.DefaultAltitude;
+                        notes.Add("Using default goal declaration altitude in declaration " + declaration);
                     }
                 }
-
-                declaration.Description = line.Substring(10);
 
                 declaredGoals.Add(declaration);
             }
@@ -265,7 +256,7 @@ namespace AXToolbox.Common.IO
         {
             double[] offsets = { 1e5, -1e5 }; //1e5 m = 100 Km
 
-            var proposed = origin - origin % 1e5 + coord4Figures * 10; 
+            var proposed = origin - origin % 1e5 + coord4Figures * 10;
             var best = proposed;
             foreach (var offset in offsets)
             {
@@ -275,7 +266,7 @@ namespace AXToolbox.Common.IO
             return best;
         }
 
-        private static SignatureStatus VerifySignature(string fileName)
+        protected override SignatureStatus VerifySignature(string fileName)
         {
             var signature = SignatureStatus.NotSigned;
 

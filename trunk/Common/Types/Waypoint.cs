@@ -26,7 +26,17 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return Name + ": " + base.ToString();
+            return ToString(PointData.All & ~(PointData.Date | PointData.Validity));
+        }
+
+        public override string ToString(PointData data)
+        {
+            string str = Name + ": " + base.ToString(data);
+
+            if (Description != "" && (data & PointData.Description) > 0)
+                str += Description + " ";
+
+            return str;
         }
     }
 }

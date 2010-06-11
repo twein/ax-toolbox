@@ -11,7 +11,8 @@ namespace AXToolbox.Common
         Altitude = 4,
         UTMCoords = 8,
         CompetitionCoords = 16,
-        Validity = 32
+        Validity = 32,
+        Description = 64
     }
 
     [Serializable]
@@ -32,10 +33,10 @@ namespace AXToolbox.Common
         public override string ToString()
         {
             //return ToString(PointData.Time | PointData.CompetitionCoords | PointData.Altitude);
-            return ToString(PointData.All);
+            return ToString(PointData.All & ~PointData.Date);
         }
 
-        public string ToString(PointData data)
+        public virtual string ToString(PointData data)
         {
             var str = new StringBuilder();
             if ((data & PointData.Date) > 0)
@@ -54,7 +55,7 @@ namespace AXToolbox.Common
                 str.Append(Altitude.ToString("0 "));
 
             if ((data & PointData.Validity) > 0)
-                str.Append(IsValid ? "OK" : "NO");
+                str.Append(IsValid ? "OK " : "NO ");
 
             return str.ToString();
         }
