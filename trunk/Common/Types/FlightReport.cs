@@ -17,11 +17,12 @@ namespace AXToolbox.Common
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
+
         /// <summary>Smoothness factor for speed used in launch and landing detection</summary>
         private const double Smoothness = 3;
 
-        protected string[] logFile;
 
+        protected string[] logFile;
         protected FlightSettings settings;
         protected int pilotId;
         protected SignatureStatus signature;
@@ -191,20 +192,23 @@ namespace AXToolbox.Common
                     highest = point;
             }
 
-            // find launch point
-            launchPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time <= highest.Time), true);
-            if (launchPoint == null)
+            if (highest != null) //highest == null is caused by wrong log file date
             {
-                launchPoint = CleanTrack.First();
-                notes.Add("Launch point not found");
-            }
+                // find launch point
+                launchPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time <= highest.Time), true);
+                if (launchPoint == null)
+                {
+                    launchPoint = CleanTrack.First();
+                    notes.Add("Launch point not found");
+                }
 
-            // find landing point
-            landingPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time >= highest.Time), false);
-            if (landingPoint == null)
-            {
-                landingPoint = CleanTrack.Last();
-                notes.Add("Landing point not found");
+                // find landing point
+                landingPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time >= highest.Time), false);
+                if (landingPoint == null)
+                {
+                    landingPoint = CleanTrack.Last();
+                    notes.Add("Landing point not found");
+                }
             }
         }
         private Point FindGroundContact(IEnumerable<Point> track, bool backwards)
