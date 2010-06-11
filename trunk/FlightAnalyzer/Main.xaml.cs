@@ -83,24 +83,29 @@ namespace FlightAnalyzer
                     //Clear Map
                     MainMap.Markers.Clear();
 
+                    // Add allowed goals to map
+                    //TODO: use report settings
+                    foreach (var m in flightSettings.AllowedGoals)
+                        MainMap.Markers.Add(GetTagMarker("goal" + m.Name, m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+
                     //Add track to map
                     MainMap.Markers.Add(GetTrackMarker());
 
-                    //Add movable pointer and center map there
-                    MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "*", GetVisibleTrack()[0].ToString(), Brushes.Orange));
-                    UpdateMarker("pointer");
-
-                    //// Add launch and landing to map
-                    MainMap.Markers.Add(GetTagMarker("launch", report.LaunchPoint, "↑", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
-                    MainMap.Markers.Add(GetTagMarker("landing", report.LandingPoint, "↓", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
+                    // Add launch and landing to map
+                    MainMap.Markers.Add(GetTagMarker("launch", report.LaunchPoint, "Launch", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
+                    MainMap.Markers.Add(GetTagMarker("landing", report.LandingPoint, "Landing", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
 
                     // Add dropped markers to map
                     foreach (var m in report.Markers)
-                        MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
+                        MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, "M" + m.Name, "Marker " + m.ToString(), Brushes.Yellow));
 
                     // Add goal declarations to map
                     foreach (var dg in report.DeclaredGoals)
-                        MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
+                        MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, "D" + dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
+
+                    //Add movable pointer and center map there
+                    MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
+                    UpdateMarker("pointer");
                 }
                 catch (InvalidOperationException)
                 {
@@ -245,7 +250,9 @@ namespace FlightAnalyzer
             var marker = new GMapMarker(new PointLatLng(llp.Latitude, llp.Longitude));
             marker.Tag = tag;
             marker.Shape = new Tag(text, toolTip, brush);
+            //marker.Shape.Opacity = 0.67;
             marker.ForceUpdateLocalPosition(MainMap);
+
             return marker;
         }
         private void UpdateMarker(string tag)

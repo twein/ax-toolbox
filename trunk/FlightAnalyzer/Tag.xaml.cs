@@ -14,7 +14,7 @@ namespace FlightAnalyzer
             Circle.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 }; ;
 
             Text.Text = text;
-            Circle.Fill = background;
+            Circle.Background = background;
             this.ToolTip = tooltip;
         }
 

@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\DateTime.cs" />
+    <Compile Include="Extensions\String.cs" />
     <Compile Include="Types\LLPoint.cs" />
     <Compile Include="Types\Point.cs" />
     <Compile Include="Interfaces\IPosition.cs" />
