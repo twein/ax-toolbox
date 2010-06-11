@@ -75,37 +75,45 @@ namespace FlightAnalyzer
 
                 try
                 {
-                    report = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
-                    DataContext = report;
+                    var newReport = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
+                    if (newReport.CleanTrack.Count == 0)
+                    {
+                        MessageBox.Show("No valid track points. Check the gps log date.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        report = newReport;
+                        DataContext = report;
 
-                    SetupSlider();
+                        SetupSlider();
 
-                    //Clear Map
-                    MainMap.Markers.Clear();
+                        //Clear Map
+                        MainMap.Markers.Clear();
 
-                    // Add allowed goals to map
-                    //TODO: use report settings
-                    foreach (var m in flightSettings.AllowedGoals)
-                        MainMap.Markers.Add(GetTagMarker("goal" + m.Name, m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+                        // Add allowed goals to map
+                        //foreach (var m in report.Settings.AllowedGoals)
+                        //    MainMap.Markers.Add(GetTagMarker("goal", m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+                        UpdateGoals();
 
-                    //Add track to map
-                    MainMap.Markers.Add(GetTrackMarker());
+                        //Add track to map
+                        MainMap.Markers.Add(GetTrackMarker());
 
-                    // Add launch and landing to map
-                    MainMap.Markers.Add(GetTagMarker("launch", report.LaunchPoint, "Launch", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
-                    MainMap.Markers.Add(GetTagMarker("landing", report.LandingPoint, "Landing", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
+                        // Add launch and landing to map
+                        MainMap.Markers.Add(GetTagMarker("launch", report.LaunchPoint, "Launch", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
+                        MainMap.Markers.Add(GetTagMarker("landing", report.LandingPoint, "Landing", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
 
-                    // Add dropped markers to map
-                    foreach (var m in report.Markers)
-                        MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, "M" + m.Name, "Marker " + m.ToString(), Brushes.Yellow));
+                        // Add dropped markers to map
+                        foreach (var m in report.Markers)
+                            MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, "M" + m.Name, "Marker " + m.ToString(), Brushes.Yellow));
 
-                    // Add goal declarations to map
-                    foreach (var dg in report.DeclaredGoals)
-                        MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, "D" + dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
+                        // Add goal declarations to map
+                        foreach (var dg in report.DeclaredGoals)
+                            MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, "D" + dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
 
-                    //Add movable pointer and center map there
-                    MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
-                    UpdateMarker("pointer");
+                        //Add movable pointer and center map there
+                        MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
+                        UpdateMarker("pointer");
+                    }
                 }
                 catch (InvalidOperationException)
                 {
@@ -176,6 +184,27 @@ namespace FlightAnalyzer
         private void checkLock_Checked(object sender, RoutedEventArgs e)
         {
             UpdateMarker("pointer");
+        }
+        private void checkGoals_Checked(object sender, RoutedEventArgs e)
+        {
+            UpdateGoals();
+        }
+
+        private void UpdateGoals()
+        {
+            if (report != null)
+            {
+                foreach (var marker in MainMap.Markers.Where(m => (string)m.Tag == "goal").ToArray())
+                {
+                    MainMap.Markers.Remove(marker);
+                }
+
+                if ((bool)checkGoals.IsChecked)
+                {
+                    foreach (var m in report.Settings.AllowedGoals)
+                        MainMap.Markers.Add(GetTagMarker("goal", m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+                }
+            }
         }
         private void buttonSetLaunch_Click(object sender, RoutedEventArgs e)
         {
@@ -355,5 +384,6 @@ namespace FlightAnalyzer
                 MessageBox.Show("Select map area holding right mouse button + ALT", "PrefetchTiles map", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
         }
+
     }
 }
