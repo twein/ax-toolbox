@@ -78,7 +78,15 @@
                                  ItemsSource="{Binding Path=Notes, Mode=OneWay}"
                                  MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
                     </ListBox>
-                    <Button Click="buttonSave_Click">Save</Button>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Margin="5"
+                            Click="buttonSave_Click">
+                            Save
+                        </Button>
+                        <Button Margin="5" Click="buttonReset_Click">
+                            Reset All
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
             </Expander>
 
@@ -117,7 +125,7 @@
                                      Checked="radio_Checked">
                             Flight points
                         </RadioButton>
-                        <CheckBox Name="checkGoals" IsChecked="True"
+                        <CheckBox Name="checkGoals" IsChecked="False"
                                   Margin="5"
                                   Click="checkGoals_Checked">
                             Show goals
@@ -125,7 +133,9 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <Slider Name="sliderCursor" Grid.Column="1"
-                            Margin="5" ValueChanged="slider_ValueChanged" SmallChange="1" LargeChange="10">
+                                Margin="5" 
+                                SmallChange="1" LargeChange="10"
+                                ValueChanged="slider_ValueChanged">
                         </Slider>
                     </StackPanel>
                 </Grid>
