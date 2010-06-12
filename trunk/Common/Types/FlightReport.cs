@@ -160,7 +160,14 @@ namespace AXToolbox.Common
 
         public void RemoveInvalidPoints()
         {
-            int nInvalid = 0, nDupes = 0, nSpikes = 0;
+            int nZone = 0, nTime = 0, nDupe = 0, nSpike = 0;
+
+            // remove points with wrong UTM zone
+            foreach (var point in track.Where(p => p.Zone != settings.UtmZone))
+            {
+                nZone++;
+                point.IsValid = false;
+            }
 
             // remove points before/after valid times
             DateTime minTime, maxTime;
@@ -177,11 +184,12 @@ namespace AXToolbox.Common
 
             foreach (var point in track.Where(p => p.Time < minTime || p.Time > maxTime))
             {
-                nInvalid++;
+                nTime++;
                 point.IsValid = false;
             }
 
             // remove dupes and spikes
+            //TODO: consider removing spikes by change in direction
             Point point_m1 = null;
             Point point_m2 = null;
             foreach (var point in track.Where(p => p.IsValid))
@@ -189,7 +197,7 @@ namespace AXToolbox.Common
                 // remove dupe
                 if (point_m1 != null && Physics.TimeDiff(point, point_m1).TotalSeconds == 0)
                 {
-                    nDupes++;
+                    nDupe++;
                     point.IsValid = false;
                     continue;
                 }
@@ -197,7 +205,7 @@ namespace AXToolbox.Common
                 // remove spike
                 if (point_m2 != null && Physics.Acceleration3D(point, point_m1, point_m2) > settings.MaxAcceleration)
                 {
-                    nSpikes++;
+                    nSpike++;
                     point.IsValid = false;
                     continue;
                 }
@@ -205,14 +213,15 @@ namespace AXToolbox.Common
                 point_m2 = point_m1;
                 point_m1 = point;
             }
-            //TODO: consider removing spikes by change in direction
 
-            if (nInvalid > 0)
-                notes.Add(string.Format("{0} out-of-time points removed", nInvalid));
-            if (nDupes > 0)
-                notes.Add(string.Format("{0} duplicated points removed", nDupes));
-            if (nSpikes > 0)
-                notes.Add(string.Format("{0} spike points removed", nSpikes));
+            if (nZone > 0)
+                notes.Add(string.Format("{0} out-of-zone points removed", nTime));
+            if (nTime > 0)
+                notes.Add(string.Format("{0} out-of-time points removed", nTime));
+            if (nDupe > 0)
+                notes.Add(string.Format("{0} duplicated points removed", nDupe));
+            if (nSpike > 0)
+                notes.Add(string.Format("{0} spike points removed", nSpike));
         }
         public void DetectLaunchAndLanding()
         {
@@ -224,14 +233,14 @@ namespace AXToolbox.Common
                     highest = point;
             }
 
-            if (highest != null) //highest == null is caused by wrong log file date
+            if (highest != null) //highest == null is caused by empty track. Probably wrong log file date or UTM zone in settings.
             {
                 // find launch point
                 launchPoint = FindGroundContact(track.Where(p => p.IsValid && p.Time <= highest.Time), true);
                 if (launchPoint == null)
                 {
                     launchPoint = CleanTrack.First();
-                    notes.Add("Launch point not found");
+                    notes.Add("Launch point not found. Using first valid track point.");
                 }
 
                 // find landing point
@@ -239,25 +248,27 @@ namespace AXToolbox.Common
                 if (landingPoint == null)
                 {
                     landingPoint = CleanTrack.Last();
-                    notes.Add("Landing point not found");
+                    notes.Add("Landing point not found.Using last valid track point.");
                 }
             }
         }
         private Point FindGroundContact(IEnumerable<Point> track, bool backwards)
         {
-            Point reference;
+            Point reference = null;
             Point groundContact = null;
             Point point_m1 = null;
             double smoothedSpeed = double.NaN;
 
             if (backwards)
             {
-                reference = markers.First();
                 track = track.Reverse();
+                if (markers.Count > 0)
+                    reference = markers.First();
             }
             else
             {
-                reference = markers.Last();
+                if (markers.Count > 0)
+                    reference = markers.Last();
             }
 
             foreach (var point in track)
@@ -280,12 +291,13 @@ namespace AXToolbox.Common
                 }
                 point_m1 = point;
             }
+
             return groundContact;
         }
 
         public override string ToString()
         {
-            return string.Format("{0:yyyy-MM-dd} {1} - {2:000}", Date, Am ? "AM" : "PM", pilotId);
+            return string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId);
         }
         public void Save(string filePath)
         {

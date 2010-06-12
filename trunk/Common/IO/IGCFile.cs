@@ -134,7 +134,7 @@ namespace AXToolbox.Common.IO
                 }
                 catch (ArgumentNullException)
                 {
-                    notes.Add("Goal not found: " + line);
+                    notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
                 }
             }
             else if (strGoal.Length == 9)
@@ -158,13 +158,13 @@ namespace AXToolbox.Common.IO
             }
             else
             {
-                notes.Add("Unknown goal declaration format: " + line);
+                notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
             }
 
             if (declaration != null)
             {
-                //Add the secription
-                declaration.Description = "\"" + line.Substring(10) + "\"";
+                //Add the description
+                declaration.Description = "[" + line.Substring(10) + "]";
 
                 //Override altitude
                 var strAltitude = line.Substring(12).Split(',')[1];

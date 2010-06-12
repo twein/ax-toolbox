@@ -35,6 +35,36 @@ namespace AXToolbox.Common
         {
             return (Velocity2D(point2, point3) - Velocity3D(point1, point2)) / TimeDiff(point1, point3).TotalSeconds;
         }
+        /// <summary>
+        /// Computes the direction from the second point to the first. 0 is grid north.
+        /// </summary>
+        /// <param Name="point1">First point</param>
+        /// <param Name="point2">Second point</param>
+        /// <returns>Direction in degrees</returns>
+        static public double Direction2D(Point point1, Point point2)
+        {
+            if (Distance2D(point1, point2) == 0)
+                throw new ArgumentException("DuplicatedPoint: " + point1.ToString() + "/" + point2.ToString());
 
+            var angle = Math.Acos((point1.Easting - point2.Northing) / Distance2D(point1, point2));
+            if (point2.Northing < point1.Northing)
+                angle = -angle;
+
+            return (360 + 180 * (Math.PI / 2 + angle) / Math.PI) % 360;
+        }
+        /// <summary>
+        /// Computes the angle between two given directions.
+        /// </summary>
+        /// <param Name="direction1">Direction 1</param>
+        /// <param Name="direction2">Direction 2</param>
+        /// <returns>Angle=Direction1-Direction2</returns>
+        static public double DirectionSubstract(double direction1, double direction2)
+        {
+            var angle = Math.Abs(direction1 - direction2);
+            if (angle > 180)
+                angle = 360 - angle;
+
+            return angle;
+        }
     }
 }
