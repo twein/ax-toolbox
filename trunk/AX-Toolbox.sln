@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightAnalyzer", "FlightAnalyzer\FlightAnalyzer.csproj", "{772C7E92-5824-41A1-BB47-BAEDF0A45D48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Measure", "Measure\Measure.csproj", "{3510D57C-FF03-4AD9-9490-E0463D3A688D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,12 @@ Global
 		{772C7E92-5824-41A1-BB47-BAEDF0A45D48}.Release|Any CPU.Build.0 = Release|Any CPU
 		{772C7E92-5824-41A1-BB47-BAEDF0A45D48}.Release|x86.ActiveCfg = Release|x86
 		{772C7E92-5824-41A1-BB47-BAEDF0A45D48}.Release|x86.Build.0 = Release|x86
+		{3510D57C-FF03-4AD9-9490-E0463D3A688D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3510D57C-FF03-4AD9-9490-E0463D3A688D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3510D57C-FF03-4AD9-9490-E0463D3A688D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3510D57C-FF03-4AD9-9490-E0463D3A688D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3510D57C-FF03-4AD9-9490-E0463D3A688D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3510D57C-FF03-4AD9-9490-E0463D3A688D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

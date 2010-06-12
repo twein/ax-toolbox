@@ -78,7 +78,7 @@ namespace FlightAnalyzer
                     var newReport = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
                     if (newReport.CleanTrack.Count == 0)
                     {
-                        MessageBox.Show("No valid track points. Check the gps log date.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
