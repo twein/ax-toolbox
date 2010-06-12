@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
-using System.Windows.Shapes;
 using AXToolbox.Common;
 using AXToolbox.Common.Geodesy;
 using AXToolbox.Common.IO;
 using FlightAnalyzer.Properties;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
-using System.Windows.Data;
-using System.IO;
 
 namespace FlightAnalyzer
 {
@@ -83,6 +80,7 @@ namespace FlightAnalyzer
                     else
                     {
                         report = newReport;
+                        textboxPilotId.IsReadOnly = false;
                         RedrawReport();
                     }
                 }
@@ -189,10 +187,10 @@ namespace FlightAnalyzer
         {
             if (report != null)
             {
-                var fileName = report.ToString() + ".rep";
+                var fileName = report.GetFileName();
                 if (!File.Exists(fileName) ||
                     MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    report.Save(fileName);
+                    report.Save();
             }
         }
         private void buttonReset_Click(object sender, RoutedEventArgs e)
