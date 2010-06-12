@@ -1,0 +1,66 @@
+##########
+# URGENT #
+##########
+
+	ADD SYNTAX CHECKING!
+
+	Make a list of use cases.
+
+
+LINEPARSER:
+
+	Support escaped quotes inside quotes
+
+
+POINTS:
+
+	pointlist.SaveTrack: Set track color & thickness
+
+	pointlist.RemoveWrongPoints: try to remove points using changes in direction
+
+
+FLIGHT:
+
+	Parallelize the computation (by pilot).
+
+	Add the gap threshold for interpolation as a parameter. (time gaps bigger than this will not be filled with interpolated points) 
+
+	Add new interpolation methods (bezier curves?, cuadratic curves?)
+
+TASK:
+
+	Implement tags "open" and "close" (internallu using areas)
+
+	MDT: Implement minimum distance of flight.
+
+	3DS: Implement scoring by time inside.
+
+	Reference: Remove the keyword "reference" and replace it by "goal" and "direction". Internally they are the same. Or make two separate classes?
+
+	MeasureBox: compute not using Area.AccumulatedDistance2D
+
+
+REFERENCE:
+
+
+
+AREA:
+
+
+PENALTY:
+
+	Add more penalty types: "angle".
+
+
+RESULT:
+
+
+OTHER:
+
+	Add degrees<->UTM conversions:
+		http://home.hiwaay.net/~taylorc/toolbox/geography/geoutm.html
+		http://home.hiwaay.net/~taylorc/bookshelf/math-science/geodesy/datum/transform/molodensky/
+
+	Add various load/save functions (for waypoints, tracks, ozi, CompeGPS...)
+
+
