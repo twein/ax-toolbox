@@ -35,12 +35,12 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock Style="{StaticResource labelStyle}">Date:</TextBlock>
                     <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
-                                       Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}">
+                                       Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}">   
                     </TextBlock>
                     <TextBlock Style="{StaticResource labelStyle}">Pilot:</TextBlock>
-                    <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
-                                       Text="{Binding Path=PilotId, Mode=TwoWay}">
-                    </TextBlock>
+                    <TextBox Name="textboxPilotId" Style="{StaticResource valueStyle}" Background="LightGray" 
+                                       Text="{Binding Path=PilotId, Mode=TwoWay}" IsReadOnly="True">
+                    </TextBox>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource labelStyle}">Launch point:</TextBlock>
                         <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLaunch_Click">Set</Button>

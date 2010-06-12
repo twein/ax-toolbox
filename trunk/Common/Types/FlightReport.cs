@@ -299,9 +299,24 @@ namespace AXToolbox.Common
         {
             return string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId);
         }
-        public void Save(string filePath)
+        public string GetFolderName()
         {
-            ObjectSerializer<FlightReport>.Save(this, filePath, serializationFormat);
+            var folder = Directory.GetCurrentDirectory();
+            var subfolder = string.Format("{0:yyyyMMdd}{1}", Date, Am ? "AM" : "PM");
+            return Path.Combine(folder, subfolder);
+        }
+        public string GetFileName()
+        {
+            var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".rep";
+            return Path.Combine(GetFolderName(), filename);
+        }
+        public void Save()
+        {
+            var folder = GetFolderName();
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            var file = GetFileName();
+            ObjectSerializer<FlightReport>.Save(this, file, serializationFormat);
         }
 
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
