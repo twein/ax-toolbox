@@ -39,6 +39,11 @@ namespace AXToolbox.Common
         public FlightSettings Settings
         {
             get { return settings; }
+            set
+            {
+                settings = value;
+                Reset();
+            }
         }
         public DateTime Date
         {
@@ -126,7 +131,7 @@ namespace AXToolbox.Common
             Reset();
         }
 
-        public void Reset()
+        protected void Reset()
         {
             pilotId = 0;
             loggerModel = "";
@@ -307,7 +312,7 @@ namespace AXToolbox.Common
         }
         public string GetFileName()
         {
-            var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".rep";
+            var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".fr";
             return Path.Combine(GetFolderName(), filename);
         }
         public void Save()
@@ -331,7 +336,7 @@ namespace AXToolbox.Common
                 case ".trk":
                     report = new TRKFile(filePath, settings);
                     break;
-                case ".rep":
+                case ".fr":
                     report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
                     break;
                 default:

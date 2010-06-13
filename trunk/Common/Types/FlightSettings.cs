@@ -5,7 +5,7 @@ using AXToolbox.Common.IO;
 namespace AXToolbox.Common
 {
     [Serializable]
-    public struct FlightSettings //struct provides value equality!
+    public class FlightSettings 
     {
         public DateTime Date { get; set; }
         public bool Am { get; set; }
