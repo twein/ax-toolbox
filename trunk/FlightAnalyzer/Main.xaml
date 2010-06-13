@@ -6,7 +6,7 @@
    	xmlns:map="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
     Title="Flight Analyzer" MinWidth="800" MinHeight="600"
     ResizeMode="CanResizeWithGrip" WindowState="Maximized"
-    KeyDown="MainWindow_KeyDown" Loaded="MainWindow_Loaded" Drop="MainWindow_Drop" AllowDrop="True">
+    KeyDown="MainWindow_KeyDown" Loaded="MainWindow_Loaded" Drop="MainWindow_Drop" AllowDrop="True" Icon="/FlightAnalyzer;component/balloon.ico">
     <Window.Resources>
         <Style x:Key="labelStyle">
             <Setter Property="Control.Margin" Value="5"/>
@@ -43,6 +43,10 @@
                 <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
                                        Text="{Binding Path=DefaultAltitude, Mode=OneWay}"/>
                 <TextBlock Style="{StaticResource labelStyle}">Allowed goals</TextBlock>
+                <ListBox Style="{StaticResource valueStyle}" 
+                                 MinHeight="50" MaxHeight="200" Height="Auto"
+                                 ItemsSource="{Binding Path=AllowedGoals, Mode=OneWay}"
+                                 GotFocus="something_GotFocus"/>
             </StackPanel>
         </DataTemplate>
     </Window.Resources>
@@ -62,7 +66,16 @@
                           BorderBrush="Gray" Margin="5,5,5,0">
                     <ContentControl Name="contentSettings" ></ContentControl>
                 </Expander>
-                <Expander ExpandDirection="Down" Header="Flight report" IsExpanded="True" BorderBrush="Gray" Margin="5,5,5,0">
+                <Expander ExpandDirection="Down"  IsExpanded="True" BorderBrush="Gray" Margin="5,5,5,0">
+                    <Expander.Header>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock VerticalAlignment="Center"> Flight report</TextBlock>
+                            <Button Margin="5,5,0,5" Click="buttonLoad_Click">Load</Button>
+                            <Button Margin="5,5,0,5" Click="buttonSave_Click">Save</Button>
+                            <Button Margin="5,5,0,5" Click="buttonReset_Click">Reset</Button>
+                            <Button Margin="5,5,0,5" Click="buttonSettings_Click">Settings</Button>
+                        </StackPanel>
+                    </Expander.Header>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Style="{StaticResource labelStyle}">Date:</TextBlock>
                         <TextBox Style="{StaticResource valueStyle}" Background="Gainsboro" 
@@ -109,13 +122,6 @@
                                  ItemsSource="{Binding Path=Notes, Mode=OneWay}"
                                  GotFocus="something_GotFocus">
                         </ListBox>
-
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Margin="5" Click="buttonLoad_Click">Load</Button>
-                            <Button Margin="5" Click="buttonSave_Click">Save</Button>
-                            <Button Margin="5" Click="buttonReset_Click">Reset</Button>
-                            <Button Margin="5" Click="buttonSettings_Click">Settings</Button>
-                        </StackPanel>
                     </StackPanel>
                 </Expander>
                 <Expander ExpandDirection="Down" Header="Report settings" IsExpanded="False" BorderBrush="Gray" Margin="5,5,5,5">
