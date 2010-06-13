@@ -1,18 +1,13 @@
 ﻿<Window x:Class="FlightAnalyzer.SettingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:props="clr-namespace:FlightAnalyzer.Properties"        
     xmlns:validation="clr-namespace:AXToolbox.Model.Validation;assembly=AXToolbox.Model"        
     xmlns:converters="clr-namespace:AXToolbox.Model.Converters;assembly=AXToolbox.Model"        
     Title="Flight settings" 
 		SizeToContent="WidthAndHeight" ShowInTaskbar="False" Topmost="True"
 		WindowStartupLocation="CenterOwner" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize" 
-		Closing="Window_Closed" mc:Ignorable="d" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        >
+		Closing="Window_Closed" Loaded="Window_Loaded" Icon="/FlightAnalyzer;component/balloon.ico">
     <Window.Resources>
-        <props:Settings x:Key="settings" />
         <converters:NotConverter x:Key="notConverter" />
         <converters:DateConverter x:Key="dateConverter" />
         <Style x:Key="defaultStyle">
@@ -22,14 +17,14 @@
         </Style>
     </Window.Resources>
 
-    <Grid DataContext="{StaticResource settings}">
+    <Grid>
         <StackPanel Orientation="Vertical">
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Date:</Label>
                 <TextBox Style="{StaticResource defaultStyle}" >
                     <TextBox.Text>
-                        <Binding Path="Default.Date" Converter="{StaticResource dateConverter}">
+                        <Binding Path="Date" Converter="{StaticResource dateConverter}">
                             <Binding.ValidationRules>
                                 <validation:DateValidationRule/>
                             </Binding.ValidationRules>
@@ -40,15 +35,15 @@
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Time of day:</Label>
-                <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Default.Am,Mode=TwoWay}" Content="AM"  />
-                <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto"  IsChecked="{Binding Path=Default.Am, Converter={StaticResource notConverter}}" Content="PM" />
+                <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Am,Mode=TwoWay}" Content="AM"  />
+                <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto"  IsChecked="{Binding Path=Am, Converter={StaticResource notConverter}}" Content="PM" />
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Time zone:</Label>
                 <TextBox Style="{StaticResource defaultStyle}">
                     <TextBox.Text>
-                        <Binding Path="Default.TimeZone">
+                        <Binding Path="TimeZone">
                             <Binding.ValidationRules>
                                 <validation:TimeSpanValidationRule/>
                             </Binding.ValidationRules>
@@ -59,24 +54,24 @@
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Datum:</Label>
-                <TextBox Style="{StaticResource defaultStyle}"  Text="{Binding Path=Default.Datum}"/>
+                <TextBox Style="{StaticResource defaultStyle}"  Text="{Binding Path=Datum}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">UTM Zone:</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.UtmZone}"/>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=UtmZone}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">QNH:</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.Qnh}"/>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Qnh}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Allowed goals file:</Label>
                 <TextBox Name="textBoxWptFileName" Style="{StaticResource defaultStyle}" IsReadOnly="True">
                     <TextBox.Text>
-                        <Binding Path="Default.GoalsFile">
+                        <Binding Path="GoalsFile">
                             <Binding.ValidationRules>
                                 <validation:FileNameValidationRule/>
                             </Binding.ValidationRules>
@@ -88,27 +83,27 @@
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Default altitude (m):</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.DefaultAltitude}"/>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=DefaultAltitude}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Minimum velocity (m/s):</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.MinVelocity}"/>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=MinVelocity}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Maximum acceleration (m/s2):</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.MaxAcceleration}"/>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=MaxAcceleration}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Interpolation interval (s):</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Default.InterpolationInterval}"/>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=InterpolationInterval}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="buttonSave" IsDefault="True" Margin="5" MinWidth="75" Click="buttonSave_Click">OK</Button>
-                <Button Name="buttonReset" Margin="5" MinWidth="75" Click="buttonReset_Click">Default</Button>
-                <Button Name="buttonCancel" IsCancel="True" Margin="5" MinWidth="75" Click="buttonCancel_Click">Cancel</Button>
+                <Button IsDefault="True" Margin="5" MinWidth="75" Click="buttonOk_Click">OK</Button>
+                <Button Margin="5" MinWidth="75" Click="buttonReset_Click">Default</Button>
+                <Button IsCancel="True" Margin="5" MinWidth="75" Click="buttonCancel_Click">Cancel</Button>
             </StackPanel>
         </StackPanel>
         <!--
@@ -129,7 +124,7 @@
         <Label Margin="5" Grid.Row="0" Grid.Column="0">Time zone:</Label>
         <TextBox Margin="5" Grid.Row="0" Grid.Column="1">
             <TextBox.Text>
-                <Binding Path="Default.TimeZone">
+                <Binding Path="TimeZone">
                     <Binding.ValidationRules>
                         <validation:TimeSpanValidationRule/>
                     </Binding.ValidationRules>
@@ -138,22 +133,22 @@
         </TextBox>
 
         <Label Margin="5" Grid.Row="1" Grid.Column="0">Datum:</Label>
-        <TextBox Margin="5" Grid.Row="1" Grid.Column="1"  Text="{Binding Path=Default.Datum}"/>
+        <TextBox Margin="5" Grid.Row="1" Grid.Column="1"  Text="{Binding Path=Datum}"/>
 
         <Label Margin="5" Grid.Row="2" Grid.Column="0">UTM Zone:</Label>
-        <TextBox Margin="5" Grid.Row="2" Grid.Column="1" Text="{Binding Path=Default.UtmZone}"/>
+        <TextBox Margin="5" Grid.Row="2" Grid.Column="1" Text="{Binding Path=UtmZone}"/>
 
         <Label Margin="5" Grid.Row="3" Grid.Column="0">QNH:</Label>
-        <TextBox Margin="5" Grid.Row="3" Grid.Column="1" Text="{Binding Path=Default.Qnh}"/>
+        <TextBox Margin="5" Grid.Row="3" Grid.Column="1" Text="{Binding Path=Qnh}"/>
 
         <Label Margin="5" Grid.Row="4" Grid.Column="0">Minimum velocity (m/s):</Label>
-        <TextBox Margin="5" Grid.Row="4" Grid.Column="1"  Text="{Binding Path=Default.MinVelocity}"/>
+        <TextBox Margin="5" Grid.Row="4" Grid.Column="1"  Text="{Binding Path=MinVelocity}"/>
 
         <Label Margin="5" Grid.Row="5" Grid.Column="0">Maximum acceleration (m/s2):</Label>
-        <TextBox Margin="5" Grid.Row="5" Grid.Column="1" Text="{Binding Path=Default.MaxAcceleration}"/>
+        <TextBox Margin="5" Grid.Row="5" Grid.Column="1" Text="{Binding Path=MaxAcceleration}"/>
 
         <Label Margin="5" Grid.Row="6" Grid.Column="0">Interpolation interval (s):</Label>
-        <TextBox Margin="5" Grid.Row="6" Grid.Column="1" Text="{Binding Path=Default.InterpolationInterval}"/>
+        <TextBox Margin="5" Grid.Row="6" Grid.Column="1" Text="{Binding Path=InterpolationInterval}"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Right">
             <Button Name="buttonSave" IsDefault="True" Margin="5" MinWidth="75" Click="buttonSave_Click">OK</Button>

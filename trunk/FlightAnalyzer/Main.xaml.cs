@@ -39,29 +39,24 @@ namespace FlightAnalyzer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (new SettingsWindow().ShowDialog() == true)
-            {
-                // config gmaps
-                GMaps.Instance.UseRouteCache = true;
-                GMaps.Instance.UseGeocoderCache = true;
-                GMaps.Instance.UsePlacemarkCache = true;
-                GMaps.Instance.Mode = AccessMode.ServerAndCache;
+            // config gmaps
+            GMaps.Instance.UseRouteCache = true;
+            GMaps.Instance.UseGeocoderCache = true;
+            GMaps.Instance.UsePlacemarkCache = true;
+            GMaps.Instance.Mode = AccessMode.ServerAndCache;
 
-                // config map
-                MainMap.MapType = allowedMaptypes[mapTypeIdx];
-                MainMap.DragButton = MouseButton.Left;
-                MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionAndCenter;
-                MainMap.MaxZoom = 20; //tiles available up to zoom 17
-                MainMap.MinZoom = 10;
-                MainMap.Zoom = 12;
-                MainMap.CurrentPosition = new PointLatLng(41.97, 2.78);
+            // config map
+            MainMap.MapType = allowedMaptypes[mapTypeIdx];
+            MainMap.DragButton = MouseButton.Left;
+            MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionAndCenter;
+            MainMap.MaxZoom = 20; //tiles available up to zoom 17
+            MainMap.MinZoom = 10;
+            MainMap.Zoom = 12;
+            MainMap.CurrentPosition = new PointLatLng(41.97, 2.78);
 
-                InitSettings();
-            }
-            else
-            {
-                Close();
-            }
+            InitSettings();
+
+            RedrawGoals();
         }
         private void MainWindow_Drop(object sender, DragEventArgs e)
         {
@@ -109,6 +104,7 @@ namespace FlightAnalyzer
                 MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
             }
         }
+
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             UpdateMarker("pointer");
@@ -129,7 +125,7 @@ namespace FlightAnalyzer
         }
         private void checkGoals_Checked(object sender, RoutedEventArgs e)
         {
-            UpdateGoals();
+            RedrawGoals();
         }
 
         private void buttonSetLaunch_Click(object sender, RoutedEventArgs e)
@@ -203,26 +199,14 @@ namespace FlightAnalyzer
                     report.Settings = flightSettings;
                     RedrawReport();
                 }
+                RedrawGoals();
             }
         }
 
         private void InitSettings()
         {
             //TODO: check for errors and/or use a constructor
-            flightSettings = new FlightSettings()
-            {
-                Date = Settings.Default.Date,
-                Am = Settings.Default.Am,
-                TimeZone = Settings.Default.TimeZone,
-                Datum = Settings.Default.Datum,
-                UtmZone = Settings.Default.UtmZone,
-                Qnh = Settings.Default.Qnh,
-                AllowedGoals = WPTFile.Load(Settings.Default.GoalsFile, Settings.Default.Datum, Settings.Default.UtmZone),
-                DefaultAltitude = Settings.Default.DefaultAltitude,
-                MinVelocity = Settings.Default.MinVelocity,
-                MaxAcceleration = Settings.Default.MaxAcceleration,
-                InterpolationInterval = Settings.Default.InterpolationInterval
-            };
+            flightSettings = FlightSettings.Load();
             contentSettings.Content = flightSettings;
 
             caToGMap = new CoordAdapter(flightSettings.Datum, "WGS84");
@@ -243,6 +227,8 @@ namespace FlightAnalyzer
                     report = newReport;
                     textboxPilotId.IsReadOnly = false;
                     RedrawReport();
+
+                    RedrawGoals();
                 }
             }
             catch (InvalidOperationException)
@@ -269,11 +255,6 @@ namespace FlightAnalyzer
             //Clear Map
             MainMap.Markers.Clear();
 
-            // Add allowed goals to map
-            //foreach (var m in report.Settings.AllowedGoals)
-            //    MainMap.Markers.Add(GetTagMarker("goal", m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
-            UpdateGoals();
-
             //Add track to map
             MainMap.Markers.Add(GetTrackMarker());
 
@@ -292,6 +273,25 @@ namespace FlightAnalyzer
             //Add movable pointer and center map there
             MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
             UpdateMarker("pointer");
+        }
+        private void RedrawGoals()
+        {
+            foreach (var marker in MainMap.Markers.Where(m => (string)m.Tag == "goal").ToArray())
+            {
+                MainMap.Markers.Remove(marker);
+            }
+
+            if ((bool)checkGoals.IsChecked)
+            {
+                List<Waypoint> goals;
+                if (report == null)
+                    goals = flightSettings.AllowedGoals;
+                else
+                    goals = report.Settings.AllowedGoals;
+
+                foreach (var m in goals)
+                    MainMap.Markers.Add(GetTagMarker("goal", m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+            }
         }
         private void UpdateMarker(string tag)
         {
@@ -326,32 +326,14 @@ namespace FlightAnalyzer
                 }
             }
         }
-        private void UpdateGoals()
-        {
-            if (report != null)
-            {
-                foreach (var marker in MainMap.Markers.Where(m => (string)m.Tag == "goal").ToArray())
-                {
-                    MainMap.Markers.Remove(marker);
-                }
-
-                if ((bool)checkGoals.IsChecked)
-                {
-                    foreach (var m in report.Settings.AllowedGoals)
-                        MainMap.Markers.Add(GetTagMarker("goal", m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
-                }
-            }
-        }
         private GMapMarker GetTrackMarker()
         {
             List<PointLatLng> points = new List<PointLatLng>();
 
-            var ca = new CoordAdapter(Settings.Default.Datum, "WGS84");
+            var ca = new CoordAdapter(report.Settings.Datum, "WGS84");
             foreach (var p in GetVisibleTrack())
             {
-                var llp = ca.ConvertToLatLong(
-                    new AXToolbox.Common.Point() { Zone = Settings.Default.UtmZone, Easting = p.Easting, Northing = p.Northing }
-                    );
+                var llp = ca.ConvertToLatLong(p);
                 points.Add(new PointLatLng(llp.Latitude, llp.Longitude));
             }
 
