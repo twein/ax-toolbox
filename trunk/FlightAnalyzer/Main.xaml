@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:FlightAnalyzer"
+    xmlns:common="clr-namespace:AXToolbox.Common;assembly=AXToolbox.Common"
    	xmlns:map="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
     Title="Flight Analyzer" MinWidth="800" MinHeight="600"
     ResizeMode="CanResizeWithGrip" WindowState="Maximized"
@@ -16,9 +17,34 @@
             <Setter Property="Control.Margin" Value="5,0,5,5"/>
             <Setter Property="Control.Width" Value="400"/>
             <Setter Property="Control.VerticalAlignment" Value="Top"/>
-            <Setter Property="Control.Background" Value="LightGray"/>
+            <Setter Property="Control.Background" Value="Gainsboro"/>
+            <Setter Property="Control.BorderBrush" Value="Gray"/>
+            <Setter Property="Control.BorderThickness" Value="1"/>
             <Setter Property="Control.HorizontalAlignment" Value="Left"/>
         </Style>
+        <DataTemplate DataType="{x:Type common:FlightSettings}">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Style="{StaticResource labelStyle}">Date</TextBlock>
+                <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}"/>
+                <TextBlock Style="{StaticResource labelStyle}">TimeZone</TextBlock>
+                <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=TimeZone,StringFormat='HH:mm:ss', Mode=OneWay}"/>
+                <TextBlock Style="{StaticResource labelStyle}">Datum</TextBlock>
+                <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=Datum, Mode=OneWay}"/>
+                <TextBlock Style="{StaticResource labelStyle}">UTM Zone</TextBlock>
+                <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=UtmZone, Mode=OneWay}"/>
+                <TextBlock Style="{StaticResource labelStyle}">QNH</TextBlock>
+                <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=Qnh, Mode=OneWay}"/>
+                <TextBlock Style="{StaticResource labelStyle}">Default altitude</TextBlock>
+                <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=DefaultAltitude, Mode=OneWay}"/>
+                <TextBlock Style="{StaticResource labelStyle}">Allowed goals</TextBlock>
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
@@ -31,64 +57,71 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Expander Grid.Column="0" ExpandDirection="Right" IsExpanded="True" Width="Auto" >
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Style="{StaticResource labelStyle}">Date:</TextBlock>
-                    <TextBlock Style="{StaticResource valueStyle}" Background="LightGray" 
-                                       Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}">   
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource labelStyle}">Pilot:</TextBlock>
-                    <TextBox Name="textboxPilotId" Style="{StaticResource valueStyle}" Background="LightGray" 
+            <StackPanel Orientation="Vertical">
+                <Expander ExpandDirection="Down" Header="Default settings" IsExpanded="False" 
+                          BorderBrush="Gray" Margin="5,5,5,0">
+                    <ContentControl Name="contentSettings" ></ContentControl>
+                </Expander>
+                <Expander ExpandDirection="Down" Header="Flight report" IsExpanded="True" BorderBrush="Gray" Margin="5,5,5,0">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Style="{StaticResource labelStyle}">Date:</TextBlock>
+                        <TextBox Style="{StaticResource valueStyle}" Background="Gainsboro" 
+                                       Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}" IsReadOnly="True">
+                        </TextBox>
+                        <TextBlock Style="{StaticResource labelStyle}">Pilot:</TextBlock>
+                        <TextBox Name="textboxPilotId" Style="{StaticResource valueStyle}" Background="Gainsboro" 
                                        Text="{Binding Path=PilotId, Mode=TwoWay}" IsReadOnly="True">
-                    </TextBox>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Style="{StaticResource labelStyle}">Launch point:</TextBlock>
-                        <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLaunch_Click">Set</Button>
-                    </StackPanel>
-                    <TextBlock x:Name="textblockLaunch" Style="{StaticResource valueStyle}" Background="LightGray" 
+                        </TextBox>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource labelStyle}">Launch point:</TextBlock>
+                            <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLaunch_Click">Set</Button>
+                        </StackPanel>
+                        <TextBox x:Name="textblockLaunch" Style="{StaticResource valueStyle}" Background="Gainsboro"  IsReadOnly="True"
                                Text="{Binding Path=LaunchPoint, Mode=OneWay}" 
                                Tag="{Binding Path=LaunchPoint, Mode=OneWay}" 
-                               MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
-                    </TextBlock>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Style="{StaticResource labelStyle}">Landing point:</TextBlock>
-                        <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLanding_Click">Set</Button>
-                    </StackPanel>
-                    <TextBlock x:Name="textblockLanding" Style="{StaticResource valueStyle}" Background="LightGray" 
+                               GotFocus="something_GotFocus">
+                        </TextBox>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource labelStyle}">Landing point:</TextBlock>
+                            <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLanding_Click">Set</Button>
+                        </StackPanel>
+                        <TextBox x:Name="textblockLanding" Style="{StaticResource valueStyle}" Background="Gainsboro"  IsReadOnly="True"
                                Text="{Binding Path=LandingPoint, Mode=OneWay}" 
                                Tag="{Binding Path=LandingPoint, Mode=OneWay}" 
-                               MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
-                    </TextBlock>
+                               GotFocus="something_GotFocus">
+                        </TextBox>
 
-                    <TextBlock Style="{StaticResource labelStyle}">Markers:</TextBlock>
-                    <ListBox Style="{StaticResource valueStyle}" Background="LightGray" 
+                        <TextBlock Style="{StaticResource labelStyle}">Markers:</TextBlock>
+                        <ListBox Style="{StaticResource valueStyle}" Background="Gainsboro"
                                  MinHeight="50" Height="Auto"
                                  ItemsSource="{Binding Path=Markers, Mode=OneWay}"
-                                 MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
-                    </ListBox>
-                    <TextBlock Style="{StaticResource labelStyle}">Declared goals:</TextBlock>
-                    <ListBox Style="{StaticResource valueStyle}" 
+                                 GotFocus="something_GotFocus">
+                        </ListBox>
+                        <TextBlock Style="{StaticResource labelStyle}">Declared goals:</TextBlock>
+                        <ListBox Style="{StaticResource valueStyle}" 
                                  MinHeight="50" Height="Auto"
                                  ItemsSource="{Binding Path=DeclaredGoals, Mode=OneWay}"
-                                 MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
-                    </ListBox>
-                    <TextBlock Style="{StaticResource labelStyle}">Notes:</TextBlock>
-                    <ListBox Style="{StaticResource valueStyle}" 
+                                 GotFocus="something_GotFocus">
+                        </ListBox>
+                        <TextBlock Style="{StaticResource labelStyle}">Notes:</TextBlock>
+                        <ListBox Style="{StaticResource valueStyle}" 
                                  MinHeight="50" Height="Auto"
                                  ItemsSource="{Binding Path=Notes, Mode=OneWay}"
-                                 MouseLeftButtonUp="ListBox_MouseLeftButtonUp">
-                    </ListBox>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Margin="5"
-                            Click="buttonSave_Click">
-                            Save
-                        </Button>
-                        <Button Margin="5" Click="buttonReset_Click">
-                            Reset All
-                        </Button>
+                                 GotFocus="something_GotFocus">
+                        </ListBox>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Margin="5" Click="buttonLoad_Click">Load</Button>
+                            <Button Margin="5" Click="buttonSave_Click">Save</Button>
+                            <Button Margin="5" Click="buttonReset_Click">Reset</Button>
+                            <Button Margin="5" Click="buttonSettings_Click">Settings</Button>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </Expander>
+                </Expander>
+                <Expander ExpandDirection="Down" Header="Report settings" IsExpanded="False" BorderBrush="Gray" Margin="5,5,5,5">
+                    <ContentControl Content="{Binding Path=Settings}"></ContentControl>
+                </Expander>
+            </StackPanel>
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>

@@ -13,6 +13,7 @@ using AXToolbox.Common.IO;
 using FlightAnalyzer.Properties;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
+using Microsoft.Win32;
 
 namespace FlightAnalyzer
 {
@@ -67,35 +68,7 @@ namespace FlightAnalyzer
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] droppedFilePaths = e.Data.GetData(DataFormats.FileDrop, true) as string[];
-
-                Cursor = Cursors.Wait;
-
-                try
-                {
-                    var newReport = FlightReport.LoadFromFile(droppedFilePaths[0], flightSettings);
-                    if (newReport.CleanTrack.Count == 0)
-                    {
-                        MessageBox.Show("No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        report = newReport;
-                        textboxPilotId.IsReadOnly = false;
-                        RedrawReport();
-                    }
-                }
-                catch (InvalidOperationException)
-                {
-                    //silently reject unknown log files
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                finally
-                {
-                    Cursor = Cursors.Arrow;
-                }
+                LoadReport(droppedFilePaths[0]);
             }
         }
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -121,12 +94,12 @@ namespace FlightAnalyzer
                     break;
             }
         }
-        private void ListBox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void something_GotFocus(object sender, RoutedEventArgs e)
         {
             AXToolbox.Common.Point wp = null;
 
-            if (sender is TextBlock)
-                wp = (sender as TextBlock).Tag as AXToolbox.Common.Point;
+            if (sender is TextBox)
+                wp = (sender as TextBox).Tag as AXToolbox.Common.Point;
             else if (sender is ListBox)
                 wp = (sender as ListBox).SelectedItem as AXToolbox.Common.Point;
 
@@ -183,6 +156,16 @@ namespace FlightAnalyzer
                 textblockLanding.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
             }
         }
+        private void buttonLoad_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "Report files (*.fr)|*.fr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog(this) == true)
+            {
+                LoadReport(dlg.FileName);
+            }
+        }
         private void buttonSave_Click(object sender, RoutedEventArgs e)
         {
             if (report != null)
@@ -198,13 +181,28 @@ namespace FlightAnalyzer
             if (report != null &&
                 MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                report.Reset();
-
-                //force binding update, since report does not implement INotifyPropertyChanged because it does not allow serialization
-                textblockLaunch.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
-                textblockLanding.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
-
+                report.Settings = flightSettings;
                 RedrawReport();
+            }
+        }
+        private void buttonSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var yes = true;
+
+            if (report != null)
+                yes = MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+
+            if (yes)
+                yes = (bool)new SettingsWindow().ShowDialog();
+
+            if (yes)
+            {
+                InitSettings();
+                if (report != null)
+                {
+                    report.Settings = flightSettings;
+                    RedrawReport();
+                }
             }
         }
 
@@ -225,11 +223,45 @@ namespace FlightAnalyzer
                 MaxAcceleration = Settings.Default.MaxAcceleration,
                 InterpolationInterval = Settings.Default.InterpolationInterval
             };
+            contentSettings.Content = flightSettings;
 
             caToGMap = new CoordAdapter(flightSettings.Datum, "WGS84");
         }
+        private void LoadReport(string fileName)
+        {
+            Cursor = Cursors.Wait;
+
+            try
+            {
+                var newReport = FlightReport.LoadFromFile(fileName, flightSettings);
+                if (newReport.CleanTrack.Count == 0)
+                {
+                    MessageBox.Show("No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    report = newReport;
+                    textboxPilotId.IsReadOnly = false;
+                    RedrawReport();
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                //silently reject unknown log files
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                Cursor = Cursors.Arrow;
+            }
+        }
+
         private void RedrawReport()
         {
+            DataContext = null;
             DataContext = report;
 
             SetupSlider();

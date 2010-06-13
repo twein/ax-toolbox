@@ -85,7 +85,7 @@ namespace FlightAnalyzer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
         public double DefaultAltitude {
             get {
                 return ((double)(this["DefaultAltitude"]));
@@ -145,7 +145,7 @@ namespace FlightAnalyzer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("%HOMEDRIVE%%HOMEPATH%\\goals.wpt")]
+        [global::System.Configuration.DefaultSettingValueAttribute("AllowedGoals.wpt")]
         public string GoalsFile {
             get {
                 return ((string)(this["GoalsFile"]));
