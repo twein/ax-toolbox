@@ -4,9 +4,9 @@ namespace AXToolbox.Common
 {
     public static class DateTimeExtensions
     {
-        public static string GetAmPm(this DateTime utcDate)
+        public static string GetAmPm(this DateTime date)
         {
-            return utcDate.ToLocalTime().TimeOfDay.TotalHours < 12 ? "AM" : "PM";
+            return date.TimeOfDay.TotalHours < 12 ? "AM" : "PM";
         }
 
         //public static TimeOfDay GetTimeOfDay(this DateTime utcDate)
@@ -21,9 +21,8 @@ namespace AXToolbox.Common
         //    }
         //}
 
-        public static DateTime StripTimePart(this DateTime utcDate)
+        public static DateTime StripTimePart(this DateTime date)
         {
-            var date = utcDate.ToLocalTime();
             return new DateTime(date.Year, date.Month, date.Day);
         }
     }

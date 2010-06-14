@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Globalization;
 namespace AXToolbox.Common
 {
     [Flags]
@@ -58,6 +59,30 @@ namespace AXToolbox.Common
                 str.Append(IsValid ? "OK " : "NO ");
 
             return str.ToString();
+        }
+
+        public static bool TryParse(string strPoint, out Point point)
+        {
+            var fields = strPoint.Split(new[] { ' ' });
+            double easting, northing;
+
+            if (double.TryParse(fields[1], out easting) && double.TryParse(fields[2], out northing))
+            {
+                point = new Point()
+                {
+                    Time = DateTime.Now.StripTimePart().ToUniversalTime(),
+                    Zone = fields[0],
+                    Easting = double.Parse(fields[1], NumberFormatInfo.InvariantInfo),
+                    Northing = double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
+                    Altitude = 0
+                };
+                return true;
+            }
+            else
+            {
+                point = null;
+                return false;
+            }
         }
     }
 }

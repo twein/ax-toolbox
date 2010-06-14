@@ -53,11 +53,9 @@ namespace FlightAnalyzer
             MainMap.MaxZoom = 20; //tiles available up to zoom 17
             MainMap.MinZoom = 10;
             MainMap.Zoom = 12;
-            MainMap.CurrentPosition = new PointLatLng(41.97, 2.78);
 
             globalSettings = FlightSettings.Load();
             contentSettings.Content = globalSettings;
-
 
             RedrawMap();
         }
@@ -259,6 +257,7 @@ namespace FlightAnalyzer
         {
             //Clear Map
             MainMap.Markers.Clear();
+            MainMap.Markers.Add(GetTagMarker("center", globalSettings.Center, "CENTER", globalSettings.Center.ToString(), Brushes.Orange));
 
             //Add allowed goals;
             if ((bool)checkGoals.IsChecked)
@@ -362,15 +361,18 @@ namespace FlightAnalyzer
 
             return marker;
         }
-        private GMapMarker GetTagMarker(string tag, IPosition p, string text, string toolTip, Brush brush)
+        private GMapMarker GetTagMarker(string tag, AXToolbox.Common.Point p, string text, string toolTip, Brush brush)
         {   //TODO: Use correct datum
             var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-            var llp = caToGMap.ConvertToLatLong(new AXToolbox.Common.Point() { Zone = globalSettings.UtmZone, Easting = p.Easting, Northing = p.Northing });
+            var llp = caToGMap.ConvertToLatLong(p);
             var marker = new GMapMarker(new PointLatLng(llp.Latitude, llp.Longitude));
             marker.Tag = tag;
             marker.Shape = new Tag(text, toolTip, brush);
             //marker.Shape.Opacity = 0.67;
             marker.ForceUpdateLocalPosition(MainMap);
+
+            if (tag == "center")
+                MainMap.CurrentPosition = marker.Position;
 
             return marker;
         }

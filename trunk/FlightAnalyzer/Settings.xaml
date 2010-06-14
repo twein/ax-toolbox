@@ -10,6 +10,7 @@
     <Window.Resources>
         <converters:NotConverter x:Key="notConverter" />
         <converters:DateConverter x:Key="dateConverter" />
+        <converters:PointConverter x:Key="pointConverter" />
         <Style x:Key="defaultStyle">
             <Setter Property="Control.Margin" Value="5"/>
             <Setter Property="Control.Width" Value="200"/>
@@ -40,26 +41,13 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Style="{StaticResource defaultStyle}">Time zone:</Label>
-                <TextBox Style="{StaticResource defaultStyle}">
-                    <TextBox.Text>
-                        <Binding Path="TimeZone">
-                            <Binding.ValidationRules>
-                                <validation:TimeSpanValidationRule/>
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                </TextBox>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Datum:</Label>
                 <TextBox Style="{StaticResource defaultStyle}"  Text="{Binding Path=Datum}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Style="{StaticResource defaultStyle}">UTM Zone:</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=UtmZone}"/>
+                <Label Style="{StaticResource defaultStyle}">Approximated center point:</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Center, Converter={StaticResource pointConverter}}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
