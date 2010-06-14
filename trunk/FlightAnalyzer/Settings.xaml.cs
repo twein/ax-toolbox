@@ -13,38 +13,52 @@ namespace FlightAnalyzer
     {
         private bool isOk = false;
         private FlightSettings settings;
+        private FlightSettings editSettings;
+        private bool doSave = false;
 
-        public SettingsWindow()
+        public FlightSettings Settings
+        {
+            get { return settings; }
+        }
+
+        public SettingsWindow(FlightSettings settings, bool doSaveOnOK)
         {
             InitializeComponent();
 
-            settings = FlightSettings.Load();
+            editSettings = settings.Clone();
+            this.settings = settings;
+            doSave = doSaveOnOK;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            DataContext = settings;
+            DataContext = editSettings;
         }
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
             if (Validator.IsValid(this))
             {
-                settings.Save();
                 isOk = true;
+                settings = editSettings;
+
+                if (doSave)
+                    settings.Save();
+
                 Close();
             }
         }
 
         private void buttonReset_Click(object sender, RoutedEventArgs e)
         {
-            settings = new FlightSettings();
+            editSettings = FlightSettings.LoadDefaults();
             DataContext = null;
-            DataContext = settings;
+            DataContext = editSettings;
         }
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
+            isOk = false;
             Close();
         }
 
@@ -62,8 +76,8 @@ namespace FlightAnalyzer
             if (x.ShowDialog(this) == true)
             {
                 textBoxWptFileName.ToolTip = textBoxWptFileName.Text = x.FileName;
-                settings.AllowedGoals = WPTFile.Load(x.FileName, settings.Datum, settings.UtmZone);
-                settings.AllowedGoals.Sort(new WaypointComparer());
+                editSettings.AllowedGoals = WPTFile.Load(x.FileName, settings.Datum, settings.UtmZone);
+                editSettings.AllowedGoals.Sort(new WaypointComparer());
             }
         }
     }

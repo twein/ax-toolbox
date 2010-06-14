@@ -25,7 +25,7 @@ namespace AXToolbox.Common
         public double MaxAcceleration { get; set; }
         public double InterpolationInterval { get; set; }
 
-        public FlightSettings()
+        private FlightSettings()
         {
             var now=DateTime.Now;
             Date = now.StripTimePart();
@@ -58,10 +58,15 @@ namespace AXToolbox.Common
         //        return false;
         //}
 
+        public FlightSettings Clone()
+        {
+            return (FlightSettings)this.MemberwiseClone();
+        }
         public void Save()
         {
             ObjectSerializer<FlightSettings>.Save(this, settingsFileName, serializationFormat);
         }
+
         public static FlightSettings Load()
         {
             FlightSettings settings;
@@ -72,6 +77,10 @@ namespace AXToolbox.Common
                 settings = new FlightSettings();
 
             return settings;
+        }
+        public static FlightSettings LoadDefaults()
+        {
+            return new FlightSettings();
         }
     }
 }

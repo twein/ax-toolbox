@@ -157,23 +157,6 @@ namespace Balloonerds.Measure
                         {
                             dropByOrder = false;
                         }
-                        if (parameters["minvelocity"] != null)
-                        {
-                            //minVelocity = NumberParser.Parse(parameters["minvelocity"]);
-                        }
-                        if (parameters["maxacceleration"] != null)
-                        {
-                            //maxAcceleration = NumberParser.Parse(parameters["maxacceleration"]);
-                        }
-                        if (parameters["qnh"] != null)
-                        {
-                            //qnh = NumberParser.Parse(parameters["qnh"]);
-                        }
-                        //TODO: improve interpolation definition: interpolate=linear,2  interpolate=no (default)
-                        if (parameters["interpolate"] != null)
-                        {
-                            //interpolationInterval = NumberParser.Parse(parameters["interpolate"]);
-                        }
                     }
                     else if (parameters["task"] != null)
                     {
@@ -261,7 +244,7 @@ namespace Balloonerds.Measure
                 {
                     if (trackTemplate.ToLower().EndsWith("rep")) //FlightReport
                     {
-                        var report = FlightReport.LoadFromFile(pilot.Number.ToString(trackTemplate), new FlightSettings());
+                        var report = FlightReport.LoadFromFile(pilot.Number.ToString(trackTemplate), null);
 
                         foreach (var p in report.CleanTrack)
                             pilot.Track.Add(new Balloonerds.ToolBox.Points.Point(p.Zone, p.Easting, p.Northing, p.Altitude, p.Time));
