@@ -168,7 +168,7 @@ namespace AXToolbox.Common
             int nZone = 0, nTime = 0, nDupe = 0, nSpike = 0;
 
             // remove points with wrong UTM zone
-            foreach (var point in track.Where(p => p.Zone != settings.UtmZone))
+            foreach (var point in track.Where(p => p.Zone != settings.Center.Zone))
             {
                 nZone++;
                 point.IsValid = false;

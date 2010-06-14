@@ -15,9 +15,8 @@ namespace AXToolbox.Common
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }
-        public TimeSpan TimeZone { get; set; }
         public string Datum { get; set; }
-        public string UtmZone { get; set; }
+        public Point Center { get; set; }
         public int Qnh { get; set; }
         public List<Waypoint> AllowedGoals { get; set; }
         public double DefaultAltitude { get; set; }
@@ -25,14 +24,18 @@ namespace AXToolbox.Common
         public double MaxAcceleration { get; set; }
         public double InterpolationInterval { get; set; }
 
+        public string AmOrPm
+        {
+            get { return Am ? "AM" : "PM"; }
+        }
+
         private FlightSettings()
         {
-            var now=DateTime.Now;
-            Date = now.StripTimePart();
+            var now = DateTime.Now;
+            Date = now.ToUniversalTime().StripTimePart();
             Am = now.Hour >= 12;
-            TimeZone = (now - now.ToUniversalTime());
             Datum = "European 1950";
-            UtmZone = "31T";
+            Center = new Point() { Time = Date, Zone = "31T", Easting = 480000, Northing = 4650000 };
             Qnh = 1013;
             DefaultAltitude = 0; // m
             MinVelocity = 0.3; // m/s

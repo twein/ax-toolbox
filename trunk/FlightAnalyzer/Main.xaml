@@ -27,15 +27,15 @@
                 <TextBlock Style="{StaticResource labelStyle}">Date</TextBlock>
                 <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
                                        Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}"/>
-                <TextBlock Style="{StaticResource labelStyle}">TimeZone</TextBlock>
+                <TextBlock Style="{StaticResource labelStyle}">Time of day</TextBlock>
                 <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
-                                       Text="{Binding Path=TimeZone,StringFormat='HH:mm:ss', Mode=OneWay}"/>
+                                       Text="{Binding Path=AmOrPm, Mode=OneWay}"/>
                 <TextBlock Style="{StaticResource labelStyle}">Datum</TextBlock>
                 <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
                                        Text="{Binding Path=Datum, Mode=OneWay}"/>
-                <TextBlock Style="{StaticResource labelStyle}">UTM Zone</TextBlock>
+                <TextBlock Style="{StaticResource labelStyle}">Center point</TextBlock>
                 <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
-                                       Text="{Binding Path=UtmZone, Mode=OneWay}"/>
+                                       Text="{Binding Path=Center, Mode=OneWay}"/>
                 <TextBlock Style="{StaticResource labelStyle}">QNH</TextBlock>
                 <TextBlock Style="{StaticResource valueStyle}" Background="Gainsboro" 
                                        Text="{Binding Path=Qnh, Mode=OneWay}"/>

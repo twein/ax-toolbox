@@ -140,12 +140,9 @@ namespace AXToolbox.Common.IO
             else if (strGoal.Length == 9)
             {
                 // type 0000/0000
-                // use the first allowed goal as a template
-                if (settings.AllowedGoals.Count == 0)
-                    throw new InvalidDataException("The allowed goals list cannot be empty");
 
                 // place the declaration in the correct map zone
-                var origin = settings.AllowedGoals[0];
+                var origin = settings.Center;
                 var easting = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(0, 4)), origin.Easting);
                 var northing = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(5, 4)), origin.Northing);
                 declaration = new Waypoint(number.ToString())
