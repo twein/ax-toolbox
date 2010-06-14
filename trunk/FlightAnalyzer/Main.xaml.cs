@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,13 +13,9 @@ using AXToolbox.Common.Geodesy;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
-using System.Threading.Tasks;
 
 namespace FlightAnalyzer
 {
-    /// <summary>
-    /// Interaction logic for Window1.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private MapType[] allowedMaptypes = new MapType[]{
@@ -30,6 +27,15 @@ namespace FlightAnalyzer
         private FlightReport report;
         private int mapTypeIdx = 0;
 
+        public FlightSettings GlobalSettings
+        {
+            get { return globalSettings; }
+        }
+        public FlightReport Report
+        {
+            get { return report; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,7 +43,7 @@ namespace FlightAnalyzer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // optimize the db
+            // optimize the db in background
             Task.Factory.StartNew(() => GMaps.Instance.OptimizeMapDb(null));
 
             // config gmaps
@@ -49,14 +55,13 @@ namespace FlightAnalyzer
             // config map
             MainMap.MapType = allowedMaptypes[mapTypeIdx];
             MainMap.DragButton = MouseButton.Left;
-            MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionAndCenter;
+            MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
             MainMap.MaxZoom = 20; //tiles available up to zoom 17
             MainMap.MinZoom = 10;
             MainMap.Zoom = 12;
 
             globalSettings = FlightSettings.Load();
-            contentSettings.Content = globalSettings;
-
+            DataContext = this;
             RedrawMap();
         }
         private void MainWindow_Drop(object sender, DragEventArgs e)
@@ -103,14 +108,21 @@ namespace FlightAnalyzer
             {
                 //TODO: use correct datum!
                 var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-                var llp = caToGMap.ConvertToLatLong(wp);
-                MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
+                var idx=GetVisibleTrack().IndexOf(wp);
+                if (idx > 1)
+                    sliderCursor.Value = idx;
+                else
+                {
+                    var llp = caToGMap.ConvertToLatLong(wp);
+                    MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
+                }
             }
         }
 
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            UpdateMarker("pointer");
+            if (report != null)
+                UpdateMarker("pointer");
         }
         private void radio_Checked(object sender, RoutedEventArgs e)
         {
@@ -140,7 +152,7 @@ namespace FlightAnalyzer
                 report.LaunchPoint = p;
                 UpdateMarker("launch");
                 //force binding update, since report does not implement INotifyPropertyChanged because it does not allow serialization
-                textblockLaunch.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
+                textblockLaunch.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             }
         }
         private void buttonSetLanding_Click(object sender, RoutedEventArgs e)
@@ -152,7 +164,7 @@ namespace FlightAnalyzer
                 report.LandingPoint = p;
                 UpdateMarker("landing");
                 //force binding update, since report does not implement INotifyPropertyChanged because it does not allow serialization
-                textblockLanding.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
+                textblockLanding.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             }
         }
         private void buttonLoad_Click(object sender, RoutedEventArgs e)
@@ -182,7 +194,7 @@ namespace FlightAnalyzer
             {
                 report.Settings = globalSettings;
                 DataContext = null;
-                DataContext = report;
+                DataContext = this;
                 RedrawMap();
             }
         }
@@ -198,26 +210,19 @@ namespace FlightAnalyzer
                         && (bool)dlg.ShowDialog())
                     {
                         report.Settings = dlg.Settings;
-                        DataContext = null;
-                        DataContext = report;
-                        RedrawMap();
                     }
                     break;
                 case "buttonGlobalSettings":
                     dlg = new SettingsWindow(globalSettings, true);
                     if ((bool)dlg.ShowDialog())
                     {
-                        if (report == null)
-                        {
-                            globalSettings = FlightSettings.Load();
-                            contentSettings.Content = globalSettings;
-                            contentSettings.DataContext = null;
-                            contentSettings.DataContext = globalSettings;
-                            RedrawMap();
-                        }
+                        globalSettings = dlg.Settings;
                     }
                     break;
             }
+            DataContext = null;
+            DataContext = this;
+            RedrawMap();
         }
 
         private void LoadReport(string fileName)
@@ -229,15 +234,16 @@ namespace FlightAnalyzer
                 var newReport = FlightReport.LoadFromFile(fileName, globalSettings);
                 if (newReport.CleanTrack.Count == 0)
                 {
-                    MessageBox.Show("No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(this, "No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     textboxPilotId.IsReadOnly = false;
                     report = newReport;
                     DataContext = null;
-                    DataContext = report;
+                    DataContext = this;
                     RedrawMap();
+                    sliderCursor.IsEnabled = true;
                 }
             }
             catch (InvalidOperationException)
@@ -298,38 +304,42 @@ namespace FlightAnalyzer
         }
         private void UpdateMarker(string tag)
         {
-            if (MainMap.Markers.Count > 0)
+            try
             {
-                var marker = MainMap.Markers.First(m => (string)m.Tag == tag);
-
-                if (marker != null)
+                if (MainMap.Markers.Count > 0)
                 {
-                    var t = (int)sliderCursor.Value;
-                    var p = GetVisibleTrack()[t];
-                    //TODO: Use correct datum
-                    var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-                    var llp = caToGMap.ConvertToLatLong(p);
+                    var marker = MainMap.Markers.First(m => (string)m.Tag == tag);
 
-                    ((Tag)marker.Shape).SetTooltip(p.ToString());
-                    marker.Position = new PointLatLng(llp.Latitude, llp.Longitude);
-                    marker.ForceUpdateLocalPosition(MainMap);
-
-                    switch (tag)
+                    if (marker != null)
                     {
-                        case "pointer":
-                            if (checkLock.IsChecked.Value)
-                                MainMap.CurrentPosition = marker.Position;
-                            textblockCursor.Text = "Pointer: " + p.ToString();
-                            break;
-                        case "launch":
-                            textblockLaunch.Tag = p;
-                            break;
-                        case "landing":
-                            textblockLanding.Tag = p;
-                            break;
+                        var t = (int)sliderCursor.Value;
+                        var p = GetVisibleTrack()[t];
+                        //TODO: Use correct datum
+                        var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
+                        var llp = caToGMap.ConvertToLatLong(p);
+
+                        ((Tag)marker.Shape).SetTooltip(p.ToString());
+                        marker.Position = new PointLatLng(llp.Latitude, llp.Longitude);
+                        marker.ForceUpdateLocalPosition(MainMap);
+
+                        switch (tag)
+                        {
+                            case "pointer":
+                                if (checkLock.IsChecked.Value)
+                                    MainMap.CurrentPosition = marker.Position;
+                                textblockCursor.Text = "Pointer: " + p.ToString();
+                                break;
+                            case "launch":
+                                textblockLaunch.Tag = p;
+                                break;
+                            case "landing":
+                                textblockLanding.Tag = p;
+                                break;
+                        }
                     }
                 }
             }
+            catch (InvalidOperationException) { }
         }
         private GMapMarker GetTrackMarker()
         {
@@ -384,7 +394,10 @@ namespace FlightAnalyzer
         }
         private IList<AXToolbox.Common.Point> GetVisibleTrack()
         {
-            return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
+            if (report != null)
+                return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
+            else
+                return new List<AXToolbox.Common.Point>();
         }
         private void PrefetchTiles()
         {
