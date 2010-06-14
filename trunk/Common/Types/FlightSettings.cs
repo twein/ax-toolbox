@@ -28,6 +28,10 @@ namespace AXToolbox.Common
         {
             get { return Am ? "AM" : "PM"; }
         }
+        public string Tag
+        {
+            get { return string.Format("({0:yy/MM/dd}{1}-{2}-{3}-{4:#}-{5:#})", Date, AmOrPm, Datum, Center.Zone, Qnh, DefaultAltitude); }
+        }
 
         private FlightSettings()
         {
@@ -69,7 +73,6 @@ namespace AXToolbox.Common
         {
             ObjectSerializer<FlightSettings>.Save(this, settingsFileName, serializationFormat);
         }
-
         public static FlightSettings Load()
         {
             FlightSettings settings;
