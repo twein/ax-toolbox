@@ -123,13 +123,12 @@ namespace FlightAnalyzer
                 //TODO: use correct datum!
                 var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
                 var idx = GetVisibleTrack().IndexOf(wp);
-                if (idx > 1)
+
+                if (idx >= 0)
                     sliderPointer.Value = idx;
-                else
-                {
-                    var llp = caToGMap.ConvertToLatLong(wp);
-                    MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
-                }
+
+                var llp = caToGMap.ConvertToLatLong(wp);
+                MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
             }
         }
         private void MainMap_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)

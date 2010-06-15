@@ -1,7 +1,7 @@
 /*
 	AX-Measure - A program to perform the measures from a GPS logger 
                  in a hot air balloon competition.
-	Copyright (c) 2005-2009 info@balloonerds.com
+	Copyright (c) 2005-2010 info@balloonerds.com
     Developers: Toni Martínez, Marcos Mezo, Dani Gallegos
 
 	This program is free software; you can redistribute it and/or modify it
@@ -45,14 +45,18 @@ namespace Balloonerds.Measure
         [STAThread]
         static void Main(string[] args)
         {
-            AssemblyName aname = Assembly.GetAssembly(typeof(Measure)).GetName();
-            title = aname.Name;
-            version =
-                 aname.Name +
-                 " version " + aname.Version.Major + "." + aname.Version.Minor + "." + aname.Version.Build + "." + aname.Version.Revision +
-                 " (c) 2005-2009 info@balloonerds.com" + Environment.NewLine + Environment.NewLine +
-                 "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. Read http://www.gnu.org/licenses/gpl.html for details.";
+            //AssemblyName aname = Assembly.GetAssembly(typeof(Measure)).GetName();
+            //title = aname.Name;
+            //version =
+            //     aname.Name +
+            //     " version " + aname.Version.Major + "." + aname.Version.Minor + "." + aname.Version.Build + "." + aname.Version.Revision +
+            //     " (c) 2005-2010 info@balloonerds.com" + Environment.NewLine + Environment.NewLine +
+            //     "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. Read http://www.gnu.org/licenses/gpl.html for details.";
 
+            title = "AX-Measure";
+            version = "1.10.06.*" +
+                " (c) 2005-2010 info@balloonerds.com" + Environment.NewLine + Environment.NewLine +
+                "This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. Read http://www.gnu.org/licenses/gpl.html for details.";
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Window());
