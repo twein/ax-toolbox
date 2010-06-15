@@ -1,7 +1,7 @@
 ﻿/*
 	AX-Measure - A program to perform the measures from a GPS logger 
                  in a hot air balloon competition.
-	Copyright (c) 2005-2009 info@balloonerds.com
+	Copyright (c) 2005-2010 info@balloonerds.com
     Developers: Toni Martínez, Marcos Mezo, Dani Gallegos
 
 	This program is free software; you can redistribute it and/or modify it
