@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
@@ -18,7 +20,7 @@ namespace FlightAnalyzer
 {
     public partial class MainWindow : Window
     {
-        private MapType[] allowedMaptypes = new MapType[]{
+        private MapType[] allowedMapTypes = new MapType[]{
             MapType.GoogleMap, MapType.GoogleHybrid, 
             MapType.BingMap, MapType.BingHybrid
         };
@@ -53,7 +55,18 @@ namespace FlightAnalyzer
             GMaps.Instance.Mode = AccessMode.ServerAndCache;
 
             // config map
-            MainMap.MapType = allowedMaptypes[mapTypeIdx];
+            MainMap.CacheLocation = "";
+            // set cache mode only if no internet avaible
+            try
+            {
+                var ip = System.Net.Dns.GetHostEntry("www.google.com");
+            }
+            catch
+            {
+                MainMap.Manager.Mode = AccessMode.CacheOnly;
+                MessageBox.Show("No internet connection avaible, going to CacheOnly mode.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            MainMap.MapType = allowedMapTypes[mapTypeIdx];
             MainMap.DragButton = MouseButton.Left;
             MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
             MainMap.MaxZoom = 20; //tiles available up to zoom 17
@@ -64,6 +77,7 @@ namespace FlightAnalyzer
             DataContext = this;
             RedrawMap();
         }
+
         private void MainWindow_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -91,7 +105,7 @@ namespace FlightAnalyzer
                     PrefetchTiles();
                     break;
                 case Key.M:
-                    MainMap.MapType = allowedMaptypes[++mapTypeIdx % allowedMaptypes.Length];
+                    MainMap.MapType = allowedMapTypes[++mapTypeIdx % allowedMapTypes.Length];
                     break;
             }
         }
@@ -108,15 +122,29 @@ namespace FlightAnalyzer
             {
                 //TODO: use correct datum!
                 var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-                var idx=GetVisibleTrack().IndexOf(wp);
+                var idx = GetVisibleTrack().IndexOf(wp);
                 if (idx > 1)
-                    sliderCursor.Value = idx;
+                    sliderPointer.Value = idx;
                 else
                 {
                     var llp = caToGMap.ConvertToLatLong(wp);
                     MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
                 }
             }
+        }
+        private void MainMap_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
+            var datum = (report == null) ? globalSettings.Datum : report.Settings.Datum;
+            var ca = new CoordAdapter("WGS84", datum);
+            var p = ca.ConvertToUTM(new LLPoint() { Latitude = llp.Lat, Longitude = llp.Lng });
+            MessageBox.Show(p.ToString(PointData.UTMCoords | PointData.CompetitionCoords), "Mouse pointer coordinates", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
+        {
+            string navigateUri = (sender as System.Windows.Documents.Hyperlink).NavigateUri.ToString();
+            Process.Start(new ProcessStartInfo(navigateUri));
+            e.Handled = true;
         }
 
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -147,7 +175,7 @@ namespace FlightAnalyzer
         {
             if (report != null)
             {
-                var t = (int)sliderCursor.Value;
+                var t = (int)sliderPointer.Value;
                 var p = GetVisibleTrack()[t];
                 report.LaunchPoint = p;
                 UpdateMarker("launch");
@@ -159,7 +187,7 @@ namespace FlightAnalyzer
         {
             if (report != null)
             {
-                var t = (int)sliderCursor.Value;
+                var t = (int)sliderPointer.Value;
                 var p = GetVisibleTrack()[t];
                 report.LandingPoint = p;
                 UpdateMarker("landing");
@@ -170,7 +198,7 @@ namespace FlightAnalyzer
         private void buttonLoad_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
-            dlg.Filter = "Report files (*.fr)|*.fr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
+            dlg.Filter = "Report files (*.axr)|*.axr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
             {
@@ -227,6 +255,7 @@ namespace FlightAnalyzer
 
         private void LoadReport(string fileName)
         {
+            this.
             Cursor = Cursors.Wait;
 
             try
@@ -243,7 +272,7 @@ namespace FlightAnalyzer
                     DataContext = null;
                     DataContext = this;
                     RedrawMap();
-                    sliderCursor.IsEnabled = true;
+                    sliderPointer.IsEnabled = true;
                 }
             }
             catch (InvalidOperationException)
@@ -312,7 +341,7 @@ namespace FlightAnalyzer
 
                     if (marker != null)
                     {
-                        var t = (int)sliderCursor.Value;
+                        var t = (int)sliderPointer.Value;
                         var p = GetVisibleTrack()[t];
                         //TODO: Use correct datum
                         var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
@@ -320,14 +349,14 @@ namespace FlightAnalyzer
 
                         ((Tag)marker.Shape).SetTooltip(p.ToString());
                         marker.Position = new PointLatLng(llp.Latitude, llp.Longitude);
-                        marker.ForceUpdateLocalPosition(MainMap);
+                        //marker.ForceUpdateLocalPosition(MainMap);
 
                         switch (tag)
                         {
                             case "pointer":
                                 if (checkLock.IsChecked.Value)
                                     MainMap.CurrentPosition = marker.Position;
-                                textblockCursor.Text = "Pointer: " + p.ToString();
+                                textblockPointer.Text = p.ToString();
                                 break;
                             case "launch":
                                 textblockLaunch.Tag = p;
@@ -340,6 +369,19 @@ namespace FlightAnalyzer
                 }
             }
             catch (InvalidOperationException) { }
+        }
+        private void SetupSlider()
+        {
+            sliderPointer.Minimum = 0;
+            sliderPointer.Maximum = GetVisibleTrack().Count - 1;
+            sliderPointer.Value = 0;
+        }
+        private IList<AXToolbox.Common.Point> GetVisibleTrack()
+        {
+            if (report != null)
+                return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
+            else
+                return new List<AXToolbox.Common.Point>();
         }
         private GMapMarker GetTrackMarker()
         {
@@ -367,7 +409,7 @@ namespace FlightAnalyzer
             };
             marker.Shape = myPath;
             marker.ZIndex = -1;
-            marker.ForceUpdateLocalPosition(MainMap);
+            //marker.ForceUpdateLocalPosition(MainMap);
 
             return marker;
         }
@@ -379,38 +421,25 @@ namespace FlightAnalyzer
             marker.Tag = tag;
             marker.Shape = new Tag(text, toolTip, brush);
             //marker.Shape.Opacity = 0.67;
-            marker.ForceUpdateLocalPosition(MainMap);
+            //marker.ForceUpdateLocalPosition(MainMap);
 
             if (tag == "center")
                 MainMap.CurrentPosition = marker.Position;
 
             return marker;
         }
-        private void SetupSlider()
-        {
-            sliderCursor.Minimum = 0;
-            sliderCursor.Maximum = GetVisibleTrack().Count - 1;
-            sliderCursor.Value = 0;
-        }
-        private IList<AXToolbox.Common.Point> GetVisibleTrack()
-        {
-            if (report != null)
-                return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
-            else
-                return new List<AXToolbox.Common.Point>();
-        }
+
         private void PrefetchTiles()
         {
-            RectLatLng area = MainMap.SelectedArea;
+            var area = MainMap.CurrentViewArea;// MainMap.SelectedArea;
 
             if (!area.IsEmpty)
             {
-                for (int z = (int)MainMap.Zoom; z <= 17; z++) //tiles available up to zoom 17
+                for (int z = (int)MainMap.Zoom; z <= 16; z++) //too many tiles over zoom 16
                 {
                     var tiles = MainMap.Projection.GetAreaTileList(area, z, 0);
-                    TilePrefetcher pref = new TilePrefetcher();
-                    pref.Start(tiles, z, MainMap.MapType, 0);
-                    tiles.Clear();
+                    new TilePrefetcher().Start(tiles, z, MainMap.MapType, 0);
+                    //tiles.Clear();
                     /*
                     MessageBoxResult res = MessageBox.Show(string.Format("PrefetchTiles {0} tiles at zoom {1}?", tiles.Count, z), "PrefetchTiles map", MessageBoxButton.YesNoCancel);
 
