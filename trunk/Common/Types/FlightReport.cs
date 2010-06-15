@@ -317,7 +317,7 @@ namespace AXToolbox.Common
         }
         public string GetFileName()
         {
-            var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".fr";
+            var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".axr";
             return Path.Combine(GetFolderName(), filename);
         }
         public void Save()
@@ -341,7 +341,7 @@ namespace AXToolbox.Common
                 case ".trk":
                     report = new TRKFile(filePath, settings);
                     break;
-                case ".fr":
+                case ".axr":
                     report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
                     break;
                 default:

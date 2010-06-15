@@ -11,7 +11,7 @@ namespace AXToolbox.Common
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
-        private const string settingsFileName = "default.fs";
+        private const string settingsFileName = "default.axs";
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }

@@ -66,7 +66,7 @@ namespace AXToolbox.Common
             var fields = strPoint.Split(new[] { ' ' });
             double easting, northing;
 
-            if (double.TryParse(fields[1], out easting) && double.TryParse(fields[2], out northing))
+            if (fields.Length==3 && double.TryParse(fields[1], out easting) && double.TryParse(fields[2], out northing))
             {
                 point = new Point()
                 {
