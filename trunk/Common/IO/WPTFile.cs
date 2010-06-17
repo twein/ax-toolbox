@@ -102,10 +102,10 @@ namespace AXToolbox.Common.IO
                 });
             }
 
-            if (p.Zone != utmZone)
-                throw new InvalidDataException(string.Format("Wrong UTM zone in waypoint: {0}", line));
-            else
-                wp = new Waypoint(name) { Time = time, Zone = p.Zone, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
+            //if (p.Zone != utmZone)
+            //    throw new InvalidDataException(string.Format("Wrong UTM zone in waypoint: {0}", line));
+            //else
+            wp = new Waypoint(name) { Time = time, Zone = p.Zone, Easting = p.Easting, Northing = p.Northing, Altitude = p.Altitude };
 
             return wp;
         }

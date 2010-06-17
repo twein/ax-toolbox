@@ -11,14 +11,14 @@ namespace AXToolbox.Model.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             DateTime date = (DateTime)value;
-            return date.ToShortDateString();
+            return string.Format("{0:yyyy/MM/dd}", date);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string strValue = value as string;
             DateTime resultDateTime;
-            if (DateTime.TryParse(strValue, out resultDateTime))
+            if (DateTime.TryParse(strValue, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal, out resultDateTime))
             {
                 return resultDateTime;
             }

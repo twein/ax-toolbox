@@ -242,7 +242,7 @@ namespace Balloonerds.Measure
                 // Load track
                 try
                 {
-                    if (trackTemplate.ToLower().EndsWith("rep")) //FlightReport
+                    if (trackTemplate.ToLower().EndsWith(".axr")) //FlightReport
                     {
                         var report = FlightReport.LoadFromFile(pilot.Number.ToString(trackTemplate), null);
 

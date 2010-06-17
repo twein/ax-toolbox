@@ -61,12 +61,20 @@ namespace AXToolbox.Common
             return str.ToString();
         }
 
+
         public static bool TryParse(string strPoint, out Point point)
         {
-            var fields = strPoint.Split(new[] { ' ' });
+            if (TryParseCoordsOnly(strPoint, out point))
+                return true;
+            else
+                return false;
+        }
+        private static bool TryParseCoordsOnly(string strPoint, out Point point)
+        {
+            var fields = strPoint.ToUpper().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             double easting, northing;
 
-            if (fields.Length==3 && double.TryParse(fields[1], out easting) && double.TryParse(fields[2], out northing))
+            if (fields.Length == 3 && double.TryParse(fields[1], out easting) && double.TryParse(fields[2], out northing))
             {
                 point = new Point()
                 {
