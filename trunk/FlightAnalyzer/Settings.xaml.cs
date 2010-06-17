@@ -37,6 +37,7 @@ namespace FlightAnalyzer
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
+            //TODO: add validators for all fields
             if (Validator.IsValid(this))
             {
                 isOk = true;

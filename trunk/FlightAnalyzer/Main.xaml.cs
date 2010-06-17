@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -46,7 +46,7 @@ namespace FlightAnalyzer
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // optimize the db in background
-            Task.Factory.StartNew(() => GMaps.Instance.OptimizeMapDb(null));
+            //Task.Factory.StartNew(() => GMaps.Instance.OptimizeMapDb(null));
 
             // config gmaps
             GMaps.Instance.UseRouteCache = true;
@@ -70,7 +70,7 @@ namespace FlightAnalyzer
             MainMap.DragButton = MouseButton.Left;
             MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
             MainMap.MaxZoom = 20; //tiles available up to zoom 17
-            MainMap.MinZoom = 10;
+            MainMap.MinZoom = 5;
             MainMap.Zoom = 12;
 
             globalSettings = FlightSettings.Load();
@@ -131,13 +131,13 @@ namespace FlightAnalyzer
                 MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
             }
         }
-        private void MainMap_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void MainMap_MouseMove(object sender, MouseEventArgs e)
         {
             var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
             var datum = (report == null) ? globalSettings.Datum : report.Settings.Datum;
             var ca = new CoordAdapter("WGS84", datum);
             var p = ca.ConvertToUTM(new LLPoint() { Latitude = llp.Lat, Longitude = llp.Lng });
-            MessageBox.Show(p.ToString(PointData.UTMCoords | PointData.CompetitionCoords), "Mouse pointer coordinates", MessageBoxButton.OK, MessageBoxImage.Information);
+            textblockMouse.Text = "Mouse: " + p.ToString(PointData.UTMCoords | PointData.CompetitionCoords);
         }
         private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
         {
@@ -211,7 +211,8 @@ namespace FlightAnalyzer
                 var fileName = report.GetFileName();
                 if (!File.Exists(fileName) ||
                     MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    report.Save();
+                    if (!report.Save())
+                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void buttonReset_Click(object sender, RoutedEventArgs e)
@@ -355,7 +356,7 @@ namespace FlightAnalyzer
                             case "pointer":
                                 if (checkLock.IsChecked.Value)
                                     MainMap.CurrentPosition = marker.Position;
-                                textblockPointer.Text = p.ToString();
+                                textblockPointer.Text = "Pointer: " + p.ToString();
                                 break;
                             case "launch":
                                 textblockLaunch.Tag = p;

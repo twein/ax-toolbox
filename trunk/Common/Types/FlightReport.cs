@@ -165,6 +165,9 @@ namespace AXToolbox.Common
             ParseLog();
             RemoveInvalidPoints();
             DetectLaunchAndLanding();
+
+            //TODO: add Ignore log PiloID setting
+            pilotId = 0;
         }
         protected abstract void ParseLog();
 
@@ -320,34 +323,45 @@ namespace AXToolbox.Common
             var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".axr";
             return Path.Combine(GetFolderName(), filename);
         }
-        public void Save()
+        public bool Save()
         {
-            var folder = GetFolderName();
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            var file = GetFileName();
-            ObjectSerializer<FlightReport>.Save(this, file, serializationFormat);
+            var ok = pilotId > 0;
+            if (ok)
+            {
+                var folder = GetFolderName();
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                var file = GetFileName();
+                ObjectSerializer<FlightReport>.Save(this, file, serializationFormat);
+            }
+
+            return ok;
         }
 
         public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
         {
             FlightReport report;
 
-            switch (Path.GetExtension(filePath).ToLower())
+            if (File.Exists(filePath))
             {
-                case ".igc":
-                    report = new IGCFile(filePath, settings);
-                    break;
-                case ".trk":
-                    report = new TRKFile(filePath, settings);
-                    break;
-                case ".axr":
-                    report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
-                    break;
-                default:
-                    throw new InvalidOperationException("Logger file type not supported");
+                switch (Path.GetExtension(filePath).ToLower())
+                {
+                    case ".igc":
+                        report = new IGCFile(filePath, settings);
+                        break;
+                    case ".trk":
+                        report = new TRKFile(filePath, settings);
+                        break;
+                    case ".axr":
+                        report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Logger file type not supported");
+                }
+                return report;
             }
-            return report;
+            else
+                throw new FileNotFoundException();
         }
         protected abstract SignatureStatus VerifySignature(string fileName);
     }

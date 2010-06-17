@@ -120,9 +120,15 @@ namespace AXToolbox.Common.IO
             if (strGoal.Length == 3)
             {
                 //Type 000
-                try
+                Waypoint p = null;
+                //try
+                //{
+                p = settings.AllowedGoals.Find(g => g.Name == strGoal);
+                //}
+                //catch (ArgumentNullException) { }
+
+                if (p != null)
                 {
-                    var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
                     declaration = new Waypoint(number.ToString())
                     {
                         Time = time,
@@ -132,10 +138,8 @@ namespace AXToolbox.Common.IO
                         Altitude = p.Altitude
                     };
                 }
-                catch (ArgumentNullException)
-                {
+                else
                     notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
-                }
             }
             else if (strGoal.Length == 9)
             {

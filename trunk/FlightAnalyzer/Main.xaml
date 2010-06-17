@@ -74,7 +74,9 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold">Global settings</TextBlock>
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" Text="{Binding Path=GlobalSettings.Tag}" Margin="5,0,0,0"/>
-                                <Button Name="buttonGlobalSettings" Margin="5,5,0,5" Click="buttonSettings_Click">Edit</Button>
+                                <Button Name="buttonGlobalSettings" Margin="5,5,0,5" 
+                                        ToolTip="Change global settings"
+                                        Click="buttonSettings_Click">Edit</Button>
                             </StackPanel>
                         </Expander.Header>
                         <ContentControl Content="{Binding Path=GlobalSettings}"/>
@@ -84,9 +86,15 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold">Flight report</TextBlock>
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" Text="{Binding Path=Report.Tag}" Margin="5,0,0,0"/>
-                                <Button Margin="5,5,0,5" Click="buttonLoad_Click">Load</Button>
-                                <Button Margin="5,5,0,5" Click="buttonSave_Click">Save</Button>
-                                <Button Margin="5,5,0,5" Click="buttonReset_Click">Reset</Button>
+                                <Button Margin="5,5,0,5" 
+                                        ToolTip="Load flight report file (.axr)"
+                                        Click="buttonLoad_Click">Load</Button>
+                                <Button Margin="5,5,0,5" 
+                                        ToolTip="Save flight report file (.axr)"
+                                        Click="buttonSave_Click">Save</Button>
+                                <Button Margin="5,5,0,5" 
+                                        ToolTip="Recompute report from log file."
+                                        Click="buttonReset_Click">Reset</Button>
                             </StackPanel>
                         </Expander.Header>
                         <StackPanel Orientation="Vertical">
@@ -100,7 +108,9 @@
                             </TextBox>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource labelStyle}">Launch point:</TextBlock>
-                                <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLaunch_Click">Set</Button>
+                                <Button Margin="0" VerticalAlignment="Center" 
+                                        ToolTip="Set launch point at pointer position"
+                                        Click="buttonSetLaunch_Click">Set</Button>
                             </StackPanel>
                             <TextBox x:Name="textblockLaunch" Style="{StaticResource valueStyle}" Background="Gainsboro" IsReadOnly="True"
                                  Text="{Binding Path=Report.LaunchPoint,Mode=OneWay}" 
@@ -109,7 +119,9 @@
                             </TextBox>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource labelStyle}">Landing point:</TextBlock>
-                                <Button Margin="0" VerticalAlignment="Center" Click="buttonSetLanding_Click">Set</Button>
+                                <Button Margin="0" VerticalAlignment="Center" 
+                                        ToolTip="Set landing point at pointer position"
+                                        Click="buttonSetLanding_Click">Set</Button>
                             </StackPanel>
                             <TextBox x:Name="textblockLanding" Style="{StaticResource valueStyle}" Background="Gainsboro" IsReadOnly="True"
                                  Text="{Binding Path=Report.LandingPoint,Mode=OneWay}" 
@@ -140,7 +152,9 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold">Report settings</TextBlock>
                                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" Text="{Binding Path=Report.Settings.Tag,Mode=OneWay}" Margin="5,0,0,0"/>
-                                <Button  Name="buttonReportSettings" Margin="5,5,0,5" Click="buttonSettings_Click">Edit</Button>
+                                <Button  Name="buttonReportSettings" Margin="5,5,0,5" 
+                                         ToolTip="Change report settings"
+                                         Click="buttonSettings_Click">Edit</Button>
                             </StackPanel>
                         </Expander.Header>
                         <ContentControl Content="{Binding Path=Report.Settings}"/>
@@ -153,13 +167,15 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0" Name="textblockPointer" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                    <TextBlock Name="textblockPointer" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                </StackPanel>
 
                 <map:GMapControl x:Name="MainMap" Grid.Row="1" Margin="0,0,5,5"
                                  BorderBrush="Gray" BorderThickness="0.5"
                                  Height="Auto"
-                                 PreviewMouseRightButtonUp="MainMap_PreviewMouseRightButtonUp"/>
+                                 MouseMove="MainMap_MouseMove"/>
                 <!--<Border Grid.Row="1" 
                         Height="100" Width="110"
                         HorizontalAlignment="Left" VerticalAlignment="Top" Background="Black" Opacity="0.25"></Border>-->
