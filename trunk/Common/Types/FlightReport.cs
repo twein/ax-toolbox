@@ -80,7 +80,7 @@ namespace AXToolbox.Common
         }
         public List<Point> CleanTrack
         {
-            get { return track.Where(p => p.IsValid == true).ToList(); }
+            get { return track.Where(p => p.IsValid && p.Time>=launchPoint.Time && p.Time<=landingPoint.Time).ToList(); }
         }
         public List<Point> FlightTrack
         {
