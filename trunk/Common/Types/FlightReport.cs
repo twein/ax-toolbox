@@ -21,6 +21,8 @@ namespace AXToolbox.Common
         /// <summary>Smoothness factor for speed used in launch and landing detection</summary>
         private const double Smoothness = 3;
 
+        [NonSerialized]
+        private string fileName = "";
 
         protected string[] logFile;
         protected FlightSettings settings;
@@ -80,7 +82,7 @@ namespace AXToolbox.Common
         }
         public List<Point> CleanTrack
         {
-            get { return track.Where(p => p.IsValid && p.Time>=launchPoint.Time && p.Time<=landingPoint.Time).ToList(); }
+            get { return track.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
         }
         public List<Point> FlightTrack
         {
@@ -165,9 +167,6 @@ namespace AXToolbox.Common
             ParseLog();
             RemoveInvalidPoints();
             DetectLaunchAndLanding();
-
-            //TODO: add Ignore log PiloID setting
-            pilotId = 0;
         }
         protected abstract void ParseLog();
 
@@ -320,8 +319,13 @@ namespace AXToolbox.Common
         }
         public string GetFileName()
         {
-            var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".axr";
-            return Path.Combine(GetFolderName(), filename);
+            if (fileName == "")
+            {
+                var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".axr";
+                return Path.Combine(GetFolderName(), filename);
+            }
+            else
+                return fileName;
         }
         public bool Save()
         {
@@ -354,6 +358,7 @@ namespace AXToolbox.Common
                         break;
                     case ".axr":
                         report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+                        report.fileName = filePath;
                         break;
                     default:
                         throw new InvalidOperationException("Logger file type not supported");

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-//using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -20,14 +19,17 @@ namespace FlightAnalyzer
 {
     public partial class MainWindow : Window
     {
-        private MapType[] allowedMapTypes = new MapType[]{
+        private List<MapType> allowedMapTypes = new MapType[]{
+            MapType.SigPacSpainMap,
             MapType.GoogleMap, MapType.GoogleHybrid, 
             MapType.BingMap, MapType.BingHybrid
-        };
+        }.ToList();
 
         private FlightSettings globalSettings;
         private FlightReport report;
-        private int mapTypeIdx = 0;
+
+        private MapType mapType = MapType.SigPacSpainMap;
+        private int mapDefaultZoom = 12;
 
         public FlightSettings GlobalSettings
         {
@@ -45,9 +47,6 @@ namespace FlightAnalyzer
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // optimize the db in background
-            //Task.Factory.StartNew(() => GMaps.Instance.OptimizeMapDb(null));
-
             // config gmaps
             GMaps.Instance.UseRouteCache = true;
             GMaps.Instance.UseGeocoderCache = true;
@@ -66,12 +65,12 @@ namespace FlightAnalyzer
                 MainMap.Manager.Mode = AccessMode.CacheOnly;
                 MessageBox.Show("No internet connection avaible, going to CacheOnly mode.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            MainMap.MapType = allowedMapTypes[mapTypeIdx];
+            MainMap.MapType = mapType;
             MainMap.DragButton = MouseButton.Left;
             MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
             MainMap.MaxZoom = 20; //tiles available up to zoom 17
             MainMap.MinZoom = 5;
-            MainMap.Zoom = 12;
+            MainMap.Zoom = mapDefaultZoom;
 
             globalSettings = FlightSettings.Load();
             DataContext = this;
@@ -99,13 +98,22 @@ namespace FlightAnalyzer
                     MainMap.Zoom -= 1;
                     break;
                 case Key.OemPeriod:
-                    MainMap.Zoom = 12;
+                    MainMap.Zoom = mapDefaultZoom;
+                    break;
+                case Key.M:
+                    mapType = allowedMapTypes[(allowedMapTypes.IndexOf(mapType) + 1) % allowedMapTypes.Count];
+                    MainMap.MapType = mapType;
+                    break;
+                case Key.O:
+                    Cursor = Cursors.Wait;
+                    IsEnabled = false;
+                    // optimize the map db
+                    GMaps.Instance.OptimizeMapDb(null);
+                    IsEnabled = true;
+                    Cursor = Cursors.Arrow;
                     break;
                 case Key.P:
                     PrefetchTiles();
-                    break;
-                case Key.M:
-                    MainMap.MapType = allowedMapTypes[++mapTypeIdx % allowedMapTypes.Length];
                     break;
             }
         }
