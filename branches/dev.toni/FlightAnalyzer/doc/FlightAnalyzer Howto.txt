@@ -1,0 +1,32 @@
+Quick guide:
+============
+Prerequisites: 
+	Needs the .NET Framework 4.0 in order to run. Download from Microsoft at:
+	http://www.microsoft.com/downloads/details.aspx?displaylang=en&FamilyID=0a391abd-25c1-4fc0-919f-b21f31ab88b7
+	It's a big package, but if you keep your computer updated I bet you already have it installed.
+
+Use:
+	Set up the global settings for the flight.
+	Drag track or report files from windows explorer over the window or press the report load button to analyze them.
+	For .TRK log files you'll have to enter the pilot number.
+	Select desired point with the slider and press set to update launch and landing.
+	Press report reset to discard any changes and let the computer reprocess the original log file.
+	When finished, press report save button to save the flight report.
+
+Mouse:
+	Click and drag over map to move.
+	Use the wheel to zoom in/out.
+	Right click: show the coordinates pointed by the mouse.
+	Click over any point description to center it in the map.
+
+Keys:
+	+: Zoom in
+	-: Zoom out
+	.: Default zoom
+	M: Change map type
+
+Controls:
+	Logger/Clean radio buttons: choose betwen unmodified track log and computed clean track
+	Slider: Select track point
+	Lock: lock the focus over the selected point
+	Show goals: show/hide allowed goals

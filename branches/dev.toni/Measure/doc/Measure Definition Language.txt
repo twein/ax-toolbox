@@ -1,0 +1,206 @@
+TODO:
+
+KEYWORDS:
+
+FLIGHT:
+
+  Mandatory:
+    label="label"
+    date=date
+    morning*|afternoon
+    pilots=number_of_pilots
+    tracks=filename_template      (Example: tracks="0715A00.trk"  the 00 denotes the pilot number placeholder)
+    cleantracks=filename_template (Example: cleantracks="CLN0715A00.trk"  the 00 denotes the pilot number placeholder)
+    waypoints=filename_template   (Example: waypoints="0715A00.wpt"  the 00 denotes the pilot number placeholder)
+    datum=datum										(Example: datum=European 1950)
+    utmzone=zone                  (Example: utmzone=31T)
+
+  Optional:
+    timezone=time                 Competition timezone. Tracks are defined in UTC, so use this parameter if you are in a different timezone. Example: timezone=02:00:00 for GMT+01DST
+    dropbyorder=*true|false
+    min_velocity=velocity         The points with speeds below this will be consideed as stopped and deleted. Default=0.4m/s
+    max_acceleration=acceleration The points with accelerations over this will be considered bizarre and deleted. Default=0.5m/s2
+    qnh=nnnn					  QNH to compute barometric altitude. If not specified, 1013.25 is used
+    interpolate=time              Fills the track with interpolated points each "time" seconds. Default=0 -> do not interpolate 
+    description="long description"
+    
+  The keyword "tracks" can specify .trk files or .igc files. The extension determines the file type.
+
+
+TASK:
+
+  Mandatory:
+    label="label"
+    type=rule#|abbreviation     	(Example: TASK type="15.20"  or  TASK type="3DT")
+
+  Optional:
+    max=distance               	 	Automatic restriction: maximum distance from the launch point to the task target
+    min=distance                	Automatic restriction: minimum distance from the launch point to the task target
+    firstexit                   	(only for cartesian sweeps) at first exit of the area, stop further computations. Default is don't stop.
+    mustexit                        (only for cartesian sweeps) the result is achieved only after exiting the area. If there's no exit, it's no result.
+    rule12_21_3                     Honouring of rule 12.21.3: 2D measurement for heights under 500ft
+	markernumber=number             for balloon competition loggers, marker number to be used
+	declaredgoal=number,time        for balloon competition loggers, goal declaration to be used, and time limit
+    description="long description"
+
+
+REFERENCE:
+
+  Mandatory:
+    label="label"
+
+    Type direction:
+      direction=angle (grid north)
+
+    Type point:
+      point=label|easting,northing[,altitude]     label is the label of a referenced point defined earlier
+      
+    Type pointtemplate:
+      pointtemplate=label_template                Used to generate label names for PDG. Example: task1_pilot00_target1  The 00 is the pilot number placeholder
+      
+    Type time:
+      time={time|label}[,offset] 
+      
+  Optional:
+    description="long description"
+
+  Examples:
+    REFERENCE label="A10" point=453221.3,4212334.5,788.3
+    REFERENCE label="task3_direction" direction=70
+
+
+AREA
+  The parameters that can be specified are the following:
+
+  Mandatory:
+    label="label"
+
+    Type everywhere:
+      everywhere
+
+    Type circle:
+      circle={label|easting,northing},radius
+
+    Type donut:
+      donut={label|easting,northing},intRadius,extRadius
+
+    Type box:
+      box=westing,northing,easting,southing
+
+    Type track:
+      track="file.trk"
+
+  Optional:
+    where=inside*|outside
+    floor=height
+    ceil=height
+    open={time|label}[,offset]
+    close={time|label}[,offset]
+    description="long description"
+    scoringratio=ratio        in pie shaped 3dt, to score differently in each section. This is the value to multiply by the accumulated distance inside
+
+
+PENALTY:
+
+  The same requirements of the AREA keyword, plus the folowing parameters:
+
+  Mandatory:
+    label="label"
+    type=min|max|before|after|bpz|pz    
+  
+    min     Needs 2 REFERENCEs. Minimum distance between the references
+    max     Needs 2 REFERENCEs. Maximum distance between the references
+    before  Needs 2 REFERENCEs. Reference 1 must happen before reference 2
+    after   Needs 2 REFERENCEs. Reference 1 must happen after reference 2
+    bpz     Needs an AREA: Points as stated in COH R10.14. Magnitude "points" is assumed
+    pz      Needs an AREA: Points as stated in COH R7.5. Magnitude "points" is assumed
+
+  Optional:
+    distance=distance                     Mandatory for min and max
+    ratio=value                           The ratio penalty points per unit of measure. Magnitude "points" is assumed
+    magnitude=distance|time|angle|points  The magnitude of the resulting penalty
+    description="long description"
+    
+    
+PILOT:
+
+  If after running the program you find out that launch and/or landing times are
+  incorrectly detected you have the option to include a pilot directive with following
+  parameters:
+
+  Mandatory:
+    number=number     Pilot number
+
+  Optional:
+    launch=time       This is given as a hint to the launch detection algorithm.
+                      Maybe it should be called "launchNotAfter" or something like that.
+                      At this time the pilot is considered to be already in flight.
+    landing=time      This is given as a hint to the landing detection algorithm.
+                      Maybe it should be called "landingNotBefore" or something like that.
+                      At this time the pilot is considered to be still flying.      
+
+
+
+Points defined automagically as REFERENCEs for each competitor:
+  "launch": launch point and launch time
+  "landing":  landing point and landing time
+  task_label+"_marker": marker drop point and marker drop time for the task, if appliable
+  task_label+"_marker2": second marker drop point and marker drop time for the task, if appliable
+  task_label+"_target": closest target to the marker drop point and drop_time for the task, if appliable
+Do not use these names in your own defined references.
+
+PENALTYs are the sum of the PENALTY for each infringing track point (Ex. time inside a PZ). If a "reference" parameter is specified, it is applied only to that point (Ex. min/max distance to launch point, max launch time etc.).
+
+
+GRAMMAR:
+
+  Special type: FLIGHT. It can have zero or more children of type TASK, PENALTY, PILOT, REFERENCE, AREA.
+  Container types: TASK, PENALTY. They are always assigned to FLIGHT. They can have zero or more children of type REFERENCE and AREA.
+  Item types: REFERENCE, AREA. They will be assigned to the lastest container parsed. They cannot have children.
+  Special type: PILOT: It is always assigned to FLIGHT. It cannot havechildren.
+
+  FLIGHT
+    [REFERENCE]
+    ...
+    [AREA] *the competition area must be defined before any container type. Only the last AREA defined will be used*
+
+    TASK
+      [REFERENCE]
+      ...
+      [AREA]
+      ...
+    ...
+    
+    [PENALTY]
+      [REFERENCE]
+      ...
+      [AREA]
+      ...
+    ...
+    
+    [PILOT]
+    ...
+
+
+
+SYNTAX
+
+The # symbol indicates comment as usual.
+
+To split a long line in several lines, use the / character at the end of an unfinished line. Example:
+  first line /
+  second line
+
+Formats:
+  date: in English dd-MMM-yy fomat. Ex. 11-AUG-2004
+  time: in 24 hour format. Ex. 19:16:33
+  numbers: with a dot (.) as decimal separator. Ex 774.5
+    lengths: in meters.
+  point:
+    launch: the launch point. Ex. launch
+    task_label: coordinates of the desired task marker. Ex: task09
+    UTM coordinates: easting,northing,elevation, no spaces allowed. The zone is assumed to be the same as the track file. Ex: 347762.5,4712118.8,644.13
+  angles: grid angles in degrees (0-359). Ex. 60
+  text: between single or double quotes (optional). Commas and spaces are not allowed. Ex. "FileName.trk".
+  
+You can use the @include="filename" directive to include other files.
