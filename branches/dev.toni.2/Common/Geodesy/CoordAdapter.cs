@@ -5,33 +5,21 @@
  * [3] http://posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs35.html
  * [4] http://www.ordnancesurvey.co.uk/oswebsite/gps/docs/A_Guide_to_Coordinate_Systems_in_Great_Britain.pdf
  * [5] http://www.mctainsh.com/Articles/Csharp/LLUTMWebForm.aspx
+ * [6] http://www.movable-type.co.uk/scripts/latlong-convert-coords.html
  * 
  */
 
 // ignore altitude in helmert transformation
 #undef USEALTITUDEINHELMERT
 
-
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AXToolbox.Common
 {
     public class CoordAdapter
     {
-        private static readonly Dictionary<string, CoordAdapter> adapterCache = new Dictionary<string, CoordAdapter>();
-
-        private Datum datum1;
-        private Datum datum2;
-        private bool performHelmert;
-
-        private CoordAdapter(Datum sourceDatum, Datum targetDatum)
-        {
-            datum1 = sourceDatum;
-            datum2 = targetDatum;
-            performHelmert = sourceDatum != targetDatum;
-        }
-
         public static CoordAdapter GetInstance(Datum sourceDatum, Datum targetDatum)
         {
             var key = sourceDatum.Name + "/" + targetDatum.Name;
@@ -52,6 +40,8 @@ namespace AXToolbox.Common
 
         public UtmCoordinates ToUTM(LatLonCoordinates p1, int zoneNumber = 0)
         {
+            Debug.WriteLine("LLToUTM");
+
             LatLonCoordinates p2;
 
             if (performHelmert)
@@ -74,6 +64,8 @@ namespace AXToolbox.Common
         }
         public UtmCoordinates ToUTM(UtmCoordinates p1, int zoneNumber = 0)
         {
+            Debug.WriteLine("UTMToUTM");
+
             UtmCoordinates p2;
 
             if (performHelmert || int.Parse(p1.Zone.Substring(0, 2)) != zoneNumber)
@@ -85,6 +77,8 @@ namespace AXToolbox.Common
         }
         public LatLonCoordinates ToLatLong(LatLonCoordinates p1)
         {
+            Debug.WriteLine("LLToLL");
+
             LatLonCoordinates p2;
 
             if (performHelmert)
@@ -107,7 +101,23 @@ namespace AXToolbox.Common
         }
         public LatLonCoordinates ToLatLong(UtmCoordinates p1)
         {
+            Debug.WriteLine("UTMToLL");
+
             return ToLatLong(UTMtoLatLong(p1, datum1));
+        }
+
+        #region "private"
+        private static readonly Dictionary<string, CoordAdapter> adapterCache = new Dictionary<string, CoordAdapter>();
+
+        private Datum datum1;
+        private Datum datum2;
+        private bool performHelmert;
+
+        private CoordAdapter(Datum sourceDatum, Datum targetDatum)
+        {
+            datum1 = sourceDatum;
+            datum2 = targetDatum;
+            performHelmert = sourceDatum != targetDatum;
         }
 
         private static XyzCoordinates LatLongToXYZ(LatLonCoordinates p1, Datum datum)
@@ -174,31 +184,39 @@ namespace AXToolbox.Common
             return p2;
         }
 
-        //TODO: check with ds != 0
         private static XyzCoordinates Helmert_LocalToWGS84(XyzCoordinates p1, Datum datum)
         {
-            double s = (1 + datum.ds * 10e-6);
+            Debug.WriteLine("Helmert_LocalToWGS84");
+
+            double scale = 1 + datum.ds;
+
             var p2 = new XyzCoordinates(
-                s * (p1.X - datum.rz * p1.Y + datum.ry * p1.Z) + datum.dx,
-                s * (datum.rz * p1.X + p1.Y - datum.rx * p1.Z) + datum.dy,
-                s * (-datum.ry * p1.X + datum.rx * p1.Y + p1.Z) + datum.dz);
+                x: scale * (p1.X - datum.rz * p1.Y + datum.ry * p1.Z) + datum.dx,
+                y: scale * (datum.rz * p1.X + p1.Y - datum.rx * p1.Z) + datum.dy,
+                z: scale * (-datum.ry * p1.X + datum.rx * p1.Y + p1.Z) + datum.dz
+            );
 
             return p2;
         }
         private static XyzCoordinates Helmert_WGS84ToLocal(XyzCoordinates p1, Datum datum)
         {
-            double s = (1 - datum.ds * 10e-6);
+            Debug.WriteLine("Helmert_WGS84ToLocal");
+
+            double scale = 1 - datum.ds;
 
             var p2 = new XyzCoordinates(
-                 s * (p1.X + datum.rz * p1.Y - datum.ry * p1.Z) - datum.dx,
-                 s * (-datum.rz * p1.X + p1.Y + datum.rx * p1.Z) - datum.dy,
-                 s * (datum.ry * p1.X - datum.rx * p1.Y + p1.Z) - datum.dz);
+                x: scale * (p1.X + datum.rz * p1.Y - datum.ry * p1.Z) - datum.dx,
+                y: scale * (-datum.rz * p1.X + p1.Y + datum.rx * p1.Z) - datum.dy,
+                z: scale * (datum.ry * p1.X - datum.rx * p1.Y + p1.Z) - datum.dz
+            );
 
             return p2;
         }
 
         private static LatLonCoordinates UTMtoLatLong(UtmCoordinates p1, Datum datum)
         {
+            Debug.WriteLine("static UTMtoLL");
+
             double k0 = 0.9996;
             double a = datum.a;
             double e2 = datum.e2;
@@ -258,6 +276,8 @@ namespace AXToolbox.Common
         }
         private static UtmCoordinates LatLongToUTM(LatLonCoordinates p1, Datum datum, int zoneNumber = 0)
         {
+            Debug.WriteLine("static LLToUTM");
+
             //[1]
 
             /*
@@ -370,5 +390,6 @@ namespace AXToolbox.Common
                 this.z = z;
             }
         }
+        #endregion "private"
     }
 }

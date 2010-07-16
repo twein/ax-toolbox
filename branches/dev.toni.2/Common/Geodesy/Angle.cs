@@ -11,6 +11,9 @@ namespace AXToolbox.Common
         public static readonly Angle Angle0 = new Angle(0);
         public static readonly Angle NaA = new Angle(Double.NaN);
 
+        public static readonly double ARCMINUTES = 60;
+        public static readonly double ARCSECONDS = 3600;
+
         public static readonly double DEG2RAD = Math.PI / 180.0;
         public static readonly double RAD2DEG = 180.0 / Math.PI;
         public static readonly double TWOPI = 2 * Math.PI;
