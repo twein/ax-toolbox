@@ -414,9 +414,9 @@ namespace AXToolbox.Common.Geodesy
 				dy = -125.157,
 				dz = 542.06,
 				ds = -20.49,
-				rx = 0.150,
-				ry = 0.2470,
-				rz = 0.8421
+				rx = 0.150 / 3600 * deg2rad,
+				ry = 0.2470 / 3600 * deg2rad,
+				rz = 0.8421 / 3600 * deg2rad
 			}, 
 			new Datum()
 			{
