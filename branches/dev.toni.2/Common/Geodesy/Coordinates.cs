@@ -57,7 +57,7 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return string.Format("{0} {1:#.000000}/{2:#.000000}/{3:#.00}", datum.Name, latitude.Degrees, longitude.Degrees, altitude);
+            return string.Format("{0} {1:0.000000} {2:0.000000} {3:0.00}", datum.Name, latitude.Degrees, longitude.Degrees, altitude);
         }
     }
 
@@ -104,7 +104,7 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2:#.00}/{3:#.00}/{4:#.00}", datum, zone, easting, northing, altitude);
+            return string.Format("{0} {1} {2:0.00} {3:0.00} {4:0.00}", datum, zone, easting, northing, altitude);
         }
     }
 }
