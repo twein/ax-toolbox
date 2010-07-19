@@ -182,7 +182,7 @@ namespace AXToolbox.Common
 
             // remove points with wrong UTM zone
             //todo: check and use forced utm zone
-            foreach (var point in track.Where(p => p.Coordinates.Zone != settings.Center.Zone))
+            foreach (var point in track.Where(p => p.Zone != settings.Center.Zone))
             {
                 nZone++;
                 point.IsValid = false;
@@ -248,7 +248,7 @@ namespace AXToolbox.Common
             TrackPoint highest = null;
             foreach (var point in track.Where(p => p.IsValid))
             {
-                if (highest == null || point.Coordinates.Altitude > highest.Coordinates.Altitude)
+                if (highest == null || point.Altitude > highest.Altitude)
                     highest = point;
             }
 

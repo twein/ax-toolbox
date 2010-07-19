@@ -19,15 +19,9 @@ namespace AXToolbox.Common
         Description = 128
     }
 
-    public class Point
+    [Serializable]
+    public class Point : UtmCoordinates
     {
-        private UtmCoordinates coordinates;
-        public UtmCoordinates Coordinates
-        {
-            get { return coordinates; }
-            set { coordinates = value; }
-        }
-
         private DateTime time;
         public DateTime Time
         {
@@ -35,9 +29,14 @@ namespace AXToolbox.Common
             set { time = value; }
         }
 
-        public Point(UtmCoordinates coordinates, DateTime time)
+        public Point(Datum datum, string zone, double easting, double northing, double altitude, DateTime time)
+            : base(datum, zone, easting, northing, altitude)
         {
-            this.coordinates = coordinates;
+            this.time = time;
+        }
+        public Point(UtmCoordinates coords, DateTime time)
+            : base(coords.Datum, coords.Zone, coords.Easting, coords.Northing, coords.Altitude)
+        {
             this.time = time;
         }
 
@@ -59,14 +58,14 @@ namespace AXToolbox.Common
             if ((data & PointData.UTMCoords) > 0 || (data & PointData.CompetitionCoords) > 0)
             {
                 if ((data & PointData.UTMCoords) > 0)
-                    str.Append(string.Format("{0} {1:000000} {2:0000000} ", coordinates.Zone, coordinates.Easting, coordinates.Northing));
+                    str.Append(string.Format("{0} {1:000000} {2:0000000} ", Zone, Easting, Northing));
 
                 if ((data & PointData.CompetitionCoords) > 0)
-                    str.Append(string.Format("({0:0000}/{1:0000}) ", coordinates.Easting % 1e5 / 10, coordinates.Northing % 1e5 / 10));
+                    str.Append(string.Format("({0:0000}/{1:0000}) ", Easting % 1e5 / 10, Northing % 1e5 / 10));
             }
 
             if ((data & PointData.Altitude) > 0)
-                str.Append(coordinates.Altitude.ToString("0 "));
+                str.Append(Altitude.ToString("0 "));
 
             return str.ToString();
         }
@@ -104,44 +103,6 @@ namespace AXToolbox.Common
                 point = null;
                 return false;
             }
-        }
-    }
-
-    public class TrackPoint : Point
-    {
-        private bool isValid;
-        public bool IsValid
-        {
-            get { return isValid; }
-            set { isValid = value; }
-        }
-
-        public TrackPoint(Point point)
-            : base(point.Coordinates, point.Time)
-        {
-            isValid = true;
-        }
-        public TrackPoint(UtmCoordinates coordinates, DateTime time)
-            : base(coordinates, time)
-        {
-            isValid = true;
-        }
-
-        public override string ToString()
-        {
-            //return ToString(PointData.Time | PointData.CompetitionCoords | PointData.Altitude);
-            return ToString(PointData.All & ~PointData.Date);
-        }
-        public override string ToString(PointData data)
-        {
-            var str = new StringBuilder();
-
-            str.Append(base.ToString(data));
-
-            if ((data & PointData.Validity) > 0)
-                str.Append(IsValid ? "" : "invalid ");
-
-            return str.ToString();
         }
     }
 }

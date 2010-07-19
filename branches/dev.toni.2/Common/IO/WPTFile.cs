@@ -51,11 +51,11 @@ namespace AXToolbox.Common.IO
             {
                 sw.WriteLine("W {0} {1} {2} {3} {4} {5} {6}",
                     wp.Name,
-                    wp.Coordinates.Zone,
-                    wp.Coordinates.Easting.ToString("0.0", NumberFormatInfo.InvariantInfo),
-                    wp.Coordinates.Northing.ToString("0.0", NumberFormatInfo.InvariantInfo),
+                    wp.Zone,
+                    wp.Easting.ToString("0.0", NumberFormatInfo.InvariantInfo),
+                    wp.Northing.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     wp.Time.ToString("dd-MMM-yy HH:mm:ss", NumberFormatInfo.InvariantInfo).ToUpper(),
-                    wp.Coordinates.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo),
+                    wp.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     ""); //description
             }
             sw.Close();

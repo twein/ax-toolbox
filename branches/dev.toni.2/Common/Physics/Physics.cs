@@ -11,13 +11,13 @@ namespace AXToolbox.Common
 
         public static double Distance2D(Point point1, Point point2)
         {
-            return Math.Sqrt(Math.Pow(point1.Coordinates.Easting - point2.Coordinates.Easting, 2) + Math.Pow(point1.Coordinates.Northing - point2.Coordinates.Northing, 2));
+            return Math.Sqrt(Math.Pow(point1.Easting - point2.Easting, 2) + Math.Pow(point1.Northing - point2.Northing, 2));
         }
         public static double Distance3D(Point point1, Point point2)
         {
-            return Math.Sqrt(Math.Pow(point1.Coordinates.Easting - point2.Coordinates.Easting, 2) 
-                + Math.Pow(point1.Coordinates.Northing - point2.Coordinates.Northing, 2)
-                + Math.Pow(point1.Coordinates.Altitude - point2.Coordinates.Altitude, 2));
+            return Math.Sqrt(Math.Pow(point1.Easting - point2.Easting, 2) 
+                + Math.Pow(point1.Northing - point2.Northing, 2)
+                + Math.Pow(point1.Altitude - point2.Altitude, 2));
         }
 
         public static double Velocity2D(Point point1, Point point2)
@@ -48,8 +48,8 @@ namespace AXToolbox.Common
             if (Distance2D(point1, point2) == 0)
                 throw new ArgumentException("DuplicatedPoint: " + point1.ToString() + "/" + point2.ToString());
 
-            var angle = Math.Acos((point1.Coordinates.Easting - point2.Coordinates.Northing) / Distance2D(point1, point2));
-            if (point2.Coordinates.Northing < point1.Coordinates.Northing)
+            var angle = Math.Acos((point1.Easting - point2.Northing) / Distance2D(point1, point2));
+            if (point2.Northing < point1.Northing)
                 angle = -angle;
 
             return (360 + 180 * (Math.PI / 2 + angle) / Math.PI) % 360;
