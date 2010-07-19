@@ -10,13 +10,18 @@ namespace AXToolbox.Common
         public string Name { get; set; }
         public string Description { get; set; }
 
+        public Waypoint(string name, Datum datum, string zone, double easting, double northing, double altitude, DateTime time)
+            : base(datum, zone, easting, northing, altitude, time)
+        {
+            Name = name;
+        }
         public Waypoint(string name, UtmCoordinates coordinates, DateTime time)
             : base(coordinates, time)
         {
             Name = name;
         }
         public Waypoint(string name, Point point)
-            : base(point.Coordinates, point.Time)
+            : base(point.Datum, point.Zone, point.Easting, point.Northing, point.Altitude, point.Time)
         {
             Name = name;
         }
@@ -46,35 +51,22 @@ namespace AXToolbox.Common
     {
         public int Compare(Waypoint x, Waypoint y)
         {
+            int comparison;
             if (x.Name == null)
             {
                 if (y.Name == null)
-                {
-                    // If x is null and y is null, they're
-                    // equal. 
-                    return 0;
-                }
+                    comparison = 0; // x=y
                 else
-                {
-                    // If x is null and y is not null, y
-                    // is greater. 
-                    return -1;
-                }
+                    comparison = -1; // x<y
             }
             else
             {
-                // If x is not null...
-                //
                 if (y.Name == null)
-                // ...and y is null, x is greater.
-                {
-                    return 1;
-                }
+                    comparison = 1; // x>y
                 else
-                {
-                    return x.Name.CompareTo(y.Name);
-                }
+                    comparison = x.Name.CompareTo(y.Name);
             }
+            return comparison;
         }
     }
 }

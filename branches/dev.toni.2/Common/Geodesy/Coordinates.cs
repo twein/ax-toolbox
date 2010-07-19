@@ -3,23 +3,18 @@ using System.Text;
 
 namespace AXToolbox.Common
 {
-    public interface ICoordinates
-    {
-        LatLonCoordinates ToLatLon(Datum toDatum);
-        UtmCoordinates ToUtm(Datum toDatum, int zoneNumber = 0);
-    }
     /// <summary>
     /// Latitude-Longitude coordinates in radians
     /// Recommended usage:
     /// Store all points in LatLonCoordinates instances in datum WGS84 (all constructors assume this) and perform all needed conversions on the fly
     /// </summary>
     [Serializable]
-    public class LatLonCoordinates : ICoordinates
+    public class LatLonCoordinates
     {
-        protected Datum datum;
-        protected Angle latitude; // in radians
-        protected Angle longitude; // in radians
-        protected double altitude;
+        protected readonly Datum datum;
+        protected readonly Angle latitude; // in radians
+        protected readonly Angle longitude; // in radians
+        protected readonly double altitude;
 
         public Datum Datum { get { return datum; } }
         public Angle Latitude { get { return latitude; } }
@@ -33,14 +28,6 @@ namespace AXToolbox.Common
             this.longitude = longitude;
             this.altitude = altitude;
         }
-        //public LatLonCoordinates(Datum datum, string utmZone, double easting, double northing, double altitude)
-        //{
-        //    var ca = CoordAdapter.GetInstance(datum, datum);
-        //    var ll = ca.ToLatLong(new UtmCoordinates(utmZone, easting, northing, altitude));
-        //    this.latitude = ll.Latitude;
-        //    this.longitude = ll.longitude;
-        //    this.altitude = altitude;
-        //}
 
         public LatLonCoordinates ToLatLon(Datum toDatum)
         {
@@ -65,13 +52,13 @@ namespace AXToolbox.Common
     /// UTM coordinates
     /// </summary>
     [Serializable]
-    public class UtmCoordinates : ICoordinates
+    public class UtmCoordinates
     {
-        protected Datum datum;
-        protected string zone;
-        protected double easting;
-        protected double northing;
-        protected double altitude;
+        protected readonly Datum datum;
+        protected readonly string zone;
+        protected readonly double easting;
+        protected readonly double northing;
+        protected readonly double altitude;
 
         public Datum Datum { get { return datum; } }
         public string Zone { get { return zone; } }

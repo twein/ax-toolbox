@@ -162,19 +162,15 @@ namespace AXToolbox.Common.IO
                 else
                 {
                     //no valid altitude
-                    if (declaration.Coordinates.Altitude == 0)
+                    if (declaration.Altitude == 0)
                     {
                         altitude = settings.DefaultAltitude;
                         notes.Add("Using default goal declaration altitude in declaration " + declaration);
                     }
                 }
 
-                declaration.Coordinates = new UtmCoordinates(declaration.Coordinates.Datum,
-                    declaration.Coordinates.Zone,
-                    declaration.Coordinates.Easting,
-                    declaration.Coordinates.Northing,
-                    altitude
-                );
+                //override altitude
+                declaration = new Waypoint(declaration.Name, declaration.Datum, declaration.Zone, declaration.Easting, declaration.Northing, altitude, declaration.Time);
 
                 declaredGoals.Add(declaration);
             }

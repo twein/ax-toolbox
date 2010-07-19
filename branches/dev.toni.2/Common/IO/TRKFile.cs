@@ -67,14 +67,13 @@ namespace AXToolbox.Common.IO
             if (utm)
             {
                 //file with utm coordinates
-                var coords = new UtmCoordinates(
+                p = new TrackPoint(
                     datum: fileDatum,
                     zone: fields[1],
                     easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
                     northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
-                    altitude: altitude
-                );
-                p = new TrackPoint(coords, time);
+                    altitude: altitude,
+                    time: time);
             }
             else
             {
