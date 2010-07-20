@@ -16,7 +16,7 @@ namespace AXToolbox.Common
         public DateTime Date { get; set; }
         public bool Am { get; set; }
         public Datum Datum { get; set; }
-        public UtmCoordinates Center { get; set; }
+        public Point Center { get; set; }
         public int Qnh { get; set; }
         public List<Waypoint> AllowedGoals { get; set; }
         public double DefaultAltitude { get; set; }

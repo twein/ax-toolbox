@@ -17,6 +17,7 @@ namespace AXToolbox.Common
         CompetitionCoords = 16,
         Validity = 32,
         Name = 64,
-        Description = 128
+        Description = 128,
+        GeoCoords = 256
     }
 }

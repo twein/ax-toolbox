@@ -18,7 +18,7 @@ using System.Diagnostics;
 
 namespace AXToolbox.Common
 {
-    public class CoordAdapter
+    internal class CoordAdapter
     {
         public static CoordAdapter GetInstance(Datum sourceDatum, Datum targetDatum)
         {
