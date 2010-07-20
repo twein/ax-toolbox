@@ -10,7 +10,7 @@ namespace AXToolbox.Common.IO
 {
     public class WPTFile
     {
-        public static List<Waypoint> Load(string filePath, Datum datum, string utmZone)
+        public static List<Waypoint> Load(string filePath, FlightSettings settings)
         {
             var waypoints = new List<Waypoint>();
             Datum fileDatum = null;
@@ -32,7 +32,7 @@ namespace AXToolbox.Common.IO
                         break;
                     case 'W':
                         //Track point
-                        var p = ParseWaypoint(line, fileDatum, datum);
+                        var p = ParseWaypoint(line, fileDatum, settings);
                         if (p != null)
                             waypoints.Add(p);
                         break;
@@ -41,11 +41,11 @@ namespace AXToolbox.Common.IO
 
             return waypoints;
         }
-        public static void Save(List<Waypoint> waypoints, string filePath, Datum datum)
+        public static void Save(List<Waypoint> waypoints, string filePath)
         {
             StreamWriter sw = new StreamWriter(filePath, false);
 
-            sw.WriteLine("G {0}", datum);
+            sw.WriteLine("G {0}", waypoints[0].Datum.ToString());
             sw.WriteLine("U 0"); //utm units
             foreach (var wp in waypoints)
             {
@@ -62,11 +62,9 @@ namespace AXToolbox.Common.IO
         }
 
 
-        private static Waypoint ParseWaypoint(string line, Datum fileDatum, Datum datum)
+        private static Waypoint ParseWaypoint(string line, Datum fileDatum, FlightSettings settings)
         {
             UtmCoordinates coords;
-
-            var coordAdapter = CoordAdapter.GetInstance(fileDatum, datum);
 
             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -81,7 +79,9 @@ namespace AXToolbox.Common.IO
                 var zone = fields[2];
                 var easting = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
                 var northing = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
-                coords = coordAdapter.ToUTM(new UtmCoordinates(fileDatum, zone, easting, northing, altitude));
+
+                coords = new UtmCoordinates(fileDatum, zone, easting, northing, altitude);
+                coords = coords.ToUtm(settings.Datum, settings.Center.ZoneNumber);
             }
             else
             {
@@ -94,7 +94,9 @@ namespace AXToolbox.Common.IO
 
                 var latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
                 var longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
-                coords = coordAdapter.ToUTM(new LatLonCoordinates(fileDatum, new Angle(latitude), new Angle(longitude), altitude));
+
+                var ll = new LatLonCoordinates(fileDatum, latitude, longitude, altitude);
+                coords = ll.ToUtm(settings.Datum, settings.Center.ZoneNumber);
             }
 
             var wp = new Waypoint(name, coords, time);

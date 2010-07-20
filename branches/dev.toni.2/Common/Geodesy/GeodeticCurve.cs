@@ -167,7 +167,7 @@ namespace AXToolbox.Common
                 if (radians < 0.0) radians += Angle.TWOPI;
                 alpha2 = new Angle() { Radians = radians };
             }
-            
+
             distance = s;
             azimuth = alpha1;
             reverseAzimuth = alpha2;

@@ -28,19 +28,19 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return ToString(PointData.All & ~(PointData.Date | PointData.Validity));
+            return ToString(PointInfo.All & ~(PointInfo.Date | PointInfo.Validity));
         }
 
-        public override string ToString(PointData data)
+        public override string ToString(PointInfo info)
         {
             var str = new StringBuilder();
 
-            if ((data & PointData.Name) > 0)
+            if ((info & PointInfo.Name) > 0)
                 str.Append(Name + ": ");
 
-            str.Append(base.ToString(data));
+            str.Append(base.ToString(info));
 
-            if ((data & PointData.Description) > 0 && Description != "")
+            if ((info & PointInfo.Description) > 0 && Description != "")
                 str.Append(Description + " ");
 
             return str.ToString();

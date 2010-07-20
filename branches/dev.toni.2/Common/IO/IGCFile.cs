@@ -7,8 +7,6 @@ namespace AXToolbox.Common.IO
     [Serializable]
     public class IGCFile : FlightReport
     {
-        private static readonly Datum WGS84DATUM = Datum.GetInstance("WGS84");
-
         private DateTime tmpDate;
 
         public IGCFile(string filePath, FlightSettings settings)
@@ -208,9 +206,9 @@ namespace AXToolbox.Common.IO
                 //Accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //Satellites = int.Parse(line.Substring(pos + 32, 2));
 
-                var coords = new LatLonCoordinates(WGS84DATUM, new Angle(latitude), new Angle(longitude), altitude);
+                var coords = new LatLonCoordinates(Datum.WGS84, new Angle(latitude), new Angle(longitude), altitude);
 
-                return new Point(coords.ToUtm(settings.OfficialDatum, settings.Center.ZoneNumber), time);
+                return new Point(coords.ToUtm(settings.Datum, settings.Center.ZoneNumber), time);
             }
             else
                 return null;

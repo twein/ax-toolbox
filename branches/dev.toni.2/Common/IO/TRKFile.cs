@@ -90,7 +90,7 @@ namespace AXToolbox.Common.IO
                     longitude: new Angle(double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1)),
                     altitude: altitude);
 
-                p = new TrackPoint(coords.ToUtm(settings.OfficialDatum), time);
+                p = new TrackPoint(coords.ToUtm(settings.Datum), time);
             }
 
             track.Add(p);
