@@ -12,8 +12,8 @@ namespace AXToolbox.Common
     public class LatLonCoordinates
     {
         protected readonly Datum datum;
-        protected readonly Angle latitude; // in radians
-        protected readonly Angle longitude; // in radians
+        protected readonly Angle latitude;
+        protected readonly Angle longitude;
         protected readonly double altitude;
 
         public Datum Datum { get { return datum; } }
@@ -21,6 +21,13 @@ namespace AXToolbox.Common
         public Angle Longitude { get { return longitude; } }
         public double Altitude { get { return altitude; } }
 
+        public LatLonCoordinates(Datum datum, double latitude, double longitude, double altitude)
+        {
+            this.datum = datum;
+            this.latitude = new Angle(latitude);
+            this.longitude = new Angle(longitude);
+            this.altitude = altitude;
+        }
         public LatLonCoordinates(Datum datum, Angle latitude, Angle longitude, double altitude)
         {
             this.datum = datum;
@@ -92,6 +99,19 @@ namespace AXToolbox.Common
         public override string ToString()
         {
             return string.Format("{0} {1} {2:0.00} {3:0.00} {4:0.00}", datum, zone, easting, northing, altitude);
+        }
+
+        public virtual string ToString(PointInfo data)
+        {
+            var str = new StringBuilder();
+
+            if ((data & PointInfo.UTMCoords) > 0)
+                str.Append(string.Format("{0} {1:000000} {2:0000000} ", Zone, Easting, Northing));
+
+            if ((data & PointInfo.CompetitionCoords) > 0)
+                str.Append(string.Format("({0:0000}/{1:0000}) ", Easting % 1e5 / 10, Northing % 1e5 / 10));
+
+            return str.ToString();
         }
     }
 }

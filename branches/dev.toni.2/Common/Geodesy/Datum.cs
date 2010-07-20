@@ -32,6 +32,8 @@ namespace AXToolbox.Common
                 { "WGS84",          new Datum("WGS84",          a: 6378137,     e2: 6.69437999E-3, dx:    0,     dy:    0,     dz:    0,    ds:   0,     rx: 0,    ry: 0,     rz: 0     ) }
             };
 
+        public static readonly Datum WGS84 = datums["WGS84"];
+
         public static Datum GetInstance(string name)
         {
             return datums[name];

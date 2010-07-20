@@ -38,15 +38,15 @@ namespace AXToolbox.Common
         public override string ToString()
         {
             //return ToString(PointData.Time | PointData.CompetitionCoords | PointData.Altitude);
-            return ToString(PointData.All & ~PointData.Date);
+            return ToString(PointInfo.All & ~PointInfo.Date);
         }
-        public override string ToString(PointData data)
+        public override string ToString(PointInfo info)
         {
             var str = new StringBuilder();
 
-            str.Append(base.ToString(data));
+            str.Append(base.ToString(info));
 
-            if ((data & PointData.Validity) > 0)
+            if ((info & PointInfo.Validity) > 0)
                 str.Append(IsValid ? "" : "invalid ");
 
             return str.ToString();

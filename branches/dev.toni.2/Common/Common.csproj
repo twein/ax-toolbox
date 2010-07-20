@@ -80,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicTypes\PointInfo.cs" />
     <Compile Include="BasicTypes\TrackPoint.cs" />
     <Compile Include="Geodesy\Coordinates.cs" />
     <Compile Include="BasicTypes\Point.cs" />
@@ -93,15 +94,12 @@
     <Compile Include="Geodesy\CoordAdapter.cs" />
     <Compile Include="Geodesy\Datum.cs" />
     <Compile Include="Geodesy\GeodeticCurve.cs" />
-    <Compile Include="Interfaces\IPosition.cs" />
-    <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="IO\IGCFile.cs" />
     <Compile Include="IO\TRKFile.cs" />
     <Compile Include="IO\WPTFile.cs" />
     <Compile Include="Physics\Physics.cs" />
     <Compile Include="ComplexTypes\ErrorLog.cs" />
     <Compile Include="IO\ObjectSerializer.cs" />
-    <Compile Include="Interfaces\IPositionTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

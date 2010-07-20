@@ -15,7 +15,7 @@ namespace AXToolbox.Common
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }
-        public Datum OfficialDatum { get; set; }
+        public Datum Datum { get; set; }
         public UtmCoordinates Center { get; set; }
         public int Qnh { get; set; }
         public List<Waypoint> AllowedGoals { get; set; }
@@ -30,7 +30,7 @@ namespace AXToolbox.Common
         }
         public string Tag
         {
-            get { return string.Format("({0:yy/MM/dd}{1}-{2}-{3}-{4:#}-{5:#})", Date, AmOrPm, OfficialDatum, Center.Zone, Qnh, DefaultAltitude); }
+            get { return string.Format("({0:yy/MM/dd}{1}-{2}-{3}-{4:#}-{5:#})", Date, AmOrPm, Datum, Center.Zone, Qnh, DefaultAltitude); }
         }
 
         private FlightSettings()
@@ -38,8 +38,8 @@ namespace AXToolbox.Common
             var now = DateTime.Now;
             Date = now.ToUniversalTime().StripTimePart();
             Am = now.Hour >= 12;
-            OfficialDatum = Datum.GetInstance("European 1950");
-            Center = new UtmCoordinates(OfficialDatum, "31T", 480000, 4650000, 0);
+            Datum = Datum.GetInstance("European 1950");
+            Center = new UtmCoordinates(Datum, "31T", 480000, 4650000, 0);
             Qnh = 1013;
             DefaultAltitude = 0; // m
             MinVelocity = 0.3; // m/s
