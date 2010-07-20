@@ -19,19 +19,39 @@ namespace AXToolbox.Common
         //{
         //    isValid = true;
         //}
-        public TrackPoint(Datum datum, string zone, double easting, double northing, double altitude, DateTime time)
-            : base(datum, zone, easting, northing, altitude, time)
+        //public TrackPoint(Datum datum, string zone, double easting, double northing, double altitude, DateTime time)
+        //    : base(time, datum, zone, easting, northing, altitude, datum)
+        //{
+        //    isValid = true;
+        //}
+        public TrackPoint(DateTime time, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
+            base(time, latitude, longitude, altitude, utmDatum, utmZone)
         {
             isValid = true;
         }
-        public TrackPoint(UtmCoordinates coords, DateTime time)
-            : base(coords.Datum, coords.Zone, coords.Easting, coords.Northing, coords.Altitude, time)
+        public TrackPoint(DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
+            base(time, datum, latitude, longitude, altitude, utmDatum, utmZone)
         {
             isValid = true;
         }
+        public TrackPoint(DateTime time, Datum datum, string zone, double easting, double northing, double altitude, Datum utmDatum, string utmZone = "") :
+            base(time, datum, zone, easting, northing, altitude, utmDatum, utmZone)
+        {
+            isValid = true;
+        }
+
         public TrackPoint(Point point)
-            : base(point.Datum, point.Zone, point.Easting, point.Northing, point.Altitude, point.Time)
+            : base()
         {
+            latitude = point.Latitude;
+            longitude = point.Longitude;
+            datum = point.Datum;
+            zone = point.Zone;
+            easting = point.Easting;
+            northing = point.Northing;
+            altitude = point.Altitude;
+            time = point.Time;
+
             isValid = true;
         }
 

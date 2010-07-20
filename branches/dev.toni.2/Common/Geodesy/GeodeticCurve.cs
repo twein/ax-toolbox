@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AXToolbox.Common
 {
-    public class GeodeticCurve
+    internal class GeodeticCurve
     {
         private double distance;
         private Angle azimuth;
