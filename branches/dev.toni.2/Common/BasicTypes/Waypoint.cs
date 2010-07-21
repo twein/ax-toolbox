@@ -10,27 +10,35 @@ namespace AXToolbox.Common
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public Waypoint(string name, Datum datum, string zone, double easting, double northing, double altitude, DateTime time)
-            : base(datum, zone, easting, northing, altitude, time)
+        public Waypoint(string name, DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
+            base(time, datum, latitude, longitude, altitude, utmDatum, utmZone)
         {
             Name = name;
         }
-        public Waypoint(string name, UtmCoordinates coordinates, DateTime time)
-            : base(coordinates, time)
+        public Waypoint(string name, DateTime time, Datum datum, string zone, double easting, double northing, double altitude, Datum utmDatum, string utmZone = "")
+            : base(time, datum, zone, easting, northing, altitude, utmDatum, utmZone)
         {
             Name = name;
         }
+
         public Waypoint(string name, Point point)
-            : base(point.Datum, point.Zone, point.Easting, point.Northing, point.Altitude, point.Time)
+            : base()
         {
             Name = name;
+            time = point.Time;
+            latitude = point.Latitude;
+            longitude = point.Longitude;
+            datum = point.Datum;
+            zone = point.Zone;
+            easting = point.Easting;
+            northing = point.Northing;
+            altitude = point.Altitude;
         }
 
         public override string ToString()
         {
             return ToString(PointInfo.All & ~(PointInfo.Date | PointInfo.Validity));
         }
-
         public override string ToString(PointInfo info)
         {
             var str = new StringBuilder();

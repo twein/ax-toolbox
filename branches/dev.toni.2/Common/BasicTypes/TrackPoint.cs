@@ -5,7 +5,7 @@ using System.Globalization;
 namespace AXToolbox.Common
 {
     [Serializable]
-    public class TrackPoint : Point
+    public class Trackpoint : Point
     {
         private bool isValid;
         public bool IsValid
@@ -14,33 +14,18 @@ namespace AXToolbox.Common
             set { isValid = value; }
         }
 
-        //public TrackPoint(UtmCoordinates coordinates, DateTime time)
-        //    : base(coordinates, time)
-        //{
-        //    isValid = true;
-        //}
-        //public TrackPoint(Datum datum, string zone, double easting, double northing, double altitude, DateTime time)
-        //    : base(time, datum, zone, easting, northing, altitude, datum)
-        //{
-        //    isValid = true;
-        //}
-        public TrackPoint(DateTime time, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
-            base(time, latitude, longitude, altitude, utmDatum, utmZone)
-        {
-            isValid = true;
-        }
-        public TrackPoint(DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
+        public Trackpoint(DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
             base(time, datum, latitude, longitude, altitude, utmDatum, utmZone)
         {
             isValid = true;
         }
-        public TrackPoint(DateTime time, Datum datum, string zone, double easting, double northing, double altitude, Datum utmDatum, string utmZone = "") :
+        public Trackpoint(DateTime time, Datum datum, string zone, double easting, double northing, double altitude, Datum utmDatum, string utmZone = "") :
             base(time, datum, zone, easting, northing, altitude, utmDatum, utmZone)
         {
             isValid = true;
         }
 
-        public TrackPoint(Point point)
+        public Trackpoint(Point point)
             : base()
         {
             latitude = point.Latitude;

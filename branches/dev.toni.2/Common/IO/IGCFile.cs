@@ -87,7 +87,7 @@ namespace AXToolbox.Common.IO
             var p = ParseFixAt(line, 7);
 
             if (p != null)
-                track.Add(new TrackPoint(p));
+                track.Add(new Trackpoint(p));
         }
         private void ParseMarker(string line)
         {
@@ -99,78 +99,88 @@ namespace AXToolbox.Common.IO
         }
         private void ParseDeclaration(string line)
         {
-            Waypoint declaration = null;
-
             var time = ParseTimeAt(line, 1);
-            var number = int.Parse(line.Substring(10, 2));
-            var strGoal = line.Substring(12).Split(',')[0];
+            var number = line.Substring(10, 2);
+            var description = "[" + line.Substring(10) + "]";
 
+            //parse altitude
+            var altitude = double.NaN;
+            var strAltitude = line.Substring(12).Split(',')[1];
+            if (strAltitude.EndsWith("ft")) //altitude in feet
+            {
+                altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
+            }
+            else if (strAltitude.EndsWith("m")) //altitude in meters
+            {
+                altitude = double.Parse(strAltitude.Replace("m", ""));
+            }
+            else //no valid altitude
+            {
+            }
+
+            //parse goal
+            var strGoal = line.Substring(12).Split(',')[0];
             if (strGoal.Length == 3)
             {
                 //Type 000
-                Waypoint p = null;
-                //try
-                //{
-                p = settings.AllowedGoals.Find(g => g.Name == strGoal);
-                //}
-                //catch (ArgumentNullException) { }
-
-                if (p != null)
+                try
                 {
-                    declaration = new Waypoint(number.ToString(), p);
+                    var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
+
+                    var declaration = new Waypoint(number, p);
+                    declaration.Time = time;
+                    //use declared altitude if exists
+                    if (!double.IsNaN(altitude))
+                        declaration.Altitude = altitude;
+                    declaration.Description = description;
+
+                    declaredGoals.Add(declaration);
                 }
-                else
+                catch (ArgumentNullException)
+                {
                     notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
+                }
             }
+
             else if (strGoal.Length == 9)
             {
                 // type 0000/0000
 
                 // place the declaration in the correct map zone
-                var origin = settings.Center;
+                var origin = settings.ReferencePoint;
+
+                var utmDatum = origin.Datum;
+                var utmZone = origin.Zone;
                 var easting = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(0, 4)), origin.Easting);
                 var northing = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(5, 4)), origin.Northing);
-                var coords = new UtmCoordinates(origin.Datum, origin.Zone, easting, northing, 0);
 
-                declaration = new Waypoint(number.ToString(), coords, time);
-            }
-            else
-            {
-                notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
-            }
-
-            if (declaration != null)
-            {
-                //Add the description
-                declaration.Description = "[" + line.Substring(10) + "]";
-
-                //Override altitude
-                var strAltitude = line.Substring(12).Split(',')[1];
-                double altitude = 0;
-                if (strAltitude.EndsWith("ft"))
+                // use default altitude if not declared
+                if (double.IsNaN(altitude))
                 {
-                    //altitude in feet
-                    altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
-                }
-                else if (strAltitude.EndsWith("m"))
-                {
-                    //altitude in meters
-                    altitude = double.Parse(strAltitude.Replace("m", ""));
-                }
-                else
-                {
-                    //no valid altitude
-                    if (declaration.Altitude == 0)
-                    {
-                        altitude = settings.DefaultAltitude;
-                        notes.Add("Using default goal declaration altitude in declaration " + declaration);
-                    }
+                    notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
+                    altitude = settings.DefaultAltitude;
                 }
 
-                //override altitude
-                declaration = new Waypoint(declaration.Name, declaration.Datum, declaration.Zone, declaration.Easting, declaration.Northing, altitude, declaration.Time);
+                var declaration = new Waypoint(
+                    name: number,
+                    time: time,
+                    datum: utmDatum,
+                    zone: utmZone,
+                    easting: easting,
+                    northing: northing,
+                    altitude: altitude,
+                    utmDatum: utmDatum,
+                    utmZone: utmZone
+                    );
+                declaration.Description = description;
 
                 declaredGoals.Add(declaration);
+            }
+
+            else
+            {
+                // invalid declaration
+                notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
             }
         }
 
@@ -206,9 +216,16 @@ namespace AXToolbox.Common.IO
                 //Accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //Satellites = int.Parse(line.Substring(pos + 32, 2));
 
-                var coords = new LatLonCoordinates(Datum.WGS84, new Angle(latitude), new Angle(longitude), altitude);
+                var p = new Point(
+                    time: time,
+                    datum:Datum.WGS84,
+                    latitude: latitude,
+                    longitude: longitude,
+                    altitude: altitude,
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone);
 
-                return new Point(coords.ToUtm(settings.Datum, settings.Center.ZoneNumber), time);
+                return p;
             }
             else
                 return null;

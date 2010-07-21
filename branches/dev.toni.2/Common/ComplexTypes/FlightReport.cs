@@ -30,7 +30,7 @@ namespace AXToolbox.Common
         protected string loggerModel;
         protected string loggerSerialNumber;
         protected int loggerQnh;
-        protected List<TrackPoint> track;
+        protected List<Trackpoint> track;
         protected List<Waypoint> markers;
         protected List<Waypoint> declaredGoals;
         protected Point launchPoint;
@@ -82,23 +82,23 @@ namespace AXToolbox.Common
         {
             get { return loggerQnh; }
         }
-        public List<TrackPoint> OriginalTrack
+        public IEnumerable<Trackpoint> OriginalTrack
         {
             get { return track; }
         }
-        public List<TrackPoint> CleanTrack
+        public IEnumerable<Trackpoint> CleanTrack
         {
-            get { return track.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
+            get { return track.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time); }
         }
-        public List<TrackPoint> FlightTrack
+        public IEnumerable<Trackpoint> FlightTrack
         {
-            get { return track.Where(p => p.IsValid == true).Where(p => p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
+            get { return track.Where(p => p.IsValid == true).Where(p => p.Time >= launchPoint.Time && p.Time <= landingPoint.Time); }
         }
-        public List<Waypoint> Markers
+        public IEnumerable<Waypoint> Markers
         {
             get { return markers; }
         }
-        public List<Waypoint> DeclaredGoals
+        public IEnumerable<Waypoint> DeclaredGoals
         {
             get { return declaredGoals; }
         }
@@ -150,7 +150,7 @@ namespace AXToolbox.Common
             loggerModel = "";
             loggerSerialNumber = "";
             loggerQnh = 0;
-            track = new List<TrackPoint>();
+            track = new List<Trackpoint>();
             markers = new List<Waypoint>();
             declaredGoals = new List<Waypoint>();
             launchPoint = null;
@@ -178,15 +178,7 @@ namespace AXToolbox.Common
 
         public void RemoveInvalidPoints()
         {
-            int nZone = 0, nTime = 0, nDupe = 0, nSpike = 0;
-
-            // remove points with wrong UTM zone
-            //todo: check and use forced utm zone
-            foreach (var point in track.Where(p => p.Zone != settings.Center.Zone))
-            {
-                nZone++;
-                point.IsValid = false;
-            }
+            int nTime = 0, nDupe = 0, nSpike = 0;
 
             // remove points before/after valid times
             DateTime minTime, maxTime;
@@ -209,8 +201,8 @@ namespace AXToolbox.Common
 
             // remove dupes and spikes
             //TODO: consider removing spikes by change in direction
-            TrackPoint point_m1 = null;
-            TrackPoint point_m2 = null;
+            Trackpoint point_m1 = null;
+            Trackpoint point_m2 = null;
             foreach (var point in track.Where(p => p.IsValid))
             {
                 // remove dupe
@@ -233,8 +225,6 @@ namespace AXToolbox.Common
                 point_m1 = point;
             }
 
-            if (nZone > 0)
-                notes.Add(string.Format("{0} out-of-zone points removed", nTime));
             if (nTime > 0)
                 notes.Add(string.Format("{0} out-of-time points removed", nTime));
             if (nDupe > 0)
@@ -245,7 +235,7 @@ namespace AXToolbox.Common
         public void DetectLaunchAndLanding()
         {
             // find the highest point in flight
-            TrackPoint highest = null;
+            Trackpoint highest = null;
             foreach (var point in track.Where(p => p.IsValid))
             {
                 if (highest == null || point.Altitude > highest.Altitude)
@@ -271,11 +261,11 @@ namespace AXToolbox.Common
                 }
             }
         }
-        private TrackPoint FindGroundContact(IEnumerable<TrackPoint> track, bool backwards)
+        private Trackpoint FindGroundContact(IEnumerable<Trackpoint> track, bool backwards)
         {
             Point reference = null;
-            TrackPoint groundContact = null;
-            TrackPoint point_m1 = null;
+            Trackpoint groundContact = null;
+            Trackpoint point_m1 = null;
             double smoothedSpeed = double.NaN;
 
             if (backwards)
