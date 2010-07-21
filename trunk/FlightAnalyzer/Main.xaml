@@ -30,13 +30,10 @@
                 <TextBlock Style="{StaticResource labelStyle}">Time of day</TextBlock>
                 <TextBox Style="{StaticResource valueStyle}" Background="Gainsboro" IsReadOnly="True"
                          Text="{Binding Path=AmOrPm, Mode=OneWay}"/>
-                <TextBlock Style="{StaticResource labelStyle}">Datum</TextBlock>
+                <TextBlock Style="{StaticResource labelStyle}">Reference point</TextBlock>
                 <TextBox Style="{StaticResource valueStyle}" Background="Gainsboro" IsReadOnly="True"
-                         Text="{Binding Path=Datum, Mode=OneWay}"/>
-                <TextBlock Style="{StaticResource labelStyle}">Center point</TextBlock>
-                <TextBox Style="{StaticResource valueStyle}" Background="Gainsboro" IsReadOnly="True"
-                         Text="{Binding Path=Center, Mode=OneWay}"
-                         Tag="{Binding Path=Center,Mode=OneWay}" 
+                         Text="{Binding Path=ReferencePoint, Mode=OneWay}"
+                         Tag="{Binding Path=ReferencePoint,Mode=OneWay}" 
                          PreviewMouseLeftButtonUp="something_MouseLeftButtonUp"/>
                 <TextBlock Style="{StaticResource labelStyle}">QNH</TextBlock>
                 <TextBox Style="{StaticResource valueStyle}" Background="Gainsboro" IsReadOnly="True"

@@ -80,24 +80,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicTypes\PointInfo.cs" />
+    <Compile Include="BasicTypes\Trackpoint.cs" />
+    <Compile Include="Geodesy\Coordinates.cs" />
+    <Compile Include="BasicTypes\Point.cs" />
+    <Compile Include="BasicTypes\Waypoint.cs" />
+    <Compile Include="ComplexTypes\BindableObject.cs" />
+    <Compile Include="ComplexTypes\FlightReport.cs" />
+    <Compile Include="ComplexTypes\FlightSettings.cs" />
     <Compile Include="Extensions\DateTime.cs" />
     <Compile Include="Extensions\String.cs" />
-    <Compile Include="Types\LLPoint.cs" />
-    <Compile Include="Types\Point.cs" />
-    <Compile Include="Interfaces\IPosition.cs" />
-    <Compile Include="Interfaces\ITime.cs" />
-    <Compile Include="IO\WPTFile.cs" />
-    <Compile Include="IO\FileSerializableObject.cs" />
-    <Compile Include="IO\TRKFile.cs" />
-    <Compile Include="Physics\Physics.cs" />
-    <Compile Include="Types\ErrorLog.cs" />
-    <Compile Include="Types\FlightReport.cs" />
-    <Compile Include="Types\FlightSettings.cs" />
-    <Compile Include="IO\ObjectSerializer.cs" />
+    <Compile Include="Geodesy\Angle.cs" />
     <Compile Include="Geodesy\CoordAdapter.cs" />
-    <Compile Include="Interfaces\IPositionTime.cs" />
-    <Compile Include="Types\Waypoint.cs" />
+    <Compile Include="Geodesy\Datum.cs" />
+    <Compile Include="Geodesy\GeodeticCurve.cs" />
     <Compile Include="IO\IGCFile.cs" />
+    <Compile Include="IO\TRKFile.cs" />
+    <Compile Include="IO\WPTFile.cs" />
+    <Compile Include="Physics\Physics.cs" />
+    <Compile Include="ComplexTypes\ErrorLog.cs" />
+    <Compile Include="IO\ObjectSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -120,7 +122,9 @@
   <ItemGroup>
     <Content Include="Ideas.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Geodesy\helmert.xlsx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

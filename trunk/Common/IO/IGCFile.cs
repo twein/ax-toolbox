@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
-using AXToolbox.Common;
-using AXToolbox.Common.Geodesy;
-
 
 namespace AXToolbox.Common.IO
 {
     [Serializable]
     public class IGCFile : FlightReport
     {
-        private CoordAdapter coordAdapter = null;
         private DateTime tmpDate;
 
         public IGCFile(string filePath, FlightSettings settings)
@@ -53,7 +47,8 @@ namespace AXToolbox.Common.IO
                             case "HFDTM":
                                 //Datum
                                 var loggerDatum = line.Substring(8);
-                                coordAdapter = new CoordAdapter(loggerDatum, settings.Datum);
+                                if (loggerDatum != "WGS84")
+                                    throw new InvalidOperationException("IGC file datum must be WGS84");
                                 break;
                             case "HFDTE":
                                 //Date
@@ -92,7 +87,7 @@ namespace AXToolbox.Common.IO
             var p = ParseFixAt(line, 7);
 
             if (p != null)
-                track.Add(p);
+                track.Add(new Trackpoint(p));
         }
         private void ParseMarker(string line)
         {
@@ -100,96 +95,92 @@ namespace AXToolbox.Common.IO
             var p = ParseFixAt(line, 12);
 
             if (p != null)
-                markers.Add(new Waypoint(number.ToString())
-                {
-                    Time = p.Time,
-                    Zone = p.Zone,
-                    Easting = p.Easting,
-                    Northing = p.Northing,
-                    Altitude = p.Altitude
-                });
+                markers.Add(new Waypoint(number.ToString(), p));
         }
         private void ParseDeclaration(string line)
         {
-            Waypoint declaration = null;
-
             var time = ParseTimeAt(line, 1);
-            var number = int.Parse(line.Substring(10, 2));
-            var strGoal = line.Substring(12).Split(',')[0];
+            var number = line.Substring(10, 2);
+            var description = "[" + line.Substring(10) + "]";
 
+            //parse altitude
+            var altitude = double.NaN;
+            var strAltitude = line.Substring(12).Split(',')[1];
+            if (strAltitude.EndsWith("ft")) //altitude in feet
+            {
+                altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
+            }
+            else if (strAltitude.EndsWith("m")) //altitude in meters
+            {
+                altitude = double.Parse(strAltitude.Replace("m", ""));
+            }
+            else //no valid altitude
+            {
+            }
+
+            //parse goal
+            var strGoal = line.Substring(12).Split(',')[0];
             if (strGoal.Length == 3)
             {
                 //Type 000
-                Waypoint p = null;
-                //try
-                //{
-                p = settings.AllowedGoals.Find(g => g.Name == strGoal);
-                //}
-                //catch (ArgumentNullException) { }
-
-                if (p != null)
+                try
                 {
-                    declaration = new Waypoint(number.ToString())
-                    {
-                        Time = time,
-                        Zone = p.Zone,
-                        Easting = p.Easting,
-                        Northing = p.Northing,
-                        Altitude = p.Altitude
-                    };
+                    var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
+
+                    var declaration = new Waypoint(number, p);
+                    declaration.Time = time;
+                    //use declared altitude if exists
+                    if (!double.IsNaN(altitude))
+                        declaration.Altitude = altitude;
+                    declaration.Description = description;
+
+                    declaredGoals.Add(declaration);
                 }
-                else
+                catch (ArgumentNullException)
+                {
                     notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
+                }
             }
+
             else if (strGoal.Length == 9)
             {
                 // type 0000/0000
 
                 // place the declaration in the correct map zone
-                var origin = settings.Center;
+                var origin = settings.ReferencePoint;
+
+                var utmDatum = origin.Datum;
+                var utmZone = origin.Zone;
                 var easting = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(0, 4)), origin.Easting);
                 var northing = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(5, 4)), origin.Northing);
-                declaration = new Waypoint(number.ToString())
-                {
-                    Time = time,
-                    Zone = origin.Zone,
-                    Easting = easting,
-                    Northing = northing
-                };
-            }
-            else
-            {
-                notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
-            }
 
-            if (declaration != null)
-            {
-                //Add the description
-                declaration.Description = "[" + line.Substring(10) + "]";
+                // use default altitude if not declared
+                if (double.IsNaN(altitude))
+                {
+                    notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
+                    altitude = settings.DefaultAltitude;
+                }
 
-                //Override altitude
-                var strAltitude = line.Substring(12).Split(',')[1];
-                if (strAltitude.EndsWith("ft"))
-                {
-                    //altitude in feet
-                    declaration.Altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
-                }
-                else if (strAltitude.EndsWith("m"))
-                {
-                    //altitude in meters
-                    declaration.Altitude = double.Parse(strAltitude.Replace("m", ""));
-                }
-                else
-                {
-                    //no valid altitude
-                    if (declaration.Altitude == 0)
-                    {
-                        declaration.Altitude = settings.DefaultAltitude;
-                        notes.Add("Using default goal declaration altitude in declaration " + declaration);
-                    }
-                }
+                var declaration = new Waypoint(
+                    name: number,
+                    time: time,
+                    datum: utmDatum,
+                    zone: utmZone,
+                    easting: easting,
+                    northing: northing,
+                    altitude: altitude,
+                    utmDatum: utmDatum,
+                    utmZone: utmZone
+                    );
+                declaration.Description = description;
 
                 declaredGoals.Add(declaration);
+            }
+
+            else
+            {
+                // invalid declaration
+                notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
             }
         }
 
@@ -213,21 +204,28 @@ namespace AXToolbox.Common.IO
             var isValid = line.Substring(pos + 17, 1) == "A";
             if (isValid)
             {
-                var fix = new LLPoint();
-                fix.IsValid = true;
-                fix.Time = ParseTimeAt(line, 1); // the time is always at pos 1
-                fix.Latitude = (double.Parse(line.Substring(pos, 2)) +
+                var time = ParseTimeAt(line, 1); // the time is always at pos 1
+                var latitude = (double.Parse(line.Substring(pos, 2)) +
                     double.Parse(line.Substring(pos + 2, 5)) / 60000)
                     * (line.Substring(pos + 7, 1) == "S" ? -1 : 1);
-                fix.Longitude = (double.Parse(line.Substring(pos + 8, 3)) +
+                var longitude = (double.Parse(line.Substring(pos + 8, 3)) +
                     double.Parse(line.Substring(pos + 11, 5)) / 60000)
                     * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
-                fix.Altitude = CorrectQnh(double.Parse(line.Substring(pos + 18, 5)));
+                var altitude = CorrectQnh(double.Parse(line.Substring(pos + 18, 5)));
                 //GpsAltitude = double.Parse(line.Substring(pos + 23, 5));
                 //Accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //Satellites = int.Parse(line.Substring(pos + 32, 2));
 
-                return coordAdapter.ConvertToUTM(fix);
+                var p = new Point(
+                    time: time,
+                    datum:Datum.WGS84,
+                    latitude: latitude,
+                    longitude: longitude,
+                    altitude: altitude,
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone);
+
+                return p;
             }
             else
                 return null;

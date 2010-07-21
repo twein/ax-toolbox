@@ -10,7 +10,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using AXToolbox.Common;
-using AXToolbox.Common.Geodesy;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
@@ -128,24 +127,22 @@ namespace FlightAnalyzer
 
             if (wp != null)
             {
-                //TODO: use correct datum!
-                var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-                var idx = GetVisibleTrack().IndexOf(wp);
+                var track = GetVisibleTrack().ToList();
+                var p = track.Find(tp => tp.Time == wp.Time);
+                var idx = track.IndexOf(p);
 
                 if (idx >= 0)
                     sliderPointer.Value = idx;
 
-                var llp = caToGMap.ConvertToLatLong(wp);
-                MainMap.CurrentPosition = new PointLatLng(llp.Latitude, llp.Longitude);
+                MainMap.CurrentPosition = new PointLatLng(wp.Latitude, wp.Longitude);
             }
         }
         private void MainMap_MouseMove(object sender, MouseEventArgs e)
         {
             var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
-            var datum = (report == null) ? globalSettings.Datum : report.Settings.Datum;
-            var ca = new CoordAdapter("WGS84", datum);
-            var p = ca.ConvertToUTM(new LLPoint() { Latitude = llp.Lat, Longitude = llp.Lng });
-            textblockMouse.Text = "Mouse: " + p.ToString(PointData.UTMCoords | PointData.CompetitionCoords);
+            var datum = (report == null) ? globalSettings.ReferencePoint.Datum : report.Settings.ReferencePoint.Datum;
+            var p = new AXToolbox.Common.Point(DateTime.Now, Datum.WGS84, llp.Lat, llp.Lng, 0, datum);
+            textblockMouse.Text = "Mouse: " + p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
         }
         private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
         {
@@ -269,7 +266,7 @@ namespace FlightAnalyzer
             try
             {
                 var newReport = FlightReport.LoadFromFile(fileName, globalSettings);
-                if (newReport.CleanTrack.Count == 0)
+                if (newReport.CleanTrack.Count() == 0)
                 {
                     MessageBox.Show(this, "No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -300,7 +297,7 @@ namespace FlightAnalyzer
         {
             //Clear Map
             MainMap.Markers.Clear();
-            MainMap.Markers.Add(GetTagMarker("center", globalSettings.Center, "CENTER", globalSettings.Center.ToString(), Brushes.Orange));
+            MainMap.Markers.Add(GetTagMarker("center", globalSettings.ReferencePoint, "CENTER", globalSettings.ReferencePoint.ToString(), Brushes.Orange));
 
             //Add allowed goals;
             if ((bool)checkGoals.IsChecked)
@@ -352,11 +349,8 @@ namespace FlightAnalyzer
                         var t = (int)sliderPointer.Value;
                         var p = GetVisibleTrack()[t];
                         //TODO: Use correct datum
-                        var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-                        var llp = caToGMap.ConvertToLatLong(p);
-
                         ((Tag)marker.Shape).SetTooltip(p.ToString());
-                        marker.Position = new PointLatLng(llp.Latitude, llp.Longitude);
+                        marker.Position = new PointLatLng(p.Latitude, p.Longitude);
                         //marker.ForceUpdateLocalPosition(MainMap);
 
                         switch (tag)
@@ -384,22 +378,20 @@ namespace FlightAnalyzer
             sliderPointer.Maximum = GetVisibleTrack().Count - 1;
             sliderPointer.Value = 0;
         }
-        private IList<AXToolbox.Common.Point> GetVisibleTrack()
+        private List<Trackpoint> GetVisibleTrack()
         {
             if (report != null)
                 return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
             else
-                return new List<AXToolbox.Common.Point>();
+                return new List<Trackpoint>();
         }
         private GMapMarker GetTrackMarker()
         {
             List<PointLatLng> points = new List<PointLatLng>();
 
-            var ca = new CoordAdapter(report.Settings.Datum, "WGS84");
             foreach (var p in GetVisibleTrack())
             {
-                var llp = ca.ConvertToLatLong(p);
-                points.Add(new PointLatLng(llp.Latitude, llp.Longitude));
+                points.Add(new PointLatLng(p.Latitude, p.Longitude));
             }
 
             GMapMarker marker = new GMapMarker(points[0]);
@@ -422,10 +414,8 @@ namespace FlightAnalyzer
             return marker;
         }
         private GMapMarker GetTagMarker(string tag, AXToolbox.Common.Point p, string text, string toolTip, Brush brush)
-        {   //TODO: Use correct datum
-            var caToGMap = new CoordAdapter(globalSettings.Datum, "WGS84");
-            var llp = caToGMap.ConvertToLatLong(p);
-            var marker = new GMapMarker(new PointLatLng(llp.Latitude, llp.Longitude));
+        {
+            var marker = new GMapMarker(new PointLatLng(p.Latitude, p.Longitude));
             marker.Tag = tag;
             marker.Shape = new Tag(text, toolTip, brush);
             //marker.Shape.Opacity = 0.67;

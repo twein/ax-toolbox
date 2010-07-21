@@ -41,13 +41,8 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
-                <Label Style="{StaticResource defaultStyle}">Datum:</Label>
-                <TextBox Style="{StaticResource defaultStyle}"  Text="{Binding Path=Datum}"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal">
-                <Label Style="{StaticResource defaultStyle}">Approximated center point:</Label>
-                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=Center, Converter={StaticResource pointConverter}}"/>
+                <Label Style="{StaticResource defaultStyle}">Reference point:</Label>
+                <TextBox Style="{StaticResource defaultStyle}" Text="{Binding Path=ReferencePoint, Converter={StaticResource pointConverter}}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal">
