@@ -62,18 +62,21 @@ namespace AXToolbox.Common.IO
 
             var time = DateTime.Parse(fields[4] + " " + fields[5]);
             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
-            TrackPoint p;
+            Trackpoint p;
 
             if (utm)
             {
                 //file with utm coordinates
-                p = new TrackPoint(
+                p = new Trackpoint(
+                    time: time,
                     datum: fileDatum,
                     zone: fields[1],
                     easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
                     northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
                     altitude: altitude,
-                    time: time);
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone
+                    );
             }
             else
             {
@@ -84,13 +87,18 @@ namespace AXToolbox.Common.IO
                 var strLongitude = fields[3].Left(fields[3].Length - 2);
                 var ew = fields[3].Right(1);
 
-                var coords = new LatLonCoordinates(
-                    datum: fileDatum,
-                    latitude: new Angle(double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1)),
-                    longitude: new Angle(double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1)),
-                    altitude: altitude);
+                var lat = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
+                var lon = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
 
-                p = new TrackPoint(coords.ToUtm(settings.Datum), time);
+                p = new Trackpoint(
+                    time: time,
+                    datum: fileDatum,
+                    latitude: lat,
+                    longitude: lon,
+                    altitude: altitude,
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone
+                    );
             }
 
             track.Add(p);

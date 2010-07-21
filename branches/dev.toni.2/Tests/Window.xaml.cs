@@ -64,33 +64,31 @@ namespace AXToolbox.Tests
             var wgs84 = Datum.GetInstance("WGS84");
             var ed50 = Datum.GetInstance("European 1950");
             var osgb36 = Datum.GetInstance("OSGB36");
-            LatLonCoordinates ll;
-            UtmCoordinates utm;
 
-            Print("From latlon WGS84 to UTM ED50 and back");
-            ll = new LatLonCoordinates(wgs84, new Angle(41.973256), new Angle(2.780310), 87.0);
-            Print(ll.ToString());
-            utm = ll.ToUtm(ed50);
-            Print(utm.ToString());
-            ll = utm.ToLatLon(wgs84);
-            Print(ll.ToString());
+            Common.Point p1, p2, p3;
+
+
+            Print("From latlon WGS84 to UTM ED50");
+            p1 = new Common.Point(DateTime.Now, wgs84, 41.973256, 2.780310, 87.0, ed50);
+            Print(p1.ToString(PointInfo.GeoCoords | PointInfo.Altitude));
+            Print(p1.ToString(PointInfo.GeoCoords | PointInfo.UTMCoords | PointInfo.Altitude));
             Print("");
 
-            Print("From UTM ED50, default zone to zone 30 and back");
-            Print(utm.ToString());
-            utm = utm.ToUtm(ed50, 30);
-            Print(utm.ToString());
-            utm = utm.ToUtm(ed50);
-            Print(utm.ToString());
+            Print("From UTM ED50 to UTM ED50");
+            p2 = new Common.Point(DateTime.Now, p1.Datum, p1.Zone, p1.Easting, p1.Northing, p1.Altitude, p1.Datum, p1.Zone);
+            Print(p1.ToString(PointInfo.GeoCoords | PointInfo.UTMCoords | PointInfo.Altitude));
+            Print(p2.ToString(PointInfo.GeoCoords | PointInfo.UTMCoords | PointInfo.Altitude));
             Print("");
 
-            Print("From latlon WGS84 to latlon OSGB36 and back");
-            ll = new LatLonCoordinates(wgs84, new Angle(53), new Angle(1), 0.0);
-            Print(ll.ToString());
-            ll = ll.ToLatLon(osgb36);
-            Print(ll.ToString());
-            ll = ll.ToLatLon(wgs84);
-            Print(ll.ToString());
+
+            Print("From UTM ED50 default zone to UTM ED50 zone 30 and back");
+            p2 = new Common.Point(DateTime.Now, p1.Datum, p1.Zone, p1.Easting, p1.Northing, p1.Altitude, p1.Datum, "30T");
+            p3 = new Common.Point(DateTime.Now, p2.Datum, p2.Zone, p2.Easting, p2.Northing, p2.Altitude, p2.Datum);
+            Print(p1.ToString(PointInfo.GeoCoords | PointInfo.UTMCoords | PointInfo.Altitude));
+            Print(p2.ToString(PointInfo.GeoCoords | PointInfo.UTMCoords | PointInfo.Altitude));
+            Print(p3.ToString(PointInfo.GeoCoords | PointInfo.UTMCoords | PointInfo.Altitude));
+
+            Print("");
         }
     }
 }

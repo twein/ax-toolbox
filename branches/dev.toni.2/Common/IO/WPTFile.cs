@@ -64,7 +64,7 @@ namespace AXToolbox.Common.IO
 
         private static Waypoint ParseWaypoint(string line, Datum fileDatum, FlightSettings settings)
         {
-            UtmCoordinates coords;
+            Waypoint wp;
 
             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -80,8 +80,16 @@ namespace AXToolbox.Common.IO
                 var easting = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
                 var northing = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 
-                coords = new UtmCoordinates(fileDatum, zone, easting, northing, altitude);
-                coords = coords.ToUtm(settings.Datum, settings.Center.ZoneNumber);
+                wp = new Waypoint(
+                    name: name,
+                    time: time,
+                    datum: fileDatum,
+                    zone: zone,
+                    easting: easting,
+                    northing: northing,
+                    altitude: altitude,
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone);
             }
             else
             {
@@ -95,11 +103,16 @@ namespace AXToolbox.Common.IO
                 var latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
                 var longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
 
-                var ll = new LatLonCoordinates(fileDatum, latitude, longitude, altitude);
-                coords = ll.ToUtm(settings.Datum, settings.Center.ZoneNumber);
+                wp = new Waypoint(
+                   name: name,
+                   time: time,
+                   datum: fileDatum,
+                   latitude: latitude,
+                   longitude: longitude,
+                   altitude: altitude,
+                   utmDatum: settings.ReferencePoint.Datum,
+                   utmZone: settings.ReferencePoint.Zone);
             }
-
-            var wp = new Waypoint(name, coords, time);
 
             return wp;
         }
