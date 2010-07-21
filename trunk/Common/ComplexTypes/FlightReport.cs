@@ -6,14 +6,13 @@ using System.ComponentModel;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using System.IO;
-using AXToolbox.Common.Geodesy;
 
 namespace AXToolbox.Common
 {
     public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
 
     [Serializable]
-    public abstract class FlightReport
+    public abstract class FlightReport : BindableObject
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
@@ -31,7 +30,7 @@ namespace AXToolbox.Common
         protected string loggerModel;
         protected string loggerSerialNumber;
         protected int loggerQnh;
-        protected List<Point> track;
+        protected List<Trackpoint> track;
         protected List<Waypoint> markers;
         protected List<Waypoint> declaredGoals;
         protected Point launchPoint;
@@ -58,7 +57,14 @@ namespace AXToolbox.Common
         public int PilotId
         {
             get { return pilotId; }
-            set { pilotId = value; }
+            set
+            {
+                if (value != pilotId)
+                {
+                    pilotId = value;
+                    base.RaisePropertyChanged("PioltId");
+                }
+            }
         }
         public SignatureStatus Signature
         {
@@ -76,15 +82,15 @@ namespace AXToolbox.Common
         {
             get { return loggerQnh; }
         }
-        public List<Point> OriginalTrack
+        public List<Trackpoint> OriginalTrack
         {
             get { return track; }
         }
-        public List<Point> CleanTrack
+        public List<Trackpoint> CleanTrack
         {
             get { return track.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
         }
-        public List<Point> FlightTrack
+        public List<Trackpoint> FlightTrack
         {
             get { return track.Where(p => p.IsValid == true).Where(p => p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
         }
@@ -104,7 +110,7 @@ namespace AXToolbox.Common
                 if (value != launchPoint)
                 {
                     launchPoint = value;
-                    //NotifyPropertyChanged("LaunchPoint");
+                    base.RaisePropertyChanged("LaunchPoint");
                 }
             }
         }
@@ -116,7 +122,7 @@ namespace AXToolbox.Common
                 if (value != landingPoint)
                 {
                     landingPoint = value;
-                    //NotifyPropertyChanged("LandingPoint");
+                    base.RaisePropertyChanged("LandingPoint");
                 }
             }
         }
@@ -144,7 +150,7 @@ namespace AXToolbox.Common
             loggerModel = "";
             loggerSerialNumber = "";
             loggerQnh = 0;
-            track = new List<Point>();
+            track = new List<Trackpoint>();
             markers = new List<Waypoint>();
             declaredGoals = new List<Waypoint>();
             launchPoint = null;
@@ -172,14 +178,7 @@ namespace AXToolbox.Common
 
         public void RemoveInvalidPoints()
         {
-            int nZone = 0, nTime = 0, nDupe = 0, nSpike = 0;
-
-            // remove points with wrong UTM zone
-            foreach (var point in track.Where(p => p.Zone != settings.Center.Zone))
-            {
-                nZone++;
-                point.IsValid = false;
-            }
+            int nTime = 0, nDupe = 0, nSpike = 0;
 
             // remove points before/after valid times
             DateTime minTime, maxTime;
@@ -202,8 +201,8 @@ namespace AXToolbox.Common
 
             // remove dupes and spikes
             //TODO: consider removing spikes by change in direction
-            Point point_m1 = null;
-            Point point_m2 = null;
+            Trackpoint point_m1 = null;
+            Trackpoint point_m2 = null;
             foreach (var point in track.Where(p => p.IsValid))
             {
                 // remove dupe
@@ -226,8 +225,6 @@ namespace AXToolbox.Common
                 point_m1 = point;
             }
 
-            if (nZone > 0)
-                notes.Add(string.Format("{0} out-of-zone points removed", nTime));
             if (nTime > 0)
                 notes.Add(string.Format("{0} out-of-time points removed", nTime));
             if (nDupe > 0)
@@ -238,8 +235,8 @@ namespace AXToolbox.Common
         public void DetectLaunchAndLanding()
         {
             // find the highest point in flight
-            Point highest = null;
-            foreach (Point point in track.Where(p => p.IsValid))
+            Trackpoint highest = null;
+            foreach (var point in track.Where(p => p.IsValid))
             {
                 if (highest == null || point.Altitude > highest.Altitude)
                     highest = point;
@@ -264,11 +261,11 @@ namespace AXToolbox.Common
                 }
             }
         }
-        private Point FindGroundContact(IEnumerable<Point> track, bool backwards)
+        private Trackpoint FindGroundContact(IEnumerable<Trackpoint> track, bool backwards)
         {
             Point reference = null;
-            Point groundContact = null;
-            Point point_m1 = null;
+            Trackpoint groundContact = null;
+            Trackpoint point_m1 = null;
             double smoothedSpeed = double.NaN;
 
             if (backwards)

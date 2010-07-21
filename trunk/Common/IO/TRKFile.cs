@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using AXToolbox.Common.Geodesy;
-
 
 namespace AXToolbox.Common.IO
 {
     [Serializable]
     public class TRKFile : FlightReport
     {
-        private CoordAdapter coordAdapter = null;
+        private Datum fileDatum = null;
         private bool utm = false;
 
         public TRKFile(string filePath, FlightSettings settings)
@@ -32,10 +30,10 @@ namespace AXToolbox.Common.IO
                 {
                     case 'G':
                         //Datum
-                        var fileDatum = line.Substring(2).Trim();
-                        if (fileDatum == "WGS 84") //Dirty hack!!!
-                            fileDatum = "WGS84";
-                        coordAdapter = new CoordAdapter(fileDatum, settings.Datum);
+                        var strFileDatum = line.Substring(2).Trim();
+                        if (strFileDatum == "WGS 84") //Dirty hack!!!
+                            strFileDatum = "WGS84";
+                        fileDatum = Datum.GetInstance(strFileDatum);
                         break;
                     //case 'L':
                     //    //Timezone
@@ -64,19 +62,21 @@ namespace AXToolbox.Common.IO
 
             var time = DateTime.Parse(fields[4] + " " + fields[5]);
             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
-            Point p;
+            Trackpoint p;
 
             if (utm)
             {
                 //file with utm coordinates
-                p = coordAdapter.ConvertToUTM(new Point()
-                {
-                    Zone = fields[1],
-                    Easting = double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
-                    Northing = double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
-                    Altitude = altitude,
-                    Time = time
-                });
+                p = new Trackpoint(
+                    time: time,
+                    datum: fileDatum,
+                    zone: fields[1],
+                    easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
+                    northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
+                    altitude: altitude,
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone
+                    );
             }
             else
             {
@@ -86,13 +86,19 @@ namespace AXToolbox.Common.IO
                 var ns = fields[2].Right(1);
                 var strLongitude = fields[3].Left(fields[3].Length - 2);
                 var ew = fields[3].Right(1);
-                p = coordAdapter.ConvertToUTM(new LLPoint()
-                {
-                    Latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1),
-                    Longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1),
-                    Altitude = altitude,
-                    Time = time
-                });
+
+                var lat = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
+                var lon = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
+
+                p = new Trackpoint(
+                    time: time,
+                    datum: fileDatum,
+                    latitude: lat,
+                    longitude: lon,
+                    altitude: altitude,
+                    utmDatum: settings.ReferencePoint.Datum,
+                    utmZone: settings.ReferencePoint.Zone
+                    );
             }
 
             track.Add(p);

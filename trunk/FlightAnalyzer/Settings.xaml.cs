@@ -77,7 +77,7 @@ namespace FlightAnalyzer
             if (x.ShowDialog(this) == true)
             {
                 textBoxWptFileName.ToolTip = textBoxWptFileName.Text = x.FileName;
-                editSettings.AllowedGoals = WPTFile.Load(x.FileName, settings.Datum, settings.Center.Zone);
+                editSettings.AllowedGoals = WPTFile.Load(x.FileName, settings);
                 editSettings.AllowedGoals.Sort(new WaypointComparer());
             }
         }
