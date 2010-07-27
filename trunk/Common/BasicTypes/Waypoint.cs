@@ -37,7 +37,7 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return ToString(PointInfo.All & ~(PointInfo.Date | PointInfo.Validity));
+            return ToString(PointInfo.Name | PointInfo.Time | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude);
         }
         public override string ToString(PointInfo info)
         {

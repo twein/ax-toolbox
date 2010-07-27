@@ -29,18 +29,16 @@ namespace AXToolbox.Common
         }
         public string Tag
         {
-            get { return string.Format("({0:yy/MM/dd}{1}-{2}-{3}-{4:#}-{5:#})", Date, AmOrPm, ReferencePoint.Datum, ReferencePoint.Zone, Qnh, DefaultAltitude); }
+            get { return string.Format("({0:yy/MM/dd}{1}-{2}-{3}-{4:#}-{5:0})", Date, AmOrPm, ReferencePoint.Datum, ReferencePoint.Zone, Qnh, DefaultAltitude); }
         }
 
         private FlightSettings()
         {
             var now = DateTime.Now;
-            var datum = Datum.GetInstance("European 1950");
-            var zone = "31T";
-
             Date = now.ToUniversalTime().StripTimePart();
             Am = now.Hour >= 12;
-            ReferencePoint = new Point(DateTime.Now, datum, zone, 480000, 4650000, 0, datum);
+            var datum = Datum.GetInstance("European 1950");
+            ReferencePoint = new Waypoint("Reference", Date, datum, "31T", 480000, 4650000, 0, datum);
             Qnh = 1013;
             DefaultAltitude = 0; // m
             MinVelocity = 0.3; // m/s

@@ -52,10 +52,15 @@
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <Hyperlink Name="hyperlinkCopyright" 
+                <StackPanel Orientation="Horizontal">
+                    <!--<TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>-->
+                    <TextBlock Style="{StaticResource valueStyle}">
+                    <Hyperlink Name="hyperlinkCopyright" 
                            NavigateUri="http://www.balloonerds.com" 
                            TextDecorations="none"
                            RequestNavigate="hyperlink_RequestNavigate">(c) 2009-2010 balloonerds.com</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
         <Grid>
@@ -168,7 +173,6 @@
                     <TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
                     <TextBlock Name="textblockPointer" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
                 </StackPanel>
-
                 <map:GMapControl x:Name="MainMap" Grid.Row="1" Margin="0,0,5,5"
                                  BorderBrush="Gray" BorderThickness="0.5"
                                  Height="Auto"

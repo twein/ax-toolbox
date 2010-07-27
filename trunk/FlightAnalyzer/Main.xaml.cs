@@ -142,7 +142,7 @@ namespace FlightAnalyzer
             var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
             var datum = (report == null) ? globalSettings.ReferencePoint.Datum : report.Settings.ReferencePoint.Datum;
             var p = new AXToolbox.Common.Point(DateTime.Now, Datum.WGS84, llp.Lat, llp.Lng, 0, datum);
-            textblockMouse.Text = "Mouse: " + p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
+            textblockMouse.Text = p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
         }
         private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
         {
@@ -297,7 +297,7 @@ namespace FlightAnalyzer
         {
             //Clear Map
             MainMap.Markers.Clear();
-            MainMap.Markers.Add(GetTagMarker("center", globalSettings.ReferencePoint, "CENTER", globalSettings.ReferencePoint.ToString(), Brushes.Orange));
+            MainMap.Markers.Add(GetTagMarker("reference", globalSettings.ReferencePoint, "REFERENCE", globalSettings.ReferencePoint.ToString(), Brushes.Orange));
 
             //Add allowed goals;
             if ((bool)checkGoals.IsChecked)
@@ -309,7 +309,7 @@ namespace FlightAnalyzer
                     goals = report.Settings.AllowedGoals;
 
                 foreach (var m in goals)
-                    MainMap.Markers.Add(GetTagMarker("goal", m, "G" + m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+                    MainMap.Markers.Add(GetTagMarker("goal", m, m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
             }
 
             if (report != null)
@@ -325,11 +325,11 @@ namespace FlightAnalyzer
 
                 // Add dropped markers to map
                 foreach (var m in report.Markers)
-                    MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, "M" + m.Name, "Marker " + m.ToString(), Brushes.Yellow));
+                    MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
 
                 // Add goal declarations to map
                 foreach (var dg in report.DeclaredGoals)
-                    MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, "D" + dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
+                    MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
 
                 //Add movable pointer and center map there
                 MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
@@ -348,7 +348,6 @@ namespace FlightAnalyzer
                     {
                         var t = (int)sliderPointer.Value;
                         var p = GetVisibleTrack()[t];
-                        //TODO: Use correct datum
                         ((Tag)marker.Shape).SetTooltip(p.ToString());
                         marker.Position = new PointLatLng(p.Latitude, p.Longitude);
                         //marker.ForceUpdateLocalPosition(MainMap);
@@ -359,6 +358,7 @@ namespace FlightAnalyzer
                                 if (checkLock.IsChecked.Value)
                                     MainMap.CurrentPosition = marker.Position;
                                 textblockPointer.Text = "Pointer: " + p.ToString();
+                                //sliderPointer.ToolTip = p.ToString();
                                 break;
                             case "launch":
                                 textblockLaunch.Tag = p;
@@ -418,10 +418,10 @@ namespace FlightAnalyzer
             var marker = new GMapMarker(new PointLatLng(p.Latitude, p.Longitude));
             marker.Tag = tag;
             marker.Shape = new Tag(text, toolTip, brush);
-            //marker.Shape.Opacity = 0.67;
+            marker.Shape.Opacity = 0.6;
             //marker.ForceUpdateLocalPosition(MainMap);
 
-            if (tag == "center")
+            if (tag == "reference")
                 MainMap.CurrentPosition = marker.Position;
 
             return marker;

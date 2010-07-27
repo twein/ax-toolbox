@@ -91,11 +91,11 @@ namespace AXToolbox.Common.IO
         }
         private void ParseMarker(string line)
         {
-            var number = int.Parse(line.Substring(10, 2));
+            var number = line.Substring(10, 2);
             var p = ParseFixAt(line, 12);
 
             if (p != null)
-                markers.Add(new Waypoint(number.ToString(), p));
+                markers.Add(new Waypoint(number, p));
         }
         private void ParseDeclaration(string line)
         {
@@ -218,7 +218,7 @@ namespace AXToolbox.Common.IO
 
                 var p = new Point(
                     time: time,
-                    datum:Datum.WGS84,
+                    datum: Datum.WGS84,
                     latitude: latitude,
                     longitude: longitude,
                     altitude: altitude,

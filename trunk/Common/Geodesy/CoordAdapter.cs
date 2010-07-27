@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace AXToolbox.Common
 {
@@ -40,8 +39,6 @@ namespace AXToolbox.Common
 
         public UtmCoordinates ToUTM(LatLonCoordinates p1, int zoneNumber = 0)
         {
-            Debug.WriteLine("LLToUTM");
-
             LatLonCoordinates p2;
 
             if (performHelmert)
@@ -64,8 +61,6 @@ namespace AXToolbox.Common
         }
         public UtmCoordinates ToUTM(UtmCoordinates p1, int zoneNumber = 0)
         {
-            Debug.WriteLine("UTMToUTM");
-
             UtmCoordinates p2;
 
             if (performHelmert || int.Parse(p1.Zone.Substring(0, 2)) != zoneNumber)
@@ -77,8 +72,6 @@ namespace AXToolbox.Common
         }
         public LatLonCoordinates ToLatLong(LatLonCoordinates p1)
         {
-            Debug.WriteLine("LLToLL");
-
             LatLonCoordinates p2;
 
             if (performHelmert)
@@ -101,8 +94,6 @@ namespace AXToolbox.Common
         }
         public LatLonCoordinates ToLatLong(UtmCoordinates p1)
         {
-            Debug.WriteLine("UTMToLL");
-
             return ToLatLong(UTMtoLatLong(p1, datum1));
         }
 
@@ -186,8 +177,6 @@ namespace AXToolbox.Common
 
         private static XyzCoordinates Helmert_LocalToWGS84(XyzCoordinates p1, Datum datum)
         {
-            Debug.WriteLine("Helmert_LocalToWGS84");
-
             double scale = 1 + datum.ds;
 
             var p2 = new XyzCoordinates(
@@ -200,8 +189,6 @@ namespace AXToolbox.Common
         }
         private static XyzCoordinates Helmert_WGS84ToLocal(XyzCoordinates p1, Datum datum)
         {
-            Debug.WriteLine("Helmert_WGS84ToLocal");
-
             double scale = 1 - datum.ds;
 
             var p2 = new XyzCoordinates(
@@ -215,8 +202,6 @@ namespace AXToolbox.Common
 
         private static LatLonCoordinates UTMtoLatLong(UtmCoordinates p1, Datum datum)
         {
-            Debug.WriteLine("static UTMtoLL");
-
             double k0 = 0.9996;
             double a = datum.a;
             double e2 = datum.e2;
@@ -276,8 +261,6 @@ namespace AXToolbox.Common
         }
         private static UtmCoordinates LatLongToUTM(LatLonCoordinates p1, Datum datum, int zoneNumber = 0)
         {
-            Debug.WriteLine("static LLToUTM");
-
             //[1]
 
             /*

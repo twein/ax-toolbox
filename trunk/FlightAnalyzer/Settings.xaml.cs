@@ -72,13 +72,13 @@ namespace FlightAnalyzer
         {
             var x = new OpenFileDialog();
             x.Filter = "Waypoint files (*.wpt)|*.wpt";
-            x.FileName = textBoxWptFileName.Text;
             x.RestoreDirectory = true;
             if (x.ShowDialog(this) == true)
             {
-                textBoxWptFileName.ToolTip = textBoxWptFileName.Text = x.FileName;
                 editSettings.AllowedGoals = WPTFile.Load(x.FileName, settings);
                 editSettings.AllowedGoals.Sort(new WaypointComparer());
+                DataContext = null;
+                DataContext = editSettings;
             }
         }
     }

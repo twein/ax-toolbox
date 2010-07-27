@@ -11,10 +11,11 @@ namespace FlightAnalyzer
         {
             this.InitializeComponent();
 
-            Circle.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 }; ;
+            Shape.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 }; ;
 
             Text.Text = text;
-            Circle.Background = background;
+            Shape.Background = background;
+
             this.ToolTip = tooltip;
         }
 
