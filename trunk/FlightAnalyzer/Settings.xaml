@@ -52,15 +52,10 @@
 
             <StackPanel Orientation="Horizontal">
                 <Label Style="{StaticResource defaultStyle}">Allowed goals file:</Label>
-                <TextBox Name="textBoxWptFileName" Style="{StaticResource defaultStyle}" IsReadOnly="True">
-                    <TextBox.Text>
-                        <Binding Path="GoalsFile">
-                            <Binding.ValidationRules>
-                                <validation:FileNameValidationRule/>
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                </TextBox>
+                <ListBox Style="{StaticResource defaultStyle}" 
+                                 MinHeight="50" MaxHeight="100"
+                                 ItemsSource="{Binding Path=AllowedGoals}">
+                </ListBox>
                 <Button Name="buttonWptFile" Style="{StaticResource defaultStyle}" Width="26" Click="buttonWptFile_Click">...</Button>
             </StackPanel>
 

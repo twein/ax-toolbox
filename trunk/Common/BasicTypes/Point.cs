@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace AXToolbox.Common
 {
@@ -91,6 +92,9 @@ namespace AXToolbox.Common
             if ((info & PointInfo.Time) > 0)
                 str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
 
+            if ((info & PointInfo.Datum) > 0)
+                str.Append(datum.Name + " ");
+
             if ((info & PointInfo.GeoCoords) > 0)
                 str.Append(string.Format("{0:0.000000} {1:0.000000} ", latitude, longitude));
 
@@ -108,7 +112,61 @@ namespace AXToolbox.Common
 
         public static bool TryParse(string strValue, out Point resultPoint)
         {
-            throw new NotImplementedException();
+            bool retVal = false;
+            resultPoint = null;
+
+            try
+            {
+                var fields = strValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+
+                //find the zone
+                string zone = null;
+                int iZone = -1;
+                for (var i = 0; i < fields.Length; i++)
+                {
+                    if (fields[i].Length == 3 && int.Parse(fields[i].Substring(0, 2)) > 0)
+                    {
+                        iZone = i;
+                        zone = fields[i];
+                        break;
+                    }
+                }
+                if (iZone >= 0)
+                {
+                    //ok. find the remaining values
+                    string strDatum = "";
+                    for (var i = 0; i < iZone; i++)
+                    {
+                        strDatum += fields[i] + " ";
+                    }
+                    var datum = Datum.GetInstance(strDatum.TrimEnd());
+
+                    var easting = double.Parse(fields[iZone + 1], NumberFormatInfo.InvariantInfo);
+                    var northing = double.Parse(fields[iZone + 2], NumberFormatInfo.InvariantInfo);
+
+                    //altitude is optional
+                    var altitude = 0.0;
+                    if (fields.Length - iZone == 4)
+                        altitude = double.Parse(fields[iZone + 3], NumberFormatInfo.InvariantInfo);
+
+                    resultPoint = new Point(DateTime.MinValue, datum, zone, easting, northing, altitude, datum);
+                    retVal = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex is ArgumentNullException || ex is IndexOutOfRangeException || ex is FormatException || ex is KeyNotFoundException)
+                {
+                    retVal = false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return retVal;
         }
 
         protected int GetZoneNumber(string zone)
