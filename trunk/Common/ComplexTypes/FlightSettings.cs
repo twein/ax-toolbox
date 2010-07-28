@@ -27,11 +27,6 @@ namespace AXToolbox.Common
         {
             get { return Am ? "AM" : "PM"; }
         }
-        public string Tag
-        {
-            get { return string.Format("({0:yy/MM/dd}{1}-{2}-{3}-{4:#}-{5:0})", Date, AmOrPm, ReferencePoint.Datum, ReferencePoint.Zone, Qnh, DefaultAltitude); }
-        }
-
         private FlightSettings()
         {
             var now = DateTime.Now;
@@ -86,6 +81,11 @@ namespace AXToolbox.Common
         public static FlightSettings LoadDefaults()
         {
             return new FlightSettings();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0:yyyy/MM/dd}{1}-{2}-{3}-{4:#}-{5:0}", Date, AmOrPm, ReferencePoint.Datum, ReferencePoint.Zone, Qnh, DefaultAltitude);
         }
     }
 }
