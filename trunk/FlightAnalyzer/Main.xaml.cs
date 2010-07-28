@@ -116,18 +116,44 @@ namespace FlightAnalyzer
                     break;
             }
         }
-        private void something_MouseLeftButtonUp(object sender, EventArgs e)
+        private void something_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
             AXToolbox.Common.Point wp = null;
+            var source = e.OriginalSource;
 
-            if (sender is TextBox)
-                wp = (sender as TextBox).Tag as AXToolbox.Common.Point;
-            else if (sender is ListBox)
-                wp = (sender as ListBox).SelectedItem as AXToolbox.Common.Point;
+            if (source is TextBlock && (source as TextBlock).DataContext is AXToolbox.Common.Point)
+            {
+                wp = (source as TextBlock).DataContext as AXToolbox.Common.Point;
+            }
+            else if (source is Button)
+            {
+                var command = (source as Button).Tag as string;
+                switch (command)
+                {
+                    case "SetLaunch":
+                        if (report != null)
+                        {
+                            var t = (int)sliderPointer.Value;
+                            wp = GetVisibleTrack()[t];
+                            report.LaunchPoint = wp;
+                            UpdateMarker("launch");
+                        }
+                        break;
+                    case "SetLanding":
+                        if (report != null)
+                        {
+                            var t = (int)sliderPointer.Value;
+                            wp = GetVisibleTrack()[t];
+                            report.LandingPoint = wp;
+                            UpdateMarker("landing");
+                        }
+                        break;
+                }
+            }
 
             if (wp != null)
             {
-                var track = GetVisibleTrack().ToList();
+                var track = GetVisibleTrack();
                 var p = track.Find(tp => tp.Time == wp.Time);
                 var idx = track.IndexOf(p);
 
@@ -150,7 +176,6 @@ namespace FlightAnalyzer
             Process.Start(new ProcessStartInfo(navigateUri));
             e.Handled = true;
         }
-
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (report != null)
@@ -173,31 +198,6 @@ namespace FlightAnalyzer
         private void checkGoals_Checked(object sender, RoutedEventArgs e)
         {
             RedrawMap();
-        }
-
-        private void buttonSetLaunch_Click(object sender, RoutedEventArgs e)
-        {
-            if (report != null)
-            {
-                var t = (int)sliderPointer.Value;
-                var p = GetVisibleTrack()[t];
-                report.LaunchPoint = p;
-                UpdateMarker("launch");
-                //force binding update, since report does not implement INotifyPropertyChanged because it does not allow serialization
-                textblockLaunch.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            }
-        }
-        private void buttonSetLanding_Click(object sender, RoutedEventArgs e)
-        {
-            if (report != null)
-            {
-                var t = (int)sliderPointer.Value;
-                var p = GetVisibleTrack()[t];
-                report.LandingPoint = p;
-                UpdateMarker("landing");
-                //force binding update, since report does not implement INotifyPropertyChanged because it does not allow serialization
-                textblockLanding.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            }
         }
         private void buttonLoad_Click(object sender, RoutedEventArgs e)
         {
@@ -272,7 +272,7 @@ namespace FlightAnalyzer
                 }
                 else
                 {
-                    textboxPilotId.IsReadOnly = false;
+                    //textboxPilotId.IsReadOnly = false;
                     report = newReport;
                     DataContext = null;
                     DataContext = this;
@@ -361,10 +361,10 @@ namespace FlightAnalyzer
                                 //sliderPointer.ToolTip = p.ToString();
                                 break;
                             case "launch":
-                                textblockLaunch.Tag = p;
+                                //textblockLaunch.Tag = p;
                                 break;
                             case "landing":
-                                textblockLanding.Tag = p;
+                                //textblockLanding.Tag = p;
                                 break;
                         }
                     }
