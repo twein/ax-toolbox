@@ -17,6 +17,7 @@ using System.Collections.Generic;
 
 namespace AXToolbox.Common
 {
+    //TODO: check all quadrants of latitude and longitude
     internal class CoordAdapter
     {
         public static CoordAdapter GetInstance(Datum sourceDatum, Datum targetDatum)

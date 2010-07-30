@@ -17,15 +17,15 @@ namespace AXToolbox.Common
         public LatLonCoordinates(Datum datum, double latitude, double longitude, double altitude)
         {
             this.Datum = datum;
-            this.Latitude = new Angle(latitude);
-            this.Longitude = new Angle(longitude);
+            this.Latitude = new Angle(latitude).Normalize180();
+            this.Longitude = new Angle(longitude).Normalize180();
             this.Altitude = altitude;
         }
         public LatLonCoordinates(Datum datum, Angle latitude, Angle longitude, double altitude)
         {
             this.Datum = datum;
-            this.Latitude = latitude;
-            this.Longitude = longitude;
+            this.Latitude = latitude.Normalize180();
+            this.Longitude = longitude.Normalize180();
             this.Altitude = altitude;
         }
 

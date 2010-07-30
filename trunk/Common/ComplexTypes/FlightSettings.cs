@@ -30,7 +30,7 @@ namespace AXToolbox.Common
         private FlightSettings()
         {
             var now = DateTime.Now;
-            Date = now.ToUniversalTime().StripTimePart();
+            Date = now.ToUniversalTime().Date;
             Am = now.Hour >= 12;
             var datum = Datum.GetInstance("European 1950");
             ReferencePoint = new Waypoint("Reference", Date, datum, "31T", 480000, 4650000, 0, datum);
