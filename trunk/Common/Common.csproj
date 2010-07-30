@@ -94,6 +94,7 @@
     <Compile Include="Geodesy\CoordAdapter.cs" />
     <Compile Include="Geodesy\Datum.cs" />
     <Compile Include="Geodesy\GeodeticCurve.cs" />
+    <Compile Include="Geodesy\Sun.cs" />
     <Compile Include="IO\IGCFile.cs" />
     <Compile Include="IO\TRKFile.cs" />
     <Compile Include="IO\WPTFile.cs" />

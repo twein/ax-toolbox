@@ -2,7 +2,7 @@
 
 namespace AXToolbox.Common
 {
-    // Angle between -180.00 .. 179.9 degrees
+    // Angle in degres 
     [Serializable]
     public class Angle
     {
@@ -18,23 +18,107 @@ namespace AXToolbox.Common
         public static readonly double RAD2DEG = 180.0 / Math.PI;
         public static readonly double TWOPI = 2 * Math.PI;
 
+        private double radians;
 
         public Angle() { }
         public Angle(double degrees)
         {
-            this.degrees = (degrees + 180.0) % 360.0 - 180.0;
+            this.radians = degrees * DEG2RAD;
         }
 
-        private double degrees;
         public double Degrees
         {
-            get { return degrees; }
-            set { degrees = (value + 180.0) % 360.0 - 180.0; }
+            get { return radians * RAD2DEG; }
+            set { radians = value * DEG2RAD; }
         }
         public double Radians
         {
-            get { return degrees * DEG2RAD; }
-            set { degrees = (value * RAD2DEG + 180.0) % 360.0 - 180.0; }
+            get { return radians; }
+            set { radians = value; }
         }
+
+        public double Hours
+        {
+            get { return radians * RAD2DEG / 15; }
+        }
+        public double Sin
+        {
+            get { return Math.Sin(radians); }
+        }
+        public double Cos
+        {
+            get { return Math.Cos(radians); }
+        }
+        public double Tan
+        {
+            get { return Math.Tan(radians); }
+        }
+
+        /// <summary>
+        /// Normalize an angle to [0, 360)
+        /// </summary>
+        public Angle Normalize360()
+        {
+            return new Angle((radians * RAD2DEG + 360.0) % 360);
+        }
+        /// <summary>
+        /// Normalize an angle to [-180, 180)
+        /// </summary>
+        public Angle Normalize180()
+        {
+            return new Angle((radians * RAD2DEG + 180.0) % 360 - 180);
+        }
+
+        public override string ToString()
+        {
+            return (radians * RAD2DEG).ToString();
+        }
+
+        public static Angle Asin(double radians)
+        {
+            return new Angle() { Radians = Math.Asin(radians) };
+        }
+        public static Angle Acos(double radians)
+        {
+            return new Angle() { Radians = Math.Acos(radians) };
+        }
+        public static Angle Atan(double radians)
+        {
+            return new Angle(Math.Atan(radians) * RAD2DEG);
+        }
+
+        public static Angle operator +(Angle alpha, Angle beta)
+        {
+            return new Angle(alpha.Degrees + beta.Degrees);
+        }
+        public static Angle operator -(Angle alpha, Angle beta)
+        {
+            return new Angle(alpha.Degrees - beta.Degrees);
+        }
+        public static Angle operator +(Angle alpha, double degrees)
+        {
+            return new Angle(alpha.Degrees + degrees);
+        }
+        public static Angle operator +(double degrees, Angle alpha)
+        {
+            return new Angle(alpha.Degrees + degrees);
+        }
+        public static Angle operator -(Angle alpha, double degrees)
+        {
+            return new Angle(alpha.Degrees - degrees);
+        }
+        public static Angle operator -(double degrees, Angle alpha)
+        {
+            return new Angle(degrees - alpha.Degrees);
+        }
+        public static Angle operator *(Angle alpha, double degrees)
+        {
+            return new Angle(alpha.Degrees * degrees);
+        }
+        public static Angle operator *(double degrees, Angle alpha)
+        {
+            return new Angle(alpha.Degrees * degrees);
+        }
+
     }
 }

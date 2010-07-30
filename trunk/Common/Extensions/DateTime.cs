@@ -20,10 +20,5 @@ namespace AXToolbox.Common
         //        return TimeOfDay.Afternoon;
         //    }
         //}
-
-        public static DateTime StripTimePart(this DateTime date)
-        {
-            return new DateTime(date.Year, date.Month, date.Day);
-        }
     }
 }
