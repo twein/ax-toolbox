@@ -109,10 +109,10 @@ namespace AXToolbox.Tests
                 timezone = (date - date.ToUniversalTime()).TotalHours;//date.IsDaylightSavingTime() ? 2 : 1;
                 Print(
                     string.Format("{0:ddd dd/MM/yyyy}  ", date)
-                    + string.Format("{0:HH:mm}   ", sun.Sunrise(date, timezone, Sun.ZenithTypes.Civil))
+                    + string.Format("{0:HH:mm}   ", sun.Sunrise(date, timezone, Sun.ZenithTypes.Custom))
                     + string.Format("{0:HH:mm}   ", sun.Sunrise(date, timezone, Sun.ZenithTypes.Official))
                     + string.Format("{0:HH:mm}   ", sun.Sunset(date, timezone, Sun.ZenithTypes.Official))
-                    + string.Format("{0:HH:mm}   ", sun.Sunset(date, timezone, Sun.ZenithTypes.Civil))
+                    + string.Format("{0:HH:mm}   ", sun.Sunset(date, timezone, Sun.ZenithTypes.Custom))
                 );
             }
         }

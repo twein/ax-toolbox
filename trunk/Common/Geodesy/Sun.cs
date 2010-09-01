@@ -8,7 +8,7 @@ namespace AXToolbox.Common
     // Washington, DC 20392
     public class Sun
     {
-        public enum ZenithTypes { Official, Civil, Nautical, Astronomical }
+        public enum ZenithTypes { Official, Civil, Nautical, Astronomical, Custom }
 
         private const double DEG2RAD = Math.PI / 180.0;
         private const double RAD2DEG = 180.0 / Math.PI;
@@ -146,6 +146,9 @@ namespace AXToolbox.Common
                     break;
                 case ZenithTypes.Astronomical:
                     degrees = 108;
+                    break;
+                case ZenithTypes.Custom:
+                    degrees = 95;
                     break;
                 default:
                     throw new Exception();
