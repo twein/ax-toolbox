@@ -12,294 +12,329 @@
 	KeyDown="MainWindow_KeyDown" 
 	Loaded="MainWindow_Loaded" 
 	Drop="MainWindow_Drop" AllowDrop="True">
-	<Window.Resources>
-		<Style x:Key="labelStyle">
-			<Setter Property="Control.Margin" Value="5"/>
-			<Setter Property="Control.VerticalAlignment" Value="Top"/>
-			<Setter Property="Control.HorizontalAlignment" Value="Left"/>
-		</Style>
-		<Style x:Key="valueStyle">
-			<Setter Property="Control.Margin" Value="5,0,5,5"/>
-			<Setter Property="Control.Width" Value="400"/>
-			<Setter Property="Control.VerticalAlignment" Value="Top"/>
-			<Setter Property="Control.HorizontalAlignment" Value="Left"/>
-			<Setter Property="Control.Background" Value="Gainsboro"/>
-			<Setter Property="Control.BorderBrush" Value="Gray"/>
-			<Setter Property="Control.BorderThickness" Value="1"/>
-		</Style>
-		<DataTemplate DataType="{x:Type common:FlightSettings}">
-			<StackPanel Orientation="Vertical">
-				<TextBlock 
+    <Window.Resources>
+        <Style x:Key="labelStyle">
+            <Setter Property="Control.Margin" Value="5"/>
+            <Setter Property="Control.VerticalAlignment" Value="Top"/>
+            <Setter Property="Control.HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style x:Key="valueStyle">
+            <Setter Property="Control.Margin" Value="5,0,5,5"/>
+            <Setter Property="Control.Width" Value="400"/>
+            <Setter Property="Control.VerticalAlignment" Value="Top"/>
+            <Setter Property="Control.HorizontalAlignment" Value="Left"/>
+            <Setter Property="Control.Background" Value="Gainsboro"/>
+            <Setter Property="Control.BorderBrush" Value="Gray"/>
+            <Setter Property="Control.BorderThickness" Value="1"/>
+        </Style>
+        <DataTemplate DataType="{x:Type common:FlightSettings}">
+            <StackPanel Orientation="Vertical">
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Date
-				</TextBlock>
-				<TextBox IsReadOnly="True"
+                </TextBlock>
+                <TextBox IsReadOnly="True"
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}"/>
-				<!--<Calendar 
+                <!--<Calendar 
 				DisplayDate="{Binding Path=Date, Mode=OneWay}" 
 				SelectedDate="{Binding Path=Date, Mode=OneWay}"/>-->
 
-				<TextBlock 
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Time of day
-				</TextBlock>
-				<TextBox IsReadOnly="True"
+                </TextBlock>
+                <TextBox IsReadOnly="True"
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=AmOrPm, Mode=OneWay}"/>
 
-				<TextBlock 
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Reference point
-				</TextBlock>
-				<TextBox IsReadOnly="True"
+                </TextBlock>
+                <TextBox IsReadOnly="True"
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=ReferencePoint, Mode=OneWay}"
 				Tag="{Binding Path=ReferencePoint,Mode=OneWay}"/>
 
-				<TextBlock 
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				QNH
-				</TextBlock>
-				<TextBox IsReadOnly="True"
+                </TextBlock>
+                <TextBox IsReadOnly="True"
 				Style="{StaticResource valueStyle}" 
 				Text="{Binding Path=Qnh, Mode=OneWay}"/>
 
-				<TextBlock 
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Default altitude
-				</TextBlock>
-				<TextBox IsReadOnly="True"
+                </TextBlock>
+                <TextBox IsReadOnly="True"
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=DefaultAltitude, Mode=OneWay}"/>
 
-				<TextBlock 
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Allowed goals
-				</TextBlock>
-				<ListBox 
+                </TextBlock>
+                <ListBox 
 				Style="{StaticResource valueStyle}" 
 				MinHeight="50" MaxHeight="100"
 				ItemsSource="{Binding Path=AllowedGoals, Mode=OneWay}"/>
-			</StackPanel>
-		</DataTemplate>
-		<DataTemplate  DataType="{x:Type common:FlightReport}">
-			<StackPanel Orientation="Vertical">
-				<TextBlock 
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate  DataType="{x:Type common:FlightReport}">
+            <StackPanel Orientation="Vertical">
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Date:
-				</TextBlock>
-				<TextBox IsReadOnly="True"
+                </TextBlock>
+                <TextBox IsReadOnly="True"
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}"/>
 
-				<TextBlock Style="{StaticResource labelStyle}">
+                <TextBlock Style="{StaticResource labelStyle}">
 				Pilot:
-				</TextBlock>
-				<TextBox  IsReadOnly="True"
+                </TextBlock>
+                <TextBox  IsReadOnly="True"
 				Name="textboxPilotId"
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=PilotId, Mode=TwoWay}"/>
 
-				<StackPanel Orientation="Horizontal">
-					<TextBlock 
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock 
 					Style="{StaticResource labelStyle}">
 					Launch point:
-					</TextBlock>
-					<Button 
+                    </TextBlock>
+                    <Button 
 					Margin="0" 
 					VerticalAlignment="Center" 
 					Tag="SetLaunch"
 					ToolTip="Set launch point at pointer position"
 					Click="something_MouseLeftButtonUp">
-						Set
-					</Button>
-				</StackPanel>
-				<TextBox IsReadOnly="True"
+                        Set
+                    </Button>
+                </StackPanel>
+                <TextBox IsReadOnly="True"
 				x:Name="textblockLaunch" 
 				Style="{StaticResource valueStyle}" 
 				Text="{Binding Path=LaunchPoint,Mode=OneWay}" 
 				Tag="{Binding Path=LaunchPoint,Mode=OneWay}"/>
 
-				<StackPanel Orientation="Horizontal">
-					<TextBlock 
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock 
 					Style="{StaticResource labelStyle}">
 					Landing point:
-					</TextBlock>
-					<Button 
+                    </TextBlock>
+                    <Button 
 					Margin="0" 
 					VerticalAlignment="Center" 
 					Tag="SetLanding"
 					ToolTip="Set landing point at pointer position"
 					Click="something_MouseLeftButtonUp">
-						Set
-					</Button>
-				</StackPanel>
-				<TextBox IsReadOnly="True"
+                        Set
+                    </Button>
+                </StackPanel>
+                <TextBox IsReadOnly="True"
 				x:Name="textblockLanding" 
 				Style="{StaticResource valueStyle}" 
 				Text="{Binding Path=LandingPoint,Mode=OneWay}" 
 				Tag="{Binding Path=LandingPoint,Mode=OneWay}"/>
 
-				<TextBlock Style="{StaticResource labelStyle}">
-				Markers:
-				</TextBlock>
-				<ListBox 
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource labelStyle}">
+				    Markers:
+                    </TextBlock>
+                    <Button 
+					Margin="0" 
+					VerticalAlignment="Center" 
+					Tag="AddMarker"
+					ToolTip="Add new marker"
+					Click="AddMarker_Click">
+                        Add
+                    </Button>
+                    <Button 
+					Margin="0" 
+					VerticalAlignment="Center" 
+					Tag="DelMarker"
+					ToolTip="Delete marker"
+					Click="DeleteMarker_Click">
+                        Delete
+                    </Button>
+                </StackPanel>
+                <ListBox 
 				Style="{StaticResource valueStyle}"
 				MinHeight="50" MaxHeight="100"
 				ItemsSource="{Binding Path=Markers}"/>
 
-				<TextBlock 
-				Style="{StaticResource labelStyle}">
-				Declared goals:
-				</TextBlock>
-				<ListBox 
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource labelStyle}">
+				    Declared goals:
+                    </TextBlock>
+                    <Button 
+					Margin="0" 
+					VerticalAlignment="Center" 
+					Tag="AddDeclaration"
+					ToolTip="Add new goal declaration"
+					Click="AddDeclaration_Click">
+                        Add
+                    </Button>
+                    <Button 
+					Margin="0" 
+					VerticalAlignment="Center" 
+					Tag="DelDeclaration"
+					ToolTip="Delete goal declaration"
+					Click="DeleteDeclaration_Click">
+                        Delete
+                    </Button>
+                </StackPanel>
+                <ListBox 
 				Style="{StaticResource valueStyle}" 
 				MinHeight="50" MaxHeight="100"
 				ItemsSource="{Binding Path=DeclaredGoals}"/>
 
-				<TextBlock 
+                <TextBlock 
 				Style="{StaticResource labelStyle}">
 				Notes:
-				</TextBlock>
-				<ListBox 
+                </TextBlock>
+                <ListBox 
 				Style="{StaticResource valueStyle}" 
 				MinHeight="50" MaxHeight="100"
 				ItemsSource="{Binding Path=Notes}"/>
-			</StackPanel>
-		</DataTemplate>
-	</Window.Resources>
-	<DockPanel>
-		<StatusBar DockPanel.Dock="Bottom">
-			<StatusBarItem>
-				<StackPanel Orientation="Horizontal">
-					<!--<TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>-->
-					<TextBlock Style="{StaticResource valueStyle}">
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <!--<TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>-->
+                    <TextBlock Style="{StaticResource valueStyle}">
 					<Hyperlink Name="hyperlinkCopyright" 
 						   NavigateUri="http://www.balloonerds.com" 
 						   TextDecorations="none"
 						   RequestNavigate="hyperlink_RequestNavigate">(c) 2009-2010 balloonerds.com</Hyperlink>
-					</TextBlock>
-				</StackPanel>
-			</StatusBarItem>
-		</StatusBar>
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto"></ColumnDefinition>
-				<ColumnDefinition Width="*"></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-			<ScrollViewer VerticalScrollBarVisibility="Auto">
-				<StackPanel Orientation="Vertical">
-					<Expander ExpandDirection="Down" IsExpanded="False" 
+                    </TextBlock>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Vertical">
+                    <Expander ExpandDirection="Down" IsExpanded="False" 
 						  BorderBrush="Gray" Margin="5,5,5,0">
-						<Expander.Header>
-							<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-								<StackPanel Orientation="Vertical">
-									<TextBlock VerticalAlignment="Center" FontWeight="Bold">Global settings</TextBlock>
-									<TextBlock VerticalAlignment="Center" Text="{Binding Path=GlobalSettings}"/>
-								</StackPanel>
-								<Button Name="buttonGlobalSettings" Margin="5,0,0,10" 
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                <StackPanel Orientation="Vertical"  Margin="0,0,5,0">
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold">Global settings</TextBlock>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=GlobalSettings}"/>
+                                </StackPanel>
+                                <Button Name="buttonGlobalSettings" Margin="0,0,0,10" 
 										ToolTip="Change global settings"
 										Click="buttonSettings_Click">Edit</Button>
-							</StackPanel>
-						</Expander.Header>
-						<ContentControl
+                            </StackPanel>
+                        </Expander.Header>
+                        <ContentControl
 							Content="{Binding Path=GlobalSettings}"
 							MouseLeftButtonUp="something_MouseLeftButtonUp"/>
-					</Expander>
-					<Expander ExpandDirection="Down"  IsExpanded="True" BorderBrush="Gray" Margin="5,5,5,0">
-						<Expander.Header>
-							<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-								<StackPanel Orientation="Vertical">
-									<TextBlock VerticalAlignment="Center" FontWeight="Bold">Flight report</TextBlock>
-									<TextBlock VerticalAlignment="Center" Text="{Binding Path=Report}"/>
-								</StackPanel>
-								<Button Margin="5,0,0,10" 
+                    </Expander>
+                    <Expander ExpandDirection="Down"  IsExpanded="True" BorderBrush="Gray" Margin="5,5,5,0">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                <StackPanel Orientation="Vertical" Margin="0,0,5,0">
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold">Flight report</TextBlock>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report}"/>
+                                </StackPanel>
+                                <Button Margin="0,0,0,10" 
 										ToolTip="Load flight report file (.axr)"
 										Click="buttonLoad_Click">Load</Button>
-								<Button Margin="5,0,0,10" 
+                                <Button Margin="0,0,0,10" 
 										ToolTip="Save flight report file (.axr)"
 										Click="buttonSave_Click">Save</Button>
-								<Button Margin="5,0,0,10"
+                                <Button Margin="0,0,0,10"
 										ToolTip="Recompute report from log file."
 										Click="buttonReset_Click">Reset</Button>
-							</StackPanel>
-						</Expander.Header>
-						<ContentControl
+                            </StackPanel>
+                        </Expander.Header>
+                        <ContentControl
 							Content="{Binding Path=Report}"
 							MouseLeftButtonUp="something_MouseLeftButtonUp"/>
-					</Expander>
-					<Expander ExpandDirection="Down" IsExpanded="False" BorderBrush="Gray" Margin="5,5,5,5">
-						<Expander.Header>
-							<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-								<StackPanel Orientation="Vertical">
-									<TextBlock VerticalAlignment="Center" FontWeight="Bold">Report settings</TextBlock>
-									<TextBlock VerticalAlignment="Center" Text="{Binding Path=Report.Settings}"/>
-								</StackPanel>
-								<Button  Name="buttonReportSettings" Margin="5,0,0,10" 
+                    </Expander>
+                    <Expander ExpandDirection="Down" IsExpanded="False" BorderBrush="Gray" Margin="5,5,5,5">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <StackPanel Orientation="Vertical" Margin="0,0,5,0">
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold">Report settings</TextBlock>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report.Settings}"/>
+                                </StackPanel>
+                                <Button  Name="buttonReportSettings" Margin="0,0,0,10" 
 										 ToolTip="Change report settings"
 										 Click="buttonSettings_Click">Edit</Button>
-							</StackPanel>
-						</Expander.Header>
-						<ContentControl 
+                            </StackPanel>
+                        </Expander.Header>
+                        <ContentControl 
 							Content="{Binding Path=Report.Settings}"              
 							MouseLeftButtonUp="something_MouseLeftButtonUp"/>
-					</Expander>
-				</StackPanel>
-			</ScrollViewer>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
 
-			<Grid Grid.Column="1">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"></RowDefinition>
-					<RowDefinition Height="*"></RowDefinition>
-				</Grid.RowDefinitions>
-				<StackPanel Grid.Row="0" Orientation="Horizontal">
-					<TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
-					<TextBlock Name="textblockPointer" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
-				</StackPanel>
-				<map:GMapControl x:Name="MainMap" Grid.Row="1" Margin="0,0,5,5"
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                    <TextBlock Name="textblockPointer" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                </StackPanel>
+                <map:GMapControl x:Name="MainMap" Grid.Row="1" Margin="0,0,5,5"
 								 BorderBrush="Gray" BorderThickness="0.5"
 								 Height="Auto"
 								 MouseMove="MainMap_MouseMove"/>
-				<!--<Border Grid.Row="1" 
+                <!--<Border Grid.Row="1" 
 						Height="100" Width="110"
 						HorizontalAlignment="Left" VerticalAlignment="Top" Background="Black" Opacity="0.25"></Border>-->
-				<Grid Grid.Row="1" Height="Auto">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-						<ColumnDefinition Width="*"></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					<StackPanel Name="controls" Grid.Column="0">
-						<CheckBox Name="checkLock" IsChecked="True"
+                <Grid Grid.Row="1" Height="Auto">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Name="controls" Grid.Column="0">
+                        <CheckBox Name="checkLock" IsChecked="True"
 								  Margin="5" 
 								  Checked="checkLock_Checked">
-							Lock to pointer
-						</CheckBox>
-						<RadioButton Name="radioLogger"
+                            Lock to pointer
+                        </CheckBox>
+                        <RadioButton Name="radioLogger"
 									 Margin="5,0,5,0" GroupName="track" IsChecked="True"
 									 Checked="radio_Checked">
-							All points
-						</RadioButton>
-						<RadioButton Name="radioFlight"
+                            All points
+                        </RadioButton>
+                        <RadioButton Name="radioFlight"
 									 Margin="5,0,5,0" GroupName="track"
 									 Checked="radio_Checked">
-							Flight points
-						</RadioButton>
-						<CheckBox Name="checkGoals" IsChecked="True"
+                            Flight points
+                        </RadioButton>
+                        <CheckBox Name="checkGoals" IsChecked="True"
 								  Margin="5"
 								  Click="checkGoals_Checked">
-							Show goals
-						</CheckBox>
-					</StackPanel>
-					<StackPanel Grid.Column="1">
-						<Slider Name="sliderPointer" Grid.Column="1"
+                            Show goals
+                        </CheckBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <Slider Name="sliderPointer" Grid.Column="1"
 								Margin="5" IsEnabled="False"
 								SmallChange="1" LargeChange="10"
 								ValueChanged="slider_ValueChanged">
-						</Slider>
-					</StackPanel>
-				</Grid>
-			</Grid>
-		</Grid>
-	</DockPanel>
+                        </Slider>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </DockPanel>
 </Window>

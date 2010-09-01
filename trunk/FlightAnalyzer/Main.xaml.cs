@@ -27,7 +27,7 @@ namespace FlightAnalyzer
         private FlightSettings globalSettings;
         private FlightReport report;
 
-        private MapType mapType = MapType.SigPacSpainMap;
+        private MapType mapType = MapType.GoogleMap;
         private int mapDefaultZoom = 12;
 
         public FlightSettings GlobalSettings
@@ -58,6 +58,7 @@ namespace FlightAnalyzer
             try
             {
                 var ip = System.Net.Dns.GetHostEntry("www.google.com");
+                //throw new Exception();
             }
             catch
             {
@@ -462,6 +463,26 @@ namespace FlightAnalyzer
             {
                 MessageBox.Show("Select map area holding right mouse button + ALT", "PrefetchTiles map", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
+        }
+
+        private void AddMarker_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DeleteMarker_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AddDeclaration_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
