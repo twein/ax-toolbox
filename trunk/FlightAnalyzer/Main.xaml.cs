@@ -467,22 +467,23 @@ namespace FlightAnalyzer
 
         private void AddMarker_Click(object sender, RoutedEventArgs e)
         {
-
+            var input = new Input("Marker", report.Settings);
+            if (input.ShowDialog() == true)
+            {
+                report.Markers.Add(input.Value);
+            }
         }
 
         private void DeleteMarker_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void AddDeclaration_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
         {
-
         }
     }
 }

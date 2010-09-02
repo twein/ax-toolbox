@@ -145,7 +145,7 @@
                     <TextBlock Style="{StaticResource labelStyle}">
 				    Markers:
                     </TextBlock>
-                    <Button 
+                    <Button
 					Margin="0" 
 					VerticalAlignment="Center" 
 					Tag="AddMarker"
