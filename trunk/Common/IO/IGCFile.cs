@@ -251,7 +251,7 @@ namespace AXToolbox.Common.IO
         /// <param name="coord4Figures">competition coordinate in 4 figures format</param>
         /// <param name="origin">complete UTM coordinate used as origin</param>
         /// <returns>correct complete UTM coordinate</returns>
-        private static double ComputeCorrectCoordinate(double coord4Figures, double origin)
+        public static double ComputeCorrectCoordinate(double coord4Figures, double origin)
         {
             double[] offsets = { 1e5, -1e5 }; //1e5 m = 100 Km
 

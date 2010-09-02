@@ -53,6 +53,11 @@ namespace AXToolbox.Common
 
             return str.ToString();
         }
+
+        public static bool TryParse(string strValue, out Waypoint resultPoint)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class WaypointComparer : IComparer<Waypoint>
