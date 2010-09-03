@@ -14,6 +14,7 @@ using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using AXToolbox.Common.IO;
 
 namespace FlightAnalyzer
 {
@@ -65,7 +66,7 @@ namespace FlightAnalyzer
             catch
             {
                 MainMap.Manager.Mode = AccessMode.CacheOnly;
-                MessageBox.Show("No internet connection avaible, going to CacheOnly mode.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("No internet connection available, going to CacheOnly mode.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             MainMap.MapType = mapType;
             MainMap.DragButton = MouseButton.Left;
@@ -203,7 +204,7 @@ namespace FlightAnalyzer
         {
             RedrawMap();
         }
-        private void buttonLoad_Click(object sender, RoutedEventArgs e)
+        private void buttonLoadReport_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
             dlg.Filter = "Report files (*.axr)|*.axr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
@@ -213,7 +214,7 @@ namespace FlightAnalyzer
                 LoadReport(dlg.FileName);
             }
         }
-        private void buttonSave_Click(object sender, RoutedEventArgs e)
+        private void buttonSaveReport_Click(object sender, RoutedEventArgs e)
         {
             if (report != null)
             {
@@ -224,7 +225,18 @@ namespace FlightAnalyzer
                         MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void buttonReset_Click(object sender, RoutedEventArgs e)
+        private void buttonExportReport_Click(object sender, RoutedEventArgs e)
+        {
+            if (report != null)
+            {
+                var fileName = report.GetLogFileName();
+                if (!File.Exists(fileName) ||
+                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (!report.ExportLog())
+                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void buttonResetReport_Click(object sender, RoutedEventArgs e)
         {
             if (report != null &&
                 MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
@@ -234,6 +246,13 @@ namespace FlightAnalyzer
                 DataContext = this;
                 RedrawMap();
             }
+        }
+        private void buttonCloseReport_Click(object sender, RoutedEventArgs e)
+        {
+            report = null;
+            DataContext = null;
+            DataContext = this;
+            RedrawMap();
         }
         private void buttonSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -470,10 +489,81 @@ namespace FlightAnalyzer
 
         private void AddMarker_Click(object sender, RoutedEventArgs e)
         {
-            var input = new Input("Marker", report.Settings);
+            Waypoint value = null;
+            bool ok = false;
+
+            var input = new Input("Marker:", report.Settings.ReferencePoint.ToString(), val => "Error " + val);
+            //do
+            //{
+            //    ok = input.ShowDialog() == true;
+            //    if (ok)
+            //    {
+            //        var strValue = input.Value;
+
+            //        var fields = strValue.Split(new char[] { ' ', ':', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+
+            //        if (fields.Length < 6 || fields.Length > 7)
+            //        {
+            //            input.ErrorMessage = "Wrong number of parameters";
+            //            continue;
+            //        }
+
+            //        int tmpNumber;
+            //        if (!int.TryParse(fields[0], out tmpNumber))
+            //        {
+            //            input.ErrorMessage = "Wrong marker number";
+            //            continue;
+            //        }
+            //        if (tmpNumber == 0)
+            //        {
+            //            input.ErrorMessage = "Marker number can not be zero";
+            //            continue;
+            //        }
+            //        var number = tmpNumber.ToString("00");
+
+            //        TimeSpan tmpTime;
+            //        if (!TimeSpan.TryParse(fields[1] + ":" + fields[2] + ":" + fields[3], out tmpTime))
+            //        {
+            //            input.ErrorMessage = "Wrong time";
+            //            continue;
+            //        }
+            //        var time = (report.Settings.Date + tmpTime).ToUniversalTime();
+
+            //        int tmpEasting;
+            //        if (!int.TryParse(fields[4], out tmpEasting))
+            //        {
+            //            input.ErrorMessage = "Wrong easting";
+            //            continue;
+            //        }
+            //        var easting = IGCFile.ComputeCorrectCoordinate(tmpEasting, report.Settings.ReferencePoint.Easting);
+
+            //        int tmpNorthing;
+            //        if (!int.TryParse(fields[5], out tmpNorthing))
+            //        {
+            //            input.ErrorMessage = "Wrong northing";
+            //            continue;
+            //        }
+            //        var northing = IGCFile.ComputeCorrectCoordinate(tmpNorthing, report.Settings.ReferencePoint.Northing);
+
+            //        double altitude = report.Settings.DefaultAltitude;
+            //        if (fields.Length == 7 && !double.TryParse(fields[6], out altitude))
+            //        {
+            //            input.ErrorMessage = "Wrong altitude";
+            //            continue;
+            //        }
+
+            //        value = new Waypoint(
+            //            number,
+            //            time,
+            //            report.Settings.ReferencePoint.Datum, report.Settings.ReferencePoint.Zone, easting, northing, altitude,
+            //            report.Settings.ReferencePoint.Datum
+            //            );
+            //    }
+            //} while (ok && value == null);
+
             if (input.ShowDialog() == true)
             {
-                AddToCollection(report.Markers, input.Value);
+                //AddToCollection(report.Markers, input.Value);
                 RedrawMap();
             }
         }
@@ -489,12 +579,12 @@ namespace FlightAnalyzer
 
         private void AddDeclaration_Click(object sender, RoutedEventArgs e)
         {
-            var input = new Input("Goal Declaration", report.Settings);
-            if (input.ShowDialog() == true)
-            {
-                AddToCollection(report.DeclaredGoals, input.Value);
-                RedrawMap();
-            }
+            //var input = new Input("Goal Declaration", report.Settings);
+            //if (input.ShowDialog() == true)
+            //{
+            //    AddToCollection(report.DeclaredGoals, input.Value);
+            //    RedrawMap();
+            //}
         }
 
         private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
@@ -527,5 +617,68 @@ namespace FlightAnalyzer
                 collection.Insert(inext, point);
             }
         }
+
+
+        /*
+            var strValue = textBoxValue.Text;
+
+            var fields = strValue.Split(new char[] { ' ', ':', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (fields.Length < 6 || fields.Length > 7)
+            {
+                textBlockError.Text = "Wrong number of parameters";
+                return;
+            }
+
+            int tmpNumber;
+            if (!int.TryParse(fields[0], out tmpNumber))
+            {
+                textBlockError.Text = "Wrong " + prompt + " number";
+                return;
+            }
+            if (tmpNumber == 0)
+            {
+                textBlockError.Text = prompt + " number can not be zero";
+                return;
+            }
+            var number = tmpNumber.ToString("00");
+
+            TimeSpan tmpTime;
+            if (!TimeSpan.TryParse(fields[1] + ":" + fields[2] + ":" + fields[3], out tmpTime))
+            {
+                textBlockError.Text = "Wrong time";
+                return;
+            }
+            var time = (settings.Date + tmpTime).ToUniversalTime();
+
+            int tmpEasting;
+            if (!int.TryParse(fields[4], out tmpEasting))
+            {
+                textBlockError.Text = "Wrong easting";
+                return;
+            }
+            var easting = IGCFile.ComputeCorrectCoordinate(tmpEasting, settings.ReferencePoint.Easting);
+
+            int tmpNorthing;
+            if (!int.TryParse(fields[5], out tmpNorthing))
+            {
+                textBlockError.Text = "Wrong northing";
+                return;
+            }
+            var northing = IGCFile.ComputeCorrectCoordinate(tmpNorthing, settings.ReferencePoint.Northing);
+
+            double altitude = settings.DefaultAltitude;
+            if (fields.Length == 7 && !double.TryParse(fields[6], out altitude))
+            {
+                textBlockError.Text = "Wrong altitude";
+                return;
+            }
+
+            value = new Waypoint(
+                number,
+                time,
+                settings.ReferencePoint.Datum, settings.ReferencePoint.Zone, easting, northing, altitude,
+                settings.ReferencePoint.Datum
+                );        */
     }
 }

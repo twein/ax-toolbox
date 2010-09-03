@@ -50,6 +50,14 @@
 
                 <TextBlock 
 				Style="{StaticResource labelStyle}">
+				Datum
+                </TextBlock>
+                <TextBox IsReadOnly="True"
+				Style="{StaticResource valueStyle}"
+				Text="{Binding Path=Datum, Mode=OneWay}"/>
+
+                <TextBlock 
+				Style="{StaticResource labelStyle}">
 				Reference point
                 </TextBlock>
                 <TextBox IsReadOnly="True"
@@ -233,7 +241,7 @@
                                     <TextBlock VerticalAlignment="Center" FontWeight="Bold">Global settings</TextBlock>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Path=GlobalSettings}"/>
                                 </StackPanel>
-                                <Button Name="buttonGlobalSettings" Margin="0,0,0,10" 
+                                <Button Name="buttonGlobalSettings" Height="22" Margin="0"
 										ToolTip="Change global settings"
 										Click="buttonSettings_Click">Edit</Button>
                             </StackPanel>
@@ -244,21 +252,27 @@
                     </Expander>
                     <Expander ExpandDirection="Down"  IsExpanded="True" BorderBrush="Gray" Margin="5,5,5,0">
                         <Expander.Header>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                 <StackPanel Orientation="Vertical" Margin="0,0,5,0">
                                     <TextBlock VerticalAlignment="Center" FontWeight="Bold">Flight report</TextBlock>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report}"/>
                                 </StackPanel>
-                                <Button Margin="0,0,0,10" 
+                                <Button Height="22" Margin="0"
 										ToolTip="Load flight report file (.axr)"
-										Click="buttonLoad_Click">Load</Button>
-                                <Button Margin="0,0,0,10" 
+										Click="buttonLoadReport_Click">Load</Button>
+                                <Button Height="22" Margin="0" 
 										ToolTip="Save flight report file (.axr)"
-										Click="buttonSave_Click">Save</Button>
-                                <Button Margin="0,0,0,10"
-										ToolTip="Recompute report from log file."
-										Click="buttonReset_Click">Reset</Button>
-                            </StackPanel>
+										Click="buttonSaveReport_Click">Save</Button>
+                                <Button Height="22" Margin="0"
+										ToolTip="Export log file"
+										Click="buttonExportReport_Click">Export</Button>
+                                <Button Height="22" Margin="0"
+										ToolTip="Recompute report from log file"
+										Click="buttonResetReport_Click">Reset</Button>
+                                <Button Height="22" Margin="0"
+										ToolTip="Close report"
+										Click="buttonCloseReport_Click">Close</Button>
+                            </WrapPanel>
                         </Expander.Header>
                         <ContentControl
                             x:Name="contentReport"
@@ -272,7 +286,7 @@
                                     <TextBlock VerticalAlignment="Center" FontWeight="Bold">Report settings</TextBlock>
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report.Settings}"/>
                                 </StackPanel>
-                                <Button  Name="buttonReportSettings" Margin="0,0,0,10" 
+                                <Button  Name="buttonReportSettings" Height="22" Margin="0"
 										 ToolTip="Change report settings"
 										 Click="buttonSettings_Click">Edit</Button>
                             </StackPanel>

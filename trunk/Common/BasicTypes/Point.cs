@@ -150,7 +150,7 @@ namespace AXToolbox.Common
                     if (fields.Length - iZone == 4)
                         altitude = double.Parse(fields[iZone + 3], NumberFormatInfo.InvariantInfo);
 
-                    resultPoint = new Point(DateTime.MinValue, datum, zone, easting, northing, altitude, datum);
+                    resultPoint = new Point(DateTime.MinValue.ToUniversalTime(), datum, zone, easting, northing, altitude, datum);
                     retVal = true;
                 }
             }

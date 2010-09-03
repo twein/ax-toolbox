@@ -15,6 +15,7 @@ namespace AXToolbox.Common
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }
+        public Datum Datum{ get; set; }
         public Point ReferencePoint { get; set; }
         public int Qnh { get; set; }
         public double DefaultAltitude { get; set; }
@@ -30,10 +31,10 @@ namespace AXToolbox.Common
         private FlightSettings()
         {
             var now = DateTime.Now;
-            Date = now.ToUniversalTime().Date;
+            Date = now.Date;
             Am = now.Hour >= 12;
-            var datum = Datum.GetInstance("European 1950");
-            ReferencePoint = new Waypoint("Reference", Date, datum, "31T", 480000, 4650000, 0, datum);
+            Datum = Datum.GetInstance("European 1950");
+            ReferencePoint = new Waypoint("Reference", Date.ToUniversalTime(), Datum, "31T", 480000, 4650000, 0, Datum);
             Qnh = 1013;
             DefaultAltitude = 0; // m
             MinVelocity = 0.3; // m/s
