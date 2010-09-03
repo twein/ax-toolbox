@@ -6,6 +6,7 @@ using System.ComponentModel;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace AXToolbox.Common
 {
@@ -31,8 +32,8 @@ namespace AXToolbox.Common
         protected string loggerSerialNumber;
         protected int loggerQnh;
         protected List<Trackpoint> track;
-        protected List<Waypoint> markers;
-        protected List<Waypoint> declaredGoals;
+        protected ObservableCollection<Waypoint> markers;
+        protected ObservableCollection<Waypoint> declaredGoals;
         protected Point launchPoint;
         protected Point landingPoint;
         protected List<string> notes;
@@ -94,11 +95,11 @@ namespace AXToolbox.Common
         {
             get { return track.Where(p => p.IsValid == true).Where(p => p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
         }
-        public List<Waypoint> Markers
+        public ObservableCollection<Waypoint> Markers
         {
             get { return markers; }
         }
-        public List<Waypoint> DeclaredGoals
+        public ObservableCollection<Waypoint> DeclaredGoals
         {
             get { return declaredGoals; }
         }
@@ -146,8 +147,8 @@ namespace AXToolbox.Common
             loggerSerialNumber = "";
             loggerQnh = 0;
             track = new List<Trackpoint>();
-            markers = new List<Waypoint>();
-            declaredGoals = new List<Waypoint>();
+            markers = new ObservableCollection<Waypoint>();
+            declaredGoals = new ObservableCollection<Waypoint>();
             launchPoint = null;
             landingPoint = null;
             notes = new List<string>();

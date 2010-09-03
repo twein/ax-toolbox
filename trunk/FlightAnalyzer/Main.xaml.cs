@@ -13,6 +13,7 @@ using AXToolbox.Common;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
+using System.Collections.ObjectModel;
 
 namespace FlightAnalyzer
 {
@@ -26,6 +27,7 @@ namespace FlightAnalyzer
 
         private FlightSettings globalSettings;
         private FlightReport report;
+        private AXToolbox.Common.Point selectedItem;
 
         private MapType mapType = MapType.GoogleMap;
         private int mapDefaultZoom = 12;
@@ -125,6 +127,7 @@ namespace FlightAnalyzer
             if (source is TextBlock && (source as TextBlock).DataContext is AXToolbox.Common.Point)
             {
                 wp = (source as TextBlock).DataContext as AXToolbox.Common.Point;
+                selectedItem = wp;
             }
             else if (source is Button)
             {
@@ -470,20 +473,59 @@ namespace FlightAnalyzer
             var input = new Input("Marker", report.Settings);
             if (input.ShowDialog() == true)
             {
-                report.Markers.Add(input.Value);
+                AddToCollection(report.Markers, input.Value);
+                RedrawMap();
             }
         }
 
         private void DeleteMarker_Click(object sender, RoutedEventArgs e)
         {
+            if (report.Markers.Remove(selectedItem as Waypoint))
+            {
+                selectedItem = null;
+                RedrawMap();
+            }
         }
 
         private void AddDeclaration_Click(object sender, RoutedEventArgs e)
         {
+            var input = new Input("Goal Declaration", report.Settings);
+            if (input.ShowDialog() == true)
+            {
+                AddToCollection(report.DeclaredGoals, input.Value);
+                RedrawMap();
+            }
         }
 
         private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
         {
+            if (report.DeclaredGoals.Remove(selectedItem as Waypoint))
+            {
+                selectedItem = null;
+                RedrawMap();
+            }
+        }
+
+        private void AddToCollection(Collection<Waypoint> collection, Waypoint point)
+        {
+            Waypoint next = null;
+            try
+            {
+                next = collection.First(m => m.Time > point.Time);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            if (next == null)
+            {
+                collection.Add(point);
+            }
+            else
+            {
+                var inext = collection.IndexOf(next);
+                collection.Insert(inext, point);
+            }
         }
     }
 }

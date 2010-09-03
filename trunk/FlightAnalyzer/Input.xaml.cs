@@ -24,7 +24,7 @@ namespace FlightAnalyzer
         {
             InitializeComponent();
             this.type = type;
-            value = new Waypoint("000", settings.ReferencePoint);
+            value = new Waypoint("00", settings.ReferencePoint);
             this.settings = settings;
 
             textBoxValue.Text = value.ToString(PointInfo.Name | PointInfo.Time | PointInfo.CompetitionCoords | PointInfo.Altitude);
@@ -53,7 +53,7 @@ namespace FlightAnalyzer
                 textBlockError.Text = type + " number can not be zero";
                 return;
             }
-            var number = tmpNumber.ToString("000");
+            var number = tmpNumber.ToString("00");
 
             TimeSpan tmpTime;
             if (!TimeSpan.TryParse(fields[1] + ":" + fields[2] + ":" + fields[3], out tmpTime))
