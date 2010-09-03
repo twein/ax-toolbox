@@ -11,88 +11,44 @@ namespace FlightAnalyzer
     /// </summary>
     public partial class Input : Window
     {
-        private string type;
-        private Waypoint value = null;
-        public Waypoint Value
+        private string prompt;
+        public string Prompt
+        {
+            get { return prompt; }
+        }
+
+        private string value = "";
+        public string Value
         {
             get { return value; }
             set { this.value = value; }
         }
-        private FlightSettings settings;
+        private string errorMessage = "";
+        public string ErrorMessage
+        {
+            get { return errorMessage; }
+        }
 
-        public Input(string type, FlightSettings settings)
+        private Func<string, string> validate;
+
+
+        public Input(string prompt, string value, Func<string, string> validate)
         {
             InitializeComponent();
-            this.type = type;
-            value = new Waypoint("00", settings.ReferencePoint);
-            this.settings = settings;
-
-            textBoxValue.Text = value.ToString(PointInfo.Name | PointInfo.Time | PointInfo.CompetitionCoords | PointInfo.Altitude);
+            this.prompt = prompt;
+            this.validate = validate;
+            DataContext = this;
         }
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
-            var strValue = textBoxValue.Text;
-
-            var fields = strValue.Split(new char[] { ' ', ':', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (fields.Length<6 || fields.Length>7)
-            {
-                textBlockError.Text = "Wrong number of parameters";
-                return;
-            }
-
-            int tmpNumber;
-            if (!int.TryParse(fields[0], out tmpNumber))
-            {
-                textBlockError.Text = "Wrong " + type + " number";
-                return;
-            }
-            if (tmpNumber == 0)
-            {
-                textBlockError.Text = type + " number can not be zero";
-                return;
-            }
-            var number = tmpNumber.ToString("00");
-
-            TimeSpan tmpTime;
-            if (!TimeSpan.TryParse(fields[1] + ":" + fields[2] + ":" + fields[3], out tmpTime))
-            {
-                textBlockError.Text = "Wrong time";
-                return;
-            }
-            var time = (settings.Date + tmpTime).ToUniversalTime();
-
-            int tmpEasting;
-            if (!int.TryParse(fields[4], out tmpEasting))
-            {
-                textBlockError.Text = "Wrong easting";
-                return;
-            }
-            var easting = IGCFile.ComputeCorrectCoordinate(tmpEasting, settings.ReferencePoint.Easting);
-
-            int tmpNorthing;
-            if (!int.TryParse(fields[5], out tmpNorthing))
-            {
-                textBlockError.Text = "Wrong northing";
-                return;
-            }
-            var northing = IGCFile.ComputeCorrectCoordinate(tmpNorthing, settings.ReferencePoint.Northing);
-
-            double altitude = settings.DefaultAltitude;
-            if (fields.Length == 7 && !double.TryParse(fields[6], out altitude))
-            {
-                textBlockError.Text = "Wrong altitude";
-                return;
-            }
-
-            value = new Waypoint(
-                number,
-                time,
-                settings.ReferencePoint.Datum, settings.ReferencePoint.Zone, easting, northing, altitude,
-                settings.ReferencePoint.Datum
-                );
-            DialogResult = true;
+            errorMessage = validate(value);
+            DataContext = null;
+            DataContext = this;
+            if (errorMessage == "")
+                DialogResult = true;
+            else
+                textBoxValue.Focus();
         }
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)

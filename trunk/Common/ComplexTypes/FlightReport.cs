@@ -320,6 +320,7 @@ namespace AXToolbox.Common
             else
                 return fileName;
         }
+        public abstract string GetLogFileName();
         public bool Save()
         {
             var ok = pilotId > 0;
@@ -330,6 +331,21 @@ namespace AXToolbox.Common
                     Directory.CreateDirectory(folder);
                 var file = GetFileName();
                 ObjectSerializer<FlightReport>.Save(this, file, serializationFormat);
+            }
+
+            return ok;
+        }
+
+        public bool ExportLog()
+        {
+            var ok = pilotId > 0;
+            if (ok)
+            {
+                var folder = GetFolderName();
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                var file = GetLogFileName();
+                File.WriteAllLines(file, logFile);
             }
 
             return ok;

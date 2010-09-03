@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
+using System.IO;
 
 namespace AXToolbox.Common.IO
 {
@@ -276,6 +277,11 @@ namespace AXToolbox.Common.IO
                 signature = SignatureStatus.Counterfeit;
 
             return signature;
+        }
+
+        public override string GetLogFileName()
+        {
+            return Path.ChangeExtension(base.GetFileName(), ".igc");
         }
     }
 }
