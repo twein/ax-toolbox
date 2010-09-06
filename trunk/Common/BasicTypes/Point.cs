@@ -47,10 +47,10 @@ namespace AXToolbox.Common
         {
         }
         /// <summary>New point from arbitrary datum latlon</summary>
-        public Point(DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "")
+        public Point(DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum targetDatum, string utmZone = "")
         {
             var ll = new LatLonCoordinates(datum, latitude, longitude, altitude);
-            var utm = ll.ToUtm(utmDatum, GetZoneNumber(utmZone));
+            var utm = ll.ToUtm(targetDatum, GetZoneNumber(utmZone));
 
             this.time = time;
             this.latitude = ll.Latitude.Degrees;
@@ -62,11 +62,11 @@ namespace AXToolbox.Common
             this.altitude = altitude;
         }
         /// <summary>New point from arbitrary datum utm</summary>
-        public Point(DateTime time, Datum datum, string zone, double easting, double northing, double altitude, Datum utmDatum, string utmZone = "")
+        public Point(DateTime time, Datum datum, string zone, double easting, double northing, double altitude, Datum targetDatum, string utmZone = "")
         {
             var utm_tmp = new UtmCoordinates(datum, zone, easting, northing, altitude);
             var ll = utm_tmp.ToLatLon(Datum.WGS84);
-            var utm = utm_tmp.ToUtm(utmDatum, GetZoneNumber(utmZone));
+            var utm = utm_tmp.ToUtm(targetDatum, GetZoneNumber(utmZone));
 
             this.time = time;
             this.latitude = ll.Latitude.Degrees;
@@ -110,7 +110,7 @@ namespace AXToolbox.Common
             return str.ToString();
         }
 
-        //Tries to parse a string containing a point definition in full UTM coordinates (Ex: 13:00:00 European 1950 31T 532212 4623452 1000)
+        //Tries to parse a string containing a point definition in full UTM coordinates (Ex: European 1950 31T 532212 4623452 1000)
         public static bool TryParse(string strValue, out Point resultPoint)
         {
             bool retVal = false;
@@ -178,7 +178,7 @@ namespace AXToolbox.Common
 
             TimeSpan tmpTime = new TimeSpan(0);
             double tmpEasting = 0, tmpNorthing = 0;
-            double altitude = settings.DefaultAltitude;
+            double altitude = settings.ReferencePoint.Altitude;
 
             if (
                 (fields.Length == 3 || fields.Length == 4) &&

@@ -159,7 +159,7 @@ namespace AXToolbox.Common.IO
                 if (double.IsNaN(altitude))
                 {
                     notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
-                    altitude = settings.DefaultAltitude;
+                    altitude = settings.ReferencePoint.Altitude;
                 }
 
                 var declaration = new Waypoint(
@@ -223,7 +223,7 @@ namespace AXToolbox.Common.IO
                     latitude: latitude,
                     longitude: longitude,
                     altitude: altitude,
-                    utmDatum: settings.ReferencePoint.Datum,
+                    targetDatum: settings.ReferencePoint.Datum,
                     utmZone: settings.ReferencePoint.Zone);
 
                 return p;

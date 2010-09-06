@@ -11,14 +11,12 @@ namespace AXToolbox.Common
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
-        private const string settingsFileName = "default.axs";
+        private const string settingsFileName = "Default.axs";
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }
-        public Datum Datum { get; set; }
         public Point ReferencePoint { get; set; }
         public int Qnh { get; set; }
-        public double DefaultAltitude { get; set; }
         public double MinVelocity { get; set; }
         public double MaxAcceleration { get; set; }
         public double InterpolationInterval { get; set; }
@@ -33,10 +31,9 @@ namespace AXToolbox.Common
             var now = DateTime.Now;
             Date = now.Date;
             Am = now.Hour >= 12;
-            Datum = Datum.GetInstance("European 1950");
-            ReferencePoint = new Waypoint("Reference", Date.ToUniversalTime(), Datum, "31T", 480000, 4650000, 0, Datum);
+            var datum = Datum.GetInstance("European 1950");
+            ReferencePoint = new Waypoint("Reference", Date.ToUniversalTime(), datum, "31T", 480000, 4650000, 0, datum);
             Qnh = 1013;
-            DefaultAltitude = 0; // m
             MinVelocity = 0.3; // m/s
             MaxAcceleration = 5; // m/s2
             InterpolationInterval = 2; // s
@@ -121,7 +118,8 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return string.Format("{0:yyyy/MM/dd}{1}-{2}-{3}-{4:#}-{5:0}", Date, AmOrPm, ReferencePoint.Datum, ReferencePoint.Zone, Qnh, DefaultAltitude);
+            return string.Format("Date: {0:yyyy/MM/dd}{1}\nReference: {2}\nQNH: {3:#}",
+                Date, AmOrPm, ReferencePoint.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude), Qnh);
         }
     }
 }

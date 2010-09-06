@@ -25,21 +25,16 @@ namespace FlightAnalyzer
             MapType.BingMap, MapType.BingHybrid
         }.ToList();
 
-        private FlightSettings globalSettings;
         private FlightReport report;
+        private FlightSettings defaultSettings, currentSettings;
         private AXToolbox.Common.Point selectedItem;
 
         private MapType mapType = MapType.GoogleMap;
         private int mapDefaultZoom = 12;
 
-        public FlightSettings GlobalSettings
-        {
-            get { return globalSettings; }
-        }
-        public FlightReport Report
-        {
-            get { return report; }
-        }
+        public FlightSettings DefaultSettings { get { return defaultSettings; } }
+        public FlightSettings CurrentSettings { get { return currentSettings; } }
+        public FlightReport Report { get { return report; } }
 
         public MainWindow()
         {
@@ -74,7 +69,8 @@ namespace FlightAnalyzer
             MainMap.MinZoom = 5;
             MainMap.Zoom = mapDefaultZoom;
 
-            globalSettings = FlightSettings.Load();
+            defaultSettings = FlightSettings.Load();
+            currentSettings = defaultSettings;
             DataContext = this;
             RedrawMap();
         }
@@ -170,7 +166,7 @@ namespace FlightAnalyzer
         private void MainMap_MouseMove(object sender, MouseEventArgs e)
         {
             var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
-            var datum = (report == null) ? globalSettings.ReferencePoint.Datum : report.Settings.ReferencePoint.Datum;
+            var datum = currentSettings.ReferencePoint.Datum;
             var p = new AXToolbox.Common.Point(DateTime.Now, Datum.WGS84, llp.Lat, llp.Lng, 0, datum);
             textblockMouse.Text = p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
         }
@@ -240,7 +236,7 @@ namespace FlightAnalyzer
             if (report != null &&
                 MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                report.Settings = globalSettings;
+                report.Settings = defaultSettings;
                 DataContext = null;
                 DataContext = this;
                 RedrawMap();
@@ -248,6 +244,7 @@ namespace FlightAnalyzer
         }
         private void buttonCloseReport_Click(object sender, RoutedEventArgs e)
         {
+            currentSettings = defaultSettings;
             report = null;
             DataContext = null;
             DataContext = this;
@@ -255,30 +252,30 @@ namespace FlightAnalyzer
         }
         private void buttonSettings_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
             SettingsWindow dlg;
-            switch (button.Name)
+            var editSettings = currentSettings.Clone();
+            dlg = new SettingsWindow(editSettings);
+            if (
+                (report == null || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                && (bool)dlg.ShowDialog()
+            )
             {
-                case "buttonReportSettings":
-                    dlg = new SettingsWindow(report.Settings, false);
-                    if (MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes
-                        && (bool)dlg.ShowDialog())
-                    {
-                        report.Settings = dlg.Settings;
-                    }
-                    break;
-                case "buttonGlobalSettings":
-                    dlg = new SettingsWindow(globalSettings, true);
-                    if ((bool)dlg.ShowDialog())
-                    {
-                        globalSettings = dlg.Settings;
-                    }
-                    break;
+                if (report == null)
+                    defaultSettings = dlg.Settings;
+                else
+                    report.Settings = dlg.Settings;
+
+                currentSettings = dlg.Settings;
+                DataContext = null;
+                DataContext = this;
+                RedrawMap();
             }
-            DataContext = null;
-            DataContext = this;
-            RedrawMap();
         }
+        private void buttonSaveSettings_Click(object sender, RoutedEventArgs e)
+        {
+            currentSettings.Save();
+        }
+
         private void AddMarker_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
@@ -324,12 +321,11 @@ namespace FlightAnalyzer
 
         private void LoadReport(string fileName)
         {
-            this.
-            Cursor = Cursors.Wait;
+            this.Cursor = Cursors.Wait;
 
             try
             {
-                var newReport = FlightReport.LoadFromFile(fileName, globalSettings);
+                var newReport = FlightReport.LoadFromFile(fileName, defaultSettings);//TODO: maybe use currentsettings instead
                 if (newReport.CleanTrack.Count() == 0)
                 {
                     MessageBox.Show(this, "No valid track points. Check the date and UTM zone in settings.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -338,6 +334,7 @@ namespace FlightAnalyzer
                 {
                     //textboxPilotId.IsReadOnly = false;
                     report = newReport;
+                    currentSettings = report.Settings;
                     DataContext = null;
                     DataContext = this;
                     RedrawMap();
@@ -361,18 +358,12 @@ namespace FlightAnalyzer
         {
             //Clear Map
             MainMap.Markers.Clear();
-            MainMap.Markers.Add(GetTagMarker("reference", globalSettings.ReferencePoint, "REFERENCE", globalSettings.ReferencePoint.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords), Brushes.Orange));
+            MainMap.Markers.Add(GetTagMarker("reference", currentSettings.ReferencePoint, "REFERENCE", currentSettings.ReferencePoint.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords), Brushes.Orange));
 
             //Add allowed goals;
             if ((bool)checkGoals.IsChecked)
             {
-                List<Waypoint> goals;
-                if (report == null)
-                    goals = globalSettings.AllowedGoals;
-                else
-                    goals = report.Settings.AllowedGoals;
-
-                foreach (var m in goals)
+                foreach (var m in currentSettings.AllowedGoals)
                     MainMap.Markers.Add(GetTagMarker("goal", m, m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
             }
 
@@ -398,6 +389,11 @@ namespace FlightAnalyzer
                 //Add movable pointer and center map there
                 MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
                 UpdateMarker("pointer");
+            }
+            else
+            {
+                var position = new PointLatLng(currentSettings.ReferencePoint.Latitude, currentSettings.ReferencePoint.Longitude);
+                MainMap.CurrentPosition = position;
             }
         }
         private void UpdateMarker(string tag)

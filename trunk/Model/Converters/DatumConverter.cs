@@ -2,25 +2,33 @@
 using System.Globalization;
 using System.Windows.Data;
 using AXToolbox.Common;
+using System.Collections.Generic;
 
 
 namespace AXToolbox.Model.Converters
 {
-    [ValueConversion(typeof(Point), typeof(String))]
-    public class PointConverter : IValueConverter
+    [ValueConversion(typeof(Datum), typeof(String))]
+    public class DatumConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Point point = value as Point;
-            return point.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.Altitude).TrimEnd();
+            var datum = value as Datum;
+            return datum.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string strValue = value as string;
-            Point resultPoint;
-            if (Point.TryParse(strValue, out resultPoint))
-                return resultPoint;
+            Datum resultDatum = null;
+
+            try
+            {
+                resultDatum = Datum.GetInstance((string)value);
+            }
+            catch (KeyNotFoundException) { }
+
+            if (resultDatum != null)
+                return resultDatum;
             else
             {
                 return value;
