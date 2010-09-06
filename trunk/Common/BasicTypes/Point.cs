@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 
 namespace AXToolbox.Common
 {
@@ -110,6 +110,7 @@ namespace AXToolbox.Common
             return str.ToString();
         }
 
+        //Tries to parse a string containing a point definition in full UTM coordinates (Ex: 13:00:00 European 1950 31T 532212 4623452 1000)
         public static bool TryParse(string strValue, out Point resultPoint)
         {
             bool retVal = false;
@@ -167,6 +168,44 @@ namespace AXToolbox.Common
             }
 
             return retVal;
+        }
+
+        //Tries to parse a string containing a point definition in competition coords (ex: "17:00:00 4512/1126 1000)
+        public static bool TryParseRelative(string str, FlightSettings settings, out Point point)
+        {
+            var fields = str.Split(new char[] { ' ', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+
+
+            TimeSpan tmpTime = new TimeSpan(0);
+            double tmpEasting = 0, tmpNorthing = 0;
+            double altitude = settings.DefaultAltitude;
+
+            if (
+                (fields.Length == 3 || fields.Length == 4) &&
+                (TimeSpan.TryParse(fields[1], out tmpTime)) &&
+                (double.TryParse(fields[2], out tmpEasting)) &&
+                (double.TryParse(fields[3], out tmpNorthing)) &&
+                (fields.Length != 5 || double.TryParse(fields[4], out altitude))
+                )
+            {
+                var time = (settings.Date + tmpTime).ToUniversalTime();
+                var easting = settings.ComputeEasting(tmpEasting);
+                var northing = settings.ComputeNorthing(tmpNorthing);
+
+                point = new Point(
+                    time,
+                    settings.ReferencePoint.Datum, settings.ReferencePoint.Zone, easting, northing, altitude,
+                    settings.ReferencePoint.Datum
+                    );
+
+                return true;
+            }
+
+            else
+            {
+                point = null;
+                return false;
+            }
         }
 
         protected int GetZoneNumber(string zone)

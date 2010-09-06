@@ -23,11 +23,6 @@ namespace FlightAnalyzer
             get { return value; }
             set { this.value = value; }
         }
-        private string errorMessage = "";
-        public string ErrorMessage
-        {
-            get { return errorMessage; }
-        }
 
         private Func<string, string> validate;
 
@@ -42,10 +37,8 @@ namespace FlightAnalyzer
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
-            errorMessage = validate(value);
-            DataContext = null;
-            DataContext = this;
-            if (errorMessage == "")
+            textBlockError.Text = validate(value);
+            if (textBlockError.Text == "")
                 DialogResult = true;
             else
                 textBoxValue.Focus();

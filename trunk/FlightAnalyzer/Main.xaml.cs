@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,8 +14,6 @@ using AXToolbox.Common;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
-using System.Collections.ObjectModel;
-using AXToolbox.Common.IO;
 
 namespace FlightAnalyzer
 {
@@ -280,6 +279,48 @@ namespace FlightAnalyzer
             DataContext = this;
             RedrawMap();
         }
+        private void AddMarker_Click(object sender, RoutedEventArgs e)
+        {
+            Waypoint value = null;
+            var input = new Input("Marker: (Example: #01 10:00:00 4512/1123 1000)",
+                report.Settings.ReferencePoint.ToString(),
+                strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Error!");
+
+            if (input.ShowDialog() == true)
+            {
+                AddToCollection(report.Markers, value);
+                RedrawMap();
+            }
+        }
+        private void DeleteMarker_Click(object sender, RoutedEventArgs e)
+        {
+            if (report.Markers.Remove(selectedItem as Waypoint))
+            {
+                selectedItem = null;
+                RedrawMap();
+            }
+        }
+        private void AddDeclaration_Click(object sender, RoutedEventArgs e)
+        {
+            Waypoint value = null;
+            var input = new Input("Goal declaration: (Example: #01 10:00:00 4512/1123 1000)",
+                report.Settings.ReferencePoint.ToString(),
+                strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Error!");
+
+            if (input.ShowDialog() == true)
+            {
+                AddToCollection(report.DeclaredGoals, value);
+                RedrawMap();
+            }
+        }
+        private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
+        {
+            if (report.DeclaredGoals.Remove(selectedItem as Waypoint))
+            {
+                selectedItem = null;
+                RedrawMap();
+            }
+        }
 
         private void LoadReport(string fileName)
         {
@@ -320,7 +361,7 @@ namespace FlightAnalyzer
         {
             //Clear Map
             MainMap.Markers.Clear();
-            MainMap.Markers.Add(GetTagMarker("reference", globalSettings.ReferencePoint, "REFERENCE", globalSettings.ReferencePoint.ToString(), Brushes.Orange));
+            MainMap.Markers.Add(GetTagMarker("reference", globalSettings.ReferencePoint, "REFERENCE", globalSettings.ReferencePoint.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords), Brushes.Orange));
 
             //Add allowed goals;
             if ((bool)checkGoals.IsChecked)
@@ -487,114 +528,6 @@ namespace FlightAnalyzer
             }
         }
 
-        private void AddMarker_Click(object sender, RoutedEventArgs e)
-        {
-            Waypoint value = null;
-            bool ok = false;
-
-            var input = new Input("Marker:", report.Settings.ReferencePoint.ToString(), val => "Error " + val);
-            //do
-            //{
-            //    ok = input.ShowDialog() == true;
-            //    if (ok)
-            //    {
-            //        var strValue = input.Value;
-
-            //        var fields = strValue.Split(new char[] { ' ', ':', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
-
-            //        if (fields.Length < 6 || fields.Length > 7)
-            //        {
-            //            input.ErrorMessage = "Wrong number of parameters";
-            //            continue;
-            //        }
-
-            //        int tmpNumber;
-            //        if (!int.TryParse(fields[0], out tmpNumber))
-            //        {
-            //            input.ErrorMessage = "Wrong marker number";
-            //            continue;
-            //        }
-            //        if (tmpNumber == 0)
-            //        {
-            //            input.ErrorMessage = "Marker number can not be zero";
-            //            continue;
-            //        }
-            //        var number = tmpNumber.ToString("00");
-
-            //        TimeSpan tmpTime;
-            //        if (!TimeSpan.TryParse(fields[1] + ":" + fields[2] + ":" + fields[3], out tmpTime))
-            //        {
-            //            input.ErrorMessage = "Wrong time";
-            //            continue;
-            //        }
-            //        var time = (report.Settings.Date + tmpTime).ToUniversalTime();
-
-            //        int tmpEasting;
-            //        if (!int.TryParse(fields[4], out tmpEasting))
-            //        {
-            //            input.ErrorMessage = "Wrong easting";
-            //            continue;
-            //        }
-            //        var easting = IGCFile.ComputeCorrectCoordinate(tmpEasting, report.Settings.ReferencePoint.Easting);
-
-            //        int tmpNorthing;
-            //        if (!int.TryParse(fields[5], out tmpNorthing))
-            //        {
-            //            input.ErrorMessage = "Wrong northing";
-            //            continue;
-            //        }
-            //        var northing = IGCFile.ComputeCorrectCoordinate(tmpNorthing, report.Settings.ReferencePoint.Northing);
-
-            //        double altitude = report.Settings.DefaultAltitude;
-            //        if (fields.Length == 7 && !double.TryParse(fields[6], out altitude))
-            //        {
-            //            input.ErrorMessage = "Wrong altitude";
-            //            continue;
-            //        }
-
-            //        value = new Waypoint(
-            //            number,
-            //            time,
-            //            report.Settings.ReferencePoint.Datum, report.Settings.ReferencePoint.Zone, easting, northing, altitude,
-            //            report.Settings.ReferencePoint.Datum
-            //            );
-            //    }
-            //} while (ok && value == null);
-
-            if (input.ShowDialog() == true)
-            {
-                //AddToCollection(report.Markers, input.Value);
-                RedrawMap();
-            }
-        }
-
-        private void DeleteMarker_Click(object sender, RoutedEventArgs e)
-        {
-            if (report.Markers.Remove(selectedItem as Waypoint))
-            {
-                selectedItem = null;
-                RedrawMap();
-            }
-        }
-
-        private void AddDeclaration_Click(object sender, RoutedEventArgs e)
-        {
-            //var input = new Input("Goal Declaration", report.Settings);
-            //if (input.ShowDialog() == true)
-            //{
-            //    AddToCollection(report.DeclaredGoals, input.Value);
-            //    RedrawMap();
-            //}
-        }
-
-        private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
-        {
-            if (report.DeclaredGoals.Remove(selectedItem as Waypoint))
-            {
-                selectedItem = null;
-                RedrawMap();
-            }
-        }
 
         private void AddToCollection(Collection<Waypoint> collection, Waypoint point)
         {
@@ -617,68 +550,5 @@ namespace FlightAnalyzer
                 collection.Insert(inext, point);
             }
         }
-
-
-        /*
-            var strValue = textBoxValue.Text;
-
-            var fields = strValue.Split(new char[] { ' ', ':', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (fields.Length < 6 || fields.Length > 7)
-            {
-                textBlockError.Text = "Wrong number of parameters";
-                return;
-            }
-
-            int tmpNumber;
-            if (!int.TryParse(fields[0], out tmpNumber))
-            {
-                textBlockError.Text = "Wrong " + prompt + " number";
-                return;
-            }
-            if (tmpNumber == 0)
-            {
-                textBlockError.Text = prompt + " number can not be zero";
-                return;
-            }
-            var number = tmpNumber.ToString("00");
-
-            TimeSpan tmpTime;
-            if (!TimeSpan.TryParse(fields[1] + ":" + fields[2] + ":" + fields[3], out tmpTime))
-            {
-                textBlockError.Text = "Wrong time";
-                return;
-            }
-            var time = (settings.Date + tmpTime).ToUniversalTime();
-
-            int tmpEasting;
-            if (!int.TryParse(fields[4], out tmpEasting))
-            {
-                textBlockError.Text = "Wrong easting";
-                return;
-            }
-            var easting = IGCFile.ComputeCorrectCoordinate(tmpEasting, settings.ReferencePoint.Easting);
-
-            int tmpNorthing;
-            if (!int.TryParse(fields[5], out tmpNorthing))
-            {
-                textBlockError.Text = "Wrong northing";
-                return;
-            }
-            var northing = IGCFile.ComputeCorrectCoordinate(tmpNorthing, settings.ReferencePoint.Northing);
-
-            double altitude = settings.DefaultAltitude;
-            if (fields.Length == 7 && !double.TryParse(fields[6], out altitude))
-            {
-                textBlockError.Text = "Wrong altitude";
-                return;
-            }
-
-            value = new Waypoint(
-                number,
-                time,
-                settings.ReferencePoint.Datum, settings.ReferencePoint.Zone, easting, northing, altitude,
-                settings.ReferencePoint.Datum
-                );        */
     }
 }

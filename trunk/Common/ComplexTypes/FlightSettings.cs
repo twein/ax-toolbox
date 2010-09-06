@@ -15,7 +15,7 @@ namespace AXToolbox.Common
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }
-        public Datum Datum{ get; set; }
+        public Datum Datum { get; set; }
         public Point ReferencePoint { get; set; }
         public int Qnh { get; set; }
         public double DefaultAltitude { get; set; }
@@ -68,6 +68,41 @@ namespace AXToolbox.Common
         {
             ObjectSerializer<FlightSettings>.Save(this, settingsFileName, serializationFormat);
         }
+        /// <summary>Compute the UTM coordinate given a 4 figures competition one
+        /// </summary>
+        /// <param name="coord4Figures">competition coordinate in 4 figures format</param>
+        /// <param name="origin">complete UTM coordinate used as origin</param>
+        /// <returns>complete UTM coordinate</returns>
+        private double ComputeCorrectCoordinate(double coord4Figures, double origin)
+        {
+            double[] offsets = { 1e5, -1e5 }; //1e5 m = 100 Km
+
+            var proposed = origin - origin % 1e5 + coord4Figures * 10;
+            var best = proposed;
+            foreach (var offset in offsets)
+            {
+                if (Math.Abs(proposed + offset - origin) < Math.Abs(best - origin))
+                    best = proposed + offset;
+            }
+            return best;
+        }
+        /// <summary>Compute the UTM easting given a 4 figures competition one
+        /// </summary>
+        /// <param name="coord4Figures">competition easting in 4 figures format</param>
+        /// <returns>complete UTM easting</returns>
+        public double ComputeEasting(double easting4Figures)
+        {
+            return ComputeCorrectCoordinate(easting4Figures, ReferencePoint.Easting);
+        }
+        /// <summary>Compute the UTM northing given a 4 figures competition one
+        /// </summary>
+        /// <param name="coord4Figures">competition northing in 4 figures format</param>
+        /// <returns>complete UTM northing</returns>
+        public double ComputeNorthing(double northing4Figures)
+        {
+            return ComputeCorrectCoordinate(northing4Figures, ReferencePoint.Northing);
+        }
+
         public static FlightSettings Load()
         {
             FlightSettings settings;
