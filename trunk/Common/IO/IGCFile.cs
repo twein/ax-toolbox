@@ -152,8 +152,8 @@ namespace AXToolbox.Common.IO
 
                 var utmDatum = origin.Datum;
                 var utmZone = origin.Zone;
-                var easting = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(0, 4)), origin.Easting);
-                var northing = ComputeCorrectCoordinate(double.Parse(strGoal.Substring(5, 4)), origin.Northing);
+                var easting = settings.ComputeEasting(double.Parse(strGoal.Substring(0, 4)));
+                var northing = settings.ComputeNorthing(double.Parse(strGoal.Substring(5, 4)));
 
                 // use default altitude if not declared
                 if (double.IsNaN(altitude))
@@ -246,24 +246,6 @@ namespace AXToolbox.Common.IO
                 newAltitude = altitude + (settings.Qnh - standardQNH) / correctBelow;
 
             return newAltitude;
-        }
-        /// <summary>Compute the correct UTM coordinate given a 4 figures competition one
-        /// </summary>
-        /// <param name="coord4Figures">competition coordinate in 4 figures format</param>
-        /// <param name="origin">complete UTM coordinate used as origin</param>
-        /// <returns>correct complete UTM coordinate</returns>
-        public static double ComputeCorrectCoordinate(double coord4Figures, double origin)
-        {
-            double[] offsets = { 1e5, -1e5 }; //1e5 m = 100 Km
-
-            var proposed = origin - origin % 1e5 + coord4Figures * 10;
-            var best = proposed;
-            foreach (var offset in offsets)
-            {
-                if (Math.Abs(proposed + offset - origin) < Math.Abs(best - origin))
-                    best = proposed + offset;
-            }
-            return best;
         }
 
         protected override SignatureStatus VerifySignature(string fileName)
