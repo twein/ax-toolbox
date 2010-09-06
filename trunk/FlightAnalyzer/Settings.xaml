@@ -23,9 +23,6 @@
             Style="{StaticResource labelStyle}">
             Date
         </TextBlock>
-        <!--<TextBox
-            Style="{StaticResource valueStyle}"
-            Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}"/>-->
         <Calendar 
             DisplayDate="{Binding Path=Date, Mode=OneWay}" 
             SelectedDate="{Binding Path=Date}"/>
@@ -34,9 +31,9 @@
             Style="{StaticResource labelStyle}">
             Time of day
         </TextBlock>
-        <StackPanel Orientation="Horizontal">
-            <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto" IsChecked="{Binding Path=Am,Mode=TwoWay}" Content="AM"  />
-            <RadioButton GroupName="rbGroup" Style="{StaticResource defaultStyle}" Width="Auto"  IsChecked="{Binding Path=Am, Converter={StaticResource notConverter}}" Content="PM" />
+        <StackPanel Orientation="Horizontal" Style="{StaticResource valueStyle}" >
+            <RadioButton GroupName="rbGroup" Style="{StaticResource valueStyle}" Width="Auto" IsChecked="{Binding Path=Am,Mode=TwoWay}" Content="AM"  />
+            <RadioButton GroupName="rbGroup" Style="{StaticResource valueStyle}" Width="Auto"  IsChecked="{Binding Path=Am, Converter={StaticResource notConverter}}" Content="PM" />
         </StackPanel>
 
         <TextBlock 
@@ -46,8 +43,16 @@
         </TextBlock>
         <TextBox
             Style="{StaticResource valueStyle}"
-            Text="{Binding Path=ReferencePoint, Converter={StaticResource pointConverter}}"
-            Tag="{Binding Path=ReferencePoint,Mode=OneWay}"/>
+            Tag="{Binding Path=ReferencePoint,Mode=OneWay}">
+            <TextBox.Text>
+                <Binding Path="ReferencePoint" Converter="{StaticResource pointConverter}">
+                    <Binding.ValidationRules>
+                        <validation:PointValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+
+            </TextBox.Text>
+        </TextBox>
 
         <TextBlock 
             Style="{StaticResource labelStyle}">
