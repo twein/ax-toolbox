@@ -302,7 +302,7 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return string.Format("{0:yyyy/MM/dd}{1}-{2:000}", Date, Am ? "AM" : "PM", pilotId);
+            return string.Format("{0:yyyy/MM/dd}{1} Pilot {2:000}", Date, Am ? "AM" : "PM", pilotId);
         }
         public string GetFolderName()
         {

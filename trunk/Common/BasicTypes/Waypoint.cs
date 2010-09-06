@@ -63,7 +63,7 @@ namespace AXToolbox.Common
             int tmpNumber = 0;
             TimeSpan tmpTime = new TimeSpan(0);
             double tmpEasting = 0, tmpNorthing = 0;
-            double altitude = settings.DefaultAltitude;
+            double altitude = settings.ReferencePoint.Altitude;
 
             if (
                 (fields.Length == 4 || fields.Length == 5) &&
@@ -75,7 +75,7 @@ namespace AXToolbox.Common
                 (fields.Length != 5 || double.TryParse(fields[4], out altitude))
                 )
             {
-                var number = tmpNumber.ToString("00");
+                var number = tmpNumber.ToString("000");
                 var time = (settings.Date + tmpTime).ToUniversalTime();
                 var easting = settings.ComputeEasting(tmpEasting);
                 var northing = settings.ComputeNorthing(tmpNorthing);
