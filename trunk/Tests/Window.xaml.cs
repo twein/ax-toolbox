@@ -96,23 +96,20 @@ namespace AXToolbox.Tests
             var lng = 2.78031;
 
             var sun = new Sun(lat, lng);
-            var timezone = 0.0;
 
             var today = DateTime.Now;
             var from = today - new TimeSpan(14, 0, 0, 0);
             var to = today + new TimeSpan(14, 0, 0, 0);
 
+            Print("Daylight hours");
             Print(string.Format("Location: ({0:0.000000}, {1:0.000000})", lat, lng));
-            Print("Date            Dawn    Sunrise Sunset  Dusk");
+            Print("Date            Dawn    Dusk");
             for (var date = from; date <= to; date += new TimeSpan(1, 0, 0, 0))
             {
-                timezone = (date - date.ToUniversalTime()).TotalHours;//date.IsDaylightSavingTime() ? 2 : 1;
                 Print(
                     string.Format("{0:ddd dd/MM/yyyy}  ", date)
-                    + string.Format("{0:HH:mm}   ", sun.Sunrise(date, timezone, Sun.ZenithTypes.Custom))
-                    + string.Format("{0:HH:mm}   ", sun.Sunrise(date, timezone, Sun.ZenithTypes.Official))
-                    + string.Format("{0:HH:mm}   ", sun.Sunset(date, timezone, Sun.ZenithTypes.Official))
-                    + string.Format("{0:HH:mm}   ", sun.Sunset(date, timezone, Sun.ZenithTypes.Custom))
+                    + string.Format("{0:HH:mm}   ", sun.Sunrise(date, Sun.ZenithTypes.Custom))
+                    + string.Format("{0:HH:mm}   ", sun.Sunset(date, Sun.ZenithTypes.Custom))
                 );
             }
         }

@@ -21,11 +21,27 @@ namespace AXToolbox.Common
         public double MaxAcceleration { get; set; }
         public double InterpolationInterval { get; set; }
         public List<Waypoint> AllowedGoals { get; set; }
-
         public string AmOrPm
         {
             get { return Am ? "AM" : "PM"; }
         }
+        public DateTime Sunrise
+        {
+            get
+            {
+                var sun = new Sun(ReferencePoint);
+                return sun.Sunrise(Date, Sun.ZenithTypes.Official);
+            }
+        }
+        public DateTime Sunset
+        {
+            get
+            {
+                var sun = new Sun(ReferencePoint);
+                return sun.Sunset(Date, Sun.ZenithTypes.Official);
+            }
+        }
+
         private FlightSettings()
         {
             var now = DateTime.Now;
@@ -118,8 +134,12 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return string.Format("Date: {0:yyyy/MM/dd}{1}\nReference: {2}\nQNH: {3:#}",
-                Date, AmOrPm, ReferencePoint.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude), Qnh);
+            return
+                string.Format("Date: {0:yyyy/MM/dd}{1}\n", Date, AmOrPm) +
+                string.Format("Reference: {0}\n", ReferencePoint.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude)) +
+                string.Format("QNH: {0}\n", Qnh.ToString()) +
+                string.Format("Sunrise: {0:HH:mm}; ", Sunrise) +
+                string.Format("Sunset: {0:HH:mm}", Sunset);
         }
     }
 }
