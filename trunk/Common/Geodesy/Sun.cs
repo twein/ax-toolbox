@@ -25,8 +25,15 @@ namespace AXToolbox.Common
             this.longitude = new Angle(longitude);
         }
 
-        public DateTime Sunrise(DateTime date, double timeZone, ZenithTypes zenithType)
+        public Sun(Point position)
         {
+            latitude = new Angle(position.Latitude);
+            longitude = new Angle(position.Longitude);
+        }
+
+        public DateTime Sunrise(DateTime date, ZenithTypes zenithType)
+        {
+            var timeZone = (date - date.ToUniversalTime()).TotalHours;
             var zenith = new Angle(ZenithDegrees(zenithType));
 
             //1: calculate the day of the year
@@ -77,8 +84,9 @@ namespace AXToolbox.Common
             var seconds = (localT - hours - (minutes / 60)) * 3600;
             return new DateTime(date.Year, date.Month, date.Day, (int)hours, (int)minutes, (int)seconds);
         }
-        public DateTime Sunset(DateTime date, double timeZone, ZenithTypes zenithType)
+        public DateTime Sunset(DateTime date, ZenithTypes zenithType)
         {
+            var timeZone = (date - date.ToUniversalTime()).TotalHours;
             var zenith = new Angle(ZenithDegrees(zenithType));
 
             //1: calculate the day of the year
