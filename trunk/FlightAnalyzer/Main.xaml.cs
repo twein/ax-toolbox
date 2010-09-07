@@ -491,39 +491,11 @@ namespace FlightAnalyzer
         {
             var area = MainMap.CurrentViewArea;// MainMap.SelectedArea;
 
-            if (!area.IsEmpty)
+            for (int z = (int)MainMap.Zoom; z <= 16; z++) //too many tiles over zoom 16
             {
-                for (int z = (int)MainMap.Zoom; z <= 16; z++) //too many tiles over zoom 16
-                {
-                    var tiles = MainMap.Projection.GetAreaTileList(area, z, 0);
-                    new TilePrefetcher().Start(tiles, z, MainMap.MapType, 0);
-                    //tiles.Clear();
-                    /*
-                    MessageBoxResult res = MessageBox.Show(string.Format("PrefetchTiles {0} tiles at zoom {1}?", tiles.Count, z), "PrefetchTiles map", MessageBoxButton.YesNoCancel);
-
-                    if (res == MessageBoxResult.Yes)
-                    {
-                        TilePrefetcher pref = new TilePrefetcher();
-                        pref.ShowCompleteMessage = true;
-                        pref.Start(tiles, z, MainMap.MapType, 100);
-                    }
-                    else if (res == MessageBoxResult.No)
-                    {
-                        continue;
-                    }
-                    else if (res == MessageBoxResult.Cancel)
-                    {
-                        break;
-                    }
-                    */
-                }
-            }
-            else
-            {
-                MessageBox.Show("Select map area holding right mouse button + ALT", "PrefetchTiles map", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                new TilePrefetcher().Start(area, MainMap.Projection, z, MainMap.MapType, 0);
             }
         }
-
 
         private void AddToCollection(Collection<Waypoint> collection, Waypoint point)
         {
