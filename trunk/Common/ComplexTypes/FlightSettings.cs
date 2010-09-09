@@ -41,6 +41,27 @@ namespace AXToolbox.Common
                 return sun.Sunset(Date, Sun.ZenithTypes.Official);
             }
         }
+        public string ReportFolder
+        {
+            get
+            {
+                var rootFolder = Directory.GetCurrentDirectory();
+                var reportFolder = Path.Combine(rootFolder, string.Format("{0:yyyyMMdd}{1}", Date, Am ? "AM" : "PM"));
+                if (!Directory.Exists(reportFolder))
+                    Directory.CreateDirectory(reportFolder);
+                return reportFolder;
+            }
+        }
+        public String LogFolder
+        {
+            get
+            {
+                var logFolder = Path.Combine(ReportFolder, "GPSLogs");
+                if (!Directory.Exists(logFolder))
+                    Directory.CreateDirectory(logFolder);
+                return logFolder;
+            }
+        }
 
         private FlightSettings()
         {

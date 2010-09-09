@@ -56,7 +56,7 @@ namespace FlightAnalyzer
         private void buttonAddGoal_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
-            var input = new Input("Goal: (Example: 001 4512/1123 1000)",
+            var input = new InputWindow("Goal: (Example: 001 4512/1123 1000)",
                 editSettings.ReferencePoint.ToString(),
                 strValue => Waypoint.TryParseRelative(strValue, editSettings, out value) ? "" : "Error!");
 

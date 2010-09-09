@@ -261,9 +261,9 @@ namespace AXToolbox.Common.IO
             return signature;
         }
 
-        public override string GetLogFileName()
+        public override string GetLogFileExtension()
         {
-            return Path.ChangeExtension(base.GetFileName(), ".igc");
+            return ".igc";
         }
     }
 }

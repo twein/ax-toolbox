@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -35,6 +35,16 @@ namespace FlightAnalyzer
         public FlightSettings DefaultSettings { get { return defaultSettings; } }
         public FlightSettings CurrentSettings { get { return currentSettings; } }
         public FlightReport Report { get { return report; } }
+        public bool DirtyReport
+        {
+            get
+            {
+                if (report == null)
+                    return false;
+                else
+                    return report.IsDirty;
+            }
+        }
 
         public MainWindow()
         {
@@ -115,6 +125,32 @@ namespace FlightAnalyzer
                     break;
             }
         }
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (!DirtyReport || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                e.Cancel = false;
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+        private void MainMap_MouseMove(object sender, MouseEventArgs e)
+        {
+            var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
+            var datum = currentSettings.ReferencePoint.Datum;
+            var p = new AXToolbox.Common.Point(DateTime.Now, Datum.WGS84, llp.Lat, llp.Lng, 0, datum);
+            textblockMouse.Text = p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
+        }
+
+        private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
+        {
+            string navigateUri = (sender as System.Windows.Documents.Hyperlink).NavigateUri.ToString();
+            Process.Start(new ProcessStartInfo(navigateUri));
+            e.Handled = true;
+        }
+        
         private void something_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
             AXToolbox.Common.Point wp = null;
@@ -136,7 +172,7 @@ namespace FlightAnalyzer
                             var t = (int)sliderPointer.Value;
                             wp = GetVisibleTrack()[t];
                             report.LaunchPoint = wp;
-                            UpdateMarker("launch");
+                            UpdateMapMarker("launch");
                         }
                         break;
                     case "SetLanding":
@@ -145,7 +181,7 @@ namespace FlightAnalyzer
                             var t = (int)sliderPointer.Value;
                             wp = GetVisibleTrack()[t];
                             report.LandingPoint = wp;
-                            UpdateMarker("landing");
+                            UpdateMapMarker("landing");
                         }
                         break;
                 }
@@ -163,23 +199,11 @@ namespace FlightAnalyzer
                 MainMap.CurrentPosition = new PointLatLng(wp.Latitude, wp.Longitude);
             }
         }
-        private void MainMap_MouseMove(object sender, MouseEventArgs e)
-        {
-            var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
-            var datum = currentSettings.ReferencePoint.Datum;
-            var p = new AXToolbox.Common.Point(DateTime.Now, Datum.WGS84, llp.Lat, llp.Lng, 0, datum);
-            textblockMouse.Text = p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
-        }
-        private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
-        {
-            string navigateUri = (sender as System.Windows.Documents.Hyperlink).NavigateUri.ToString();
-            Process.Start(new ProcessStartInfo(navigateUri));
-            e.Handled = true;
-        }
+
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (report != null)
-                UpdateMarker("pointer");
+                UpdateMapMarker("pointer");
         }
         private void radio_Checked(object sender, RoutedEventArgs e)
         {
@@ -187,18 +211,19 @@ namespace FlightAnalyzer
             {
                 SetupSlider();
                 MainMap.Markers.Remove(MainMap.Markers.First(m => (string)m.Tag == "track"));
-                MainMap.Markers.Add(GetTrackMarker());
-                UpdateMarker("pointer");
+                MainMap.Markers.Add(GetTrackMapMarker());
+                UpdateMapMarker("pointer");
             }
         }
         private void checkLock_Checked(object sender, RoutedEventArgs e)
         {
-            UpdateMarker("pointer");
+            UpdateMapMarker("pointer");
         }
         private void checkGoals_Checked(object sender, RoutedEventArgs e)
         {
             RedrawMap();
         }
+
         private void buttonLoadReport_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
@@ -211,30 +236,14 @@ namespace FlightAnalyzer
         }
         private void buttonSaveReport_Click(object sender, RoutedEventArgs e)
         {
-            if (report != null)
-            {
-                var fileName = report.GetFileName();
-                if (!File.Exists(fileName) ||
-                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    if (!report.Save())
-                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-        private void buttonExportReport_Click(object sender, RoutedEventArgs e)
-        {
-            if (report != null)
-            {
-                var fileName = report.GetLogFileName();
-                if (!File.Exists(fileName) ||
-                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                    if (!report.ExportLog())
-                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            SaveReport();
         }
         private void buttonResetReport_Click(object sender, RoutedEventArgs e)
         {
-            if (report != null &&
-                MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (
+                report != null &&
+                (!report.IsDirty || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                )
             {
                 report.Settings = defaultSettings;
                 DataContext = null;
@@ -244,11 +253,14 @@ namespace FlightAnalyzer
         }
         private void buttonCloseReport_Click(object sender, RoutedEventArgs e)
         {
-            currentSettings = defaultSettings;
-            report = null;
-            DataContext = null;
-            DataContext = this;
-            RedrawMap();
+            if (!DirtyReport || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                currentSettings = defaultSettings;
+                report = null;
+                DataContext = null;
+                DataContext = this;
+                RedrawMap();
+            }
         }
         private void buttonSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -279,19 +291,19 @@ namespace FlightAnalyzer
         private void AddMarker_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
-            var input = new Input("Marker: (Example: #01 10:00:00 4512/1123 1000)",
+            var input = new InputWindow("Marker: (Example: #01 10:00:00 4512/1123 1000)",
                 report.Settings.ReferencePoint.ToString(),
-                strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Error!");
+                strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Parse error!");
 
             if (input.ShowDialog() == true)
             {
-                AddToCollection(report.Markers, value);
+                report.AddMarker(value);
                 RedrawMap();
             }
         }
         private void DeleteMarker_Click(object sender, RoutedEventArgs e)
         {
-            if (report.Markers.Remove(selectedItem as Waypoint))
+            if (report.RemoveMarker(selectedItem as Waypoint))
             {
                 selectedItem = null;
                 RedrawMap();
@@ -300,19 +312,19 @@ namespace FlightAnalyzer
         private void AddDeclaration_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
-            var input = new Input("Goal declaration: (Example: #01 10:00:00 4512/1123 1000)",
+            var input = new InputWindow("Goal declaration: (Example: #001 10:00:00 4512/1123 1000)",
                 report.Settings.ReferencePoint.ToString(),
-                strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Error!");
+                strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Parse error!");
 
             if (input.ShowDialog() == true)
             {
-                AddToCollection(report.DeclaredGoals, value);
+                report.AddDeclaredGoal(value);
                 RedrawMap();
             }
         }
         private void DeleteDeclaration_Click(object sender, RoutedEventArgs e)
         {
-            if (report.DeclaredGoals.Remove(selectedItem as Waypoint))
+            if (report.RemoveDeclaredGoal(selectedItem as Waypoint))
             {
                 selectedItem = null;
                 RedrawMap();
@@ -354,17 +366,34 @@ namespace FlightAnalyzer
                 Cursor = Cursors.Arrow;
             }
         }
+        private void SaveReport()
+        {
+            string fileName;
+            if (report != null)
+            {
+                fileName = report.ReportFilePath;
+                if (!File.Exists(fileName) ||
+                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    if (!report.Save() || !report.ExportLog())
+                    {
+                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
         private void RedrawMap()
         {
             //Clear Map
             MainMap.Markers.Clear();
-            MainMap.Markers.Add(GetTagMarker("reference", currentSettings.ReferencePoint, "REFERENCE", currentSettings.ReferencePoint.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords), Brushes.Orange));
+            MainMap.Markers.Add(CreateTagMapMarker("reference", currentSettings.ReferencePoint, "REFERENCE", currentSettings.ReferencePoint.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords), Brushes.Orange));
 
             //Add allowed goals;
             if ((bool)checkGoals.IsChecked)
             {
                 foreach (var m in currentSettings.AllowedGoals)
-                    MainMap.Markers.Add(GetTagMarker("goal", m, m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
+                    MainMap.Markers.Add(CreateTagMapMarker("goal", m, m.Name, "Goal " + m.ToString(), Brushes.LightBlue));
             }
 
             if (report != null)
@@ -372,23 +401,23 @@ namespace FlightAnalyzer
                 SetupSlider();
 
                 //Add track to map
-                MainMap.Markers.Add(GetTrackMarker());
+                MainMap.Markers.Add(GetTrackMapMarker());
 
                 // Add launch and landing to map
-                MainMap.Markers.Add(GetTagMarker("launch", report.LaunchPoint, "Launch", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
-                MainMap.Markers.Add(GetTagMarker("landing", report.LandingPoint, "Landing", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
+                MainMap.Markers.Add(CreateTagMapMarker("launch", report.LaunchPoint, "Launch", "Launch Point: " + report.LaunchPoint.ToString(), Brushes.Lime));
+                MainMap.Markers.Add(CreateTagMapMarker("landing", report.LandingPoint, "Landing", "Landing Point: " + report.LandingPoint.ToString(), Brushes.Lime));
 
                 // Add dropped markers to map
                 foreach (var m in report.Markers)
-                    MainMap.Markers.Add(GetTagMarker("marker" + m.Name, m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
+                    MainMap.Markers.Add(CreateTagMapMarker("marker" + m.Name, m, m.Name, "Marker " + m.ToString(), Brushes.Yellow));
 
                 // Add goal declarations to map
                 foreach (var dg in report.DeclaredGoals)
-                    MainMap.Markers.Add(GetTagMarker("declaredgoal" + dg.Name, dg, dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
+                    MainMap.Markers.Add(CreateTagMapMarker("declaredgoal" + dg.Name, dg, dg.Name, "Declaration " + dg.ToString() + " - " + dg.Description, Brushes.Red));
 
                 //Add movable pointer and center map there
-                MainMap.Markers.Add(GetTagMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
-                UpdateMarker("pointer");
+                MainMap.Markers.Add(CreateTagMapMarker("pointer", GetVisibleTrack()[0], "PTR", GetVisibleTrack()[0].ToString(), Brushes.Orange));
+                UpdateMapMarker("pointer");
             }
             else
             {
@@ -396,7 +425,7 @@ namespace FlightAnalyzer
                 MainMap.CurrentPosition = position;
             }
         }
-        private void UpdateMarker(string tag)
+        private void UpdateMapMarker(string tag)
         {
             try
             {
@@ -432,20 +461,7 @@ namespace FlightAnalyzer
             }
             catch (InvalidOperationException) { }
         }
-        private void SetupSlider()
-        {
-            sliderPointer.Minimum = 0;
-            sliderPointer.Maximum = GetVisibleTrack().Count - 1;
-            sliderPointer.Value = 0;
-        }
-        private List<Trackpoint> GetVisibleTrack()
-        {
-            if (report != null)
-                return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
-            else
-                return new List<Trackpoint>();
-        }
-        private GMapMarker GetTrackMarker()
+        private GMapMarker GetTrackMapMarker()
         {
             List<PointLatLng> points = new List<PointLatLng>();
 
@@ -473,7 +489,7 @@ namespace FlightAnalyzer
 
             return marker;
         }
-        private GMapMarker GetTagMarker(string tag, AXToolbox.Common.Point p, string text, string toolTip, Brush brush)
+        private GMapMarker CreateTagMapMarker(string tag, AXToolbox.Common.Point p, string text, string toolTip, Brush brush)
         {
             var marker = new GMapMarker(new PointLatLng(p.Latitude, p.Longitude));
             marker.Tag = tag;
@@ -486,7 +502,19 @@ namespace FlightAnalyzer
 
             return marker;
         }
-
+        private void SetupSlider()
+        {
+            sliderPointer.Minimum = 0;
+            sliderPointer.Maximum = GetVisibleTrack().Count - 1;
+            sliderPointer.Value = 0;
+        }
+        private List<Trackpoint> GetVisibleTrack()
+        {
+            if (report != null)
+                return (radioLogger.IsChecked.Value) ? report.OriginalTrack : report.FlightTrack;
+            else
+                return new List<Trackpoint>();
+        }
         private void PrefetchTiles()
         {
             var area = MainMap.CurrentViewArea;// MainMap.SelectedArea;
@@ -494,28 +522,6 @@ namespace FlightAnalyzer
             for (int z = (int)MainMap.Zoom; z <= 16; z++) //too many tiles over zoom 16
             {
                 new TilePrefetcher().Start(area, MainMap.Projection, z, MainMap.MapType, 0);
-            }
-        }
-
-        private void AddToCollection(Collection<Waypoint> collection, Waypoint point)
-        {
-            Waypoint next = null;
-            try
-            {
-                next = collection.First(m => m.Time > point.Time);
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            if (next == null)
-            {
-                collection.Add(point);
-            }
-            else
-            {
-                var inext = collection.IndexOf(next);
-                collection.Insert(inext, point);
             }
         }
     }
