@@ -44,6 +44,13 @@ namespace AXToolbox.Common
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [field: NonSerialized]
+        protected Boolean isDirty = false;
+        public Boolean IsDirty
+        {
+            get { return isDirty; }
+        }
+
         /// <summary>
         /// Returns an instance of PropertyChangedEventArgs for 
         /// the specified property name.
@@ -116,7 +123,7 @@ namespace AXToolbox.Common
                 // Raise the PropertyChanged event.
                 handler(this, args);
             }
-
+            isDirty = true;
             this.AfterPropertyChanged(propertyName);
         }
 

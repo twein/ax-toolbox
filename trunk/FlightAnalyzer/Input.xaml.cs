@@ -9,7 +9,7 @@ namespace FlightAnalyzer
     /// <summary>
     /// Interaction logic for Input.xaml
     /// </summary>
-    public partial class Input : Window
+    public partial class InputWindow : Window
     {
         private string prompt;
         public string Prompt
@@ -27,7 +27,7 @@ namespace FlightAnalyzer
         private Func<string, string> validate;
 
 
-        public Input(string prompt, string value, Func<string, string> validate)
+        public InputWindow(string prompt, string value, Func<string, string> validate)
         {
             InitializeComponent();
             this.prompt = prompt;

@@ -21,9 +21,6 @@ namespace AXToolbox.Common
         /// <summary>Smoothness factor for speed used in launch and landing detection</summary>
         private const double Smoothness = 3;
 
-        [NonSerialized]
-        private string fileName = "";
-
         protected string[] logFile;
         protected FlightSettings settings;
         protected int pilotId;
@@ -38,6 +35,28 @@ namespace AXToolbox.Common
         protected Point landingPoint;
         protected List<string> notes;
 
+        public string FileName
+        {
+            get
+            {
+                return string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId);
+            }
+        }
+        public string ReportFilePath
+        {
+            get
+            {
+                return Path.Combine(settings.ReportFolder, Path.ChangeExtension(FileName, ".axr"));
+            }
+        }
+        public string LogFilePath
+        {
+            get
+            {
+                return Path.Combine(settings.LogFolder, Path.ChangeExtension(FileName, GetLogFileExtension()));
+            }
+        }
+        public abstract string GetLogFileExtension();
         public FlightSettings Settings
         {
             get { return settings; }
@@ -257,6 +276,32 @@ namespace AXToolbox.Common
                 }
             }
         }
+
+        public void AddMarker(Waypoint marker)
+        {
+            AddToCollection(markers, marker);
+            RaisePropertyChanged("Markers");
+        }
+        public bool RemoveMarker(Waypoint marker)
+        {
+            bool ok = markers.Remove(marker);
+            if (ok)
+                RaisePropertyChanged("Markers");
+            return ok;
+        }
+        public void AddDeclaredGoal(Waypoint declaration)
+        {
+            AddToCollection(declaredGoals, declaration);
+            RaisePropertyChanged("DeclaredGoals");
+        }
+        public bool RemoveDeclaredGoal(Waypoint declaration)
+        {
+            bool ok = declaredGoals.Remove(declaration);
+            if (ok)
+                RaisePropertyChanged("DeclaredGoals");
+            return ok;
+        }
+
         private Trackpoint FindGroundContact(IEnumerable<Trackpoint> track, bool backwards)
         {
             Point reference = null;
@@ -304,33 +349,14 @@ namespace AXToolbox.Common
         {
             return string.Format("{0:yyyy/MM/dd}{1} Pilot {2:000}", Date, Am ? "AM" : "PM", pilotId);
         }
-        public string GetFolderName()
-        {
-            var folder = Directory.GetCurrentDirectory();
-            var subfolder = string.Format("{0:yyyyMMdd}{1}", Date, Am ? "AM" : "PM");
-            return Path.Combine(folder, subfolder);
-        }
-        public string GetFileName()
-        {
-            if (fileName == "")
-            {
-                var filename = string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId) + ".axr";
-                return Path.Combine(GetFolderName(), filename);
-            }
-            else
-                return fileName;
-        }
-        public abstract string GetLogFileName();
+
         public bool Save()
         {
             var ok = pilotId > 0;
             if (ok)
             {
-                var folder = GetFolderName();
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-                var file = GetFileName();
-                ObjectSerializer<FlightReport>.Save(this, file, serializationFormat);
+                ObjectSerializer<FlightReport>.Save(this, ReportFilePath, serializationFormat);
+                isDirty = false;
             }
 
             return ok;
@@ -341,11 +367,7 @@ namespace AXToolbox.Common
             var ok = pilotId > 0;
             if (ok)
             {
-                var folder = GetFolderName();
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-                var file = GetLogFileName();
-                File.WriteAllLines(file, logFile);
+                File.WriteAllLines(LogFilePath, logFile);
             }
 
             return ok;
@@ -361,13 +383,14 @@ namespace AXToolbox.Common
                 {
                     case ".igc":
                         report = new IGCFile(filePath, settings);
+                        report.isDirty = true;
                         break;
                     case ".trk":
                         report = new TRKFile(filePath, settings);
+                        report.isDirty = true;
                         break;
                     case ".axr":
                         report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
-                        report.fileName = filePath;
                         break;
                     default:
                         throw new InvalidOperationException("Logger file type not supported");
@@ -378,5 +401,26 @@ namespace AXToolbox.Common
                 throw new FileNotFoundException();
         }
         protected abstract SignatureStatus VerifySignature(string fileName);
+        protected void AddToCollection(Collection<Waypoint> collection, Waypoint point)
+        {
+            Waypoint next = null;
+            try
+            {
+                next = collection.First(m => m.Time > point.Time);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            if (next == null)
+            {
+                collection.Add(point);
+            }
+            else
+            {
+                var inext = collection.IndexOf(next);
+                collection.Insert(inext, point);
+            }
+        }
     }
 }

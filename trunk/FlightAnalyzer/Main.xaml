@@ -4,6 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:local="clr-namespace:FlightAnalyzer"
 	xmlns:common="clr-namespace:AXToolbox.Common;assembly=AXToolbox.Common"
+    xmlns:converters="clr-namespace:AXToolbox.Model.Converters;assembly=AXToolbox.Model"    
 	xmlns:map="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
 	Title="Flight Analyzer" 
 	MinWidth="800" MinHeight="600"
@@ -11,8 +12,9 @@
 	Icon="/FlightAnalyzer;component/balloon.ico"
 	KeyDown="MainWindow_KeyDown" 
 	Loaded="MainWindow_Loaded" 
-	Drop="MainWindow_Drop" AllowDrop="True">
+	Drop="MainWindow_Drop" AllowDrop="True" Closing="MainWindow_Closing">
     <Window.Resources>
+        <converters:BoolColorConverter x:Key="boolColorConverter" />
         <DataTemplate  DataType="{x:Type common:FlightReport}">
             <StackPanel Orientation="Vertical">
                 <TextBlock 
@@ -180,14 +182,11 @@
                                     <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report}"/>
                                 </StackPanel>
                                 <Button Height="22" Margin="0"
-										ToolTip="Load flight report file (.axr)"
+										ToolTip="Load flight report file or log file"
 										Click="buttonLoadReport_Click">Load</Button>
                                 <Button Height="22" Margin="0" 
-										ToolTip="Save flight report file (.axr)"
+										ToolTip="Save flight report file" BorderBrush="{Binding Path=DirtyReport, Converter={StaticResource boolColorConverter}}"
 										Click="buttonSaveReport_Click">Save</Button>
-                                <Button Height="22" Margin="0"
-										ToolTip="Export log file"
-										Click="buttonExportReport_Click">Export</Button>
                                 <Button Height="22" Margin="0"
 										ToolTip="Recompute report from log file"
 										Click="buttonResetReport_Click">Reset</Button>

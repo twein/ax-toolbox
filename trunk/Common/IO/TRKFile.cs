@@ -108,9 +108,9 @@ namespace AXToolbox.Common.IO
             return SignatureStatus.NotSigned;
         }
 
-        public override string GetLogFileName()
+        public override string GetLogFileExtension()
         {
-            return Path.ChangeExtension(base.GetFileName(), ".trk");
+            return ".trk";
         }
     }
 }
