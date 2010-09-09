@@ -15,6 +15,7 @@
 	Drop="MainWindow_Drop" AllowDrop="True" Closing="MainWindow_Closing">
     <Window.Resources>
         <converters:BoolColorConverter x:Key="boolColorConverter" />
+        <converters:IsNullVisibilityConverter x:Key="isNullVisibilityConverter" />
         <DataTemplate  DataType="{x:Type common:FlightReport}">
             <StackPanel Orientation="Vertical">
                 <TextBlock 
@@ -184,13 +185,13 @@
                                 <Button Height="22" Margin="0"
 										ToolTip="Load flight report file or log file"
 										Click="buttonLoadReport_Click">Load</Button>
-                                <Button Height="22" Margin="0" 
-										ToolTip="Save flight report file" BorderBrush="{Binding Path=DirtyReport, Converter={StaticResource boolColorConverter}}"
+                                <Button Height="22" Margin="0" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"
+										ToolTip="Save flight report file" BorderBrush="{Binding Path=Report.IsDirty, Converter={StaticResource boolColorConverter}}"
 										Click="buttonSaveReport_Click">Save</Button>
-                                <Button Height="22" Margin="0"
+                                <Button Height="22" Margin="0" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"
 										ToolTip="Recompute report from log file"
 										Click="buttonResetReport_Click">Reset</Button>
-                                <Button Height="22" Margin="0"
+                                <Button Height="22" Margin="0" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"
 										ToolTip="Close report"
 										Click="buttonCloseReport_Click">Close</Button>
                             </WrapPanel>

@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\BoolColorConverter.cs" />
+    <Compile Include="Converters\IsNullVisibilityConverter.cs" />
     <Compile Include="Converters\DatumConverter.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\NotConverter.cs" />

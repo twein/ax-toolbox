@@ -356,7 +356,7 @@ namespace AXToolbox.Common
             if (ok)
             {
                 ObjectSerializer<FlightReport>.Save(this, ReportFilePath, serializationFormat);
-                isDirty = false;
+                IsDirty = false;
             }
 
             return ok;
@@ -383,11 +383,11 @@ namespace AXToolbox.Common
                 {
                     case ".igc":
                         report = new IGCFile(filePath, settings);
-                        report.isDirty = true;
+                        report.IsDirty = true;
                         break;
                     case ".trk":
                         report = new TRKFile(filePath, settings);
-                        report.isDirty = true;
+                        report.IsDirty = true;
                         break;
                     case ".axr":
                         report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
