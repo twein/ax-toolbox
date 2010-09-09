@@ -35,16 +35,6 @@ namespace FlightAnalyzer
         public FlightSettings DefaultSettings { get { return defaultSettings; } }
         public FlightSettings CurrentSettings { get { return currentSettings; } }
         public FlightReport Report { get { return report; } }
-        public bool DirtyReport
-        {
-            get
-            {
-                if (report == null)
-                    return false;
-                else
-                    return report.IsDirty;
-            }
-        }
 
         public MainWindow()
         {
@@ -127,7 +117,10 @@ namespace FlightAnalyzer
         }
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (!DirtyReport || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (report == null || 
+                !report.IsDirty || 
+                MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes
+                )
             {
                 e.Cancel = false;
             }
@@ -150,7 +143,7 @@ namespace FlightAnalyzer
             Process.Start(new ProcessStartInfo(navigateUri));
             e.Handled = true;
         }
-        
+
         private void something_MouseLeftButtonUp(object sender, RoutedEventArgs e)
         {
             AXToolbox.Common.Point wp = null;
@@ -253,7 +246,9 @@ namespace FlightAnalyzer
         }
         private void buttonCloseReport_Click(object sender, RoutedEventArgs e)
         {
-            if (!DirtyReport || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (report != null &&
+                (!report.IsDirty || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                )
             {
                 currentSettings = defaultSettings;
                 report = null;

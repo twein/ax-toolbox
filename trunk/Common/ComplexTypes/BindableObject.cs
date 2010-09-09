@@ -44,11 +44,20 @@ namespace AXToolbox.Common
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [field: NonSerialized]
-        protected Boolean isDirty = false;
+        [NonSerialized]
+        private Boolean isDirty = false;
         public Boolean IsDirty
         {
             get { return isDirty; }
+            set
+            {
+                if (isDirty != value)
+                {
+                    isDirty = value;
+                    RaisePropertyChanged("IsDirty");
+                }
+
+            }
         }
 
         /// <summary>
@@ -123,8 +132,10 @@ namespace AXToolbox.Common
                 // Raise the PropertyChanged event.
                 handler(this, args);
             }
-            isDirty = true;
             this.AfterPropertyChanged(propertyName);
+
+            if (propertyName != "IsDirty")
+                RaisePropertyChanged("IsDirty");
         }
 
         #endregion // Protected Members
