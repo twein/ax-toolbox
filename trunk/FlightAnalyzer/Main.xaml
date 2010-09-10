@@ -167,8 +167,8 @@
 										ToolTip="View/edit settings"
 										Click="buttonSettings_Click">Details</Button>
                                 <Button Height="22" Margin="0" 
-										ToolTip="Save default report file (.axr)"
-										Click="buttonSaveSettings_Click">Save</Button>
+										ToolTip="Save as default report file (.axr)"
+										Click="buttonSaveSettings_Click">Save as default</Button>
                             </StackPanel>
                         </Expander.Header>
                         <ContentControl Margin="5"

@@ -11,7 +11,8 @@ namespace AXToolbox.Common
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
-        private const string settingsFileName = "Default.axs";
+        private static readonly string dataFolder;
+        private static readonly string settingsFileName;
 
         public DateTime Date { get; set; }
         public bool Am { get; set; }
@@ -41,12 +42,15 @@ namespace AXToolbox.Common
                 return sun.Sunset(Date, Sun.ZenithTypes.Official);
             }
         }
+        public static string DataFolder
+        {
+            get { return FlightSettings.dataFolder; }
+        }
         public string ReportFolder
         {
             get
             {
-                var rootFolder = Directory.GetCurrentDirectory();
-                var reportFolder = Path.Combine(rootFolder, string.Format("{0:yyyyMMdd}{1}", Date, Am ? "AM" : "PM"));
+                var reportFolder = Path.Combine(dataFolder, string.Format("{0:yyyyMMdd}{1}", Date, Am ? "AM" : "PM"));
                 if (!Directory.Exists(reportFolder))
                     Directory.CreateDirectory(reportFolder);
                 return reportFolder;
@@ -61,6 +65,12 @@ namespace AXToolbox.Common
                     Directory.CreateDirectory(logFolder);
                 return logFolder;
             }
+        }
+
+        static FlightSettings()
+        {
+            dataFolder = Path.Combine(Directory.GetCurrentDirectory(), "AX-Toolbox Data");
+            settingsFileName = Path.Combine(dataFolder, "Default.axs");
         }
 
         private FlightSettings()
@@ -100,7 +110,7 @@ namespace AXToolbox.Common
         }
         public void Save()
         {
-            ObjectSerializer<FlightSettings>.Save(this, settingsFileName, serializationFormat);
+            ObjectSerializer<FlightSettings>.Save(this, Path.Combine(dataFolder, settingsFileName), serializationFormat);
         }
         /// <summary>Compute the UTM coordinate given a 4 figures competition one
         /// </summary>
