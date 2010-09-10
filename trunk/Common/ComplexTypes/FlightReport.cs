@@ -159,7 +159,7 @@ namespace AXToolbox.Common
             Reset();
         }
 
-        protected void Reset()
+        public void Reset()
         {
             pilotId = 0;
             loggerModel = "";

@@ -30,7 +30,7 @@ namespace FlightAnalyzer
         private AXToolbox.Common.Point selectedItem;
 
         private MapType mapType = MapType.GoogleMap;
-        private int mapDefaultZoom = 12;
+        private int mapDefaultZoom = 11;
 
         public FlightSettings DefaultSettings { get { return defaultSettings; } }
         public FlightSettings CurrentSettings { get { return currentSettings; } }
@@ -50,8 +50,8 @@ namespace FlightAnalyzer
             GMaps.Instance.Mode = AccessMode.ServerAndCache;
 
             // config map
-            MainMap.CacheLocation = "";
-            // set cache mode only if no internet avaible
+            MainMap.CacheLocation = Path.Combine(FlightSettings.DataFolder, "GMaps");
+            // set cache mode if not online
             try
             {
                 var ip = System.Net.Dns.GetHostEntry("www.google.com");
@@ -65,7 +65,7 @@ namespace FlightAnalyzer
             MainMap.MapType = mapType;
             MainMap.DragButton = MouseButton.Left;
             MainMap.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
-            MainMap.MaxZoom = 20; //tiles available up to zoom 17
+            MainMap.MaxZoom = 20;
             MainMap.MinZoom = 5;
             MainMap.Zoom = mapDefaultZoom;
 
@@ -74,13 +74,20 @@ namespace FlightAnalyzer
             DataContext = this;
             RedrawMap();
         }
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = !ConfirmLoseChanges();
+        }
 
         private void MainWindow_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] droppedFilePaths = e.Data.GetData(DataFormats.FileDrop, true) as string[];
-                LoadReport(droppedFilePaths[0]);
+                if (ConfirmLoseChanges())
+                {
+                    string[] droppedFilePaths = e.Data.GetData(DataFormats.FileDrop, true) as string[];
+                    LoadReport(droppedFilePaths[0]);
+                }
             }
         }
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -115,20 +122,6 @@ namespace FlightAnalyzer
                     break;
             }
         }
-        private void MainWindow_Closing(object sender, CancelEventArgs e)
-        {
-            if (report == null || 
-                !report.IsDirty || 
-                MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes
-                )
-            {
-                e.Cancel = false;
-            }
-            else
-            {
-                e.Cancel = true;
-            }
-        }
         private void MainMap_MouseMove(object sender, MouseEventArgs e)
         {
             var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
@@ -139,7 +132,7 @@ namespace FlightAnalyzer
 
         private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
         {
-            string navigateUri = (sender as System.Windows.Documents.Hyperlink).NavigateUri.ToString();
+            string navigateUri = (sender as Hyperlink).NavigateUri.ToString();
             Process.Start(new ProcessStartInfo(navigateUri));
             e.Handled = true;
         }
@@ -219,26 +212,39 @@ namespace FlightAnalyzer
 
         private void buttonLoadReport_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "Report files (*.axr)|*.axr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog(this) == true)
+            if (ConfirmLoseChanges())
             {
-                LoadReport(dlg.FileName);
+                var dlg = new OpenFileDialog();
+                dlg.Filter = "Report files (*.axr)|*.axr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
+                dlg.RestoreDirectory = true;
+                if (dlg.ShowDialog(this) == true)
+                {
+                    LoadReport(dlg.FileName);
+                }
             }
         }
         private void buttonSaveReport_Click(object sender, RoutedEventArgs e)
         {
-            SaveReport();
+            string fileName;
+            if (report != null)
+            {
+                fileName = report.ReportFilePath;
+                if (!File.Exists(fileName) ||
+                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    if (!report.Save() || !report.ExportLog())
+                    {
+                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
         private void buttonResetReport_Click(object sender, RoutedEventArgs e)
         {
-            if (
-                report != null &&
-                (!report.IsDirty || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                )
+            if (ConfirmLoseChanges())
             {
-                report.Settings = defaultSettings;
+                //report.Settings = defaultSettings;
+                report.Reset();
                 DataContext = null;
                 DataContext = this;
                 RedrawMap();
@@ -246,9 +252,7 @@ namespace FlightAnalyzer
         }
         private void buttonCloseReport_Click(object sender, RoutedEventArgs e)
         {
-            if (report != null &&
-                (!report.IsDirty || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                )
+            if (ConfirmLoseChanges())
             {
                 currentSettings = defaultSettings;
                 report = null;
@@ -350,7 +354,7 @@ namespace FlightAnalyzer
             }
             catch (InvalidOperationException)
             {
-                //silently reject unknown log files
+                MessageBox.Show(this, "Unsupported file format.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -361,21 +365,16 @@ namespace FlightAnalyzer
                 Cursor = Cursors.Arrow;
             }
         }
-        private void SaveReport()
+        private bool ConfirmLoseChanges()
         {
-            string fileName;
-            if (report != null)
-            {
-                fileName = report.ReportFilePath;
-                if (!File.Exists(fileName) ||
-                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    if (!report.Save() || !report.ExportLog())
-                    {
-                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-            }
+            if (
+                report == null ||
+                !report.IsDirty ||
+                MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes
+                )
+                return true;
+            else
+                return false;
         }
 
         private void RedrawMap()
@@ -513,11 +512,12 @@ namespace FlightAnalyzer
         private void PrefetchTiles()
         {
             var area = MainMap.CurrentViewArea;// MainMap.SelectedArea;
-
+            Cursor = Cursors.Wait;
             for (int z = (int)MainMap.Zoom; z <= 16; z++) //too many tiles over zoom 16
             {
                 new TilePrefetcher().Start(area, MainMap.Projection, z, MainMap.MapType, 0);
             }
+            Cursor = Cursors.Arrow;
         }
     }
 }
