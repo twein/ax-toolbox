@@ -338,7 +338,7 @@ namespace Balloonerds.Measure
             //save all the ponts inside the area in track file
             if (values.NumberOfPointsInside > 0 && Flight.Instance.SaveAllPointLists)
             {
-                Balloonerds.ToolBox.CompeGPS.CompeGPS.SaveTrack(pointsInside, "PointsInside_" + label + "_Pilot" + pilot.Number.ToString("00") + ".trk", Flight.Instance.Datum);
+                Balloonerds.ToolBox.CompeGPS.CompeGPS.SaveTrack(pointsInside, "PointsInside_" + label + "_Pilot" + pilot.Number.ToString("000") + ".trk", Flight.Instance.Datum);
             }
 
             return values;

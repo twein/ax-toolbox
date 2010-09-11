@@ -212,11 +212,13 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <TextBlock Name="textblockMouse" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
                     <TextBlock Name="textblockPointer" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
+                    <TextBlock Name="textblockDistance" Style="{StaticResource valueStyle}" FontSize="12" FontWeight="Bold" Width="Auto"/>
                 </StackPanel>
                 <map:GMapControl x:Name="MainMap" Grid.Row="1" Margin="0,0,5,5"
 								 BorderBrush="Gray" BorderThickness="0.5"
 								 Height="Auto"
-								 MouseMove="MainMap_MouseMove"/>
+								 MouseMove="MainMap_MouseMove"
+                                 MouseRightButtonUp="MainMap_MouseRightButtonUp"/>
                 <!--<Border Grid.Row="1" 
 						Height="100" Width="110"
 						HorizontalAlignment="Left" VerticalAlignment="Top" Background="Black" Opacity="0.25"></Border>-->
