@@ -10,23 +10,27 @@ Use:
 	Drag track or report files from windows explorer over the window or press the report load button to analyze them.
 	For .TRK log files you'll have to enter the pilot number.
 	Select desired point with the slider and press set to update launch and landing.
+	Add/remove manual markers and goal declarations, if any.
 	Press report reset to discard any changes and let the computer reprocess the original log file.
-	When finished, press report save button to save the flight report.
+	When finished, press report save button to save the flight report and a copy of the original log file in the data folder.
 
 Mouse:
 	Click and drag over map to move.
 	Use the wheel to zoom in/out.
-	Right click: show the coordinates pointed by the mouse.
-	Click over any point description to center it in the map.
+	Right click: 1st time: set first point for distance measurement. 2nd time: set second point and perform the measurement.
+	Click over any report point description to center it in the map.
+
 
 Keys:
 	+: Zoom in
 	-: Zoom out
 	.: Default zoom
 	M: Change map type
+	P: Prefetch map tiles for the visible zone and map type (for offline use)
+	O: Optimize the tile database (use if map refresh becomes slow)
 
 Controls:
-	Logger/Clean radio buttons: choose betwen unmodified track log and computed clean track
-	Slider: Select track point
-	Lock: lock the focus over the selected point
-	Show goals: show/hide allowed goals
+	All/flight points radio buttons: choose betwen unmodified track log and computed clean flight track.
+	Slider: Select track point.
+	Lock: lock the focus over the pointer.
+	Show goals: show/hide allowed goals.

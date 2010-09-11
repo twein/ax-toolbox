@@ -122,12 +122,61 @@ namespace FlightAnalyzer
                     break;
             }
         }
+
         private void MainMap_MouseMove(object sender, MouseEventArgs e)
         {
             var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
             var datum = currentSettings.ReferencePoint.Datum;
             var p = new AXToolbox.Common.Point(DateTime.Now, Datum.WGS84, llp.Lat, llp.Lng, 0, datum);
             textblockMouse.Text = p.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords);
+        }
+        private void MainMap_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            List<GMapMarker> mmarkers = new List<GMapMarker>();
+            var llp = MainMap.FromLocalToLatLng((int)e.GetPosition(MainMap).X, (int)e.GetPosition(MainMap).Y);
+
+            try
+            {
+                mmarkers = MainMap.Markers.Where(m => (string)m.Tag == "M1" || (string)m.Tag == "M2").ToList();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            string tag = "M1";
+            if (mmarkers.Count() == 1)
+            {
+                tag = "M2";
+            }
+            else if (mmarkers.Count() == 2)
+            {
+                MainMap.Markers.Remove(mmarkers[0]);
+                MainMap.Markers.Remove(mmarkers[1]);
+                textblockDistance.Text = "";
+            }
+
+            var marker = new GMapMarker(llp);
+            marker.Tag = tag;
+            marker.Shape = new Tag(tag, "Measuring point", Brushes.Violet);
+            marker.Shape.Opacity = 0.6;
+            MainMap.Markers.Add(marker);
+
+            if (mmarkers.Count() == 1)
+            {
+                var p1 = new AXToolbox.Common.Point(
+                    DateTime.Now,
+                    Datum.WGS84,
+                    mmarkers[0].Position.Lat, mmarkers[0].Position.Lng, 0,
+                    currentSettings.ReferencePoint.Datum);
+                var p2 = new AXToolbox.Common.Point(
+                    DateTime.Now,
+                    Datum.WGS84,
+                    llp.Lat, llp.Lng, 0,
+                    currentSettings.ReferencePoint.Datum);
+
+                var dist = Physics.Distance2D(p1, p2);
+                textblockDistance.Text = dist.ToString("Measured distance = 0m");
+            }
         }
 
         private void hyperlink_RequestNavigate(object sender, RoutedEventArgs e)
@@ -380,6 +429,8 @@ namespace FlightAnalyzer
         private void RedrawMap()
         {
             //Clear Map
+            textblockPointer.Text = "";
+            textblockDistance.Text = "";
             MainMap.Markers.Clear();
             MainMap.Markers.Add(CreateTagMapMarker("reference", currentSettings.ReferencePoint, "REFERENCE", currentSettings.ReferencePoint.ToString(PointInfo.UTMCoords | PointInfo.CompetitionCoords), Brushes.Orange));
 
