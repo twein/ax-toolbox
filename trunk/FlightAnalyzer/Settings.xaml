@@ -95,11 +95,25 @@
                 Clear
             </Button>
         </WrapPanel>
-
         <ListBox x:Name="listBoxGoals"
             Style="{StaticResource valueStyle}" 
             MinHeight="50" MaxHeight="100"
             ItemsSource="{Binding Path=AllowedGoals}"/>
+
+        <TextBlock 
+            Style="{StaticResource labelStyle}">
+            Maximum distance from declared goal to road crossing
+        </TextBlock>
+        <TextBox
+            Style="{StaticResource valueStyle}" >
+            <TextBox.Text>
+                <Binding Path="MaxDistToCrossing">
+                    <Binding.ValidationRules>
+                        <validation:DoubleValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button IsDefault="True" Margin="5" MinWidth="75" Click="buttonOk_Click">OK</Button>

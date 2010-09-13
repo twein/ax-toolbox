@@ -56,6 +56,13 @@ namespace AXToolbox.Common
                 return Path.Combine(settings.LogFolder, Path.ChangeExtension(FileName, GetLogFileExtension()));
             }
         }
+        public string WptFilePath
+        {
+            get
+            {
+                return Path.Combine(settings.LogFolder, Path.ChangeExtension(FileName, ".wpt"));
+            }
+        }
         public abstract string GetLogFileExtension();
         public FlightSettings Settings
         {
@@ -361,13 +368,27 @@ namespace AXToolbox.Common
 
             return ok;
         }
-
         public bool ExportLog()
         {
             var ok = pilotId > 0;
             if (ok)
             {
                 File.WriteAllLines(LogFilePath, logFile);
+            }
+
+            return ok;
+        }
+        public bool ExportWaypoints()
+        {
+            var ok = pilotId > 0;
+            if (ok)
+            {
+                var wpts = new List<Waypoint>();
+                wpts.Add(new Waypoint("Launch", launchPoint));
+                wpts.Add(new Waypoint("Landing", landingPoint));
+                wpts.AddRange(markers);
+                wpts.AddRange(declaredGoals);
+                WPTFile.Save(wpts, WptFilePath);
             }
 
             return ok;

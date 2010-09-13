@@ -19,6 +19,7 @@ namespace AXToolbox.Common
         Name = 64,
         Description = 128,
         GeoCoords = 256,
-        Datum = 512
+        Datum = 512,
+        Radius = 1024
     }
 }
