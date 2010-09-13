@@ -201,6 +201,14 @@ namespace FlightAnalyzer
                 var command = (source as Button).Tag as string;
                 switch (command)
                 {
+                    case "ChangePilotId":
+                        int id = report.PilotId;
+                        var input = new InputWindow("New pilot id:",
+                            report.PilotId.ToString(),
+                            strValue => int.TryParse(strValue, out id) ? "" : "Parse error!");
+                        if (input.ShowDialog() == true)
+                            report.PilotId = id;
+                        break;
                     case "SetLaunch":
                         if (report != null)
                         {

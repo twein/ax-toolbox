@@ -26,9 +26,19 @@
 				Style="{StaticResource valueStyle}"
 				Text="{Binding Path=Date,StringFormat='dd/MM/yyyy', Mode=OneWay}"/>
 
-                <TextBlock Style="{StaticResource labelStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource labelStyle}">
 				Pilot:
-                </TextBlock>
+                    </TextBlock>
+                    <Button
+					Margin="0" 
+					VerticalAlignment="Center" 
+					Tag="ChangePilotId"
+					ToolTip="Change pilot id"
+					Click="something_MouseLeftButtonUp">
+                        Change
+                    </Button>
+                </StackPanel>
                 <TextBox  IsReadOnly="True"
 				Name="textboxPilotId"
 				Style="{StaticResource valueStyle}"
@@ -180,7 +190,7 @@
                             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                 <StackPanel Orientation="Vertical" Margin="0,0,5,0">
                                     <TextBlock VerticalAlignment="Center" FontWeight="Bold">Flight report</TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report}"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding Path=Report.Description}"/>
                                 </StackPanel>
                                 <Button Height="22" Margin="0"
 										ToolTip="Load flight report file or log file"
