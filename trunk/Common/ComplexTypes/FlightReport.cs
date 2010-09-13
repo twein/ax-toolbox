@@ -89,7 +89,8 @@ namespace AXToolbox.Common
                 if (value != pilotId)
                 {
                     pilotId = value;
-                    base.RaisePropertyChanged("PioltId");
+                    base.RaisePropertyChanged("PilotId");
+                    base.RaisePropertyChanged("Description");
                 }
             }
         }
@@ -156,6 +157,13 @@ namespace AXToolbox.Common
         public List<string> Notes
         {
             get { return notes; }
+        }
+        public string Description
+        {
+            get
+            {
+                return this.ToString();
+            }
         }
 
         protected FlightReport(string filePath, FlightSettings settings)

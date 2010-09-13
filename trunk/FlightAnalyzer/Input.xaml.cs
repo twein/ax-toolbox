@@ -31,6 +31,7 @@ namespace FlightAnalyzer
         {
             InitializeComponent();
             this.prompt = prompt;
+            this.value = value;
             this.validate = validate;
             DataContext = this;
         }
