@@ -22,6 +22,7 @@ namespace AXToolbox.Common
         public double MaxAcceleration { get; set; }
         public double InterpolationInterval { get; set; }
         public List<Waypoint> AllowedGoals { get; set; }
+        public double MaxDistToCrossing { get; set; }
         public string AmOrPm
         {
             get { return Am ? "AM" : "PM"; }
@@ -83,8 +84,9 @@ namespace AXToolbox.Common
             Qnh = 1013;
             MinVelocity = 0.3; // m/s
             MaxAcceleration = 5; // m/s2
-            InterpolationInterval = 2; // s
+            InterpolationInterval = 0; // s
             AllowedGoals = new List<Waypoint>();
+            MaxDistToCrossing = 0;
         }
 
         //public override bool Equals(object obj)
@@ -168,9 +170,10 @@ namespace AXToolbox.Common
             return
                 string.Format("Date: {0:yyyy/MM/dd}{1}\n", Date, AmOrPm) +
                 string.Format("Reference: {0}\n", ReferencePoint.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude)) +
-                string.Format("QNH: {0}\n", Qnh.ToString()) +
-                string.Format("Sunrise: {0:HH:mm}; ", Sunrise) +
-                string.Format("Sunset: {0:HH:mm}", Sunset);
+                string.Format("QNH: {0:0}\n", Qnh.ToString()) +
+                string.Format("Sunrise: {0:HH:mm}; ", Sunrise) + string.Format("Sunset: {0:HH:mm}\n", Sunset) +
+                string.Format("Allowed goals count: {0:0}\n", AllowedGoals.Count) +
+                "Maximum distance from goal declaration to crossing: " + ((MaxDistToCrossing > 0) ? MaxDistToCrossing.ToString("0m") : "not set");
         }
     }
 }

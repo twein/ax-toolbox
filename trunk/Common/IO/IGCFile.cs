@@ -134,6 +134,7 @@ namespace AXToolbox.Common.IO
                     if (!double.IsNaN(altitude))
                         declaration.Altitude = altitude;
                     declaration.Description = description;
+                    declaration.Radius = settings.MaxDistToCrossing;
 
                     declaredGoals.Add(declaration);
                 }
@@ -174,6 +175,7 @@ namespace AXToolbox.Common.IO
                     utmZone: utmZone
                     );
                 declaration.Description = description;
+                declaration.Radius = settings.MaxDistToCrossing;
 
                 declaredGoals.Add(declaration);
             }

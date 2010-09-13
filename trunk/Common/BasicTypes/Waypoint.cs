@@ -9,6 +9,7 @@ namespace AXToolbox.Common
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public double Radius { get; set; }
 
         public Waypoint(string name, DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum utmDatum, string utmZone = "") :
             base(time, datum, latitude, longitude, altitude, utmDatum, utmZone)
@@ -33,11 +34,12 @@ namespace AXToolbox.Common
             easting = point.Easting;
             northing = point.Northing;
             altitude = point.Altitude;
+            Radius = 0;
         }
 
         public override string ToString()
         {
-            return ToString(PointInfo.Name | PointInfo.Time | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude);
+            return ToString(PointInfo.Name | PointInfo.Time | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude | PointInfo.Radius);
         }
         public override string ToString(PointInfo info)
         {
@@ -47,6 +49,9 @@ namespace AXToolbox.Common
                 str.Append(Name + ": ");
 
             str.Append(base.ToString(info));
+
+            if ((info & PointInfo.Radius) > 0 && Radius > 0)
+                str.Append(Radius.ToString("0 "));
 
             if ((info & PointInfo.Description) > 0 && Description != "")
                 str.Append(Description + " ");

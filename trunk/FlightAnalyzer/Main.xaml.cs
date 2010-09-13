@@ -281,7 +281,7 @@ namespace FlightAnalyzer
                 if (!File.Exists(fileName) ||
                     MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    if (!report.Save() || !report.ExportLog())
+                    if (!report.Save() || !report.ExportLog() || !report.ExportWaypoints())
                     {
                         MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
@@ -366,6 +366,7 @@ namespace FlightAnalyzer
 
             if (input.ShowDialog() == true)
             {
+                value.Radius = report.Settings.MaxDistToCrossing;
                 report.AddDeclaredGoal(value);
                 RedrawMap();
             }

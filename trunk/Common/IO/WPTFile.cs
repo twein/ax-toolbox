@@ -57,6 +57,8 @@ namespace AXToolbox.Common.IO
                     wp.Time.ToString("dd-MMM-yy HH:mm:ss", NumberFormatInfo.InvariantInfo).ToUpper(),
                     wp.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     ""); //description
+                if (wp.Radius > 0)
+                    sw.WriteLine(string.Format("w Waypoint,0,0.0,63736,0,0,39,,{0},,-1,0", wp.Radius));
             }
             sw.Close();
         }
