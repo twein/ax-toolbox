@@ -1,0 +1,5 @@
+TO DO
+Gmap marker object (like Tag) for point and another for waypoint (with circle support). 
+
+IDEAS
+Make an error log to output all recoverable error causes

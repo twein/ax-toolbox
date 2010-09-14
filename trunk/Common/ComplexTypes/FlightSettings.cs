@@ -11,9 +11,7 @@ namespace AXToolbox.Common
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
-        private static readonly string dataFolder;
-        private static readonly string settingsFileName;
-
+        private string dataFolder;
         public DateTime Date { get; set; }
         public bool Am { get; set; }
         public Point ReferencePoint { get; set; }
@@ -43,9 +41,16 @@ namespace AXToolbox.Common
                 return sun.Sunset(Date, Sun.ZenithTypes.Official);
             }
         }
-        public static string DataFolder
+
+        public string DataFolder
         {
-            get { return FlightSettings.dataFolder; }
+            get
+            {
+                if (!Directory.Exists(DataFolder))
+                    Directory.CreateDirectory(DataFolder);
+                return dataFolder;
+            }
+            set { dataFolder = value; }
         }
         public string ReportFolder
         {
@@ -67,15 +72,16 @@ namespace AXToolbox.Common
                 return logFolder;
             }
         }
-
-        static FlightSettings()
+        private static string DefaultFileName
         {
-            dataFolder = Path.Combine(Directory.GetCurrentDirectory(), "AX-Toolbox Data");
-            settingsFileName = Path.Combine(dataFolder, "Default.axs");
+            get { return Path.Combine(Directory.GetCurrentDirectory(), "Default.axs"); }
         }
 
         private FlightSettings()
         {
+            dataFolder = Path.Combine(Directory.GetCurrentDirectory(), "AX-Toolbox Data");
+            //dataFolder = Path.Combine(@"\\mainserver\preeuropean", "AX-Toolbox Data");
+
             var now = DateTime.Now;
             Date = now.Date;
             Am = now.Hour >= 12;
@@ -112,7 +118,7 @@ namespace AXToolbox.Common
         }
         public void Save()
         {
-            ObjectSerializer<FlightSettings>.Save(this, Path.Combine(dataFolder, settingsFileName), serializationFormat);
+            ObjectSerializer<FlightSettings>.Save(this, Path.Combine(dataFolder, DefaultFileName), serializationFormat);
         }
         /// <summary>Compute the UTM coordinate given a 4 figures competition one
         /// </summary>
@@ -149,16 +155,20 @@ namespace AXToolbox.Common
             return ComputeCorrectCoordinate(northing4Figures, ReferencePoint.Northing);
         }
 
-        public static FlightSettings Load()
+        public static FlightSettings Load(string fileName)
         {
             FlightSettings settings;
 
-            if (File.Exists(settingsFileName))
-                settings = ObjectSerializer<FlightSettings>.Load(settingsFileName, serializationFormat);
+            if (File.Exists(fileName))
+                settings = ObjectSerializer<FlightSettings>.Load(fileName, serializationFormat);
             else
                 settings = new FlightSettings();
 
             return settings;
+        }
+        public static FlightSettings LoadDefault()
+        {
+            return Load(DefaultFileName);
         }
         public static FlightSettings LoadDefaults()
         {
@@ -167,7 +177,13 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
+            var data = dataFolder;
+            if (data.Length > 45)
+            {
+                data = data.Left(19) + " . . . " + data.Right(19);
+            }
             return
+                string.Format("Data: {0}\n", data) +
                 string.Format("Date: {0:yyyy/MM/dd}{1}\n", Date, AmOrPm) +
                 string.Format("Reference: {0}\n", ReferencePoint.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.CompetitionCoords | PointInfo.Altitude)) +
                 string.Format("QNH: {0:0}\n", Qnh.ToString()) +
