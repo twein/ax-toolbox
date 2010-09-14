@@ -50,7 +50,7 @@ namespace FlightAnalyzer
             GMaps.Instance.Mode = AccessMode.ServerAndCache;
 
             // config map
-            MainMap.CacheLocation = Path.Combine(FlightSettings.DataFolder, "GMaps");
+            MainMap.CacheLocation = Path.Combine(Directory.GetCurrentDirectory(), "GMaps");
             // set cache mode if not online
             try
             {
@@ -69,7 +69,7 @@ namespace FlightAnalyzer
             MainMap.MinZoom = 5;
             MainMap.Zoom = mapDefaultZoom;
 
-            defaultSettings = FlightSettings.Load();
+            defaultSettings = FlightSettings.LoadDefault();
             currentSettings = defaultSettings;
             DataContext = this;
             RedrawMap();
@@ -267,6 +267,20 @@ namespace FlightAnalyzer
             RedrawMap();
         }
 
+
+        private void buttonLoadSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (ConfirmLoseChanges())
+            {
+                var dlg = new OpenFileDialog();
+                dlg.Filter = "Flight settings files (*.axs)|*.axs";
+                dlg.RestoreDirectory = true;
+                if (dlg.ShowDialog(this) == true)
+                {
+                    LoadSettings(dlg.FileName);
+                }
+            }
+        }
         private void buttonLoadReport_Click(object sender, RoutedEventArgs e)
         {
             if (ConfirmLoseChanges())
@@ -347,8 +361,8 @@ namespace FlightAnalyzer
         private void AddMarker_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
-            var input = new InputWindow("Marker: (Example: #01 10:00:00 4512/1123 1000)",
-                report.Settings.ReferencePoint.ToString(),
+            var input = new InputWindow("Marker: (Example: 01 10:00:00 4512/1123 1000)",
+                "",
                 strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Parse error!");
 
             if (input.ShowDialog() == true)
@@ -368,8 +382,8 @@ namespace FlightAnalyzer
         private void AddDeclaration_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
-            var input = new InputWindow("Goal declaration: (Example: #001 10:00:00 4512/1123 1000)",
-                report.Settings.ReferencePoint.ToString(),
+            var input = new InputWindow("Goal declaration: (Example: 01 10:00:00 4512/1123 1000)",
+                "",
                 strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Parse error!");
 
             if (input.ShowDialog() == true)
@@ -388,6 +402,15 @@ namespace FlightAnalyzer
             }
         }
 
+        private void LoadSettings(string fileName)
+        {
+            report = null;
+            defaultSettings = FlightSettings.Load(fileName);
+            currentSettings = defaultSettings;
+            DataContext = null;
+            DataContext = this;
+            RedrawMap();
+        }
         private void LoadReport(string fileName)
         {
             this.Cursor = Cursors.Wait;
@@ -547,9 +570,12 @@ namespace FlightAnalyzer
         {
             var marker = new GMapMarker(new PointLatLng(p.Latitude, p.Longitude));
             marker.Tag = tag;
+            if (p is Waypoint)
+            {
+                //TODO: add circle for minimum distance to road crossing
+            }
             marker.Shape = new Tag(text, toolTip, brush);
             marker.Shape.Opacity = 0.6;
-            //marker.ForceUpdateLocalPosition(MainMap);
 
             if (tag == "reference")
                 MainMap.CurrentPosition = marker.Position;

@@ -176,6 +176,9 @@
                                 <Button Name="buttonSettings" Height="22" Margin="0"
 										ToolTip="View/edit settings"
 										Click="buttonSettings_Click">Details</Button>
+                                <Button Height="22" Margin="0"
+										ToolTip="Load flight settings from file"
+										Click="buttonLoadSettings_Click">Load</Button>
                                 <Button Height="22" Margin="0" 
 										ToolTip="Save as default report file (.axr)"
 										Click="buttonSaveSettings_Click">Save as default</Button>

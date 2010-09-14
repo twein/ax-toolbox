@@ -121,9 +121,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Ideas.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Geodesy\helmert.xlsx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
