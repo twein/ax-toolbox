@@ -201,9 +201,11 @@
                                 <Button Height="22" Margin="0" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"
 										ToolTip="Save flight report file" BorderBrush="{Binding Path=Report.IsDirty, Converter={StaticResource boolColorConverter}}"
 										Click="buttonSaveReport_Click">Save</Button>
+                                <!--
                                 <Button Height="22" Margin="0" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"
 										ToolTip="Recompute report from log file"
 										Click="buttonResetReport_Click">Reset</Button>
+                                -->
                                 <Button Height="22" Margin="0" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"
 										ToolTip="Close report"
 										Click="buttonCloseReport_Click">Close</Button>

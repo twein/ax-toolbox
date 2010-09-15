@@ -46,8 +46,8 @@ namespace AXToolbox.Common
         {
             get
             {
-                if (!Directory.Exists(DataFolder))
-                    Directory.CreateDirectory(DataFolder);
+                if (!Directory.Exists(dataFolder))
+                    Directory.CreateDirectory(dataFolder);
                 return dataFolder;
             }
             set { dataFolder = value; }

@@ -60,7 +60,7 @@ namespace FlightAnalyzer
             catch
             {
                 MainMap.Manager.Mode = AccessMode.CacheOnly;
-                MessageBox.Show("No internet connection available, going to CacheOnly mode.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, "No internet connection available, going to CacheOnly mode.", "Alert!", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             MainMap.MapType = mapType;
             MainMap.DragButton = MouseButton.Left;
@@ -286,7 +286,7 @@ namespace FlightAnalyzer
             if (ConfirmLoseChanges())
             {
                 var dlg = new OpenFileDialog();
-                dlg.Filter = "Report files (*.axr)|*.axr|IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk";
+                dlg.Filter = "IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk|Report files (*.axr)|*.axr";
                 dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog(this) == true)
                 {
@@ -301,11 +301,11 @@ namespace FlightAnalyzer
             {
                 fileName = report.ReportFilePath;
                 if (!File.Exists(fileName) ||
-                    MessageBox.Show("File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    MessageBox.Show(this, "File " + fileName + " already exists. Overwrite?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     if (!report.Save() || !report.ExportLog() || !report.ExportWaypoints())
                     {
-                        MessageBox.Show("The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(this, "The pilot id can not be zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
@@ -314,7 +314,6 @@ namespace FlightAnalyzer
         {
             if (ConfirmLoseChanges())
             {
-                //report.Settings = defaultSettings;
                 report.Reset();
                 DataContext = null;
                 DataContext = this;
@@ -338,7 +337,7 @@ namespace FlightAnalyzer
             var editSettings = currentSettings.Clone();
             dlg = new SettingsWindow(editSettings);
             if (
-                (report == null || MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                (report == null || MessageBox.Show(this, "Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 && (bool)dlg.ShowDialog()
             )
             {
@@ -424,13 +423,16 @@ namespace FlightAnalyzer
                 }
                 else
                 {
-                    //textboxPilotId.IsReadOnly = false;
+
                     report = newReport;
                     currentSettings = report.Settings;
                     DataContext = null;
                     DataContext = this;
                     RedrawMap();
                     sliderPointer.IsEnabled = true;
+                    if (report.Signature == SignatureStatus.Counterfeit)
+                        MessageBox.Show(this, "This log file has been tampered with!", "Warning!", MessageBoxButton.OK, MessageBoxImage.Warning);
+
                 }
             }
             catch (InvalidOperationException)
@@ -439,7 +441,7 @@ namespace FlightAnalyzer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(this, ex.Message);
             }
             finally
             {
@@ -451,7 +453,7 @@ namespace FlightAnalyzer
             if (
                 report == null ||
                 !report.IsDirty ||
-                MessageBox.Show("Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes
+                MessageBox.Show(this, "Are you sure?\nAll changes since last save will be lost.", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes
                 )
                 return true;
             else
