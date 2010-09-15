@@ -261,10 +261,12 @@ namespace FlightAnalyzer
         private void checkLock_Checked(object sender, RoutedEventArgs e)
         {
             UpdateMapMarker("pointer");
+            MainMap.Focus();
         }
         private void checkGoals_Checked(object sender, RoutedEventArgs e)
         {
             RedrawMap();
+            MainMap.Focus();
         }
 
 
@@ -359,9 +361,9 @@ namespace FlightAnalyzer
 
         private void AddMarker_Click(object sender, RoutedEventArgs e)
         {
-            Waypoint value = null;
-            var input = new InputWindow("Marker: (Example: 01 10:00:00 4512/1123 1000)",
-                "",
+            Waypoint value = new Waypoint("00", GetVisibleTrack()[(int)sliderPointer.Value]);
+            var input = new InputWindow("Marker: (Example: 01 10:00:00 (4512/1123) 1000)",
+                value.ToString(PointInfo.Input),
                 strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Parse error!");
 
             if (input.ShowDialog() == true)
@@ -381,7 +383,7 @@ namespace FlightAnalyzer
         private void AddDeclaration_Click(object sender, RoutedEventArgs e)
         {
             Waypoint value = null;
-            var input = new InputWindow("Goal declaration: (Example: 01 10:00:00 4512/1123 1000)",
+            var input = new InputWindow("Goal declaration: (Example: 01 10:00:00 (4512/1123) 1000)",
                 "",
                 strValue => Waypoint.TryParseRelative(strValue, report.Settings, out value) ? "" : "Parse error!");
 
