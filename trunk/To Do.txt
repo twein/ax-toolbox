@@ -1,5 +1,10 @@
 TO DO
-Gmap marker object (like Tag) for point and another for waypoint (with circle support). 
+Add notes for every user action.
+Make a different Gmap marker object (like Tag) for point and another for waypoint (with circle support). 
+Keep track of debriefer identity.
+Don't score counterfeit logs.
+Mark manually added markers and declarations. Don't allow to delete non-manual ones.
+Make all measurements and penalizations in FlightAnalyzer.
 
 IDEAS
-Make an error log to output all recoverable error causes
+Make an error log to output all recoverable error causes.

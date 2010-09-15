@@ -33,7 +33,7 @@ namespace AXToolbox.Common
         protected ObservableCollection<Waypoint> declaredGoals;
         protected Point launchPoint;
         protected Point landingPoint;
-        protected List<string> notes;
+        protected ObservableCollection<string> notes;
 
         public string FileName
         {
@@ -64,6 +64,7 @@ namespace AXToolbox.Common
             }
         }
         public abstract string GetLogFileExtension();
+
         public FlightSettings Settings
         {
             get { return settings; }
@@ -88,6 +89,7 @@ namespace AXToolbox.Common
             {
                 if (value != pilotId)
                 {
+                    notes.Add(string.Format("The pilot number has been changed from {0} to {1}", pilotId, value));
                     pilotId = value;
                     base.RaisePropertyChanged("PilotId");
                     base.RaisePropertyChanged("Description");
@@ -137,6 +139,7 @@ namespace AXToolbox.Common
             {
                 if (value != launchPoint)
                 {
+                    notes.Add(string.Format("The launch point has been changed from {0} to {1}", launchPoint, value));
                     launchPoint = value;
                     base.RaisePropertyChanged("LaunchPoint");
                 }
@@ -149,12 +152,13 @@ namespace AXToolbox.Common
             {
                 if (value != landingPoint)
                 {
+                    notes.Add(string.Format("The landing point has been changed from {0} to {1}", landingPoint, value));
                     landingPoint = value;
                     base.RaisePropertyChanged("LandingPoint");
                 }
             }
         }
-        public List<string> Notes
+        public ObservableCollection<string> Notes
         {
             get { return notes; }
         }
@@ -185,7 +189,7 @@ namespace AXToolbox.Common
             declaredGoals = new ObservableCollection<Waypoint>();
             launchPoint = null;
             landingPoint = null;
-            notes = new List<string>();
+            notes = new ObservableCollection<string>();
 
             switch (signature)
             {
@@ -294,26 +298,26 @@ namespace AXToolbox.Common
 
         public void AddMarker(Waypoint marker)
         {
-            AddToCollection(markers, marker);
-            RaisePropertyChanged("Markers");
+            InsertIntoCollection(markers, marker);
+            notes.Add(string.Format("New marker added: {0}", marker));
         }
         public bool RemoveMarker(Waypoint marker)
         {
-            bool ok = markers.Remove(marker);
+            var ok = markers.Remove(marker);
             if (ok)
-                RaisePropertyChanged("Markers");
+                notes.Add(string.Format("Marker removed: {0}", marker));
             return ok;
         }
         public void AddDeclaredGoal(Waypoint declaration)
         {
-            AddToCollection(declaredGoals, declaration);
-            RaisePropertyChanged("DeclaredGoals");
+            InsertIntoCollection(declaredGoals, declaration);
+            notes.Add(string.Format("New goal declaration added: {0}", declaration));
         }
         public bool RemoveDeclaredGoal(Waypoint declaration)
         {
-            bool ok = declaredGoals.Remove(declaration);
+            var ok = declaredGoals.Remove(declaration);
             if (ok)
-                RaisePropertyChanged("DeclaredGoals");
+                notes.Add(string.Format("Goal declaration removed: {0}", declaration));
             return ok;
         }
 
@@ -430,7 +434,7 @@ namespace AXToolbox.Common
                 throw new FileNotFoundException();
         }
         protected abstract SignatureStatus VerifySignature(string fileName);
-        protected void AddToCollection(Collection<Waypoint> collection, Waypoint point)
+        protected void InsertIntoCollection(Collection<Waypoint> collection, Waypoint point)
         {
             Waypoint next = null;
             try
