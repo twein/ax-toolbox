@@ -14,6 +14,7 @@ using AXToolbox.Common;
 using GMap.NET;
 using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
+using System.Collections.ObjectModel;
 
 namespace FlightAnalyzer
 {
@@ -31,10 +32,12 @@ namespace FlightAnalyzer
 
         private MapType mapType = MapType.GoogleMap;
         private int mapDefaultZoom = 11;
+        private ObservableCollection<string> analyzedLogs;
 
         public FlightSettings DefaultSettings { get { return defaultSettings; } }
         public FlightSettings CurrentSettings { get { return currentSettings; } }
         public FlightReport Report { get { return report; } }
+        public ObservableCollection<string> AnalyzedLogs { get { return analyzedLogs; } }
 
         public MainWindow()
         {
@@ -71,6 +74,8 @@ namespace FlightAnalyzer
 
             defaultSettings = FlightSettings.LoadDefault();
             currentSettings = defaultSettings;
+            analyzedLogs = new ObservableCollection<string>();
+            RefreshAnalyzedLogs();
             DataContext = this;
             RedrawMap();
         }
@@ -282,6 +287,7 @@ namespace FlightAnalyzer
                     LoadSettings(dlg.FileName);
                 }
             }
+            RefreshAnalyzedLogs();
         }
         private void buttonLoadReport_Click(object sender, RoutedEventArgs e)
         {
@@ -295,6 +301,7 @@ namespace FlightAnalyzer
                     LoadReport(dlg.FileName);
                 }
             }
+            RefreshAnalyzedLogs();
         }
         private void buttonSaveReport_Click(object sender, RoutedEventArgs e)
         {
@@ -311,6 +318,7 @@ namespace FlightAnalyzer
                     }
                 }
             }
+            RefreshAnalyzedLogs();
         }
         private void buttonResetReport_Click(object sender, RoutedEventArgs e)
         {
@@ -332,6 +340,7 @@ namespace FlightAnalyzer
                 DataContext = this;
                 RedrawMap();
             }
+            RefreshAnalyzedLogs();
         }
         private void buttonSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -353,10 +362,15 @@ namespace FlightAnalyzer
                 DataContext = this;
                 RedrawMap();
             }
+            RefreshAnalyzedLogs();
         }
         private void buttonSaveSettings_Click(object sender, RoutedEventArgs e)
         {
             currentSettings.Save();
+        }
+        private void buttonRefreshLogList_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshAnalyzedLogs();
         }
 
         private void AddMarker_Click(object sender, RoutedEventArgs e)
@@ -411,6 +425,7 @@ namespace FlightAnalyzer
             DataContext = null;
             DataContext = this;
             RedrawMap();
+            RefreshAnalyzedLogs();
         }
         private void LoadReport(string fileName)
         {
@@ -449,6 +464,7 @@ namespace FlightAnalyzer
             {
                 Cursor = Cursors.Arrow;
             }
+            RefreshAnalyzedLogs();
         }
         private bool ConfirmLoseChanges()
         {
@@ -608,6 +624,15 @@ namespace FlightAnalyzer
                 new TilePrefetcher().Start(area, MainMap.Projection, z, MainMap.MapType, 0);
             }
             Cursor = Cursors.Arrow;
+        }
+        private void RefreshAnalyzedLogs()
+        {
+            analyzedLogs.Clear();
+
+            foreach (var r in Directory.EnumerateFiles(currentSettings.ReportFolder, "*.axr").OrderBy(s => s))
+            {
+                analyzedLogs.Add(Path.GetFileName(r));
+            }
         }
     }
 }
