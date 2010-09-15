@@ -45,16 +45,24 @@ namespace AXToolbox.Common
         {
             var str = new StringBuilder();
 
-            if ((info & PointInfo.Name) > 0)
-                str.Append(Name + ": ");
+            if (info == PointInfo.Input)
+            {
+                str.Append(Name + " ");
+                str.Append(base.ToString(PointInfo.Time | PointInfo.CompetitionCoords | PointInfo.Altitude));
+            }
+            else
+            {
+                if ((info & PointInfo.Name) > 0)
+                    str.Append(Name + ": ");
 
-            str.Append(base.ToString(info));
+                str.Append(base.ToString(info));
 
-            if ((info & PointInfo.Radius) > 0 && Radius > 0)
-                str.Append(Radius.ToString("0 "));
+                if ((info & PointInfo.Radius) > 0 && Radius > 0)
+                    str.Append(Radius.ToString("0 "));
 
-            if ((info & PointInfo.Description) > 0 && Description != "")
-                str.Append(Description + " ");
+                if ((info & PointInfo.Description) > 0 && Description != "")
+                    str.Append(Description + " ");
+            }
 
             return str.ToString();
         }

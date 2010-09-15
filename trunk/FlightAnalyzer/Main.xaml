@@ -245,7 +245,7 @@
                     <StackPanel Name="controls" Grid.Column="0">
                         <CheckBox Name="checkLock" IsChecked="True"
 								  Margin="5" 
-								  Checked="checkLock_Checked">
+								  Click="checkLock_Checked">
                             Lock to pointer
                         </CheckBox>
                         <RadioButton Name="radioLogger"
