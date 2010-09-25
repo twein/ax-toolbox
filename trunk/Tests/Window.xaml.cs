@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Documents;
 using AXToolbox.Common;
+using System.Globalization;
 
 namespace AXToolbox.Tests
 {
@@ -92,8 +93,10 @@ namespace AXToolbox.Tests
 
         private void buttonSun_Click(object sender, RoutedEventArgs e)
         {
-            var lat = 41.9732;
-            var lng = 2.78031;
+            //var lat = 41.9732;
+            //var lng = 2.78031;
+            var lat = 41.950881;
+            var lng = 3.225678;
 
             var sun = new Sun(lat, lng);
 
