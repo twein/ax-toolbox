@@ -21,13 +21,15 @@ namespace MapViewerTest
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Background = Brushes.Silver;
+            bool blankMap = true;
+
             var dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.Filter = "Map files (*.axm)|*.axm";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
             {
                 map.LoadMapImage(dlg.FileName);
+                blankMap = false;
             }
 
             {
@@ -60,17 +62,10 @@ namespace MapViewerTest
                 marker.Shape.Opacity = .66;
                 map.AddOverlay(marker);
             }
-            //var marker = new MapOverlayControl()
-            //{
-            //    Shape = new TextBlock()
-            //    {
-            //        Text = "M1",
-            //        FontSize = 15,
-            //        Background = Brushes.Lime
-            //    }
-            //};
 
             //map.ZoomTo(2, map.FromUTMToLocal(marker.Position));
+            if (blankMap)
+                map.LoadBlankMap();
             map.Reset();
         }
 

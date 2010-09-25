@@ -52,15 +52,6 @@ namespace AXToolbox.MapViewer
             MapFileName = "";
             overlays = new List<MapOverlayControl>();
 
-            LeftX = 0;
-            TopY = 10E5;
-            RightX = 10E5;
-            BottomY = 0;
-
-            UnitsPerPixel = 10;
-            MinZoom = 1 / UnitsPerPixel;
-            MaxZoom = UnitsPerPixel;
-
             DefaultZoomFactor = 1.1;
 
             // set up layout
@@ -104,7 +95,7 @@ namespace AXToolbox.MapViewer
             MouseLeftButtonUp += new MouseButtonEventHandler(source_MouseLeftButtonUp);
             MouseWheel += new MouseWheelEventHandler(source_MouseWheel);
 
-            mapCanvas.Children.Add(new Grid() { Width = RightX / UnitsPerPixel, Height = TopY / UnitsPerPixel, Background = Brushes.White });
+            LoadBlankMap();
         }
 
         /// <summary>Load a calibrated image file as map</summary>
@@ -155,6 +146,33 @@ namespace AXToolbox.MapViewer
             catch
             {
             }
+        }
+
+        public void LoadBlankMap()
+        {
+            if (overlays.Count == 0)
+            {
+                LeftX = 0;
+                TopY = 10E5;
+                RightX = 10E5;
+                BottomY = 0;
+
+            }
+            else
+            {
+                var center = overlays[0].Position;
+                LeftX = center.X - 5e4;
+                RightX = center.X + 5e4;
+                BottomY = center.Y - 5e4;
+                TopY = center.Y + 5e4;
+            }
+
+            UnitsPerPixel = 10;
+            MinZoom = 1 / UnitsPerPixel;
+            MaxZoom = UnitsPerPixel;
+
+            mapCanvas.Children.Clear();
+            mapCanvas.Children.Add(new Border() { Width = (RightX - LeftX) / UnitsPerPixel, Height = (TopY - BottomY) / UnitsPerPixel, Background = Brushes.White });
         }
 
         /// <summary>Center the desired point</summary>
