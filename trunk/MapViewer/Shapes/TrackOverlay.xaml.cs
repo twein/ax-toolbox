@@ -8,15 +8,19 @@ namespace AXToolbox.MapViewer
     {
         public Point[] Points;
 
-        public TrackOverlay(Point[] points, Brush color, double thickness)
+        public override Brush Color
+        {
+            set { track.Stroke = value; }
+        }
+
+        public TrackOverlay(Point[] points, double thickness)
             : base(points[0])
         {
             InitializeComponent();
 
             this.Points = points;
-            path.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
-            path.Stroke = color;
-            path.StrokeThickness = thickness;
+            track.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
+            track.StrokeThickness = thickness;
 
             RefreshShape();
         }
@@ -43,7 +47,7 @@ namespace AXToolbox.MapViewer
                 }
                 geometry.Freeze(); //for additional performance benefits.
 
-                path.Data = geometry;
+                track.Data = geometry;
             }
         }
     }

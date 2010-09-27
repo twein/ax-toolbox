@@ -42,33 +42,42 @@ namespace MapViewerTest
                 double xoffset = 20, yoffset = -10;
                 for (var i = 0; i < 1000; i++)
                 {
-                    if (rnd.NextDouble() < .01)
+                    if (rnd.NextDouble() < .05)
                     {
-                        xoffset = rnd.NextDouble() * 20 - 15;
-                        yoffset = rnd.NextDouble() * 20 - 10;
+                        xoffset = rnd.NextDouble() * 20 - 10;
+                        yoffset = rnd.NextDouble() * 20 - 20;
                     }
                     utm.X += rnd.NextDouble() * 20 + xoffset;
                     utm.Y += rnd.NextDouble() * 20 + yoffset;
                     trackLog.Add(new Point(utm.X, utm.Y));
                 }
-                var track = new TrackOverlay(trackLog.ToArray(), Brushes.Blue, 2);
+                var track = new TrackOverlay(trackLog.ToArray(), 2);
+                track.Color = Brushes.Blue;
                 map.AddOverlay(track);
             }
 
             //add a marker
             {
                 var position = new Point(315000, 4620000);
-                var marker = new TagOverlay(position, "Marker 1", Brushes.Violet);
-                marker.Opacity = .66;
+                var marker = new MarkerOverlay(position, "Marker 1");
+                marker.Color = Brushes.Green;
                 map.AddOverlay(marker);
             }
 
             //add a target
             {
                 var position = new Point(317000, 4618000);
-                var target = new TargetOverlay(position, "Target 1", Brushes.Transparent);
-                target.Opacity = .66;
+                var target = new TargetOverlay(position, 100, "Target 1");
+                target.Color = Brushes.Yellow;
                 map.AddOverlay(target);
+            }
+
+            //add a PZ
+            {
+                var position = new Point(314000, 4618000);
+                var pz = new PzOverlay(position, 500, "BPZ1");
+                pz.Color = Brushes.Blue;
+                map.AddOverlay(pz);
             }
 
             //map.ZoomTo(2, map.FromUTMToLocal(marker.Position));

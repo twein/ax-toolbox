@@ -4,5 +4,5 @@
     x:Class="AXToolbox.MapViewer.TrackOverlay"
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
     IsHitTestVisible="False">
-    <Path Name="path" Stroke="Red" StrokeThickness="2" Data="M0,0 L100,50 L150,30" />
+    <Path Name="track" Stroke="Red" StrokeThickness="2" Data="M0,0 L100,50 L150,30" />
 </maps:MapOverlay>

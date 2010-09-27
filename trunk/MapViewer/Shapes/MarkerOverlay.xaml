@@ -1,0 +1,24 @@
+﻿<maps:MapOverlay
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="AXToolbox.MapViewer.MarkerOverlay" 
+    xmlns:maps="clr-namespace:AXToolbox.MapViewer"
+    IsHitTestVisible="False"
+    >
+    <Grid  HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid >
+            <Path Name="flag" HorizontalAlignment="Left" VerticalAlignment="Top" 
+              Stroke="Black" Fill="Red" StrokeThickness="1" Opacity=".67"
+              Data="M0,-15 L0,-25 L15,-20 L0,-15" />
+            <Path Name="pole" HorizontalAlignment="Left" VerticalAlignment="Top" 
+              Stroke="Black" Fill="Black" StrokeThickness="2" 
+              Data="M0,0 L0,-26"  />
+        </Grid>
+        <Grid Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Border Name="border" Height="23" Width="{Binding ElementName=label, Path=Width}" 
+                BorderBrush="Black" BorderThickness="1.5" CornerRadius="10" Background="Lime" Opacity=".5"/>
+            <TextBlock Name="label" Height="23" MinWidth="23" HorizontalAlignment="Left"
+                Padding="4">Label</TextBlock>
+        </Grid>
+    </Grid>
+</maps:MapOverlay>
