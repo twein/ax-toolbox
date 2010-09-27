@@ -44,13 +44,13 @@ namespace AXToolbox.MapViewer
         private Point startPosition;
         private Point startOffset;
 
-        private List<MapOverlayControl> overlays;
+        private List<MapOverlay> overlays;
 
         public MapViewerControl()
         {
             startPosition = new Point(0, 0);
             MapFileName = "";
-            overlays = new List<MapOverlayControl>();
+            overlays = new List<MapOverlay>();
 
             DefaultZoomFactor = 1.1;
 
@@ -297,7 +297,7 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        public void AddOverlay(MapOverlayControl overlay)
+        public void AddOverlay(MapOverlay overlay)
         {
             if (LeftX == 0)
             {
@@ -307,7 +307,7 @@ namespace AXToolbox.MapViewer
             }
 
             overlay.Map = this;
-            overlaysCanvas.Children.Add(overlay.Shape);
+            overlaysCanvas.Children.Add(overlay);
             overlays.Add(overlay);
         }
 
