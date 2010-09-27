@@ -4,33 +4,21 @@ using System.Windows.Media.Effects;
 
 namespace AXToolbox.MapViewer
 {
-    public partial class TargetOverlay : MapOverlay
+    public partial class PzOverlay : MapOverlay
     {
         private double radius;
-        public double Radius
-        {
-            get { return radius; }
-            set
-            {
-                if (value != radius)
-                {
-                    radius = value;
-                    RefreshShape();
-                }
-            }
-        }
 
         public override double Opacity
         {
-            set { border.Opacity = value; }
+            set { area.Opacity = value; }
         }
 
         public override Brush Color
         {
-            set { border.Background = value; }
+            set { area.Fill = value; }
         }
 
-        public TargetOverlay(Point position, double radius, string labelText)
+        public PzOverlay(Point position, double radius, string labelText)
             : base(position)
         {
             this.InitializeComponent();

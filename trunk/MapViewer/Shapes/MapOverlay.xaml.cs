@@ -1,16 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AXToolbox.MapViewer
 {
     public class MapOverlay : UserControl
     {
-        protected Vector offset;
-        public Vector Offset
-        {
-            get { return offset; }
-        }
-
         private Point position;
         public Point Position
         {
@@ -40,10 +35,18 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        public MapOverlay()
+        public virtual new double Opacity
         {
-            offset = new Vector(0, 0);
+            set { base.Opacity = value; }
         }
+
+        public virtual Brush Color
+        {
+            set { base.Background = value; }
+        }
+
+
+        public MapOverlay() { }
 
         public MapOverlay(Point position)
             : this()
@@ -56,8 +59,8 @@ namespace AXToolbox.MapViewer
             if (map != null)
             {
                 var localPos = map.FromMapToLocal(position);
-                Canvas.SetLeft(this, localPos.X + Offset.X);
-                Canvas.SetTop(this, localPos.Y + Offset.Y);
+                Canvas.SetLeft(this, localPos.X);
+                Canvas.SetTop(this, localPos.Y);
             }
         }
 
