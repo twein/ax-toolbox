@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="AXToolbox.MapViewer.PzOverlay" 
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
-    IsHitTestVisible="False" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignHeight="105" d:DesignWidth="116">
+    IsHitTestVisible="False" >
     <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
         <Ellipse Name="area" Height="100" Width="100" Margin="-50" HorizontalAlignment="Left" VerticalAlignment="Top"
                  Fill="Blue" Stroke="Black" Opacity=".25" />
