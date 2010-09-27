@@ -51,7 +51,7 @@ namespace MapViewerTest
                     utm.Y += rnd.NextDouble() * 20 + yoffset;
                     trackLog.Add(new Point(utm.X, utm.Y));
                 }
-                var track = new TrackOverlay(position, trackLog.ToArray(), Brushes.Blue, 2);
+                var track = new TrackOverlay(trackLog.ToArray(), Brushes.Blue, 2);
                 map.AddOverlay(track);
             }
 
@@ -59,8 +59,16 @@ namespace MapViewerTest
             {
                 var position = new Point(315000, 4620000);
                 var marker = new TagOverlay(position, "Marker 1", Brushes.Violet);
-                marker.Shape.Opacity = .66;
+                marker.Opacity = .66;
                 map.AddOverlay(marker);
+            }
+
+            //add a target
+            {
+                var position = new Point(317000, 4618000);
+                var target = new TargetOverlay(position, "Target 1", Brushes.Transparent);
+                target.Opacity = .66;
+                map.AddOverlay(target);
             }
 
             //map.ZoomTo(2, map.FromUTMToLocal(marker.Position));

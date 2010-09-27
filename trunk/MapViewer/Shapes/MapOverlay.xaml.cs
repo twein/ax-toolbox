@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Effects;
-using System.Windows.Shapes;
 
 namespace AXToolbox.MapViewer
 {
-    abstract public class MapOverlayControl
+    public class MapOverlay : UserControl
     {
-        private UIElement shape;
-        public UIElement Shape
+        protected Vector offset;
+        public Vector Offset
         {
-            get { return shape; }
-            set { shape = value; }
+            get { return offset; }
         }
 
         private Point position;
@@ -45,21 +40,27 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        public MapOverlayControl(Point position)
+        public MapOverlay()
+        {
+            offset = new Vector(0, 0);
+        }
+
+        public MapOverlay(Point position)
+            : this()
         {
             this.position = position;
         }
 
         public void UpdateLocalPosition()
         {
-            if (map != null && shape != null)
+            if (map != null)
             {
                 var localPos = map.FromMapToLocal(position);
-                Canvas.SetLeft(shape, localPos.X);
-                Canvas.SetTop(shape, localPos.Y);
+                Canvas.SetLeft(this, localPos.X + Offset.X);
+                Canvas.SetTop(this, localPos.Y + Offset.Y);
             }
         }
 
-        abstract public void RefreshShape();
+        public virtual void RefreshShape() { }
     }
 }

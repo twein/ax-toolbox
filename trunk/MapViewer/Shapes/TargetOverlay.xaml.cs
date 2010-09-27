@@ -1,17 +1,18 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Effects;
-using System.Windows;
 
 namespace AXToolbox.MapViewer
 {
-    public partial class TagShape
+    public partial class TargetOverlay : MapOverlay
     {
-        public TagShape(string text, Brush background)
+        public TargetOverlay(Point position, string text, Brush background)
+            : base(position)
         {
             this.InitializeComponent();
 
             Shape.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 }; ;
-            Shape.Background = background;
+            Text.Background = background;
 
             Text.Text = text;
         }
