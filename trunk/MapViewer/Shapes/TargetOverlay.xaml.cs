@@ -30,15 +30,13 @@ namespace AXToolbox.MapViewer
             set { border.Background = value; }
         }
 
-        public TargetOverlay(Point position, double radius, string labelText)
+        public TargetOverlay(Point position, double radius, string text)
             : base(position)
         {
             this.InitializeComponent();
 
             this.radius = radius;
-            //target.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 }; ;
-
-            label.Text = labelText;
+            label.Text = text;
         }
 
         public override void RefreshShape()

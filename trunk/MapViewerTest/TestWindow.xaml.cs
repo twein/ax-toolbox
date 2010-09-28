@@ -32,53 +32,52 @@ namespace MapViewerTest
                 blankMap = false;
             }
 
+            // add a track
+            var rnd = new Random();
+            var position = new Point(312000, 4620000);
+            var trackLog = new Point[1000];
+            var utm = new Point(position.X, position.Y);
+            trackLog[0] = position;
+            double xoffset = 20, yoffset = -10;
+            for (var i = 1; i < 1000; i++)
             {
-                // add a track
-                var rnd = new Random();
-                var position = new Point(312000, 4620000);
-                var trackLog = new List<Point>();
-                trackLog.Add(new Point(position.X, position.Y));
-                var utm = new Point(position.X, position.Y);
-                double xoffset = 20, yoffset = -10;
-                for (var i = 0; i < 1000; i++)
+                if (rnd.NextDouble() < .05)
                 {
-                    if (rnd.NextDouble() < .05)
-                    {
-                        xoffset = rnd.NextDouble() * 20 - 10;
-                        yoffset = rnd.NextDouble() * 20 - 20;
-                    }
-                    utm.X += rnd.NextDouble() * 20 + xoffset;
-                    utm.Y += rnd.NextDouble() * 20 + yoffset;
-                    trackLog.Add(new Point(utm.X, utm.Y));
+                    xoffset = rnd.NextDouble() * 20 - 10;
+                    yoffset = rnd.NextDouble() * 20 - 20;
                 }
-                var track = new TrackOverlay(trackLog.ToArray(), 2);
-                track.Color = Brushes.Blue;
-                map.AddOverlay(track);
+                utm.X += rnd.NextDouble() * 20 + xoffset;
+                utm.Y += rnd.NextDouble() * 20 + yoffset;
+                trackLog[i] = new Point(utm.X, utm.Y);
             }
+            var track = new TrackOverlay(trackLog, 2);
+            track.Color = Brushes.Blue;
+            map.AddOverlay(track);
+
+            //add a crosshair
+            position = trackLog[(int)(rnd.NextDouble() * trackLog.Length)];
+            var crosshair = new CrosshairOverlay(position);
+            crosshair.Color = Brushes.Red;
+            map.AddOverlay(crosshair);
 
             //add a marker
-            {
-                var position = new Point(315000, 4620000);
-                var marker = new MarkerOverlay(position, "Marker 1");
-                marker.Color = Brushes.Green;
-                map.AddOverlay(marker);
-            }
+            position = trackLog[(int)(rnd.NextDouble() * trackLog.Length)];
+            var marker = new MarkerOverlay(position, "Marker 1");
+            marker.Color = Brushes.Green;
+            map.AddOverlay(marker);
 
             //add a target
-            {
-                var position = new Point(317000, 4618000);
-                var target = new TargetOverlay(position, 100, "Target 1");
-                target.Color = Brushes.Yellow;
-                map.AddOverlay(target);
-            }
+            position = new Point(316000, 4619000);
+            var target = new TargetOverlay(position, 100, "Target 1");
+            target.Color = Brushes.Yellow;
+            map.AddOverlay(target);
 
             //add a PZ
-            {
-                var position = new Point(314000, 4618000);
-                var pz = new PzOverlay(position, 500, "BPZ1");
-                pz.Color = Brushes.Blue;
-                map.AddOverlay(pz);
-            }
+            position = new Point(314000, 4618000);
+            var pz = new PzOverlay(position, 500, "BPZ1");
+            pz.Color = Brushes.Blue;
+            map.AddOverlay(pz);
+
 
             //map.ZoomTo(2, map.FromUTMToLocal(marker.Position));
             if (blankMap)
@@ -121,7 +120,7 @@ namespace MapViewerTest
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             var pos = map.FromLocalToMap(e.GetPosition(map));
-            textPosition.Text = string.Format("UTM= {0:0.0} {1:0.0}", pos.X, pos.Y);
+            textPosition.Text = string.Format("UTM: {0:0.0} {1:0.0}", pos.X, pos.Y);
         }
     }
 }
