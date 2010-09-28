@@ -18,7 +18,7 @@ namespace AXToolbox.MapViewer
         {
             InitializeComponent();
 
-            this.Points = points;
+            Points = points;
             track.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
             track.StrokeThickness = thickness;
 

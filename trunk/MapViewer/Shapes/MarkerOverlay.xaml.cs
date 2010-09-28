@@ -20,14 +20,12 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        public MarkerOverlay(Point position, string labelText)
+        public MarkerOverlay(Point position, string text)
             : base(position)
         {
             this.InitializeComponent();
-
-            //arrow.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 }; ;
             
-            label.Text = labelText;
+            label.Text = text;
         }
     }
 }
