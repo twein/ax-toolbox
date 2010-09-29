@@ -68,6 +68,10 @@ namespace MapViewerTest
             var target = new TargetOverlay(position, 100, "Target 1");
             target.Color = Brushes.Yellow;
             map.AddOverlay(target);
+            position = new Point(315500, 4618500);
+             target = new TargetOverlay(position, 100, "Target 2");
+            target.Color = Brushes.Orange;
+            map.AddOverlay(target);
 
             //add a PZ
             position = new Point(314000, 4618000);

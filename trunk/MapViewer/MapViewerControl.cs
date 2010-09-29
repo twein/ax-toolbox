@@ -16,20 +16,21 @@ namespace AXToolbox.MapViewer
     {
         protected bool mapLoaded = false;
 
-        //Transformation parameters 
+        //World file transformation parameters
+        //http://en.wikipedia.org/wiki/World_file
         //transform matrix
-        protected double TfwA { get; set; }
-        protected double TfwD { get; set; }
-        protected double TfwB { get; set; }
-        protected double TfwE { get; set; }
+        protected double WfA { get; set; }
+        protected double WfD { get; set; }
+        protected double WfB { get; set; }
+        protected double WfE { get; set; }
+        //deltas
+        protected double WfC { get; set; }
+        protected double WfF { get; set; }
         //inverse transform matrix
         protected double I11 { get; set; }
         protected double I12 { get; set; }
         protected double I21 { get; set; }
         protected double I22 { get; set; }
-        //deltas
-        protected double TfwC { get; set; }
-        protected double TfwF { get; set; }
 
         //bitmap size
         protected double BitmapWidth { get; set; }
@@ -40,8 +41,8 @@ namespace AXToolbox.MapViewer
         protected Point MapCenter { get; set; }
 
         //zoom parameters
-        public double MaxZoom { get; protected set; }
-        public double MinZoom { get; protected set; }
+        public double MaxZoom { get; set; }
+        public double MinZoom { get; set; }
         public double DefaultZoomFactor { get; set; }
         protected double zoomLevel;
         public double ZoomLevel
@@ -72,6 +73,8 @@ namespace AXToolbox.MapViewer
 
         public MapViewerControl()
         {
+            ClipToBounds = true;
+
             startPosition = new Point(0, 0);
             overlays = new List<MapOverlay>();
 
@@ -135,14 +138,6 @@ namespace AXToolbox.MapViewer
             try
             {
                 //throw new Exception();
-
-                //Load and parse the world file
-                //todo: honor world file naming convention: http://en.wikipedia.org/wiki/World_file#The_filename
-                var tfwFileName = System.IO.Path.ChangeExtension(bitmapFileName, ".tfw");
-                var lines = System.IO.File.ReadAllLines(tfwFileName);
-
-                ComputeMapTransformParameters(double.Parse(lines[0]), double.Parse(lines[1]), double.Parse(lines[2]), double.Parse(lines[3]), double.Parse(lines[4]), double.Parse(lines[5]));
-
                 //Load the bitmap file
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
@@ -157,6 +152,26 @@ namespace AXToolbox.MapViewer
                 mapCanvas.Children.Clear(); //delete blank map
                 mapCanvas.Children.Add(img);
                 mapLoaded = true;
+
+                //Load and parse the world file
+                //first naming convention
+                var bitmapFileExtension = System.IO.Path.GetExtension(bitmapFileName);
+                var worldFileExtension = "." + bitmapFileExtension[1] + bitmapFileExtension[3] + "w";
+                var worldFileName = System.IO.Path.ChangeExtension(bitmapFileName, worldFileExtension);
+                if (!System.IO.File.Exists(worldFileName))
+                {
+                    //second naming convention
+                    worldFileExtension = bitmapFileExtension + "w";
+                    worldFileName = System.IO.Path.ChangeExtension(bitmapFileName, worldFileExtension);
+                }
+                var lines = System.IO.File.ReadAllLines(worldFileName);
+                ComputeMapTransformParameters(
+                    double.Parse(lines[0], NumberFormatInfo.InvariantInfo),
+                    double.Parse(lines[1], NumberFormatInfo.InvariantInfo),
+                    double.Parse(lines[2], NumberFormatInfo.InvariantInfo),
+                    double.Parse(lines[3], NumberFormatInfo.InvariantInfo),
+                    double.Parse(lines[4], NumberFormatInfo.InvariantInfo),
+                    double.Parse(lines[5], NumberFormatInfo.InvariantInfo));
 
                 Reset();
             }
@@ -304,13 +319,13 @@ namespace AXToolbox.MapViewer
         {
             //transform matrix
             //http://en.wikipedia.org/wiki/World_file
-            TfwA = a;
-            TfwD = d;
-            TfwB = b;
-            TfwE = e;
+            WfA = a;
+            WfD = d;
+            WfB = b;
+            WfE = e;
 
-            TfwC = c;
-            TfwF = f;
+            WfC = c;
+            WfF = f;
 
             //inverse transform matrix
             //http://en.wikipedia.org/wiki/Invertible_matrix#Inversion_of_2.C3.972_matrices
@@ -320,13 +335,15 @@ namespace AXToolbox.MapViewer
             I21 = -rdet * b;
             I22 = rdet * a;
 
-            var map = mapCanvas.Children[0];
+            //centers
             LocalCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
             MapCenter = FromLocalToMap(LocalCenter);
 
-            //TODO: compute according to map parameters and screen size
-            MaxZoom = 100;
-            MinZoom = .01;
+            //zoom limits
+            var pixWidth = Math.Sqrt(WfA * WfA + WfD * WfD);
+            var pixHeight = Math.Sqrt(WfB * WfB + WfE * WfE);
+            MaxZoom = 10 * Math.Max(pixWidth, pixHeight); // 10 cm/pix 
+            MinZoom = Math.Min(ActualWidth / BitmapWidth, ActualHeight / BitmapHeight); // fit to viewer
         }
 
         /// <summary>Converts units from local (screen) coords to map coords</summary>
@@ -336,8 +353,8 @@ namespace AXToolbox.MapViewer
         {
             var bitmapCoords = mTransformGroup.Inverse.Transform(localCoords);
 
-            var mapX = TfwA * bitmapCoords.X + TfwB * bitmapCoords.Y + TfwC;
-            var mapY = TfwD * bitmapCoords.X + TfwE * bitmapCoords.Y + TfwF;
+            var mapX = WfA * bitmapCoords.X + WfB * bitmapCoords.Y + WfC;
+            var mapY = WfD * bitmapCoords.X + WfE * bitmapCoords.Y + WfF;
 
             return new Point(mapX, mapY);
         }
@@ -346,8 +363,8 @@ namespace AXToolbox.MapViewer
         /// <returns></returns>
         public Point FromMapToLocal(Point mapCoords)
         {
-            var tX = mapCoords.X - TfwC;
-            var tY = mapCoords.Y - TfwF;
+            var tX = mapCoords.X - WfC;
+            var tY = mapCoords.Y - WfF;
 
             var bitmapX = I11 * tX + I12 * tY;
             var bitmapY = I21 * tX + I22 * tY;
