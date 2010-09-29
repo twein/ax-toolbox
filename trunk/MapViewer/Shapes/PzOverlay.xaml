@@ -4,7 +4,7 @@
 	x:Class="AXToolbox.MapViewer.PzOverlay" 
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
     IsHitTestVisible="False" >
-    <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" CacheMode="BitmapCache">
         <Ellipse Name="area" Height="100" Width="100" Margin="-50" HorizontalAlignment="Left" VerticalAlignment="Top"
                  Fill="Blue" Stroke="Black" Opacity=".25" />
         <Path Name="center" Height="1" Width="1" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Top"

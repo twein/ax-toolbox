@@ -1,4 +1,3 @@
-﻿Goal overlay
-Marker overlay
-Area overlay
-PZ overlay
+﻿Area overlay: circle, polygon...
+Distance overlay: a line segment displaying the distance between two points
+Angle Overlay: two line segments displaying an angle between three points

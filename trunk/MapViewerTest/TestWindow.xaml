@@ -2,16 +2,20 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
-    Title="MapViewer test" Height="1024" Width="768" WindowState="Maximized"
+    Title="MapViewer test" Width="1024" Height="768" WindowState="Maximized"
         Loaded="Window_Loaded"
         KeyDown="Window_KeyDown"
         MouseRightButtonUp="Window_MouseRightButtonUp"
         MouseMove="Window_MouseMove">
     <Grid>
-        <maps:MapViewerControl x:Name="map" />
-        <StackPanel Orientation="Vertical">
-            <TextBlock Text="{Binding ElementName=map, Path=ZoomLevel}" IsHitTestVisible="False" Background="White"></TextBlock>
-            <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="White"></TextBlock>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            <TextBlock Text="{Binding ElementName=map, Path=ZoomLevel}" IsHitTestVisible="False" Background="Silver"></TextBlock>
+            <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="Silver"></TextBlock>
         </StackPanel>
+        <maps:MapViewerControl x:Name="map" Grid.Row="1"/>
     </Grid>
 </Window>
