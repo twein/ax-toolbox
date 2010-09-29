@@ -21,15 +21,12 @@ namespace MapViewerTest
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            bool blankMap = true;
-
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Filter = "Map files (*.axm)|*.axm";
+            dlg.Filter = "Map files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
             {
-                map.LoadMapImage(dlg.FileName);
-                blankMap = false;
+                map.Load(dlg.FileName);
             }
 
             // add a track
@@ -77,12 +74,6 @@ namespace MapViewerTest
             var pz = new PzOverlay(position, 500, "BPZ1");
             pz.Color = Brushes.Blue;
             map.AddOverlay(pz);
-
-
-            //map.ZoomTo(2, map.FromUTMToLocal(marker.Position));
-            if (blankMap)
-                map.LoadBlankMap();
-            map.Reset();
         }
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

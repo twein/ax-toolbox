@@ -7,20 +7,43 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace AXToolbox.MapViewer
 {
     public class MapViewerControl : ContentControl, INotifyPropertyChanged
     {
-        public double LeftX { get; private set; }
-        public double TopY { get; private set; }
-        public double RightX { get; private set; }
-        public double BottomY { get; private set; }
-        public double UnitsPerPixel { get; private set; }
-        public double MaxZoom { get; private set; }
-        public double MinZoom { get; private set; }
+        protected bool mapLoaded = false;
+
+        //Transformation parameters 
+        //transform matrix
+        protected double TfwA { get; set; }
+        protected double TfwD { get; set; }
+        protected double TfwB { get; set; }
+        protected double TfwE { get; set; }
+        //inverse transform matrix
+        protected double I11 { get; set; }
+        protected double I12 { get; set; }
+        protected double I21 { get; set; }
+        protected double I22 { get; set; }
+        //deltas
+        protected double TfwC { get; set; }
+        protected double TfwF { get; set; }
+
+        //bitmap size
+        protected double BitmapWidth { get; set; }
+        protected double BitmapHeight { get; set; }
+
+        //map center
+        protected Point LocalCenter { get; set; }
+        protected Point MapCenter { get; set; }
+
+        //zoom parameters
+        public double MaxZoom { get; protected set; }
+        public double MinZoom { get; protected set; }
         public double DefaultZoomFactor { get; set; }
-        private double zoomLevel;
+        protected double zoomLevel;
         public double ZoomLevel
         {
             get { return zoomLevel; }
@@ -32,27 +55,29 @@ namespace AXToolbox.MapViewer
                 }
             }
         }
-        public string MapFileName { get; set; }
 
-        private TranslateTransform translateTransform;
-        private ScaleTransform zoomTransform;
-        private TransformGroup mTransformGroup;
-        private TransformGroup oTransformGroup;
-        private Canvas mapCanvas;
-        private Canvas overlaysCanvas;
+        protected Canvas mapCanvas;
+        protected Canvas overlaysCanvas;
+        protected List<MapOverlay> overlays;
 
-        private Point startPosition;
-        private Point startOffset;
+        //WPF transforms
+        protected TranslateTransform translateTransform;
+        protected ScaleTransform zoomTransform;
+        protected TransformGroup mTransformGroup;
+        protected TransformGroup oTransformGroup;
 
-        private List<MapOverlay> overlays;
+        //pan parameters
+        protected Point startPosition;
+        protected Point startOffset;
 
         public MapViewerControl()
         {
             startPosition = new Point(0, 0);
-            MapFileName = "";
             overlays = new List<MapOverlay>();
 
             DefaultZoomFactor = 1.1;
+            zoomLevel = 1;
+
 
             // set up layout
             mapCanvas = new Canvas();
@@ -71,12 +96,11 @@ namespace AXToolbox.MapViewer
             Setup(this);
         }
 
-        void Setup(FrameworkElement control)
+        protected void Setup(FrameworkElement control)
         {
             // add transforms
             translateTransform = new TranslateTransform();
             zoomTransform = new ScaleTransform();
-            zoomLevel = zoomTransform.ScaleX; ;
 
             mTransformGroup = new TransformGroup();
             mTransformGroup.Children.Add(zoomTransform);
@@ -85,7 +109,6 @@ namespace AXToolbox.MapViewer
 
             oTransformGroup = new TransformGroup();
             oTransformGroup.Children.Add(translateTransform);
-            //overlaysCanvas.RenderTransform = mTransformGroup;
 
 
             // events
@@ -95,104 +118,74 @@ namespace AXToolbox.MapViewer
             MouseLeftButtonUp += new MouseButtonEventHandler(source_MouseLeftButtonUp);
             MouseWheel += new MouseWheelEventHandler(source_MouseWheel);
 
-            LoadBlankMap();
+
+            //load blank map
+            BitmapWidth = 1e4;
+            BitmapHeight = 1e4;
+            mapCanvas.Children.Add(new Border() { Width = BitmapWidth, Height = BitmapHeight, Background = Brushes.White });
         }
 
         /// <summary>Load a calibrated image file as map</summary>
-        /// <param name="mapFileName">
-        /// Map calibration file name: 
-        /// The file contains two lines of text
-        /// Line 1: name of the image file (wpf supported types)
-        /// Line 2: coordinate of the leftmost pixel, coordinate of the topmost pixel and units per pixel (space separated)
-        /// Perfect grid orientation and square pixels of invariant size throughout the map are assumed
-        /// Example for an UTM map, units in meters:
-        ///   Europeans2010.jpg
-        ///   282854.10332446 4634097.33585027 8.9505817351082
+        /// <param name="bitmapFileName">
+        /// Bitmap file name. A .tfw (ESRI world file) with the same name must exist.
+        /// http://en.wikipedia.org/wiki/World_file
         /// </param>
-        public void LoadMapImage(string mapFileName)
+        public void Load(string bitmapFileName)
         {
             try
             {
-                // Load the map file
                 //throw new Exception();
-                var lines = System.IO.File.ReadAllLines(mapFileName);
-                var imgFilename = lines[0];
-                var parms = lines[1].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                LeftX = double.Parse(parms[0], NumberFormatInfo.InvariantInfo);
-                TopY = double.Parse(parms[1], NumberFormatInfo.InvariantInfo);
-                UnitsPerPixel = double.Parse(parms[2], NumberFormatInfo.InvariantInfo);
 
-                if (!System.IO.Path.IsPathRooted(imgFilename))
-                {
-                    //imgFilename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), imgFilename);
-                    imgFilename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(mapFileName), imgFilename);
-                }
+                //Load and parse the world file
+                //todo: honor world file naming convention: http://en.wikipedia.org/wiki/World_file#The_filename
+                var tfwFileName = System.IO.Path.ChangeExtension(bitmapFileName, ".tfw");
+                var lines = System.IO.File.ReadAllLines(tfwFileName);
 
+                ComputeMapTransformParameters(double.Parse(lines[0]), double.Parse(lines[1]), double.Parse(lines[2]), double.Parse(lines[3]), double.Parse(lines[4]), double.Parse(lines[5]));
+
+                //Load the bitmap file
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
-                bmp.UriSource = new Uri(imgFilename);
+                bmp.UriSource = new Uri(bitmapFileName);
                 bmp.EndInit();
 
                 var img = new Image();
                 img.Source = bmp;
-                mapCanvas.Children.Clear();
-                mapCanvas.Children.Add(img);
 
-                RightX = LeftX + img.Source.Width * UnitsPerPixel;
-                BottomY = TopY - img.Source.Height * UnitsPerPixel;
-                MinZoom = 1 / UnitsPerPixel;
-                MaxZoom = 10 * UnitsPerPixel;
+                BitmapWidth = bmp.Width;
+                BitmapHeight = bmp.Height;
+                mapCanvas.Children.Clear(); //delete blank map
+                mapCanvas.Children.Add(img);
+                mapLoaded = true;
+
+                Reset();
             }
             catch
             {
             }
         }
 
-        public void LoadBlankMap()
-        {
-            if (overlays.Count == 0)
-            {
-                LeftX = 0;
-                TopY = 10E5;
-                RightX = 10E5;
-                BottomY = 0;
-
-            }
-            else
-            {
-                var center = overlays[0].Position;
-                LeftX = center.X - 5e4;
-                RightX = center.X + 5e4;
-                BottomY = center.Y - 5e4;
-                TopY = center.Y + 5e4;
-            }
-
-            UnitsPerPixel = 10;
-            MinZoom = 1 / UnitsPerPixel;
-            MaxZoom = UnitsPerPixel;
-
-            mapCanvas.Children.Clear();
-            mapCanvas.Children.Add(new Border() { Width = (RightX - LeftX) / UnitsPerPixel, Height = (TopY - BottomY) / UnitsPerPixel, Background = Brushes.White });
-        }
 
         /// <summary>Center the desired point</summary>
-        /// <param name="position">Desired point</param>
-        public void PanTo(Point position)
+        /// <param name="mapPosition">Desired point in map coordinates</param>
+        public void PanTo(Point mapPosition)
         {
+            var localPosition = FromMapToLocal(mapPosition);
             var offset = new Point(translateTransform.X, translateTransform.Y);
             var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            var displacement = new Vector(mapViewerCenter.X - position.X + offset.X, mapViewerCenter.Y - position.Y + offset.Y);
+            var displacement = new Vector(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
 
             DoPan(displacement);
         }
         /// <summary>Zoom in/out and center to a desired point</summary>
         /// <param name="zoom">Absolute zoom level</param>
-        /// <param name="position">Point to center to</param>
-        public void ZoomTo(double zoom, Point position)
+        /// <param name="mapPosition">Desired point in map coordinates</param>
+        public void ZoomTo(double zoom, Point mapPosition)
         {
+            var localPosition = FromMapToLocal(mapPosition);
             var offset = new Point(translateTransform.X, translateTransform.Y);
             var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            var displacement = new Point(mapViewerCenter.X - position.X + offset.X, mapViewerCenter.Y - position.Y + offset.Y);
+            var displacement = new Point(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
 
             translateTransform.X = displacement.X;
             translateTransform.Y = displacement.Y;
@@ -208,48 +201,49 @@ namespace AXToolbox.MapViewer
             DoIncZoom(deltaZoom, mapViewerCenter);
         }
         ///<summary>Incremental zoom into or out of the content relative to MapViewer center</summary>
-        /// <param name="zoomDelta">Factor to mutliply the zoom level by</param>
-        public void IncZoom(double zoomDelta)
+        /// <param name="deltaZoom">Factor to mutliply the zoom level by</param>
+        public void IncZoom(double deltaZoom)
         {
             var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            DoIncZoom(zoomDelta, mapViewerCenter);
+            DoIncZoom(deltaZoom, mapViewerCenter);
         }
 
         /// <summary>Reset to default zoom level and centered content</summary>
         public void Reset()
         {
-            var mapCenter = new Point(LeftX + (RightX - LeftX) / 2, BottomY + (TopY - BottomY) / 2);
-            var center = FromMapToLocal(mapCenter);
-            var zoom = Math.Min(ActualWidth * UnitsPerPixel / (RightX - LeftX), ActualHeight * UnitsPerPixel / (TopY - BottomY));
-
-            ZoomTo(zoom, center);
+            //TODO: zoom to fit map
+            ZoomTo(MinZoom, MapCenter);
         }
 
-        /// <summary>Converts units from local (screen) coords to map coords</summary>
-        /// <param name="localCoords"></param>
-        /// <returns></returns>
-        public Point FromLocalToMap(Point localCoords)
+        /// <summary>Add a new overlay to MapViewer</summary>
+        /// <param name="overlay"></param>
+        public void AddOverlay(MapOverlay overlay)
         {
-            var imageCoords = mTransformGroup.Inverse.Transform(localCoords);
-            var mapX = LeftX + imageCoords.X * UnitsPerPixel;
-            var mapY = TopY - imageCoords.Y * UnitsPerPixel;
-            return new Point(mapX, mapY);
+            //Load a blank map if adding the first overlay and no map is loaded
+            if (overlays.Count == 0 && !mapLoaded)
+            {
+                var center = overlay.Position;
+                ComputeMapTransformParameters(10, 0, 0, -10, center.X - 5e4, center.Y + 5e4);
+                Reset();
+            }
+
+            overlay.Map = this;
+            overlaysCanvas.Children.Add(overlay);
+            overlays.Add(overlay);
         }
-        /// <summary>Converts units from map coords to local (screen)</summary>
-        /// <param name="mapCoords"></param>
-        /// <returns></returns>
-        public Point FromMapToLocal(Point mapCoords)
+        /// <summary>Remove an overlay from MapViewer</summary>
+        /// <param name="overlay"></param>
+        public void RemoveOverlay(MapOverlay overlay)
         {
-            var imageX = (mapCoords.X - LeftX) / UnitsPerPixel;
-            var imageY = (TopY - mapCoords.Y) / UnitsPerPixel;
-            var imageCoords = new Point(imageX, imageY);
-            return mTransformGroup.Transform(imageCoords);
+            overlays.Remove(overlay);
+            overlaysCanvas.Children.Remove(overlay);
+            overlay.Map = null;
         }
 
 
         /// <summary>Pan the content</summary>
-        /// <param name="displacement"></param>
-        private void DoPan(Vector displacement)
+        /// <param name="displacement">Displacement in local coords</param>
+        protected void DoPan(Vector displacement)
         {
             translateTransform.X = displacement.X;
             translateTransform.Y = displacement.Y;
@@ -257,19 +251,19 @@ namespace AXToolbox.MapViewer
         }
         /// <summary>Absolute zoom into or out of the content relative to a point</summary>
         /// <param name="zoom">Desired zoom level</param>
-        /// <param name="position">Point to use as zoom center</param>
-        private void DoZoom(double zoom, Point position)
+        /// <param name="position">Point in local coords to use as zoom center</param>
+        protected void DoZoom(double zoom, Point position)
         {
             var deltaZoom = zoom / zoomLevel;
             DoIncZoom(deltaZoom, position);
         }
         /// <summary>Incremental zoom into or out of the content relative to a point</summary>
-        /// <param name="zoomDelta">Factor to mutliply the zoom level by</param>
-        /// <param name="position">Point to use as zoom center</param>
-        private void DoIncZoom(double zoomDelta, Point position)
+        /// <param name="deltaZoom">Factor to mutliply the zoom level by</param>
+        /// <param name="position">Pointin local coords to use as zoom center</param>
+        protected void DoIncZoom(double deltaZoom, Point position)
         {
             var currentZoom = zoomLevel;
-            zoomLevel = Math.Max(MinZoom, Math.Min(MaxZoom, zoomLevel * zoomDelta));
+            zoomLevel = Math.Max(MinZoom, Math.Min(MaxZoom, zoomLevel * deltaZoom));
 
             var untransformedPosition = mTransformGroup.Inverse.Transform(position);
 
@@ -285,7 +279,9 @@ namespace AXToolbox.MapViewer
                 NotifyPropertyChanged("ZoomLevel");
         }
 
-        private void RefreshOverlays(bool regenerateTrackShapes)
+        /// <summary>Refresh the overlays position and size after a pan or zoom</summary>
+        /// <param name="regenerateTrackShapes">For optimal performance must be true if zoom level changed, false otherwise</param>
+        protected void RefreshOverlays(bool regenerateTrackShapes)
         {
             foreach (var o in overlays)
             {
@@ -297,22 +293,72 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        public void AddOverlay(MapOverlay overlay)
+        /// <summary>Compute the transformation parameters to convert bitmap coordinates from/to map coordinates</summary>
+        /// <param name="a">1st transform matrix coefficient</param>
+        /// <param name="d">2nd transform matrix coefficient</param>
+        /// <param name="b">3rd transform matrix coefficient</param>
+        /// <param name="e">4th transform matrix coefficient</param>
+        /// <param name="c">delta x</param>
+        /// <param name="f">delta y</param>
+        private void ComputeMapTransformParameters(double a, double d, double b, double e, double c, double f)
         {
-            if (LeftX == 0)
-            {
-                LeftX = overlay.Position.X - 5e4;
-                TopY = overlay.Position.Y + 5e4;
+            //transform matrix
+            //http://en.wikipedia.org/wiki/World_file
+            TfwA = a;
+            TfwD = d;
+            TfwB = b;
+            TfwE = e;
 
-            }
+            TfwC = c;
+            TfwF = f;
 
-            overlay.Map = this;
-            overlaysCanvas.Children.Add(overlay);
-            overlays.Add(overlay);
+            //inverse transform matrix
+            //http://en.wikipedia.org/wiki/Invertible_matrix#Inversion_of_2.C3.972_matrices
+            var rdet = 1 / (a * e - d * b);
+            I11 = rdet * e;
+            I12 = -rdet * d;
+            I21 = -rdet * b;
+            I22 = rdet * a;
+
+            var map = mapCanvas.Children[0];
+            LocalCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
+            MapCenter = FromLocalToMap(LocalCenter);
+
+            //TODO: compute according to map parameters and screen size
+            MaxZoom = 100;
+            MinZoom = .01;
         }
 
+        /// <summary>Converts units from local (screen) coords to map coords</summary>
+        /// <param name="localCoords"></param>
+        /// <returns></returns>
+        public Point FromLocalToMap(Point localCoords)
+        {
+            var bitmapCoords = mTransformGroup.Inverse.Transform(localCoords);
+
+            var mapX = TfwA * bitmapCoords.X + TfwB * bitmapCoords.Y + TfwC;
+            var mapY = TfwD * bitmapCoords.X + TfwE * bitmapCoords.Y + TfwF;
+
+            return new Point(mapX, mapY);
+        }
+        /// <summary>Converts units from map coords to local (screen)</summary>
+        /// <param name="mapCoords"></param>
+        /// <returns></returns>
+        public Point FromMapToLocal(Point mapCoords)
+        {
+            var tX = mapCoords.X - TfwC;
+            var tY = mapCoords.Y - TfwF;
+
+            var bitmapX = I11 * tX + I12 * tY;
+            var bitmapY = I21 * tX + I22 * tY;
+
+            var bitmapCoords = new Point(bitmapX, bitmapY);
+            return mTransformGroup.Transform(bitmapCoords);
+        }
+
+
         #region "Event handlers"
-        private void source_MouseWheel(object sender, MouseWheelEventArgs e)
+        protected void source_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             //Zoom to the mouse pointer position
             if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
@@ -327,8 +373,7 @@ namespace AXToolbox.MapViewer
                 DoIncZoom(zoomFactor, position);
             }
         }
-
-        private void source_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        protected void source_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             //Save starting point, used later when determining how much to scroll
             startPosition = e.GetPosition(this);
@@ -336,7 +381,7 @@ namespace AXToolbox.MapViewer
             CaptureMouse();
             Cursor = Cursors.ScrollAll;
         }
-        private void source_MouseMove(object sender, MouseEventArgs e)
+        protected void source_MouseMove(object sender, MouseEventArgs e)
         {
             if (IsMouseCaptured)
             {
@@ -346,7 +391,7 @@ namespace AXToolbox.MapViewer
                 DoPan(displacement);
             }
         }
-        private void source_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        protected void source_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (IsMouseCaptured)
             {
@@ -358,9 +403,8 @@ namespace AXToolbox.MapViewer
         #endregion
 
         #region INotifyPropertyChanged Members
-
         public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(String info)
+        protected void NotifyPropertyChanged(String info)
         {
             if (PropertyChanged != null)
             {
