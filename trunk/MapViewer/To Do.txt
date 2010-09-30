@@ -1,3 +1,2 @@
-﻿Area overlay: circle, polygon...
-Distance overlay: a line segment displaying the distance between two points
+﻿Distance overlay: a line segment displaying the distance between two points
 Angle Overlay: two line segments displaying an angle between three points

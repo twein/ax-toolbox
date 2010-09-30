@@ -4,7 +4,7 @@ using System.Windows.Media.Effects;
 
 namespace AXToolbox.MapViewer
 {
-    public partial class PzOverlay : MapOverlay
+    public partial class CircularAreaOverlay : MapOverlay
     {
         private double radius;
 
@@ -18,7 +18,7 @@ namespace AXToolbox.MapViewer
             set { area.Fill = value; }
         }
 
-        public PzOverlay(Point position, double radius, string text)
+        public CircularAreaOverlay(Point position, double radius, string text)
             : base(position)
         {
             this.InitializeComponent();

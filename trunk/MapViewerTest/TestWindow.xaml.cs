@@ -73,9 +73,20 @@ namespace MapViewerTest
             target.Color = Brushes.Orange;
             map.AddOverlay(target);
 
+            //add a poligonal area
+            var polygon = new Point[]{
+                new Point(313000, 4621000),
+                new Point(314000, 4621000),
+                new Point(314000, 4620000),
+                new Point(313000, 4620000)
+            };
+            var area = new PolygonalAreaOverlay(polygon, "AREA 1");
+            area.Color = Brushes.Blue;
+            map.AddOverlay(area);
+
             //add a PZ
             position = new Point(314000, 4618000);
-            var pz = new PzOverlay(position, 500, "BPZ1");
+            var pz = new CircularAreaOverlay(position, 500, "BPZ1");
             pz.Color = Brushes.Blue;
             map.AddOverlay(pz);
         }

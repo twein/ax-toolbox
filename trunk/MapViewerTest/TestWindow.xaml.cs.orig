@@ -1,0 +1,116 @@
+﻿using System.Windows;
+using System;
+using System.Collections.Generic;
+using System.Windows.Controls;
+using System.Windows.Media;
+using AXToolbox.MapViewer;
+using System.Windows.Input;
+
+namespace MapViewerTest
+{
+    /// <summary>
+    /// Interaction logic for Window1.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            bool blankMap = true;
+
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.FileName = "*.axm";
+            dlg.Filter = "Map files (*.axm)|*.axm";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog(this) == true)
+            {
+                map.LoadMapImage(dlg.FileName);
+                blankMap = false;
+            }
+
+            AXToolbox.Common.FlightReport report = null;
+            dlg.FileName = "*.axr";
+            dlg.Filter = "IGC files (*.igc)|*.igc|CompeGPS track files (*.trk)|*.trk|Report files (*.axr)|*.axr";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog(this) == true)
+            {
+                report = AXToolbox.Common.FlightReport.LoadFromFile(dlg.FileName, null);
+            }
+
+
+            //add the track
+            var trackLog = new System.Windows.Point[report.OriginalTrack.Count];
+            for (int i = 0; i < report.OriginalTrack.Count; i++)
+            {
+                trackLog[i] = new Point(report.OriginalTrack[i].Easting, report.OriginalTrack[i].Northing);
+            }
+            var track = new TrackOverlay(trackLog, 2);
+            track.Color = Brushes.Blue;
+            map.AddOverlay(track);
+
+
+            foreach (var m in report.Markers)
+            {
+                var marker = new MarkerOverlay(new Point(m.Easting, m.Northing), m.Name);
+                marker.Color = Brushes.Yellow;
+                map.AddOverlay(marker);
+            }
+
+
+            foreach (var g in report.DeclaredGoals)
+            {
+                var goal = new TargetOverlay(new Point(g.Easting, g.Northing), 100, g.Name);
+                goal.Color = Brushes.LimeGreen;
+                map.AddOverlay(goal);
+            }
+
+
+            if (blankMap)
+                map.LoadBlankMap();
+            map.Reset();
+        }
+
+        private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var pos = e.GetPosition(this);
+            var utmPos = map.FromLocalToMap(pos);
+            MessageBox.Show(
+                string.Format("Local: {0:0}; {1:0}\n", pos.X, pos.Y) +
+                string.Format("UTM: {0:0.0}; {1:0.0}\n", utmPos.X, utmPos.Y) +
+                string.Format("Zoom: {0: 0.0}%", 100 * map.ZoomLevel)
+                );
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    map.Reset();
+                    break;
+                case Key.OemPlus:
+                case Key.Add:
+                    map.ZoomLevel *= map.DefaultZoomFactor;
+                    break;
+                case Key.OemMinus:
+                case Key.Subtract:
+                    map.ZoomLevel /= map.DefaultZoomFactor;
+                    break;
+                case Key.OemPeriod:
+                    map.ZoomLevel = 1;
+                    break;
+            }
+        }
+
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = map.FromLocalToMap(e.GetPosition(map));
+            textPosition.Text = string.Format("UTM= {0:0.0} {1:0.0}", pos.X, pos.Y);
+        }
+    }
+}
