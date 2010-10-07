@@ -5,7 +5,7 @@
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
     IsHitTestVisible="False" >
     <Grid HorizontalAlignment="Left" VerticalAlignment="Top" CacheMode="BitmapCache">
-        <Polygon Name="area" Stroke="Black" Fill="Red" StrokeThickness="1" Points="0,0 100,75 150,30" Opacity="0.25"/>
+        <Polygon Name="area" Stroke="Black" Fill="Red" StrokeThickness="1" Points="0,0 30,75 100,30 75,10" Opacity="0.25"/>
         <TextBlock Name="label" Height="23" MinWidth="23" HorizontalAlignment="Center" VerticalAlignment="Center" 
               Padding="4">Label</TextBlock>
     </Grid>
