@@ -10,3 +10,4 @@ List of saved reports.
 IDEAS
 Make an error log to output all recoverable error causes.
 Steal ideas from http://boxy.fisch.lu
+Add PDF output: http://itextpdf.com
