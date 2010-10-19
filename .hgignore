@@ -1,5 +1,6 @@
-relre:\.suo$
 relre:\/Build\/
+relre:\/Setup\/
+relre:\.suo$
 relre:\/obj\/
 relre:\/bin\/
 relre:\.user$
