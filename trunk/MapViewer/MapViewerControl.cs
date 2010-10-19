@@ -122,14 +122,14 @@ namespace AXToolbox.MapViewer
             try
             {
                 //throw new Exception();
+
                 //Load the bitmap file
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
                 bmp.UriSource = new Uri(bitmapFileName);
                 bmp.EndInit();
 
-                var img = new Image();
-                img.Source = bmp;
+                var img = new Image() { Source = bmp };
 
                 BitmapWidth = bmp.Width;
                 BitmapHeight = bmp.Height;

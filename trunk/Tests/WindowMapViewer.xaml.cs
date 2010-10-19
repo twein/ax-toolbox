@@ -6,15 +6,15 @@ using System.Windows.Media;
 using AXToolbox.MapViewer;
 using System.Windows.Input;
 
-namespace MapViewerTest
+namespace AXToolbox.Tests
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class WindowMapViewer : Window
     {
 
-        public MainWindow()
+        public WindowMapViewer()
         {
             InitializeComponent();
         }

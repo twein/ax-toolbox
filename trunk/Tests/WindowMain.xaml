@@ -1,4 +1,4 @@
-﻿<Window x:Class="AXToolbox.Tests.MainWindow"
+﻿<Window x:Class="AXToolbox.Tests.WindowMain"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Test" Height="480" Width="650" Loaded="Window_Loaded" Closed="Window_Closed">
@@ -7,6 +7,8 @@
             <Button Name="buttonClear" VerticalAlignment="Top" Height="23" Width="75" Click="buttonClear_Click">Clear Screen</Button>
             <Button Name="buttonCoords" VerticalAlignment="Top" Height="23" Width="75" Click="buttonCoords_Click">Coords</Button>
             <Button Name="buttonSun" VerticalAlignment="Top" Height="23" Width="75" Click="buttonSun_Click">Sun</Button>
+            <Button Name="buttonMap" VerticalAlignment="Top" Height="23" Width="75" Click="buttonMap_Click">Map</Button>
+            <Button Name="buttonPdf" VerticalAlignment="Top" Height="23" Width="75" Click="buttonPdf_Click">Pdf</Button>
         </StackPanel>
         <FlowDocumentPageViewer ClipToBounds="True" Margin="0,25,0,0">
             <FlowDocument Name="output" FontFamily="Lucida Console" FontSize="10" TextAlignment="Left" ColumnRuleBrush="Black" ColumnRuleWidth="1" IsOptimalParagraphEnabled="True" />
