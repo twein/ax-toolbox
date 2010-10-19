@@ -6,7 +6,7 @@
         Loaded="Window_Loaded"
         KeyDown="Window_KeyDown"
         MouseRightButtonUp="Window_MouseRightButtonUp"
-        MouseMove="Window_MouseMove">
+        MouseMove="Window_MouseMove" Icon="/AXToolbox.Tests;component/balloon.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Documents;
 using AXToolbox.Common;
 using System.Globalization;
+using System.IO;
 
 namespace AXToolbox.Tests
 {
@@ -130,11 +131,13 @@ namespace AXToolbox.Tests
 
         private void buttonPdf_Click(object sender, RoutedEventArgs e)
         {
-            var pdftest = new PdfTest("iTextsharp.pdf");
+            var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "iTextsharp.pdf");
+
+            var pdftest = new PdfTest(fileName);
 
             var proc = new System.Diagnostics.Process();
             proc.EnableRaisingEvents = false;
-            proc.StartInfo.FileName = "iTextsharp.pdf";
+            proc.StartInfo.FileName = fileName;
             proc.Start();
         }
     }
