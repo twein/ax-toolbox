@@ -1,6 +1,8 @@
 TO DO
 Add notes for every user action.
 Keep track of debriefer identity. Assign pilot ranges to each debriefer?
+Try CacheMode BitmapCache SnapsToDevicePixels=true
+
 Don't score counterfeit logs.
 Mark manually added markers and declarations. Don't allow to delete non-manual ones.
 Make all measurements and penalizations in FlightAnalyzer.

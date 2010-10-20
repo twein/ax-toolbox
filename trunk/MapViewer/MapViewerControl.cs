@@ -57,6 +57,7 @@ namespace AXToolbox.MapViewer
 
         public MapViewerControl()
         {
+            UseLayoutRounding = true;
             ClipToBounds = true;
 
             startPosition = new Point(0, 0);
