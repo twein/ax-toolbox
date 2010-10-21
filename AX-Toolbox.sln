@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupTests", "Deployment\SetupTests.vdproj", "{C9814175-EC54-495A-9D9E-BAF09E03D081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fas", "Fas\Fas.csproj", "{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scripting", "Scripting\Scripting.csproj", "{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7FA1A995-EDA9-4F2F-828E-B8018011E9C6} = {7FA1A995-EDA9-4F2F-828E-B8018011E9C6}
 	EndProjectSection

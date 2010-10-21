@@ -3,14 +3,14 @@ using AXToolbox.Common;
 using System.Globalization;
 namespace AXToolbox.Fas
 {
-    public class FasPoint
+    public class ScriptingPoint
     {
         protected string name;
         protected string type;
         protected Point point = null;
         protected double radius = 0;
 
-        public FasPoint(string name, string type, string definition, Datum datum, string utmZone)
+        public ScriptingPoint(string name, string type, string definition, Datum datum, string utmZone)
         {
             this.name=name;
             this.type=type;
