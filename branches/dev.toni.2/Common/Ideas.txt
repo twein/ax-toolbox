@@ -1,1 +1,0 @@
-﻿Make an error log to output all recoverable error causes
