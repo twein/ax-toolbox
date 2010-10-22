@@ -233,6 +233,16 @@ namespace AXToolbox.MapViewer
             overlaysCanvas.Children.Remove(overlay);
             overlay.Map = null;
         }
+        /// <summary>Removes all overlays from MapViewer</summary>
+        public void ClearOverlays()
+        {
+            foreach (var overlay in overlays)
+            {
+                overlaysCanvas.Children.Remove(overlay);
+                overlay.Map = null;
+            }
+            overlays.Clear();
+        }
 
         /// <summary>Convert map coordinates to local (relative to mapviewer)</summary>
         /// <param name="mapPosition"></param>

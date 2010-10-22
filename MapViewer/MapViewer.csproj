@@ -41,6 +41,9 @@
   <ItemGroup>
     <Compile Include="MapOverlay.cs" />
     <Compile Include="MapTransform.cs" />
+    <Compile Include="Shapes\WaypointOverlay.xaml.cs">
+      <DependentUpon>WaypointOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Shapes\PolygonalAreaOverlay.xaml.cs">
       <DependentUpon>PolygonalAreaOverlay.xaml</DependentUpon>
     </Compile>
@@ -63,6 +66,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Shapes\WaypointOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Shapes\PolygonalAreaOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
