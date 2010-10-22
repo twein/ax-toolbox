@@ -68,10 +68,12 @@ namespace AXToolbox.Tests
             var target = new TargetOverlay(position, 100, "Target 1");
             target.Color = Brushes.Yellow;
             map.AddOverlay(target);
+
+            //add a waypoint
             position = new Point(315500, 4618500);
-             target = new TargetOverlay(position, 100, "Target 2");
-            target.Color = Brushes.Orange;
-            map.AddOverlay(target);
+            var waypoint = new WaypointOverlay(position, "Waypoint 1");
+            waypoint.Color = Brushes.Orange;
+            map.AddOverlay(waypoint);
 
             //add a poligonal area
             var polygon = new Point[]{

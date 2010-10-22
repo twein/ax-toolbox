@@ -24,6 +24,9 @@ namespace AXToolbox.Tests
             //paragraph
             document.Add(new Paragraph("Special characters test: à è ò í ú ï ü ç À È Ò Í Ú Ï Ü Ç."));
 
+            //page break
+            document.NewPage();
+
             //table
             var relWidths = new float[] { 4, 1, 1, 1 };
             var table = new PdfPTable(relWidths)

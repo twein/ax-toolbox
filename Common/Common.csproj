@@ -82,6 +82,7 @@
   <ItemGroup>
     <Compile Include="BasicTypes\PointInfo.cs" />
     <Compile Include="BasicTypes\Trackpoint.cs" />
+    <Compile Include="General\Singleton.cs" />
     <Compile Include="Geodesy\Coordinates.cs" />
     <Compile Include="BasicTypes\Point.cs" />
     <Compile Include="BasicTypes\Waypoint.cs" />
