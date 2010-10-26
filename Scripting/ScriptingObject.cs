@@ -8,12 +8,12 @@ namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
-        protected Dictionary<string, ScriptingObject> heap = Singleton<Dictionary<string, ScriptingObject>>.Instance;
-        protected string name;
-        protected string type;
-        protected string[] parameters;
-        protected string displayMode;
-        protected string[] displayParameters;
+        
+        public string name;
+        public string type;
+        public string[] parameters;
+        public string displayMode;
+        public string[] displayParameters;
 
         public ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {

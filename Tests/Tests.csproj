@@ -108,6 +108,9 @@
     </Compile>
     <None Include="app.config" />
     <AppDesigner Include="Properties\" />
+    <Content Include="testScript.axs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
@@ -117,6 +120,10 @@
     <ProjectReference Include="..\MapViewer\MapViewer.csproj">
       <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
       <Name>MapViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Scripting\Scripting.csproj">
+      <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
+      <Name>Scripting</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

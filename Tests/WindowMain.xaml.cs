@@ -4,6 +4,8 @@ using System.Windows.Documents;
 using AXToolbox.Common;
 using System.Globalization;
 using System.IO;
+using AXToolbox.Scripting;
+using System.Text;
 
 namespace AXToolbox.Tests
 {
@@ -139,6 +141,16 @@ namespace AXToolbox.Tests
             proc.EnableRaisingEvents = false;
             proc.StartInfo.FileName = fileName;
             proc.Start();
+        }
+
+        private void buttonScripting_Click(object sender, RoutedEventArgs e)
+        {
+            var scriptingEngine = ScriptingEngine.Instance;
+            scriptingEngine.LoadScript("testScript.axs");
+            foreach (var o in scriptingEngine.Heap)
+            {
+                Print(o.Value.GetType().ToString() + " " + o.Value.name + "=" + o.Value.type + "(" + o.Value.parameters.Length + "parms)");
+            }
         }
     }
 }
