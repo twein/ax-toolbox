@@ -149,7 +149,7 @@ namespace AXToolbox.Tests
             scriptingEngine.LoadScript("testScript.axs");
             foreach (var o in scriptingEngine.Heap)
             {
-                Print(o.Value.GetType().ToString() + " " + o.Value.name + "=" + o.Value.type + "(" + o.Value.parameters.Length + "parms)");
+                Print(o.Value.ToString());
             }
         }
     }

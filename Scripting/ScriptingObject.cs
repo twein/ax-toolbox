@@ -8,7 +8,7 @@ namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
-        
+
         public string name;
         public string type;
         public string[] parameters;
@@ -54,6 +54,34 @@ namespace AXToolbox.Scripting
             }
 
             return altitude;
+        }
+
+        public override string ToString()
+        {
+            string str = name + " = ";
+
+            var parms = "";
+            foreach (var par in parameters)
+            {
+                parms += par + ",";
+            }
+            parms = parms.Trim(new char[] { ',' });
+
+            str += type + "(" + parms + ")";
+
+            if (displayMode != "")
+            {
+                parms = "";
+                foreach (var par in displayParameters)
+                {
+                    parms += par + ",";
+                }
+                parms = parms.Trim(new char[] { ',' });
+
+                str += " " + displayMode + "(" + parms + ")";
+            }
+
+            return str;
         }
     }
 }
