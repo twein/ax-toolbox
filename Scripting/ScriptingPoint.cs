@@ -11,8 +11,7 @@ namespace AXToolbox.Scripting
 
         public ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
-        {
-        }
+        { }
 
         public override void Resolve(FlightReport report)
         {
@@ -132,6 +131,11 @@ namespace AXToolbox.Scripting
 
             }
             return overlay;
+        }
+
+        public override string ToString()
+        {
+            return "POINT " + base.ToString();
         }
     }
 }
