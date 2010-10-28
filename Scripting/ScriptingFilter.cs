@@ -16,11 +16,11 @@ namespace AXToolbox.Scripting
             : base(name, type, parameters, displayMode, displayParameters)
         { }
 
-        public override void Resolve(FlightReport report)
+        public override void Run(FlightReport report)
         {
         }
 
-        public override MapOverlay Display()
+        public override MapOverlay GetOverlay()
         {
             return null;
         }

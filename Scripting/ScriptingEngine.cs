@@ -16,16 +16,53 @@ namespace AXToolbox.Scripting
         }
         static ScriptingEngine() { }
         #endregion
-        static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
+
+        //Regular Expressions to parse commands. Use in this order.
         static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
+        static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
 
         //Settings
         private DateTime date;
-        private TimeSpan amPm;
+        public DateTime Date
+        {
+            get { return date; }
+            set { date = value; }
+        }
+
+        private string mapFile;
+        public string MapFile
+        {
+            get { return mapFile; }
+            set { mapFile = value; }
+        }
+
         private Datum datum;
+        public Datum Datum
+        {
+            get { return datum; }
+            set { datum = value; }
+        }
+
         private string utmZone;
+        public string UtmZone
+        {
+            get { return utmZone; }
+            set { utmZone = value; }
+        }
+
         private double qnh;
+        public double Qnh
+        {
+            get { return qnh; }
+            set { qnh = value; }
+        }
+
         private bool tasksByOrder;
+        public bool TasksByOrder
+        {
+            get { return tasksByOrder; }
+            set { tasksByOrder = value; }
+        }
 
         private Dictionary<string, ScriptingObject> heap;
         public Dictionary<string, ScriptingObject> Heap
@@ -78,6 +115,15 @@ namespace AXToolbox.Scripting
                 }
                 else
                     throw new ArgumentException("Syntax error");
+            }
+        }
+
+        public void Resolve(FlightReport report)
+        {
+            foreach (var kvp in heap)
+            {
+                var obj = kvp.Value;
+                obj.Run(report);
             }
         }
 
