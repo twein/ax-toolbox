@@ -1,4 +1,6 @@
-﻿//task 4
+﻿SET QNH = 1012
+
+//task 4
 TASK Task4 = XDD()
 
 AREA T4area = Area(task4area.trk) NONE()
