@@ -9,7 +9,7 @@ namespace AXToolbox.Scripting
     {
         protected Point point = null;
 
-        public ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
         { }
 

@@ -15,13 +15,39 @@ namespace AXToolbox.Scripting
         public string displayMode;
         public string[] displayParameters;
 
-        public ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        protected ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
             this.name = name;
             this.type = type;
             this.parameters = parameters;
             this.displayMode = displayMode;
             this.displayParameters = displayParameters;
+        }
+
+        public static ScriptingObject Create(string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        {
+            ScriptingObject obj = null;
+
+            switch (objectClass)
+            {
+                case "SET":
+                    obj = new ScriptingSetting(name, type, parameters, displayMode, displayParameters);
+                    break;
+                case "TASK":
+                    obj = new ScriptingTask(name, type, parameters, displayMode, displayParameters);
+                    break;
+                case "AREA":
+                    obj = new ScriptingArea(name, type, parameters, displayMode, displayParameters);
+                    break;
+                case "FILTER":
+                    obj = new ScriptingFilter(name, type, parameters, displayMode, displayParameters);
+                    break;
+                case "POINT":
+                    obj = new ScriptingPoint(name, type, parameters, displayMode, displayParameters);
+                    break;
+            }
+
+            return obj;
         }
 
         public abstract void Resolve(FlightReport report);

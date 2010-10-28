@@ -16,7 +16,16 @@ namespace AXToolbox.Scripting
         }
         static ScriptingEngine() { }
         #endregion
-        static Regex lineRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$");
+        static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
+        static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
+
+        //Settings
+        private DateTime date;
+        private TimeSpan amPm;
+        private Datum datum;
+        private string utmZone;
+        private double qnh;
+        private bool tasksByOrder;
 
         private Dictionary<string, ScriptingObject> heap;
         public Dictionary<string, ScriptingObject> Heap
@@ -24,6 +33,7 @@ namespace AXToolbox.Scripting
             get { return heap; }
         }
 
+        private List<Trackpoint> validTrackPoints;
 
         public ScriptingEngine()
         {
@@ -32,29 +42,42 @@ namespace AXToolbox.Scripting
 
         public void LoadScript(string scriptFileName)
         {
-            var lines = File.ReadAllLines(scriptFileName);
             string line;
+
+            heap.Clear();
+
+            var lines = File.ReadAllLines(scriptFileName);
             foreach (var l in lines)
             {
                 line = l.Trim();
                 if (line == "" || line.StartsWith("//"))
                     continue;
-                var matches = lineRE.Matches(line);
-                var groups = matches[0].Groups;
 
-                var objectClass = groups["object"].Value.ToUpper();
-                var name = groups["name"].Value;
-                var type = groups["type"].Value;
-                var parms = SplitParameters(groups["params"].Value);
-                var displayMode = groups["display"].Value;
-                var displayParms =SplitParameters( groups["displayparms"].Value);
+                MatchCollection matches = null;
+                if (objectRE.IsMatch(line))
+                    matches = objectRE.Matches(line);
+                else if (setRE.IsMatch(line))
+                    matches = setRE.Matches(line);
 
-                switch (objectClass)
+                if (matches != null)
                 {
-                    case "POINT":
-                        heap.Add(name, new ScriptingPoint(name, type, parms, displayMode, displayParms));
-                        break;
+                    var groups = matches[0].Groups;
+
+                    var objectClass = groups["object"].Value.ToUpper();
+                    var name = groups["name"].Value;
+                    var type = groups["type"].Value;
+                    var parms = SplitParameters(groups["parms"].Value);
+                    var displayMode = groups["display"].Value;
+                    var displayParms = SplitParameters(groups["displayparms"].Value);
+
+                    var obj = ScriptingObject.Create(objectClass, name, type, parms, displayMode, displayParms);
+                    if (obj != null)
+                    {
+                        heap.Add(name, obj);
+                    }
                 }
+                else
+                    throw new ArgumentException("Syntax error");
             }
         }
 
