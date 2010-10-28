@@ -2,19 +2,27 @@
 using System.Globalization;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
     public class ScriptingPoint : ScriptingObject
     {
         protected Point point = null;
+        protected double radius = 0;
 
         internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
-        { }
-
-        public override void Resolve(FlightReport report)
         {
+        }
+
+        public override void Run(FlightReport report)
+        {
+            var engine = ScriptingEngine.Instance;
+
+            //reset
+            point = null;
+
             switch (type)
             {
                 case "SLL":
@@ -23,20 +31,19 @@ namespace AXToolbox.Scripting
                     {
                         var lat = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
                         var lng = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
-                        var alt = double.Parse(parameters[2], NumberFormatInfo.InvariantInfo) * 0.3048;
-                        //point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, settings.ReferencePoint.Datum, settings.ReferencePoint.Zone);
-                        throw new NotImplementedException();
+                        var alt = ParseAltitude(parameters[2]); //double.Parse(parameters[2], NumberFormatInfo.InvariantInfo) * 0.3048;
+                        point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, engine.Datum, engine.UtmZone);
                     }
                     break;
                 case "SUTM":
                     //UTM
-                    //SUTM(<latZone>, <longZone>, <easting>, <northing>, <alt>)
+                    //SUTM(<utmZone>, <easting>, <northing>, <alt>)
                     {
-                        var zone = parameters[0] + parameters[1];
-                        var easting = double.Parse(parameters[2], NumberFormatInfo.InvariantInfo);
-                        var northing = double.Parse(parameters[3], NumberFormatInfo.InvariantInfo);
-                        var alt = double.Parse(parameters[4], NumberFormatInfo.InvariantInfo) * 0.3048;
-                        throw new NotImplementedException();
+                        var zone = parameters[0].ToUpper();
+                        var easting = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
+                        var northing = double.Parse(parameters[2], NumberFormatInfo.InvariantInfo);
+                        var alt = ParseAltitude(parameters[3]); //double.Parse(parameters[3], NumberFormatInfo.InvariantInfo) * 0.3048;
+                        point = new Point(DateTime.MinValue, engine.Datum, zone, easting, northing, alt, engine.Datum, engine.UtmZone);
                     }
                     break;
                 case "LNP":
@@ -120,8 +127,7 @@ namespace AXToolbox.Scripting
                     throw new NotImplementedException();
             }
         }
-
-        public override MapOverlay Display()
+        public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;
             if (point != null)

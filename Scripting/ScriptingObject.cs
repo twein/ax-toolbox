@@ -3,17 +3,32 @@ using AXToolbox.Common;
 using AXToolbox.MapViewer;
 using System.Text.RegularExpressions;
 using System;
+using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
+        private static readonly Dictionary<string, Brush> colors = new Dictionary<string, Brush>() { 
+            {"BLUE",   Brushes.Blue},
+            {"BROWN",  Brushes.Brown},
+            {"GRAY",   Brushes.Gray},
+            {"GREEN",  Brushes.Green},
+            {"ORANGE", Brushes.Orange},
+            {"PINK",   Brushes.Pink},
+            {"RED",    Brushes.Red},
+            {"VIOLET", Brushes.Violet},
+            {"WHITE",  Brushes.White},
+            {"YELLOW", Brushes.Yellow}
+        };
 
         public string name;
         public string type;
         public string[] parameters;
         public string displayMode;
         public string[] displayParameters;
+
+        protected Brush color = Brushes.Blue;
 
         protected ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
@@ -22,6 +37,14 @@ namespace AXToolbox.Scripting
             this.parameters = parameters;
             this.displayMode = displayMode;
             this.displayParameters = displayParameters;
+
+            //TODO: this is a shitty color parser. Do it properly!
+            if (displayParameters.Length > 0)
+            {
+                var colorCandidate = displayParameters[displayParameters.Length - 1].ToUpper();
+                if (colors.ContainsKey(colorCandidate))
+                    color = colors[colorCandidate];
+            }
         }
 
         public static ScriptingObject Create(string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -50,37 +73,9 @@ namespace AXToolbox.Scripting
             return obj;
         }
 
-        public abstract void Resolve(FlightReport report);
+        public abstract void Run(FlightReport report);
 
-        public abstract MapOverlay Display();
-
-        public static double ParseAltitude(string str)
-        {
-            double altitude = 0;
-
-            str = str.Trim().ToLower();
-            var regex = new Regex(@"(?<value>\d|\.+)\s*(?<units>\w*)");
-            var matches = regex.Matches(str);
-            if (matches.Count != 1)
-            {
-                throw new ArgumentException();
-            }
-            else
-            {
-                altitude = double.Parse(matches[0].Groups["value"].Value);
-                var units = matches[0].Groups["units"].Value;
-                if (units == "ft" || units == "")
-                {
-                    altitude *= 0.3048;
-                }
-                else if (units != "m")
-                {
-                    throw new ArgumentException();
-                }
-            }
-
-            return altitude;
-        }
+        public abstract MapOverlay GetOverlay();
 
         public override string ToString()
         {
@@ -108,6 +103,34 @@ namespace AXToolbox.Scripting
             }
 
             return str;
+        }
+
+        protected static double ParseAltitude(string str)
+        {
+            double altitude = 0;
+
+            str = str.Trim().ToLower();
+            var regex = new Regex(@"(?<value>\d|\.+)\s*(?<units>\w*)");
+            var matches = regex.Matches(str);
+            if (matches.Count != 1)
+            {
+                throw new ArgumentException("Syntax error in altitude");
+            }
+            else
+            {
+                altitude = double.Parse(matches[0].Groups["value"].Value);
+                var units = matches[0].Groups["units"].Value;
+                if (units == "ft" || units == "")
+                {
+                    altitude *= 0.3048;
+                }
+                else if (units != "m")
+                {
+                    throw new ArgumentException("Syntax error in altitude");
+                }
+            }
+
+            return altitude;
         }
     }
 }
