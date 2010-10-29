@@ -146,10 +146,19 @@ namespace AXToolbox.Tests
         private void buttonScripting_Click(object sender, RoutedEventArgs e)
         {
             var scriptingEngine = ScriptingEngine.Instance;
-            scriptingEngine.LoadScript("testScript.axs");
-            foreach (var o in scriptingEngine.Heap)
+
+            try
             {
-                Print(o.Value.ToString());
+                scriptingEngine.LoadScript("testScript.axs");
+
+                foreach (var o in scriptingEngine.Heap)
+                {
+                    Print(o.Value.ToString());
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                Print(ex.Message);
             }
         }
     }

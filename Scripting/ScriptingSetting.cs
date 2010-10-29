@@ -12,7 +12,7 @@ namespace AXToolbox.Scripting
         {
             var engine = ScriptingEngine.Instance;
             this.name = name.ToUpper();
-            switch (this.name)
+            switch (this.Name)
             {
                 case "DATETIME":
                     engine.Date = DateTime.Parse(parameters[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
@@ -20,7 +20,9 @@ namespace AXToolbox.Scripting
                     if (parameters[1] == "AM")
                     { }
                     else if (parameters[1] == "PM")
+                    {
                         engine.Date += new TimeSpan(12, 0, 0);
+                    }
                     else
                     {
                         throw new ArgumentException("Syntax error in DATETIME");
@@ -53,7 +55,7 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        throw new ArgumentException("Syntax error TASKORDER");
+                        throw new ArgumentException("Syntax error in TASKORDER");
                     }
                     break;
             }
@@ -76,7 +78,7 @@ namespace AXToolbox.Scripting
             }
             parms = parms.Trim(new char[] { ',' });
 
-            return "SET " + name + " = " + parms;
+            return "SET " + Name + " = " + parms;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Globalization;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
 using System.Windows.Media;
+using System.Collections.Generic;
 
 namespace AXToolbox.Scripting
 {
@@ -11,9 +12,23 @@ namespace AXToolbox.Scripting
         protected Point point = null;
         protected double radius = 0;
 
+        private static readonly List<string> pointTypes = new List<string>
+        {
+            "SLL","SUTM","LNP","LFT","LFNN","LLNN","MVMD","MPDG","TLCH","TLND","TMP","TNL","TDT","TDD","TAFI","TAFO","TALI","TALO"
+        };
+        private static readonly List<string> displayModes = new List<string>
+        {
+            "NONE","WAYPOINT","TARGET","MARKER","CROSSHAIR"
+        };
+
         internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
         {
+            if (!pointTypes.Contains(type))
+                throw new ArgumentException("Unknown point type '" + type + "'");
+
+            if (!displayModes.Contains(displayMode))
+                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
         }
 
         public override void Run(FlightReport report)
@@ -133,7 +148,7 @@ namespace AXToolbox.Scripting
             if (point != null)
             {
                 var position = new System.Windows.Point(point.Easting, point.Northing);
-                overlay = new WaypointOverlay(position, name);
+                overlay = new WaypointOverlay(position, Name);
 
             }
             return overlay;

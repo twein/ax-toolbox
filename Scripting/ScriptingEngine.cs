@@ -17,9 +17,9 @@ namespace AXToolbox.Scripting
         static ScriptingEngine() { }
         #endregion
 
-        //Regular Expressions to parse commands. Use in this order.
-        static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
+        //Regular Expressions to parse commands. Use in this same order.
         static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
+        static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
 
         //Settings
         private DateTime date;
@@ -84,12 +84,15 @@ namespace AXToolbox.Scripting
             heap.Clear();
 
             var lines = File.ReadAllLines(scriptFileName);
-            foreach (var l in lines)
+            for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
             {
-                line = l.Trim();
+                line = lines[lineNumber].Trim();
+
+                //comments
                 if (line == "" || line.StartsWith("//"))
                     continue;
 
+                //find token or die
                 MatchCollection matches = null;
                 if (objectRE.IsMatch(line))
                     matches = objectRE.Matches(line);
@@ -98,23 +101,29 @@ namespace AXToolbox.Scripting
 
                 if (matches != null)
                 {
+                    //parse the constructor and create the object or die
                     var groups = matches[0].Groups;
 
                     var objectClass = groups["object"].Value.ToUpper();
                     var name = groups["name"].Value;
-                    var type = groups["type"].Value;
+                    var type = groups["type"].Value.ToUpper(); ;
                     var parms = SplitParameters(groups["parms"].Value);
-                    var displayMode = groups["display"].Value;
+                    var displayMode = groups["display"].Value.ToUpper(); ;
                     var displayParms = SplitParameters(groups["displayparms"].Value);
 
-                    var obj = ScriptingObject.Create(objectClass, name, type, parms, displayMode, displayParms);
-                    if (obj != null)
+                    try
                     {
-                        heap.Add(name, obj);
+                        var obj = ScriptingObject.Create(objectClass, name, type, parms, displayMode, displayParms);
+                        heap.Add(obj.Name, obj);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        throw new ArgumentException("Line " + (lineNumber + 1).ToString() + ": " + ex.Message);
                     }
                 }
+
                 else
-                    throw new ArgumentException("Syntax error");
+                    throw new ArgumentException("Line " + (lineNumber + 1).ToString() + ": Syntax error");
             }
         }
 

@@ -9,7 +9,7 @@ namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
-        private static readonly Dictionary<string, Brush> colors = new Dictionary<string, Brush>() { 
+        protected static readonly Dictionary<string, Brush> colors = new Dictionary<string, Brush>() { 
             {"BLUE",   Brushes.Blue},
             {"BROWN",  Brushes.Brown},
             {"GRAY",   Brushes.Gray},
@@ -22,11 +22,16 @@ namespace AXToolbox.Scripting
             {"YELLOW", Brushes.Yellow}
         };
 
-        public string name;
-        public string type;
-        public string[] parameters;
-        public string displayMode;
-        public string[] displayParameters;
+        protected string name;
+        public string Name
+        {
+            get { return name; }
+        }
+
+        protected string type;
+        protected string[] parameters;
+        protected string displayMode;
+        protected string[] displayParameters;
 
         protected Brush color = Brushes.Blue;
 
@@ -68,13 +73,14 @@ namespace AXToolbox.Scripting
                 case "POINT":
                     obj = new ScriptingPoint(name, type, parameters, displayMode, displayParameters);
                     break;
+                default:
+                    throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
             }
 
             return obj;
         }
 
         public abstract void Run(FlightReport report);
-
         public abstract MapOverlay GetOverlay();
 
         public override string ToString()
