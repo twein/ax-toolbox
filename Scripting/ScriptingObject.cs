@@ -9,7 +9,7 @@ namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
-        protected static readonly Dictionary<string, Brush> colors = new Dictionary<string, Brush>() { 
+        private static readonly Dictionary<string, Brush> colors = new Dictionary<string, Brush>() { 
             {"BLUE",   Brushes.Blue},
             {"BROWN",  Brushes.Brown},
             {"GRAY",   Brushes.Gray},
@@ -42,14 +42,6 @@ namespace AXToolbox.Scripting
             this.parameters = parameters;
             this.displayMode = displayMode;
             this.displayParameters = displayParameters;
-
-            //TODO: this is a shitty color parser. Do it properly!
-            if (displayParameters.Length > 0)
-            {
-                var colorCandidate = displayParameters[displayParameters.Length - 1].ToUpper();
-                if (colors.ContainsKey(colorCandidate))
-                    color = colors[colorCandidate];
-            }
         }
 
         public static ScriptingObject Create(string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -80,7 +72,13 @@ namespace AXToolbox.Scripting
             return obj;
         }
 
+        /// <summary>Clears the pilot dependent (non-static) values</summary>
+        public abstract void Reset();
+        /// <summary>Executes the script</summary>
+        /// <param name="report"></param>
         public abstract void Run(FlightReport report);
+        /// <summary>Gets the overlay for the current object (or null if no overlay is defined)</summary>
+        /// <returns></returns>
         public abstract MapOverlay GetOverlay();
 
         public override string ToString()
@@ -120,7 +118,7 @@ namespace AXToolbox.Scripting
             var matches = regex.Matches(str);
             if (matches.Count != 1)
             {
-                throw new ArgumentException("Syntax error in altitude");
+                throw new ArgumentException("Syntax error in altitude definition");
             }
             else
             {
@@ -132,11 +130,19 @@ namespace AXToolbox.Scripting
                 }
                 else if (units != "m")
                 {
-                    throw new ArgumentException("Syntax error in altitude");
+                    throw new ArgumentException("Syntax error in altitude definition");
                 }
             }
 
             return altitude;
+        }
+        protected static Brush ParseColor(string str)
+        {
+            str = str.ToUpper();
+            if (colors.ContainsKey(str))
+                return colors[str];
+            else
+                throw new ArgumentException("Unknown display mode '" + str + "'");
         }
     }
 }

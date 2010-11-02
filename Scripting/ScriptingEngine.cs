@@ -71,6 +71,11 @@ namespace AXToolbox.Scripting
         }
 
         private List<Trackpoint> validTrackPoints;
+        public List<Trackpoint> ValidTrackPoints
+        {
+            get { return validTrackPoints; }
+            internal set { validTrackPoints = value; }
+        }
 
         public ScriptingEngine()
         {
@@ -127,11 +132,14 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public void Resolve(FlightReport report)
+        public void Run(FlightReport report)
         {
+            validTrackPoints = report.FlightTrack;
+
             foreach (var kvp in heap)
             {
                 var obj = kvp.Value;
+                obj.Reset();
                 obj.Run(report);
             }
         }

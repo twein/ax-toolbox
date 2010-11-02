@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
-using System.Windows.Media;
-using System.Collections.Generic;
 
 namespace AXToolbox.Scripting
 {
     public class ScriptingPoint : ScriptingObject
     {
+        protected bool isStatic = false;
+
+        //type fields
         protected Point point = null;
+
+        //display fields
         protected double radius = 0;
 
-        private static readonly List<string> pointTypes = new List<string>
+        private static readonly List<string> types = new List<string>
         {
             "SLL","SUTM","LNP","LFT","LFNN","LLNN","MVMD","MPDG","TLCH","TLND","TMP","TNL","TDT","TDD","TAFI","TAFO","TALI","TALO"
         };
@@ -24,19 +28,15 @@ namespace AXToolbox.Scripting
         internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
         {
-            if (!pointTypes.Contains(type))
+            if (!types.Contains(type))
                 throw new ArgumentException("Unknown point type '" + type + "'");
 
             if (!displayModes.Contains(displayMode))
                 throw new ArgumentException("Unknown display mode '" + displayMode + "'");
-        }
 
-        public override void Run(FlightReport report)
-        {
+
+            //parse static point types
             var engine = ScriptingEngine.Instance;
-
-            //reset
-            point = null;
 
             switch (type)
             {
@@ -44,6 +44,7 @@ namespace AXToolbox.Scripting
                     //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
                     {
+                        isStatic = true;
                         var lat = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
                         var lng = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
                         var alt = ParseAltitude(parameters[2]); //double.Parse(parameters[2], NumberFormatInfo.InvariantInfo) * 0.3048;
@@ -54,6 +55,7 @@ namespace AXToolbox.Scripting
                     //UTM
                     //SUTM(<utmZone>, <easting>, <northing>, <alt>)
                     {
+                        isStatic = true;
                         var zone = parameters[0].ToUpper();
                         var easting = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
                         var northing = double.Parse(parameters[2], NumberFormatInfo.InvariantInfo);
@@ -61,6 +63,22 @@ namespace AXToolbox.Scripting
                         point = new Point(DateTime.MinValue, engine.Datum, zone, easting, northing, alt, engine.Datum, engine.UtmZone);
                     }
                     break;
+            }
+        }
+
+        public override void Reset()
+        {
+            if (!isStatic)
+                point = null;
+        }
+
+        public override void Run(FlightReport report)
+        {
+            var engine = ScriptingEngine.Instance;
+
+            // parse pilot dependent types
+            switch (type)
+            {
                 case "LNP":
                     //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
@@ -149,7 +167,7 @@ namespace AXToolbox.Scripting
             {
                 var position = new System.Windows.Point(point.Easting, point.Northing);
                 overlay = new WaypointOverlay(position, Name);
-
+                overlay.Color = color;
             }
             return overlay;
         }
