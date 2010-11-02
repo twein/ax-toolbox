@@ -8,7 +8,7 @@ namespace AXToolbox.Scripting
 {
     public class ScriptingTask : ScriptingObject
     {
-        private static readonly List<string> taskTypes = new List<string>
+        private static readonly List<string> types = new List<string>
         {
             "PDG","JDG","HWZ","FIN","FON","HNH","WSD","GBM","CRT","RTA","ELB","LRN","MDT","SFL","MDD","XDT","XDI","XDD","ANG","3DT"
         };
@@ -16,9 +16,12 @@ namespace AXToolbox.Scripting
         internal ScriptingTask(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
         {
-            if (!taskTypes.Contains(type))
+            if (!types.Contains(type))
                 throw new ArgumentException("Unknown task type '" + type + "'");
         }
+
+        public override void Reset()
+        { }
 
         public override void Run(FlightReport report)
         {

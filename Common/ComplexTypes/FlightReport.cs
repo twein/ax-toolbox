@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.ComponentModel;
-using AXToolbox.Common;
 using AXToolbox.Common.IO;
-using System.IO;
-using System.Collections.ObjectModel;
 
 namespace AXToolbox.Common
 {
@@ -112,17 +110,26 @@ namespace AXToolbox.Common
         {
             get { return loggerQnh; }
         }
+        /// <summary>
+        /// Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
+        /// </summary>
         public List<Trackpoint> OriginalTrack
         {
             get { return track; }
         }
+        /// <summary>
+        /// Track without spikes and dupes. May contain points before launch and after landing
+        /// </summary>
         public List<Trackpoint> CleanTrack
         {
-            get { return track.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
+            get { return track.Where(p => p.IsValid).ToList(); }
         }
+        /// <summary>
+        /// Clean track from launch to landing
+        /// </summary>
         public List<Trackpoint> FlightTrack
         {
-            get { return track.Where(p => p.IsValid == true).Where(p => p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
+            get { return track.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); }
         }
         public ObservableCollection<Waypoint> Markers
         {

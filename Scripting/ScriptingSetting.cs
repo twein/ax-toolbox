@@ -61,6 +61,9 @@ namespace AXToolbox.Scripting
             }
         }
 
+        public override void Reset()
+        { }
+
         public override void Run(FlightReport report)
         { }
 
