@@ -18,6 +18,8 @@ namespace AXToolbox.Scripting
         {
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown task type '" + type + "'");
+            if (parameters.Length != 1 || parameters[0] != "")
+                throw new ArgumentException("Syntax error in task definition");
         }
 
         public override void Reset()
