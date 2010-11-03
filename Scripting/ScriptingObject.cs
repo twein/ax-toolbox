@@ -4,6 +4,7 @@ using AXToolbox.MapViewer;
 using System.Text.RegularExpressions;
 using System;
 using System.Windows.Media;
+using System.Globalization;
 
 namespace AXToolbox.Scripting
 {
@@ -109,28 +110,28 @@ namespace AXToolbox.Scripting
             return str;
         }
 
-        protected static double ParseAltitude(string str)
+        protected static double ParseLength(string str)
         {
             double altitude = 0;
 
             str = str.Trim().ToLower();
-            var regex = new Regex(@"(?<value>\d|\.+)\s*(?<units>\w*)");
+            var regex = new Regex(@"(?<value>[\d\.]+)\s*(?<units>\w*)");
             var matches = regex.Matches(str);
             if (matches.Count != 1)
             {
-                throw new ArgumentException("Syntax error in altitude definition");
+                throw new ArgumentException("Syntax error in distance or altitude definition");
             }
             else
             {
-                altitude = double.Parse(matches[0].Groups["value"].Value);
+                altitude = double.Parse(matches[0].Groups["value"].Value, NumberFormatInfo.InvariantInfo);
                 var units = matches[0].Groups["units"].Value;
-                if (units == "ft" || units == "")
+                if (units == "ft")
                 {
                     altitude *= 0.3048;
                 }
-                else if (units != "m")
+                else if (units != "m" && units != "")
                 {
-                    throw new ArgumentException("Syntax error in altitude definition");
+                    throw new ArgumentException("Syntax error in distance or altitude definition");
                 }
             }
 

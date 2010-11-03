@@ -6,7 +6,8 @@ set QNH = 1012
 
 //task 4
 TASK Task4 = XDD()
-	AREA T4Area = poly(task4area.trk) none()
+	POINT T4AreaCenter = SUTM (31T,300804,4603554,180m) none()
+	AREA T4Area = circle(T4AreaCenter,200) Default(green)
 
 	filter T4scoringPeriod = BEFORETIME(10:00:00)
 	filter T4scoringArea = Inside(T4Area);

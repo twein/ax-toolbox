@@ -26,7 +26,7 @@ namespace AXToolbox.Scripting
         };
         private static readonly List<string> displayModes = new List<string>
         {
-            "NONE","WAYPOINT","TARGET","MARKER","CROSSHAIR"
+            "","NONE","WAYPOINT","TARGET","MARKER","CROSSHAIR"
         };
 
         internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -54,7 +54,7 @@ namespace AXToolbox.Scripting
                             isStatic = true;
                             var lat = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
                             var lng = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
-                            var alt = ParseAltitude(parameters[2]); //double.Parse(parameters[2], NumberFormatInfo.InvariantInfo) * 0.3048;
+                            var alt = ParseLength(parameters[2]);
                             point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, engine.Datum, engine.UtmZone);
                         }
                     }
@@ -70,7 +70,7 @@ namespace AXToolbox.Scripting
                             var zone = parameters[0].ToUpper();
                             var easting = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
                             var northing = double.Parse(parameters[2], NumberFormatInfo.InvariantInfo);
-                            var alt = ParseAltitude(parameters[3]); //double.Parse(parameters[3], NumberFormatInfo.InvariantInfo) * 0.3048;
+                            var alt = ParseLength(parameters[3]);
                             point = new Point(DateTime.MinValue, engine.Datum, zone, easting, northing, alt, engine.Datum, engine.UtmZone);
                         }
                     }
@@ -110,7 +110,7 @@ namespace AXToolbox.Scripting
                         if (parameters.Length != 1 || !int.TryParse(parameters[0], out number))
                             throw new ArgumentException("Syntax error in goal definition");
                         throw new NotImplementedException();
-                    } 
+                    }
 
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
@@ -247,9 +247,23 @@ namespace AXToolbox.Scripting
             MapOverlay overlay = null;
             if (point != null)
             {
-                var position = new System.Windows.Point(point.Easting, point.Northing);
-                overlay = new WaypointOverlay(position, Name);
-                overlay.Color = color;
+                switch (displayMode)
+                {
+                    case "NONE":
+                        break;
+                    case "":
+                    case "WAYPOINT": { }
+                        var position = new System.Windows.Point(point.Easting, point.Northing);
+                        overlay = new WaypointOverlay(position, Name);
+                        overlay.Color = color;
+                        break;
+                    case "TARGET":
+                        throw new NotImplementedException();
+                    case "MARKER":
+                        throw new NotImplementedException();
+                    case "CROSSHAIR":
+                        throw new NotImplementedException();
+                }
             }
             return overlay;
         }
