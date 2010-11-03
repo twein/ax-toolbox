@@ -26,6 +26,8 @@ namespace AXToolbox.Scripting
 
             if (!displayModes.Contains(displayMode))
                 throw new ArgumentException("Unknown display mode '" + displayMode + "'");
+
+            //TODO: more syntax checking
         }
 
         public override void Reset()
@@ -34,11 +36,12 @@ namespace AXToolbox.Scripting
 
         public override void Run(FlightReport report)
         {
+            throw new NotImplementedException();
         }
 
         public override MapOverlay GetOverlay()
         {
-            return null;
+            throw new NotImplementedException();
         }
 
         public override string ToString()

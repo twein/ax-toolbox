@@ -204,7 +204,6 @@ namespace AXToolbox.MapViewer
         ///<summary>Reset to default zoom level and centered content</summary>
         public void Reset()
         {
-            //TODO: zoom to fit map
             ZoomTo(MinZoom, MapCenter);
         }
 

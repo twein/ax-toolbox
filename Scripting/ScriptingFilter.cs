@@ -30,7 +30,10 @@ namespace AXToolbox.Scripting
             switch (type)
             {
                 case "NONE":
+                    if (parameters.Length != 1 || parameters[0] != "")
+                        throw new ArgumentException("Syntax error");
                     break;
+
                 case "INSIDE":
                 case "OUTSIDE":
                     if (parameters.Length != 1)
@@ -38,6 +41,7 @@ namespace AXToolbox.Scripting
                     else
                         area = (ScriptingArea)engine.Heap[parameters[0]];
                     break;
+
                 case "BEFORETIME":
                 case "AFTERTIME":
                     if (parameters.Length != 1)
@@ -45,6 +49,7 @@ namespace AXToolbox.Scripting
                     else
                         time = engine.Date + TimeSpan.Parse(parameters[0]); //TODO: check local-GMT conversion
                     break;
+
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
                     if (parameters.Length != 1)
@@ -52,12 +57,13 @@ namespace AXToolbox.Scripting
                     else if (!engine.Heap.ContainsKey(parameters[0]))
                         throw new ArgumentException("Undefined point " + parameters[0]);
                     break;
+
                 case "ABOVE":
                 case "BELOW":
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in altitude definition");
                     else
-                        altitude = ParseAltitude(parameters[0]);
+                        altitude = ParseLength(parameters[0]);
                     break;
             }
         }
@@ -74,18 +80,23 @@ namespace AXToolbox.Scripting
                 case "NONE":
                     engine.ValidTrackPoints = report.FlightTrack;
                     break;
+
                 case "INSIDE":
                     engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => area.Contains(p)).ToList();
                     break;
+
                 case "OUTSIDE":
                     engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => !area.Contains(p)).ToList();
                     break;
+
                 case "BEFORETIME":
                     engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
                     break;
+
                 case "AFTERTIME":
                     engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
                     break;
+
                 case "BEFOREPOINT":
                     {
                         var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
@@ -93,6 +104,7 @@ namespace AXToolbox.Scripting
                         engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
                     }
                     break;
+
                 case "AFTERPOINT":
                     {
                         var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
@@ -100,9 +112,11 @@ namespace AXToolbox.Scripting
                         engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
                     }
                     break;
+
                 case "ABOVE":
                     engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Altitude >= altitude).ToList();
                     break;
+
                 case "BELOW":
                     engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToList();
                     break;
