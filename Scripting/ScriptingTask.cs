@@ -15,6 +15,9 @@ namespace AXToolbox.Scripting
 
         internal ScriptingTask(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
+        { }
+
+        public override void CheckConstructorSyntax()
         {
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown task type '" + type + "'");
@@ -22,12 +25,14 @@ namespace AXToolbox.Scripting
                 throw new ArgumentException("Syntax error in task definition");
         }
 
+        public override void CheckDisplayModeSyntax()
+        { }
+
         public override void Reset()
         { }
 
         public override void Run(FlightReport report)
-        {
-        }
+        { }
 
         public override MapOverlay GetOverlay()
         {

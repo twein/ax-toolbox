@@ -43,6 +43,9 @@ namespace AXToolbox.Scripting
             this.parameters = parameters;
             this.displayMode = displayMode;
             this.displayParameters = displayParameters;
+
+            CheckConstructorSyntax();
+            CheckDisplayModeSyntax();
         }
 
         public static ScriptingObject Create(string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -72,6 +75,12 @@ namespace AXToolbox.Scripting
 
             return obj;
         }
+
+        /// <summary>Check constructor syntax and parse static definitions</summary>
+        public abstract void CheckConstructorSyntax();
+
+        /// <summary>Check display mode syntax and parse static definitions</summary>
+        public abstract void CheckDisplayModeSyntax();
 
         /// <summary>Clears the pilot dependent (non-static) values</summary>
         public abstract void Reset();
@@ -119,7 +128,7 @@ namespace AXToolbox.Scripting
             var matches = regex.Matches(str);
             if (matches.Count != 1)
             {
-                throw new ArgumentException("Syntax error in distance or altitude definition");
+                throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
             }
             else
             {
@@ -131,7 +140,7 @@ namespace AXToolbox.Scripting
                 }
                 else if (units != "m" && units != "")
                 {
-                    throw new ArgumentException("Syntax error in distance or altitude definition");
+                    throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
                 }
             }
 

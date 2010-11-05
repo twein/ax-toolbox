@@ -2,24 +2,40 @@
 using System.Globalization;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using System.Collections.Generic;
 
 namespace AXToolbox.Scripting
 {
     public class ScriptingSetting : ScriptingObject
     {
+        private static readonly List<string> names = new List<string>
+        {
+            "DATETIME","MAP","DATUM","UTMZONE","QNH","TASKORDER"
+        };
+
         internal ScriptingSetting(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
+        { }
+
+        public override void CheckConstructorSyntax()
         {
+            name = name.ToUpper();
+
+            if (!names.Contains(name))
+                throw new ArgumentException("Unknown setting '" + name + "'");
+
+            //TODO: Check all the syntax checking
             var engine = ScriptingEngine.Instance;
-            this.name = name.ToUpper();
-            switch (this.Name)
+            switch (name)
             {
                 case "DATETIME":
+                    if (parameters.Length != 2)
+                        throw new ArgumentException("Syntax error in DATETIME definition");
+
                     engine.Date = DateTime.Parse(parameters[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
-                    parameters[1] = parameters[1].ToUpper();
-                    if (parameters[1] == "AM")
+                    if (parameters[1].ToUpper() == "AM")
                     { }
-                    else if (parameters[1] == "PM")
+                    else if (parameters[1].ToUpper() == "PM")
                     {
                         engine.Date += new TimeSpan(12, 0, 0);
                     }
@@ -59,7 +75,11 @@ namespace AXToolbox.Scripting
                     }
                     break;
             }
+
         }
+
+        public override void CheckDisplayModeSyntax()
+        { }
 
         public override void Reset()
         { }

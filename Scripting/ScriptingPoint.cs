@@ -32,12 +32,12 @@ namespace AXToolbox.Scripting
         internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
         {
+        }
+
+        public override void CheckConstructorSyntax()
+        {
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown point type '" + type + "'");
-
-            if (!displayModes.Contains(displayMode))
-                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
-
 
             //check syntax and resolve static point types
             var engine = ScriptingEngine.Instance;
@@ -148,6 +148,14 @@ namespace AXToolbox.Scripting
             }
         }
 
+        public override void CheckDisplayModeSyntax()
+        {
+            if (!displayModes.Contains(displayMode))
+                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
+
+            //TODO: syntax checking
+        }
+                
         public override void Reset()
         {
             if (!isStatic)

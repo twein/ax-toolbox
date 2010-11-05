@@ -20,6 +20,9 @@ namespace AXToolbox.Scripting
 
         internal ScriptingFilter(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
+        { }
+
+        public override void CheckConstructorSyntax()
         {
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown filter type '" + type + "'");
@@ -67,6 +70,9 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
+
+        public override void CheckDisplayModeSyntax()
+        { }
 
         public override void Reset()
         { }
