@@ -11,8 +11,8 @@
             <Button Name="buttonPdf" VerticalAlignment="Top" Height="23" Width="75" Click="buttonPdf_Click">Pdf</Button>
             <Button Name="buttonScripting" VerticalAlignment="Top" Height="23" Width="75" Click="buttonScripting_Click">Scripting</Button>
         </StackPanel>
-        <FlowDocumentPageViewer ClipToBounds="True" Margin="0,25,0,0">
-            <FlowDocument Name="output" FontFamily="Lucida Console" FontSize="10" TextAlignment="Left" ColumnRuleBrush="Black" ColumnRuleWidth="1" IsOptimalParagraphEnabled="True" />
-        </FlowDocumentPageViewer>
+        <FlowDocumentReader ClipToBounds="True" Margin="0,25,0,0">
+            <FlowDocument Name="output" FontFamily="Lucida Console" FontSize="10" TextAlignment="Left" ColumnRuleBrush="Black" ColumnRuleWidth="1" />
+        </FlowDocumentReader>
     </Grid>
 </Window>
