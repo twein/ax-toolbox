@@ -1,11 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Documents;
 using AXToolbox.Common;
-using System.Globalization;
-using System.IO;
-using AXToolbox.Scripting;
-using System.Text;
 
 namespace AXToolbox.Tests
 {
@@ -145,21 +142,8 @@ namespace AXToolbox.Tests
 
         private void buttonScripting_Click(object sender, RoutedEventArgs e)
         {
-            var scriptingEngine = ScriptingEngine.Instance;
-
-            try
-            {
-                scriptingEngine.LoadScript("testScript.axs");
-
-                foreach (var o in scriptingEngine.Heap)
-                {
-                    Print(o.Value.ToString());
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                Print(ex.Message);
-            }
+            var w = new WindowScripting();
+            w.ShowDialog();
         }
     }
 }

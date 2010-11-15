@@ -40,7 +40,9 @@ namespace AXToolbox.Scripting
                     if (!engine.Heap.ContainsKey(parameters[0]))
                         throw new ArgumentException("Undefined point '" + parameters[0] + "'");
 
-                    ParseLength(parameters[1]);
+                    var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
+                    centerPoint = spoint.Point;
+                    radius = ParseLength(parameters[1]);
                     break;
 
                 case "POLY":
@@ -101,9 +103,13 @@ namespace AXToolbox.Scripting
             switch (type)
             {
                 case "CIRCLE":
-                    var center = new System.Windows.Point(centerPoint.Easting, centerPoint.Northing);
-                    overlay = new CircularAreaOverlay(center, radius, name);
+                    if (centerPoint != null)
+                    {
+                        var center = new System.Windows.Point(centerPoint.Easting, centerPoint.Northing);
+                        overlay = new CircularAreaOverlay(center, radius, name);
+                    }
                     break;
+
                 case "POLY":
                     throw new NotImplementedException();
             }

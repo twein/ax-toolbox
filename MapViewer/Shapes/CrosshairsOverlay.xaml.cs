@@ -10,7 +10,8 @@ namespace AXToolbox.MapViewer
         {
             set
             {
-                crosshair.Stroke = value;
+                crosshairs.Stroke = value;
+                circle.Stroke = value;
             }
         }
 

@@ -79,10 +79,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WindowScripting.xaml.cs">
+      <DependentUpon>WindowScripting.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PdfTest.cs" />
     <Compile Include="WindowMapViewer.xaml.cs">
       <DependentUpon>WindowMapViewer.xaml</DependentUpon>
     </Compile>
+    <Page Include="WindowScripting.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="WindowMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

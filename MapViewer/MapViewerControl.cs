@@ -153,8 +153,9 @@ namespace AXToolbox.MapViewer
                 ComputeMapConstants();
                 Reset();
             }
-            catch
+            catch (Exception ex)
             {
+
             }
         }
 
