@@ -31,7 +31,6 @@ namespace AXToolbox.Scripting
                 throw new ArgumentException("Unknown area type '" + type + "'");
 
             var engine = ScriptingEngine.Instance;
-
             switch (type)
             {
                 case "CIRCLE":
@@ -58,7 +57,23 @@ namespace AXToolbox.Scripting
         {
             if (!displayModes.Contains(displayMode))
                 throw new ArgumentException("Unknown display mode '" + displayMode + "'");
-            //TODO: syntax checking
+
+            var engine = ScriptingEngine.Instance;
+            switch (displayMode)
+            {
+                case "NONE":
+                    if (displayParameters.Length != 1 || displayParameters[0] != "")
+                        throw new ArgumentException("Syntax error");
+                    break;
+
+                case "DEFAULT":
+                    if (displayParameters.Length != 1)
+                        throw new ArgumentException("Syntax error");
+
+                    if (displayParameters[0] != "")
+                        color = ParseColor(displayParameters[0]);
+                    break;
+            }
         }
 
         public override void Reset()

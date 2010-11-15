@@ -1,8 +1,9 @@
 ﻿set DateTime = 2010/10/28,PM
-set map=..\Europeans2011.png
+//set map=..\Europeans2011.png
 set Datum=European 1950
 set UTMZone=31T
 set QNH = 1012
+set TASKORDER=free
 
 //task 4
 TASK Task4 = XDD()
