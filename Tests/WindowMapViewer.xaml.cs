@@ -53,7 +53,7 @@ namespace AXToolbox.Tests
 
             //add a crosshair
             position = trackLog[(int)(rnd.NextDouble() * trackLog.Length)];
-            var crosshair = new CrosshairOverlay(position);
+            var crosshair = new CrosshairsOverlay(position);
             crosshair.Color = Brushes.Red;
             map.AddOverlay(crosshair);
 

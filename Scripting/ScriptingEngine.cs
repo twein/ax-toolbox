@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using AXToolbox.Common;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using System;
+using AXToolbox.Common;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -33,7 +34,18 @@ namespace AXToolbox.Scripting
         public string MapFile
         {
             get { return mapFile; }
-            set { mapFile = value; }
+            set
+            {
+                mapFile = value;
+                if (mapFile != "")
+                    map.Load(mapFile);
+            }
+        }
+
+        private MapViewerControl map;
+        public MapViewerControl Map
+        {
+            get { return map; }
         }
 
         private Datum datum;
@@ -87,6 +99,7 @@ namespace AXToolbox.Scripting
             string line;
 
             heap.Clear();
+            map = new MapViewerControl();
 
             var lines = File.ReadAllLines(scriptFileName);
             for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)

@@ -47,8 +47,8 @@
     <Compile Include="Shapes\PolygonalAreaOverlay.xaml.cs">
       <DependentUpon>PolygonalAreaOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\CrosshairOverlay.xaml.cs">
-      <DependentUpon>CrosshairOverlay.xaml</DependentUpon>
+    <Compile Include="Shapes\CrosshairsOverlay.xaml.cs">
+      <DependentUpon>CrosshairsOverlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="Shapes\CircularAreaOverlay.xaml.cs">
       <DependentUpon>CircularAreaOverlay.xaml</DependentUpon>
@@ -74,7 +74,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\CrosshairOverlay.xaml">
+    <Page Include="Shapes\CrosshairsOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
