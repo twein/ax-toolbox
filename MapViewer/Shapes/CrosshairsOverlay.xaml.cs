@@ -4,7 +4,7 @@ using System.Windows.Media.Effects;
 
 namespace AXToolbox.MapViewer
 {
-    public partial class CrosshairOverlay : MapOverlay
+    public partial class CrosshairsOverlay : MapOverlay
     {
         public override Brush Color
         {
@@ -14,7 +14,7 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        public CrosshairOverlay(Point position)
+        public CrosshairsOverlay(Point position)
             : base(position)
         {
             this.InitializeComponent();

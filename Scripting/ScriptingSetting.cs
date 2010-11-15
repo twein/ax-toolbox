@@ -41,6 +41,7 @@ namespace AXToolbox.Scripting
                         engine.Date += new TimeSpan(12, 0, 0);
 
                     break;
+
                 case "MAP":
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in MAP definition");
@@ -53,6 +54,7 @@ namespace AXToolbox.Scripting
                         engine.MapFile = parameters[0];
                     }
                     break;
+
                 case "DATUM":
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in DATUM definition");
@@ -66,12 +68,14 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Unsupported datum '" + parameters[0] + "'");
                     }
                     break;
+
                 case "UTMZONE":
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in UTMZONE definition");
 
                     engine.UtmZone = parameters[0];
                     break;
+
                 case "QNH":
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in QNH definition");
@@ -85,6 +89,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error in QNH definition '" + parameters[0] + "'");
                     }
                     break;
+
                 case "TASKORDER":
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in TASKORDER definition");

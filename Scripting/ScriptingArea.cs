@@ -58,7 +58,6 @@ namespace AXToolbox.Scripting
             if (!displayModes.Contains(displayMode))
                 throw new ArgumentException("Unknown display mode '" + displayMode + "'");
 
-            var engine = ScriptingEngine.Instance;
             switch (displayMode)
             {
                 case "NONE":

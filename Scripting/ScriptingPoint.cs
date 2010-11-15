@@ -153,7 +153,33 @@ namespace AXToolbox.Scripting
             if (!displayModes.Contains(displayMode))
                 throw new ArgumentException("Unknown display mode '" + displayMode + "'");
 
-            //TODO: syntax checking
+            switch (displayMode)
+            {
+                case "NONE":
+                    if (displayParameters.Length != 1 || displayParameters[0] != "")
+                        throw new ArgumentException("Syntax error");
+                    break;
+
+                case "WAYPOINT":
+                case "MARKER":
+                case "CROSSHAIRS":
+                    if (displayParameters.Length > 1)
+                        throw new ArgumentException("Syntax error");
+
+                    if (displayParameters[0] != "")
+                        color = ParseColor(displayParameters[0]);
+                    break;
+
+                case "TARGET":
+                    if (displayParameters.Length > 2)
+                        throw new ArgumentException("Syntax error");
+
+                    radius = ParseLength(displayParameters[1]);
+
+                    if (displayParameters.Length == 2)
+                        color = ParseColor(displayParameters[1]);
+                    break;
+            }
         }
 
         public override void Reset()
@@ -259,18 +285,38 @@ namespace AXToolbox.Scripting
                 {
                     case "NONE":
                         break;
+
                     case "":
-                    case "WAYPOINT": { }
-                        var position = new System.Windows.Point(point.Easting, point.Northing);
-                        overlay = new WaypointOverlay(position, Name);
-                        overlay.Color = color;
+                    case "WAYPOINT":
+                        {
+                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            overlay = new WaypointOverlay(position, Name);
+                            overlay.Color = color;
+                        }
                         break;
+
                     case "TARGET":
-                        throw new NotImplementedException();
+                        {
+                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            overlay = new TargetOverlay(position, radius, Name);
+                            overlay.Color = color;
+                        }
+                        break;
+
                     case "MARKER":
-                        throw new NotImplementedException();
+                        {
+                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            overlay = new MarkerOverlay(position, Name);
+                            overlay.Color = color;
+                        } break;
+
                     case "CROSSHAIRS":
-                        throw new NotImplementedException();
+                        {
+                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            overlay = new CrosshairsOverlay(position);
+                            overlay.Color = color;
+                        }
+                        break;
                 }
             }
             return overlay;
