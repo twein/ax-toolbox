@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
-using System.Collections.Generic;
 
 namespace AXToolbox.Scripting
 {
@@ -24,7 +25,6 @@ namespace AXToolbox.Scripting
             if (!names.Contains(name))
                 throw new ArgumentException("Unknown setting '" + name + "'");
 
-            //TODO: Check all the syntax checking
             var engine = ScriptingEngine.Instance;
             switch (name)
             {
@@ -32,47 +32,72 @@ namespace AXToolbox.Scripting
                     if (parameters.Length != 2)
                         throw new ArgumentException("Syntax error in DATETIME definition");
 
+                    var time = parameters[1].ToUpper();
+                    if (time != "AM" && time != "PM")
+                        throw new ArgumentException("Syntax error in DATETIME definition");
+
                     engine.Date = DateTime.Parse(parameters[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
-                    if (parameters[1].ToUpper() == "AM")
-                    { }
-                    else if (parameters[1].ToUpper() == "PM")
-                    {
+                    if (time == "PM")
                         engine.Date += new TimeSpan(12, 0, 0);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Syntax error in DATETIME");
-                    }
+
                     break;
                 case "MAP":
+                    if (parameters.Length != 1)
+                        throw new ArgumentException("Syntax error in MAP definition");
+
                     if (parameters[0].ToUpper() != "BLANK")
                     {
+                        if (!File.Exists(parameters[0]))
+                            throw new ArgumentException("Map file not found '" + parameters[0] + "'");
+
                         engine.MapFile = parameters[0];
                     }
                     break;
                 case "DATUM":
-                    engine.Datum = Datum.GetInstance(parameters[0]);
+                    if (parameters.Length != 1)
+                        throw new ArgumentException("Syntax error in DATUM definition");
+
+                    try
+                    {
+                        engine.Datum = Datum.GetInstance(parameters[0]);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        throw new ArgumentException("Unsupported datum '" + parameters[0] + "'");
+                    }
                     break;
                 case "UTMZONE":
+                    if (parameters.Length != 1)
+                        throw new ArgumentException("Syntax error in UTMZONE definition");
+
                     engine.UtmZone = parameters[0];
                     break;
                 case "QNH":
-                    engine.Qnh = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
+                    if (parameters.Length != 1)
+                        throw new ArgumentException("Syntax error in QNH definition");
+
+                    try
+                    {
+                        engine.Qnh = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException("Syntax error in QNH definition '" + parameters[0] + "'");
+                    }
                     break;
                 case "TASKORDER":
-                    parameters[0] = parameters[0].ToUpper();
+                    if (parameters.Length != 1)
+                        throw new ArgumentException("Syntax error in TASKORDER definition");
+
+                    var order = parameters[0].ToUpper();
+                    if (order != "BYORDER" && order != "FREE")
+                        throw new ArgumentException("Syntax error in TASKORDER definition");
+
                     if (parameters[0] == "BYORDER")
-                    {
                         engine.TasksByOrder = true;
-                    }
-                    else if (parameters[0] == "FREE")
-                    {
-                        engine.TasksByOrder = false;
-                    }
                     else
-                    {
-                        throw new ArgumentException("Syntax error in TASKORDER");
-                    }
+                        engine.TasksByOrder = false;
+
                     break;
             }
 
