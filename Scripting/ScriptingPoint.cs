@@ -26,7 +26,7 @@ namespace AXToolbox.Scripting
         };
         private static readonly List<string> displayModes = new List<string>
         {
-            "","NONE","WAYPOINT","TARGET","MARKER","CROSSHAIR"
+            "","NONE","WAYPOINT","TARGET","MARKER","CROSSHAIRS"
         };
 
         internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -155,7 +155,7 @@ namespace AXToolbox.Scripting
 
             //TODO: syntax checking
         }
-                
+
         public override void Reset()
         {
             if (!isStatic)
@@ -269,7 +269,7 @@ namespace AXToolbox.Scripting
                         throw new NotImplementedException();
                     case "MARKER":
                         throw new NotImplementedException();
-                    case "CROSSHAIR":
+                    case "CROSSHAIRS":
                         throw new NotImplementedException();
                 }
             }

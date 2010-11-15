@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Globalization;
-using AXToolbox.Common;
-using AXToolbox.MapViewer;
 using System.Collections.Generic;
 using System.IO;
+using AXToolbox.Common;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -19,14 +18,17 @@ namespace AXToolbox.Scripting
         };
 
 
+        protected Point centerPoint = null;
+        protected double radius = 0;
+
         internal ScriptingArea(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(name, type, parameters, displayMode, displayParameters)
+        { }
+
+        public override void CheckConstructorSyntax()
         {
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown area type '" + type + "'");
-
-            if (!displayModes.Contains(displayMode))
-                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
 
             var engine = ScriptingEngine.Instance;
 
@@ -50,8 +52,13 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Track file not found '" + parameters[0] + "'");
                     break;
             }
+        }
 
-            //TODO: more syntax checking
+        public override void CheckDisplayModeSyntax()
+        {
+            if (!displayModes.Contains(displayMode))
+                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
+            //TODO: syntax checking
         }
 
         public override void Reset()
@@ -60,12 +67,34 @@ namespace AXToolbox.Scripting
 
         public override void Run(FlightReport report)
         {
-            throw new NotImplementedException();
+            var engine = ScriptingEngine.Instance;
+            switch (type)
+            {
+                case "CIRCLE":
+                    var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
+                    if (spoint != null)
+                        centerPoint = spoint.Point;
+                    radius = ParseLength(parameters[1]);
+                    break;
+                case "POLY":
+                    throw new NotImplementedException();
+            }
         }
 
         public override MapOverlay GetOverlay()
         {
-            throw new NotImplementedException();
+            MapOverlay overlay = null;
+            switch (type)
+            {
+                case "CIRCLE":
+                    var center = new System.Windows.Point(centerPoint.Easting, centerPoint.Northing);
+                    overlay = new CircularAreaOverlay(center, radius, name);
+                    break;
+                case "POLY":
+                    throw new NotImplementedException();
+            }
+
+            return overlay;
         }
 
         public override string ToString()
@@ -79,3 +108,4 @@ namespace AXToolbox.Scripting
         }
     }
 }
+
