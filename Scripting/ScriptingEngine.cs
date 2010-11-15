@@ -37,15 +37,7 @@ namespace AXToolbox.Scripting
             set
             {
                 mapFile = value;
-                if (mapFile != "")
-                    map.Load(mapFile);
             }
-        }
-
-        private MapViewerControl map;
-        public MapViewerControl Map
-        {
-            get { return map; }
         }
 
         private Datum datum;
@@ -99,7 +91,7 @@ namespace AXToolbox.Scripting
             string line;
 
             heap.Clear();
-            map = new MapViewerControl();
+            //TODO: initialize all variables
 
             var lines = File.ReadAllLines(scriptFileName);
             for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)

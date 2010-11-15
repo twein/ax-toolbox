@@ -174,7 +174,7 @@ namespace AXToolbox.Scripting
                     if (displayParameters.Length > 2)
                         throw new ArgumentException("Syntax error");
 
-                    radius = ParseLength(displayParameters[1]);
+                    radius = ParseLength(displayParameters[0]);
 
                     if (displayParameters.Length == 2)
                         color = ParseColor(displayParameters[1]);
