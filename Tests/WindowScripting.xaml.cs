@@ -28,7 +28,7 @@ namespace AXToolbox.Tests
                 if (scriptingEngine.MapFile != null)
                 {
                     var completeFileName = Path.Combine(Directory.GetCurrentDirectory(), scriptingEngine.MapFile);
-                    map.Load(completeFileName);
+                    map.LoadBitmap(completeFileName);
                 }
 
                 MapOverlay ov;
