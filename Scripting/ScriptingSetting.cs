@@ -84,7 +84,7 @@ namespace AXToolbox.Scripting
                     {
                         engine.Qnh = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         throw new ArgumentException("Syntax error in QNH definition '" + parameters[0] + "'");
                     }

@@ -26,7 +26,7 @@ namespace AXToolbox.Tests
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
             {
-                map.Load(dlg.FileName);
+                map.LoadBitmap(dlg.FileName);
             }
 
             // add a track

@@ -105,25 +105,17 @@ namespace AXToolbox.MapViewer
             MouseMove += new MouseEventHandler(source_MouseMove);
             MouseLeftButtonUp += new MouseButtonEventHandler(source_MouseLeftButtonUp);
             MouseWheel += new MouseWheelEventHandler(source_MouseWheel);
-
-
-            //load blank map
-            BitmapWidth = 1e4;
-            BitmapHeight = 1e4;
-            mapCanvas.Children.Add(new Border() { Width = BitmapWidth, Height = BitmapHeight, Background = Brushes.White });
         }
 
         /// <summary>Load a calibrated image file as map</summary>
         /// <param name="bitmapFileName">
-        /// Bitmap file name. A .tfw (ESRI world file) with the same name must exist.
+        /// Bitmap file name. An ESRI world file following the standard naming conventions must exist.
         /// http://en.wikipedia.org/wiki/World_file
         /// </param>
-        public void Load(string bitmapFileName)
+        public void LoadBitmap(string bitmapFileName)
         {
             try
             {
-                //throw new Exception();
-
                 //Load the bitmap file
                 var bmp = new BitmapImage();
                 bmp.BeginInit();
@@ -155,8 +147,19 @@ namespace AXToolbox.MapViewer
             }
             catch (Exception ex)
             {
-
+                throw ex;
             }
+        }
+
+        public void LoadBlank(Point center)
+        {
+            //load blank map
+            BitmapWidth = 1e4;
+            BitmapHeight = 1e4;
+            mapCanvas.Children.Add(new Border() { Width = BitmapWidth, Height = BitmapHeight, Background = Brushes.White });
+            mapTransform = new MapTransform(10, 0, 0, -10, center.X - 5e4, center.Y + 5e4);
+            ComputeMapConstants();
+            Reset();
         }
 
         /// <summary>Center the desired point</summary>
@@ -214,12 +217,7 @@ namespace AXToolbox.MapViewer
         {
             //Load a blank map if adding the first overlay and no map is loaded
             if (overlays.Count == 0 && !mapLoaded)
-            {
-                var center = overlay.Position;
-                mapTransform = new MapTransform(10, 0, 0, -10, center.X - 5e4, center.Y + 5e4);
-                ComputeMapConstants();
-                Reset();
-            }
+                LoadBlank(overlay.Position);
 
             overlay.Map = this;
             overlaysCanvas.Children.Add(overlay);
