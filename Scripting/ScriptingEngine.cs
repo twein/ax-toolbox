@@ -93,7 +93,10 @@ namespace AXToolbox.Scripting
             heap.Clear();
             //TODO: initialize all variables
 
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(scriptFileName));
+
             var lines = File.ReadAllLines(scriptFileName);
+
             for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
             {
                 line = lines[lineNumber].Trim();
