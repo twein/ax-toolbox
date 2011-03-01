@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using AXToolbox.MapViewer;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace AXToolbox.Tests
 {
@@ -21,9 +22,10 @@ namespace AXToolbox.Tests
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
+            var dlg = new OpenFileDialog();
             dlg.Filter = "Map files (*.*)|*.*";
-            dlg.RestoreDirectory = true;
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            //dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
             {
                 map.LoadBitmap(dlg.FileName);

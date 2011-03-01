@@ -21,7 +21,7 @@ namespace AXToolbox.MapViewer
         protected double BitmapHeight { get; set; }
 
         //map center
-        protected Point LocalCenter { get; set; }
+        protected Point BitmapCenter { get; set; }
         protected Point MapCenter { get; set; }
 
         //zoom parameters
@@ -105,6 +105,7 @@ namespace AXToolbox.MapViewer
             MouseMove += new MouseEventHandler(source_MouseMove);
             MouseLeftButtonUp += new MouseButtonEventHandler(source_MouseLeftButtonUp);
             MouseWheel += new MouseWheelEventHandler(source_MouseWheel);
+            SizeChanged += new SizeChangedEventHandler(source_SizeChanged);
         }
 
         /// <summary>Load a calibrated image file as map</summary>
@@ -315,12 +316,10 @@ namespace AXToolbox.MapViewer
 
         private void ComputeMapConstants()
         {
-            //centers
-            LocalCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
-            MapCenter = FromLocalToMap(LocalCenter);
+            BitmapCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
+            MapCenter = mapTransform.FromBitmapToMap(BitmapCenter);
 
-            var maxScale = 1; // in m/pix
-            MaxZoom = Math.Max(mapTransform.PixelWidth, mapTransform.PixelHeight) / maxScale;
+            MaxZoom = Math.Max(mapTransform.PixelWidth, mapTransform.PixelHeight);
             MinZoom = Math.Min(ActualWidth / BitmapWidth, ActualHeight / BitmapHeight); // fit to viewer
         }
 
@@ -365,6 +364,17 @@ namespace AXToolbox.MapViewer
                 //Reset the cursor and release the mouse pointer
                 Cursor = Cursors.Arrow;
                 ReleaseMouseCapture();
+            }
+        }
+        protected void source_SizeChanged(Object sender, SizeChangedEventArgs e)
+        {
+
+            if (!(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
+            {
+                var previousLocalCenter = new Point(e.PreviousSize.Width / 2, e.PreviousSize.Height / 2);
+                var previousMapCenter = FromLocalToMap(previousLocalCenter);
+                ComputeMapConstants();
+                PanTo(previousMapCenter);
             }
         }
         #endregion

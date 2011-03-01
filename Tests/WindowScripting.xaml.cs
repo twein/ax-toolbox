@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using AXToolbox.MapViewer;
 using AXToolbox.Scripting;
+using Microsoft.Win32;
 
 namespace AXToolbox.Tests
 {
@@ -24,25 +25,36 @@ namespace AXToolbox.Tests
 
             try
             {
-                scriptingEngine.LoadScript("testScript.axs");
-                if (scriptingEngine.MapFile != null)
+                var dlg = new OpenFileDialog();
+                dlg.Filter = "AX-Script files (*.axs)|*.axs";
+                dlg.InitialDirectory = Environment.CurrentDirectory;
+                dlg.RestoreDirectory = true;
+                if (dlg.ShowDialog(this) == true)
                 {
-                    var completeFileName = Path.Combine(Directory.GetCurrentDirectory(), scriptingEngine.MapFile);
-                    map.LoadBitmap(completeFileName);
-                }
+                    scriptingEngine.LoadScript(dlg.FileName);
+                    if (scriptingEngine.MapFile != null)
+                    {
+                        var completeFileName = Path.Combine(Directory.GetCurrentDirectory(), scriptingEngine.MapFile);
+                        map.LoadBitmap(completeFileName);
+                    }
 
-                MapOverlay ov;
-                foreach (var o in scriptingEngine.Heap)
+                    MapOverlay ov;
+                    foreach (var o in scriptingEngine.Heap)
+                    {
+                        ov = o.Value.GetOverlay();
+                        if (ov != null)
+                            map.AddOverlay(ov);
+                    }
+                }
+                else
                 {
-                    ov = o.Value.GetOverlay();
-                    if (ov != null)
-                        map.AddOverlay(ov);
+                    Close();
                 }
             }
             catch (ArgumentException ex)
             {
                 MessageBox.Show(ex.Message);
-                Close();   
+                Close();
             }
 
         }

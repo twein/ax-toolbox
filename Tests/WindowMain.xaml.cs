@@ -106,18 +106,24 @@ namespace AXToolbox.Tests
             var sun = new Sun(lat, lng);
 
             var today = DateTime.Now;
-            var from = today - new TimeSpan(14, 0, 0, 0);
-            var to = today + new TimeSpan(14, 0, 0, 0);
+            var from = today - new TimeSpan(30, 0, 0, 0);
+            var to = today + new TimeSpan(30, 0, 0, 0);
 
             Print("Daylight hours");
             Print(string.Format("Location: ({0:0.000000}, {1:0.000000})", lat, lng));
             Print("Date            Dawn   Dusk");
             for (var date = from; date <= to; date += new TimeSpan(1, 0, 0, 0))
             {
+                var sr = sun.Sunrise(date, Sun.ZenithTypes.Custom);
+                var ss = sun.Sunset(date, Sun.ZenithTypes.Custom);
+                var span = ss - sr;
                 Print(
-                    string.Format("{0:ddd dd/MM/yyyy}  ", date)
-                    + string.Format("{0:HH:mm}  ", sun.Sunrise(date, Sun.ZenithTypes.Custom))
-                    + string.Format("{0:HH:mm}  ", sun.Sunset(date, Sun.ZenithTypes.Custom))
+                    date.ToString(@"ddd dd/MM/yyyy  ")
+                    + sr.ToString(@"HH:mm  ")
+                    + ss.ToString(@"HH:mm  ")
+                    //+ string.Format("{0:HH:mm}  ", span)
+                    //+ span.ToString(@"hh:mm  ")
+                    + span.ToString()
                 );
             }
         }

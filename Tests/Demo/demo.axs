@@ -1,6 +1,6 @@
 ﻿set DateTime = 2010/10/28,PM
-//set map=NewEuropeans2010Half.png
-set map=blank
+set map=demo.png
+//set map=blank
 set Datum=European 1950
 set UTMZone=31T
 set QNH = 1012
