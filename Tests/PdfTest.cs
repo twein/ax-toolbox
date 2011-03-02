@@ -1,34 +1,50 @@
 ﻿using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using AXToolbox.Common;
+using System;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace AXToolbox.Tests
 {
     public class PdfTest
     {
-        public static Font FontHeader = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-        public static Font FontBold = new Font(Font.FontFamily.HELVETICA, Font.DEFAULTSIZE, Font.BOLD);
-        public static Font FontSmall = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
+        public static float cm2pt = 72f / 2.54f;
+
+        public static string loc = "Plaça dels Països Catalans, Girona";
+        public static double lat = 41.950904;
+        public static double lng = 3.225684;
+
+        public static Font HeaderFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+        public static Font BoldFont = new Font(Font.FontFamily.HELVETICA, 7, Font.BOLD);
+        public static Font NormalFont = new Font(Font.FontFamily.HELVETICA, 6.5f, Font.NORMAL);
+        public static Font FooterFont = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL);
 
         public PdfTest(string pdfFileName)
         {
             var document = new Document();
-            document.SetPageSize(PageSize.A4.Rotate());
-            document.SetMargins(30, 30, 30, 30); // in pt
+            //document.SetPageSize(PageSize.A4); //portrait
+            document.SetPageSize(PageSize.A4.Rotate()); //landscape
+            document.SetMargins(1f * cm2pt, 1f * cm2pt, 1.5f * cm2pt, 1.5f * cm2pt); // in pt
+
             PdfWriter.GetInstance(document, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents();
             document.Open();
 
             //title
-            document.Add(new Paragraph("iPDF test", FontHeader));
+            //document.Add(new Paragraph("Sun table", HeaderFont) { Alignment = Element.ALIGN_CENTER });
 
             //paragraph
-            document.Add(new Paragraph("Special characters test: à è ò í ú ï ü ç À È Ò Í Ú Ï Ü Ç."));
+            //document.Add(new Paragraph(string.Format(NumberFormatInfo.InvariantInfo, "Location: {0} ({1:0.000000}, {2:0.000000})", loc, lat, lng), NormalFont)
+            //    {
+            //        Alignment = Element.ALIGN_CENTER
+            //    });
 
             //page break
-            document.NewPage();
+            //document.NewPage();
 
             //table
-            var relWidths = new float[] { 4, 1, 1, 1 };
+            var relWidths = new float[] { 8, 2, 2, 3 };
             var table = new PdfPTable(relWidths)
             {
                 WidthPercentage = 100,
@@ -36,27 +52,62 @@ namespace AXToolbox.Tests
                 SpacingAfter = 10,
                 HeaderRows = 1
             };
-            table.DefaultCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+            table.DefaultCell.HorizontalAlignment = Element.ALIGN_LEFT;
 
             //table header
-            table.AddCell(new PdfPCell(new Paragraph("Name", FontBold)) { HorizontalAlignment = Element.ALIGN_LEFT });
-            table.AddCell(new PdfPCell(new Paragraph("Score 1", FontBold)) { HorizontalAlignment = Element.ALIGN_RIGHT });
-            table.AddCell(new PdfPCell(new Paragraph("Score 2", FontBold)) { HorizontalAlignment = Element.ALIGN_RIGHT });
-            table.AddCell(new PdfPCell(new Paragraph("Score 3", FontBold)) { HorizontalAlignment = Element.ALIGN_RIGHT });
-
-            //table content
-            for (int row = 1; row <= 90; row++)
+            table.AddCell(new PdfPCell(new Paragraph("Date", BoldFont))
             {
-                table.AddCell(new PdfPCell(new Paragraph(row.ToString("0 1"))) { HorizontalAlignment = Element.ALIGN_LEFT });
-                table.AddCell(new Paragraph(row.ToString("0 2")));
-                table.AddCell(new Paragraph(row.ToString("0 3")));
-                table.AddCell(new Paragraph(row.ToString("0 4")));
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+            table.AddCell(new PdfPCell(new Paragraph("Dawn", BoldFont)));
+            table.AddCell(new PdfPCell(new Paragraph("Dusk", BoldFont)));
+            table.AddCell(new PdfPCell(new Paragraph("Outdoor activity time", BoldFont)));
+
+            //table body
+            var cells = GetCells();
+            foreach (var c in cells)
+            {
+                table.AddCell(new PdfPCell(new Paragraph(c, NormalFont)));
             }
 
-            document.Add(table);
+            //normal layout
+            //document.Add(table);
+
+            //multicolumn layout
+            MultiColumnText columns = new MultiColumnText();
+            columns.AddRegularColumns(1 * cm2pt, document.PageSize.Width - 1 * cm2pt, 0.35f * cm2pt, 4); //(L-margin, R-margin, separation, # of cols) in pt
+            columns.AddElement(table);
+            document.Add(columns);
 
 
             document.Close();
+        }
+
+        private List<string> GetCells()
+        {
+            var cells = new List<string>();
+
+            var sun = new Sun(lat, lng);
+
+            var today = DateTime.Now;
+            //var from = today - new TimeSpan(10, 0, 0, 0);
+            //var to = today + new TimeSpan(30, 0, 0, 0);
+
+            var from = new DateTime(today.Year, 1, 1);
+            var to = new DateTime(today.Year, 12, 31);
+
+            for (var date = from; date <= to; date += new TimeSpan(1, 0, 0, 0))
+            {
+                var sr = sun.Sunrise(date, Sun.ZenithTypes.Custom);
+                var ss = sun.Sunset(date, Sun.ZenithTypes.Custom);
+                var span = ss - sr;
+                cells.Add(date.ToString(@"D", DateTimeFormatInfo.InvariantInfo));
+                cells.Add(sr.ToString(@"HH:mm"));
+                cells.Add(ss.ToString(@"HH:mm"));
+                cells.Add(span.ToString());
+            }
+
+            return cells;
         }
 
         internal class PageEvents : IPdfPageEvent
@@ -66,12 +117,28 @@ namespace AXToolbox.Tests
                 PdfContentByte cb = writer.DirectContent;
                 if (document.PageNumber > 0)
                 {
+                    //insert header
+                    ColumnText.ShowTextAligned(
+                        cb,
+                        Element.ALIGN_CENTER,
+                        new Paragraph("Sun table", HeaderFont),
+                        document.PageSize.Width / 2,
+                        document.Top + 10 + HeaderFont.Size,
+                        0);
+                    ColumnText.ShowTextAligned(
+                        cb,
+                        Element.ALIGN_CENTER,
+                        new Paragraph(string.Format(NumberFormatInfo.InvariantInfo, "Location: {0} ({1:0.000000}, {2:0.000000})", loc, lat, lng), FooterFont),
+                        document.PageSize.Width / 2,
+                        document.Top + 10,
+                        0);
+
                     //insert footer
                     ColumnText.ShowTextAligned(
                         cb,
-                        Element.ALIGN_LEFT,
-                        new Paragraph(writer.PageNumber.ToString("Page 0"), PdfTest.FontSmall),
-                        document.LeftMargin,
+                        Element.ALIGN_CENTER,
+                        new Paragraph(writer.PageNumber.ToString("Page 0"), PdfTest.FooterFont),
+                        document.PageSize.Width / 2,
                         document.Bottom - 10,
                         0);
                 }

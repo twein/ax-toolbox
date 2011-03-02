@@ -59,7 +59,7 @@ namespace AXToolbox.MapViewer
         {
             UseLayoutRounding = true;
             ClipToBounds = true;
-
+            
             startPosition = new Point(0, 0);
             overlays = new List<MapOverlay>();
 
@@ -106,6 +106,7 @@ namespace AXToolbox.MapViewer
             MouseLeftButtonUp += new MouseButtonEventHandler(source_MouseLeftButtonUp);
             MouseWheel += new MouseWheelEventHandler(source_MouseWheel);
             SizeChanged += new SizeChangedEventHandler(source_SizeChanged);
+            KeyDown += new KeyEventHandler(source_KeyDown);
         }
 
         /// <summary>Load a calibrated image file as map</summary>
@@ -341,8 +342,12 @@ namespace AXToolbox.MapViewer
         }
         protected void source_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            //Get keyboard focus
+            Keyboard.Focus(this);
+
             //Save starting point, used later when determining how much to scroll
             startPosition = e.GetPosition(this);
+
             startOffset = new Point(translateTransform.X, translateTransform.Y);
             CaptureMouse();
             Cursor = Cursors.ScrollAll;
@@ -366,7 +371,7 @@ namespace AXToolbox.MapViewer
                 ReleaseMouseCapture();
             }
         }
-        protected void source_SizeChanged(Object sender, SizeChangedEventArgs e)
+        protected void source_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 
             if (!(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
@@ -375,6 +380,26 @@ namespace AXToolbox.MapViewer
                 var previousMapCenter = FromLocalToMap(previousLocalCenter);
                 ComputeMapConstants();
                 PanTo(previousMapCenter);
+            }
+        }
+        protected void source_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    Reset();
+                    break;
+                case Key.OemPlus:
+                case Key.Add:
+                    ZoomLevel *= DefaultZoomFactor;
+                    break;
+                case Key.OemMinus:
+                case Key.Subtract:
+                    ZoomLevel /= DefaultZoomFactor;
+                    break;
+                case Key.OemPeriod:
+                    ZoomLevel = 1;
+                    break;
             }
         }
         #endregion
