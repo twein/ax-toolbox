@@ -56,7 +56,6 @@ namespace AXToolbox.Tests
                 MessageBox.Show(ex.Message);
                 Close();
             }
-
         }
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -66,29 +65,8 @@ namespace AXToolbox.Tests
             MessageBox.Show(
                 string.Format("Local: {0:0}; {1:0}\n", pos.X, pos.Y) +
                 string.Format("UTM: {0:0.0}; {1:0.0}\n", utmPos.X, utmPos.Y) +
-                string.Format("Zoom: {0: 0.0}%", 100 * map.ZoomLevel)
+                string.Format("Zoom: {0: 0.0}%\n", 100 * map.ZoomLevel)
                 );
-        }
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.Escape:
-                    map.Reset();
-                    break;
-                case Key.OemPlus:
-                case Key.Add:
-                    map.ZoomLevel *= map.DefaultZoomFactor;
-                    break;
-                case Key.OemMinus:
-                case Key.Subtract:
-                    map.ZoomLevel /= map.DefaultZoomFactor;
-                    break;
-                case Key.OemPeriod:
-                    map.ZoomLevel = 1;
-                    break;
-            }
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)

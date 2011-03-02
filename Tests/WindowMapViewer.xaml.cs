@@ -106,27 +106,6 @@ namespace AXToolbox.Tests
                 );
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.Escape:
-                    map.Reset();
-                    break;
-                case Key.OemPlus:
-                case Key.Add:
-                    map.ZoomLevel *= map.DefaultZoomFactor;
-                    break;
-                case Key.OemMinus:
-                case Key.Subtract:
-                    map.ZoomLevel /= map.DefaultZoomFactor;
-                    break;
-                case Key.OemPeriod:
-                    map.ZoomLevel = 1;
-                    break;
-            }
-        }
-
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             var pos = map.FromLocalToMap(e.GetPosition(map));

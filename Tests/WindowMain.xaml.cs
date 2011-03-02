@@ -106,12 +106,14 @@ namespace AXToolbox.Tests
             var sun = new Sun(lat, lng);
 
             var today = DateTime.Now;
-            var from = today - new TimeSpan(30, 0, 0, 0);
-            var to = today + new TimeSpan(30, 0, 0, 0);
+            //var from = today - new TimeSpan(30, 0, 0, 0);
+            //var to = today + new TimeSpan(30, 0, 0, 0);
+            var from = new DateTime(today.Year, 1, 1);
+            var to = new DateTime(today.Year, 12, 31);
 
             Print("Daylight hours");
             Print(string.Format("Location: ({0:0.000000}, {1:0.000000})", lat, lng));
-            Print("Date            Dawn   Dusk");
+            Print("Date            Dawn   Dusk   Outdoor activity");
             for (var date = from; date <= to; date += new TimeSpan(1, 0, 0, 0))
             {
                 var sr = sun.Sunrise(date, Sun.ZenithTypes.Custom);

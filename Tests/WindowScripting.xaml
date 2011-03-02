@@ -4,7 +4,6 @@
     xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
     Title="MapViewer test" Width="1024" Height="768" WindowState="Maximized"
         Loaded="Window_Loaded"
-        KeyDown="Window_KeyDown"
         MouseRightButtonUp="Window_MouseRightButtonUp"
         MouseMove="Window_MouseMove" Icon="/AXToolbox.Tests;component/balloon.ico">
     <Grid>
@@ -15,6 +14,7 @@
         <StackPanel Orientation="Vertical" Grid.Row="0">
             <TextBlock Text="{Binding ElementName=map, Path=ZoomLevel}" IsHitTestVisible="False" Background="Silver"></TextBlock>
             <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="Silver"></TextBlock>
+            <TextBox x:Name="tboxTest">Try me!</TextBox>
         </StackPanel>
         <maps:MapViewerControl x:Name="map" Grid.Row="1"/>
     </Grid>

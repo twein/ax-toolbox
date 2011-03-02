@@ -60,7 +60,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp">
-      <HintPath>..\Lib\iText\itextsharp.dll</HintPath>
+      <HintPath>..\ThirdParty\iText\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -118,9 +118,9 @@
     </None>
     <None Include="app.config" />
     <AppDesigner Include="Properties\" />
-    <Content Include="Demo\demo.axs">
+    <None Include="Demo\demo.axs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <None Include="Demo\demo.pgw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -141,6 +141,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="balloon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

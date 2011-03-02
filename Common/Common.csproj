@@ -68,9 +68,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BalloonLoggerSignature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\SignatureLib\BalloonLoggerSignature.dll</HintPath>
+    <Reference Include="BalloonLoggerSignature">
+      <HintPath>..\ThirdParty\SignatureLib\BalloonLoggerSignature.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

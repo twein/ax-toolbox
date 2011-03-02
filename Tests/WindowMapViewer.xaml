@@ -4,7 +4,6 @@
     xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
     Title="MapViewer test" Width="1024" Height="768" WindowState="Maximized"
         Loaded="Window_Loaded"
-        KeyDown="Window_KeyDown"
         MouseRightButtonUp="Window_MouseRightButtonUp"
         MouseMove="Window_MouseMove" Icon="/AXToolbox.Tests;component/balloon.ico">
     <Grid>
