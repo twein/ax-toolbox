@@ -5,10 +5,10 @@
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
     IsHitTestVisible="False" >
     <Grid >
-        <Path Name="crosshairs" Width="25" Height="25" Margin="-12.5" HorizontalAlignment="Left" VerticalAlignment="Top"
+        <Path Name="crosshairs" Width="30" Height="30" Margin="-15" HorizontalAlignment="Left" VerticalAlignment="Top"
               Stroke="Red" StrokeThickness="1" Stretch="UniformToFill"
               Data="M-5,0 L-1,0 M1,0 L5,0 M0,-5 L0,-1 M0,1 L0,5" />
-        <Ellipse Name="circle" Width="25" Height="25" Margin="-12.5" HorizontalAlignment="Left" VerticalAlignment="Top"
+        <Ellipse Name="circle" Width="30" Height="30" Margin="-15" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Stroke="Red" />
     </Grid>
 </maps:MapOverlay>
