@@ -29,65 +29,64 @@ namespace AXToolbox.Tests
                 map.LoadBitmap(dlg.FileName);
             }
 
-            // add a track
+            // add a random track
             var rnd = new Random();
-            var position = new Point(312000, 4620000);
+            var position = new Point(302263, 4609451);
             var trackLog = new Point[1000];
             var utm = new Point(position.X, position.Y);
             trackLog[0] = position;
-            double xoffset = 20, yoffset = -10;
+
+            double amplitude = Math.PI / 6, stroke = 25;
+            double ang = 0, dist;
             for (var i = 1; i < 1000; i++)
             {
-                if (rnd.NextDouble() < .05)
-                {
-                    xoffset = rnd.NextDouble() * 20 - 10;
-                    yoffset = rnd.NextDouble() * 20 - 20;
-                }
-                utm.X += rnd.NextDouble() * 20 + xoffset;
-                utm.Y += rnd.NextDouble() * 20 + yoffset;
+                ang += amplitude * (rnd.NextDouble() - 0.5);
+                dist = stroke * (1 + rnd.NextDouble()) / 2;
+                utm.X += dist * Math.Cos(ang);
+                utm.Y += dist * Math.Sin(ang);
                 trackLog[i] = new Point(utm.X, utm.Y);
             }
             var track = new TrackOverlay(trackLog, 2);
             track.Color = Brushes.Blue;
             map.AddOverlay(track);
 
-            //add a crosshair
-            position = trackLog[(int)(rnd.NextDouble() * trackLog.Length)];
-            var crosshair = new CrosshairsOverlay(position);
-            crosshair.Color = Brushes.Red;
-            map.AddOverlay(crosshair);
+            //add crosshairs
+            position = trackLog[rnd.Next(trackLog.Length)];
+            var crosshairs = new CrosshairsOverlay(position);
+            crosshairs.Color = Brushes.Red;
+            map.AddOverlay(crosshairs);
 
             //add a marker
-            position = trackLog[(int)(rnd.NextDouble() * trackLog.Length)];
+            position = trackLog[rnd.Next(trackLog.Length)];
             var marker = new MarkerOverlay(position, "Marker 1");
             marker.Color = Brushes.Green;
             map.AddOverlay(marker);
 
             //add a target
-            position = new Point(316000, 4619000);
+            position = new Point(306000, 4609000);
             var target = new TargetOverlay(position, 100, "Target 1");
             target.Color = Brushes.Yellow;
             map.AddOverlay(target);
 
             //add a waypoint
-            position = new Point(315500, 4618500);
+            position = new Point(305500, 4608500);
             var waypoint = new WaypointOverlay(position, "Waypoint 1");
             waypoint.Color = Brushes.Orange;
             map.AddOverlay(waypoint);
 
             //add a poligonal area
             var polygon = new Point[]{
-                new Point(313000, 4621000),
-                new Point(314000, 4621000),
-                new Point(314000, 4620000),
-                new Point(313000, 4620000)
+                new Point(303000, 4612000),
+                new Point(305000, 4612000),
+                new Point(305000, 4610000),
+                new Point(303000, 4610000)
             };
             var area = new PolygonalAreaOverlay(polygon, "AREA 1");
             area.Color = Brushes.Blue;
             map.AddOverlay(area);
 
             //add a PZ
-            position = new Point(314000, 4618000);
+            position = new Point(308000, 4608000);
             var pz = new CircularAreaOverlay(position, 500, "BPZ1");
             pz.Color = Brushes.Blue;
             map.AddOverlay(pz);

@@ -121,7 +121,7 @@ namespace AXToolbox.Scripting
 
         protected static double ParseLength(string str)
         {
-            double altitude = 0;
+            double length = 0;
 
             str = str.Trim().ToLower();
             var regex = new Regex(@"(?<value>[\d\.]+)\s*(?<units>\w*)");
@@ -132,19 +132,39 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                altitude = double.Parse(matches[0].Groups["value"].Value, NumberFormatInfo.InvariantInfo);
+                length = double.Parse(matches[0].Groups["value"].Value, NumberFormatInfo.InvariantInfo);
                 var units = matches[0].Groups["units"].Value;
+                switch (units)
+                {
+                    case "m":
+                        break;
+                    case "km":
+                        length *= 1000;
+                        break;
+                    case "ft":
+                        length *= 0.3048;
+                        break;
+                    case "mi":
+                        length *= 1609.344;
+                        break;
+                    case "nm":
+                        length *= 1852;
+                        break;
+                    default:
+                        throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
+                }
+
                 if (units == "ft")
                 {
-                    altitude *= 0.3048;
+                    length *= 0.3048;
                 }
-                else if (units != "m" && units != "")
+                else if (units != "m" /*&& units != ""*/)
                 {
                     throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
                 }
             }
 
-            return altitude;
+            return length;
         }
         protected static Brush ParseColor(string str)
         {
