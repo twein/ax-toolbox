@@ -6,7 +6,7 @@ namespace AXToolbox.MapViewer
 {
     public class MapOverlay : UserControl
     {
-        private Point position;
+        protected Point position;
         public Point Position
         {
             get { return position; }
@@ -54,7 +54,7 @@ namespace AXToolbox.MapViewer
             this.position = position;
         }
 
-        public void UpdateLocalPosition()
+        public virtual void UpdateLocalPosition()
         {
             if (map != null)
             {

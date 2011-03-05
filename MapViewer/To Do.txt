@@ -1,2 +1,1 @@
-﻿Distance overlay: a line segment displaying the distance between two points
-Angle Overlay: two line segments displaying an angle between three points
+﻿Bug: The polygonal area overlay misplaces the label for some coodinate sets. The map test shows one such set.
