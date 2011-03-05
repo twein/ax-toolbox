@@ -1,10 +1,8 @@
-﻿using System.Windows;
-using System;
-using System.Collections.Generic;
-using System.Windows.Controls;
+﻿using System;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using AXToolbox.MapViewer;
-using System.Windows.Input;
 using Microsoft.Win32;
 
 namespace AXToolbox.Tests
@@ -23,7 +21,7 @@ namespace AXToolbox.Tests
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
-            dlg.Filter = "Map files (*.*)|*.*";
+            dlg.Filter = "Image Files (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png|All Files (*.*)|*.*";
             dlg.InitialDirectory = Environment.CurrentDirectory;
             //dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
