@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 
 namespace AXToolbox.MapViewer
@@ -49,7 +50,7 @@ namespace AXToolbox.MapViewer
         public MapTransform(string worldFileName)
         {
             //read world file
-            var lines = System.IO.File.ReadAllLines(worldFileName);
+            var lines = File.ReadAllLines(worldFileName);
 
             ComputeMapTransformParameters(
                 double.Parse(lines[0], NumberFormatInfo.InvariantInfo),
@@ -71,7 +72,7 @@ namespace AXToolbox.MapViewer
 
             return new Point(mapX, mapY);
         }
-        /// <summary>Converts units from map coords to bitmap</summary>
+        /// <summary>Converts units from map coords to bitmap coords</summary>
         /// <param name="mapCoords"></param>
         /// <returns></returns>
         public Point FromMapToBitmap(Point mapCoords)

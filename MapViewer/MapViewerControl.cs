@@ -12,10 +12,7 @@ namespace AXToolbox.MapViewer
     public class MapViewerControl : ContentControl, INotifyPropertyChanged
     {
         protected bool mapLoaded = false;
-
-        //Transformation
-        protected MapTransform mapTransform;
-
+        
         //bitmap size
         protected double BitmapWidth { get; set; }
         protected double BitmapHeight { get; set; }
@@ -45,13 +42,16 @@ namespace AXToolbox.MapViewer
         protected Canvas overlaysCanvas;
         protected List<MapOverlay> overlays;
 
+        //bitmap transformation
+        protected MapTransform mapTransform;
+
         //WPF transforms
         protected TranslateTransform translateTransform;
         protected ScaleTransform zoomTransform;
-        protected TransformGroup mTransformGroup;
-        protected TransformGroup oTransformGroup;
+        protected TransformGroup mapTransformGroup;
+        protected TransformGroup overlayTransformGroup;
 
-        //pan parameters
+        //mouse pan parameters
         protected Point startPosition;
         protected Point startOffset;
 
@@ -59,13 +59,17 @@ namespace AXToolbox.MapViewer
         {
             UseLayoutRounding = true;
             ClipToBounds = true;
-            
+
             startPosition = new Point(0, 0);
             overlays = new List<MapOverlay>();
 
             DefaultZoomFactor = 1.1;
             zoomLevel = 1;
+        }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
 
             // set up layout
             mapCanvas = new Canvas();
@@ -76,27 +80,18 @@ namespace AXToolbox.MapViewer
             grid.Children.Add(overlaysCanvas);
 
             this.AddChild(grid);
-        }
 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-            Setup(this);
-        }
-
-        private void Setup(FrameworkElement control)
-        {
             // add transforms
             translateTransform = new TranslateTransform();
             zoomTransform = new ScaleTransform();
 
-            mTransformGroup = new TransformGroup();
-            mTransformGroup.Children.Add(zoomTransform);
-            mTransformGroup.Children.Add(translateTransform);
-            mapCanvas.RenderTransform = mTransformGroup;
+            mapTransformGroup = new TransformGroup();
+            mapTransformGroup.Children.Add(zoomTransform);
+            mapTransformGroup.Children.Add(translateTransform);
+            mapCanvas.RenderTransform = mapTransformGroup;
 
-            oTransformGroup = new TransformGroup();
-            oTransformGroup.Children.Add(translateTransform);
+            overlayTransformGroup = new TransformGroup();
+            overlayTransformGroup.Children.Add(translateTransform);
 
 
             // events
@@ -173,7 +168,7 @@ namespace AXToolbox.MapViewer
             var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
             var displacement = new Vector(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
 
-            DoPan(displacement);
+            LocalPanTo(displacement);
         }
 
         /// <summary>Zoom in/out and center to a desired point</summary>
@@ -250,7 +245,7 @@ namespace AXToolbox.MapViewer
         public Point FromMapToLocal(Point mapPosition)
         {
             var bitmapPosition = mapTransform.FromMapToBitmap(mapPosition);
-            var localPosition = mTransformGroup.Transform(bitmapPosition);
+            var localPosition = mapTransformGroup.Transform(bitmapPosition);
             return localPosition;
         }
         /// <summary>Convert to local coordinates (relative to mapviewer) to map</summary>
@@ -258,39 +253,48 @@ namespace AXToolbox.MapViewer
         /// <returns></returns>
         public Point FromLocalToMap(Point localPosition)
         {
-            var bitmapPosition = mTransformGroup.Inverse.Transform(localPosition);
+            var bitmapPosition = mapTransformGroup.Inverse.Transform(localPosition);
             var mapPosition = mapTransform.FromBitmapToMap(bitmapPosition);
             return mapPosition;
         }
 
-        /// <summary>Pan the content</summary>
-        /// <param name="displacement">Displacement in local coords</param>
-        private void DoPan(Vector displacement)
+        /// <summary>Pan the content (absolute)</summary>
+        /// <param name="localDisplacement">Displacement from origin in local coords</param>
+        private void LocalPanTo(Vector localDisplacement)
         {
-            translateTransform.X = displacement.X;
-            translateTransform.Y = displacement.Y;
+            translateTransform.X = localDisplacement.X;
+            translateTransform.Y = localDisplacement.Y;
             RefreshOverlays(false);
         }
+        /// <summary>Pan the content (relative)</summary>
+        /// <param name="localDisplacement">Displacement in local coords</param>
+        private void LocalPan(Vector localDisplacement)
+        {
+            translateTransform.X += localDisplacement.X;
+            translateTransform.Y += localDisplacement.Y;
+            RefreshOverlays(false);
+        }
+
         /// <summary>Absolute zoom into or out of the content relative to a point</summary>
         /// <param name="zoom">Desired zoom level</param>
-        /// <param name="position">Point in local coords to use as zoom center</param>
-        private void DoZoom(double zoom, Point position)
+        /// <param name="localPosition">Point in local coords to use as zoom center</param>
+        private void DoZoom(double zoom, Point localPosition)
         {
             var deltaZoom = zoom / zoomLevel;
-            DoIncZoom(deltaZoom, position);
+            DoIncZoom(deltaZoom, localPosition);
         }
         /// <summary>Incremental zoom into or out of the content relative to a point</summary>
         /// <param name="deltaZoom">Factor to mutliply the zoom level by</param>
-        /// <param name="position">Pointin local coords to use as zoom center</param>
-        private void DoIncZoom(double deltaZoom, Point position)
+        /// <param name="localPosition">Pointin local coords to use as zoom center</param>
+        private void DoIncZoom(double deltaZoom, Point localPosition)
         {
             var currentZoom = zoomLevel;
             zoomLevel = Math.Max(MinZoom, Math.Min(MaxZoom, zoomLevel * deltaZoom));
 
-            var untransformedPosition = mTransformGroup.Inverse.Transform(position);
+            var bitmapPosition = mapTransformGroup.Inverse.Transform(localPosition);
 
-            translateTransform.X = position.X - untransformedPosition.X * zoomLevel;
-            translateTransform.Y = position.Y - untransformedPosition.Y * zoomLevel;
+            translateTransform.X = localPosition.X - bitmapPosition.X * zoomLevel;
+            translateTransform.Y = localPosition.Y - bitmapPosition.Y * zoomLevel;
 
             zoomTransform.ScaleX = zoomLevel;
             zoomTransform.ScaleY = zoomLevel;
@@ -328,11 +332,11 @@ namespace AXToolbox.MapViewer
         protected void source_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             //Zoom to the mouse pointer position
-            if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+            //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
             {
                 //Compute zoom delta according to wheel direction
                 double zoomFactor = DefaultZoomFactor;
-                if (e.Delta > 0)
+                if (e.Delta < 0)
                     zoomFactor = 1.0 / DefaultZoomFactor;
 
                 //Perform the zoom
@@ -359,7 +363,7 @@ namespace AXToolbox.MapViewer
                 //Move the content
                 var position = e.GetPosition(this);
                 var displacement = new Vector(position.X - startPosition.X + startOffset.X, position.Y - startPosition.Y + startOffset.Y);
-                DoPan(displacement);
+                LocalPanTo(displacement);
             }
         }
         protected void source_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -399,6 +403,18 @@ namespace AXToolbox.MapViewer
                     break;
                 case Key.OemPeriod:
                     ZoomLevel = 1;
+                    break;
+                case Key.Up:
+                    LocalPan(new Vector(0, -50));
+                    break;
+                case Key.Down:
+                    LocalPan(new Vector(0, 50));
+                    break;
+                case Key.Left:
+                    LocalPan(new Vector(-50, 0));
+                    break;
+                case Key.Right:
+                    LocalPan(new Vector(50, 0));
                     break;
             }
         }

@@ -14,7 +14,6 @@
         <StackPanel Orientation="Vertical" Grid.Row="0">
             <TextBlock Text="{Binding ElementName=map, Path=ZoomLevel}" IsHitTestVisible="False" Background="Silver"></TextBlock>
             <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="Silver"></TextBlock>
-            <TextBox x:Name="tboxTest">Try me!</TextBox>
         </StackPanel>
         <maps:MapViewerControl x:Name="map" Grid.Row="1"/>
     </Grid>
