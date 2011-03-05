@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace AXToolbox.MapViewer
@@ -13,9 +14,12 @@ namespace AXToolbox.MapViewer
         }
 
         public PolygonalAreaOverlay(Point[] points, string text)
-            : base(points[0])
         {
             InitializeComponent();
+
+            var x = points.Average(p => p.X);
+            var y = points.Average(p => p.Y);
+            position = new Point(x, y);
 
             Points = points;
             //area.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
@@ -30,7 +34,7 @@ namespace AXToolbox.MapViewer
             {
                 //convert the points in map coordinates to local
                 var localPoints = new PointCollection();
-                var offset = Map.FromMapToLocal(Points[0]);
+                var offset = Map.FromMapToLocal(position);
                 Point p;
                 for (int i = 0; i < Points.Length; i++)
                 {

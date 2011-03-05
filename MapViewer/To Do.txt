@@ -1,1 +1,1 @@
-﻿Bug: The polygonal area overlay misplaces the label for some coodinate sets. The map test shows one such set.
+﻿Bug: look for workaround to avoid the blurry WPF text rendering issue
