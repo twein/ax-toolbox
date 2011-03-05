@@ -1,0 +1,15 @@
+﻿<maps:MapOverlay
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="AXToolbox.MapViewer.AngleOverlay"
+    xmlns:maps="clr-namespace:AXToolbox.MapViewer"
+    IsHitTestVisible="False" >
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid.CacheMode>
+            <BitmapCache SnapsToDevicePixels="True"/>
+        </Grid.CacheMode>
+        <TextBlock Name="label" TextOptions.TextFormattingMode="Display"
+                   HorizontalAlignment="Left">Label</TextBlock>
+        <Path Name="angle" Stroke="Black" StrokeThickness="1" Data="M50,-50 L0,0 L50,50"/>
+    </Grid>
+</maps:MapOverlay>
