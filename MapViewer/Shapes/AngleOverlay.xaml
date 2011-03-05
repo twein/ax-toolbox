@@ -8,8 +8,7 @@
         <Grid.CacheMode>
             <BitmapCache SnapsToDevicePixels="True"/>
         </Grid.CacheMode>
-        <TextBlock Name="label" TextOptions.TextFormattingMode="Display"
-                   HorizontalAlignment="Left">Label</TextBlock>
         <Path Name="angle" Stroke="Black" StrokeThickness="1" Data="M50,-50 L0,0 L50,50"/>
+        <TextBlock Name="label" TextOptions.TextFormattingMode="Display">Label</TextBlock>
     </Grid>
 </maps:MapOverlay>
