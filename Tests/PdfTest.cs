@@ -31,6 +31,11 @@ namespace AXToolbox.Tests
             PdfWriter.GetInstance(document, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents();
             document.Open();
 
+            document.AddAuthor("AX-Toolbox Test program");
+            document.AddTitle("Sun table for " + DateTime.Today.Year.ToString());
+            document.AddSubject("Table with dawn and dusk times for " + DateTime.Today.Year.ToString() + ". It shows the start and end time for outdoor activities.");
+            document.AddKeywords("AX-Toolbox, sun, dawn, dusk");
+
             //title
             //document.Add(new Paragraph("Sun table", HeaderFont) { Alignment = Element.ALIGN_CENTER });
 
