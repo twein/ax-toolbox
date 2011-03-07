@@ -6,13 +6,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace AXToolbox.MapViewer
 {
     public class MapViewerControl : ContentControl, INotifyPropertyChanged
     {
         protected bool mapLoaded = false;
-        
+
         //bitmap size
         protected double BitmapWidth { get; set; }
         protected double BitmapHeight { get; set; }
@@ -148,6 +149,9 @@ namespace AXToolbox.MapViewer
             }
         }
 
+        /// <summary>Use a white background as map
+        /// </summary>
+        /// <param name="center">Map center coordinates</param>
         public void LoadBlank(Point center)
         {
             //load blank map
@@ -158,6 +162,24 @@ namespace AXToolbox.MapViewer
             ComputeMapConstants();
             Reset();
         }
+
+        /// <summary>Save the actual view to a png file
+        /// </summary>
+        /// <param name="fileName">desired png file path</param>
+        public void SaveSnapshot(string fileName)
+        {
+            var encoder = new PngBitmapEncoder();
+            var bitmap = new RenderTargetBitmap((int)this.ActualWidth, (int)this.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(this);
+            var frame = BitmapFrame.Create(bitmap);
+            encoder.Frames.Add(frame);
+
+            using (var stream = File.Create(fileName))
+            {
+                encoder.Save(stream);
+            }
+        }
+
 
         /// <summary>Center the desired point</summary>
         /// <param name="mapPosition">Desired point in map coordinates</param>

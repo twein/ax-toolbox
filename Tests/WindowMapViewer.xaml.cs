@@ -109,12 +109,15 @@ namespace AXToolbox.Tests
 
         private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
+            map.SaveSnapshot("snapshot.png");
+
             var pos = e.GetPosition(this);
             var utmPos = map.FromLocalToMap(pos);
             MessageBox.Show(
                 string.Format("Local: {0:0}; {1:0}\n", pos.X, pos.Y) +
                 string.Format("UTM: {0:0.0}; {1:0.0}\n", utmPos.X, utmPos.Y) +
-                string.Format("Zoom: {0: 0.0}%", 100 * map.ZoomLevel)
+                string.Format("Zoom: {0: 0.0}%\n", 100 * map.ZoomLevel) +
+                "Snapshot saved to 'snapshot.png'"
                 );
         }
 
