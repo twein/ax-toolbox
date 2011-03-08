@@ -44,7 +44,6 @@ namespace AXToolbox.MapViewer
                 var pA = Map.FromMapToLocal(PointA);
                 var pB = Map.FromMapToLocal(PointB);
                 var pC = Map.FromMapToLocal(PointC);
-                //var localPosition = new Point(Math.Min(pA.X, pB.X), Math.Min(pA.Y, pB.Y));
 
                 var localPoints = new PointCollection();
                 localPoints.Add(new Point(pA.X - pB.X, pA.Y - pB.Y));

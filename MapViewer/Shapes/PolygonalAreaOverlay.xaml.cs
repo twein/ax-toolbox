@@ -22,7 +22,7 @@ namespace AXToolbox.MapViewer
             position = new Point(x, y);
 
             Points = points;
-            //area.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
+
             label.Text = text;
 
             RefreshShape();
@@ -42,6 +42,7 @@ namespace AXToolbox.MapViewer
                     localPoints.Add(new Point(p.X - offset.X, p.Y - offset.Y));
                 }
 
+                //replace polygon
                 area.Points = localPoints;
             }
         }
