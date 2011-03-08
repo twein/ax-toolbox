@@ -21,7 +21,7 @@ namespace AXToolbox.MapViewer
 
             PointA = pointA;
             PointB = pointB;
-            //area.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
+
             label.Text = text;
         }
 
@@ -32,7 +32,7 @@ namespace AXToolbox.MapViewer
                 var pA = Map.FromMapToLocal(PointA);
                 var pB = Map.FromMapToLocal(PointB);
                 var localPosition = new Point((pA.X + pB.X) / 2, (pA.Y + pB.Y) / 2);
-                //var localPosition = new Point(Math.Min(pA.X, pB.X), Math.Min(pA.Y, pB.Y));
+
                 Canvas.SetLeft(this, localPosition.X);
                 Canvas.SetTop(this, localPosition.Y);
             }
@@ -46,7 +46,6 @@ namespace AXToolbox.MapViewer
                 var pA = Map.FromMapToLocal(PointA);
                 var pB = Map.FromMapToLocal(PointB);
                 var localPosition = new Point((pA.X + pB.X) / 2, (pA.Y + pB.Y) / 2);
-                //var localPosition = new Point(Math.Min(pA.X, pB.X), Math.Min(pA.Y, pB.Y));
 
                 var localPoints = new PointCollection();
                 localPoints.Add(new Point(pA.X - localPosition.X, pA.Y - localPosition.Y));
