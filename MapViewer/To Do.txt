@@ -1,1 +1,4 @@
 ﻿Bug: look for workaround to avoid the blurry WPF text rendering issue
+
+Ideas:
+Add a grid lines layer.
