@@ -23,9 +23,6 @@ namespace AXToolbox.MapViewer
         protected Point MapCenter { get; set; }
 
         //zoom parameters
-        public double MaxZoom { get; set; }
-        public double MinZoom { get; set; }
-        public double DefaultZoomFactor { get; set; }
         protected double zoomLevel;
         public double ZoomLevel
         {
@@ -38,7 +35,11 @@ namespace AXToolbox.MapViewer
                 }
             }
         }
+        public double MaxZoom { get; set; }
+        public double MinZoom { get; set; }
+        public double DefaultZoomFactor { get; set; }
 
+        protected Grid mainGrid;
         protected Canvas mapCanvas;
         protected Canvas overlaysCanvas;
         protected List<MapOverlay> overlays;
@@ -67,7 +68,6 @@ namespace AXToolbox.MapViewer
             DefaultZoomFactor = 1.1;
             zoomLevel = 1;
         }
-
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -76,11 +76,11 @@ namespace AXToolbox.MapViewer
             mapCanvas = new Canvas();
             overlaysCanvas = new Canvas();
 
-            var grid = new Grid();
-            grid.Children.Add(mapCanvas);
-            grid.Children.Add(overlaysCanvas);
+            mainGrid = new Grid();
+            mainGrid.Children.Add(mapCanvas);
+            mainGrid.Children.Add(overlaysCanvas);
 
-            this.AddChild(grid);
+            AddChild(mainGrid);
 
             // add transforms
             translateTransform = new TranslateTransform();
@@ -97,13 +97,16 @@ namespace AXToolbox.MapViewer
 
             // events
             Focusable = true;
-            MouseLeftButtonDown += new MouseButtonEventHandler(source_MouseLeftButtonDown);
-            MouseMove += new MouseEventHandler(source_MouseMove);
-            MouseLeftButtonUp += new MouseButtonEventHandler(source_MouseLeftButtonUp);
-            MouseWheel += new MouseWheelEventHandler(source_MouseWheel);
-            SizeChanged += new SizeChangedEventHandler(source_SizeChanged);
-            KeyDown += new KeyEventHandler(source_KeyDown);
+            KeyDown += new KeyEventHandler(control_KeyDown);
+            MouseLeftButtonDown += new MouseButtonEventHandler(control_MouseLeftButtonDown);
+            MouseLeftButtonUp += new MouseButtonEventHandler(control_MouseLeftButtonUp);
+            MouseMove += new MouseEventHandler(control_MouseMove);
+            MouseWheel += new MouseWheelEventHandler(control_MouseWheel);
+            SizeChanged += new SizeChangedEventHandler(control_SizeChanged);
         }
+
+
+        //bitmaps
 
         /// <summary>Load a calibrated image file as map</summary>
         /// <param name="bitmapFileName">
@@ -148,7 +151,6 @@ namespace AXToolbox.MapViewer
                 throw ex;
             }
         }
-
         /// <summary>Use a white background as map
         /// </summary>
         /// <param name="center">Map center coordinates</param>
@@ -162,15 +164,14 @@ namespace AXToolbox.MapViewer
             ComputeMapConstants();
             Reset();
         }
-
         /// <summary>Save the actual view to a png file
         /// </summary>
         /// <param name="fileName">desired png file path</param>
         public void SaveSnapshot(string fileName)
         {
             var encoder = new PngBitmapEncoder();
-            var bitmap = new RenderTargetBitmap((int)this.ActualWidth, (int)this.ActualHeight, 96, 96, PixelFormats.Pbgra32);
-            bitmap.Render(this);
+            var bitmap = new RenderTargetBitmap((int)mainGrid.ActualWidth, (int)mainGrid.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(mainGrid);
             var frame = BitmapFrame.Create(bitmap);
             encoder.Frames.Add(frame);
 
@@ -181,54 +182,7 @@ namespace AXToolbox.MapViewer
         }
 
 
-        /// <summary>Center the desired point</summary>
-        /// <param name="mapPosition">Desired point in map coordinates</param>
-        public void PanTo(Point mapPosition)
-        {
-            var localPosition = FromMapToLocal(mapPosition);
-            var offset = new Point(translateTransform.X, translateTransform.Y);
-            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            var displacement = new Vector(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
-
-            LocalPanTo(displacement);
-        }
-
-        /// <summary>Zoom in/out and center to a desired point</summary>
-        /// <param name="zoom">Absolute zoom level</param>
-        /// <param name="mapPosition">Desired point in map coordinates</param>
-        public void ZoomTo(double zoom, Point mapPosition)
-        {
-            var localPosition = FromMapToLocal(mapPosition);
-            var offset = new Point(translateTransform.X, translateTransform.Y);
-            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            var displacement = new Point(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
-
-            translateTransform.X = displacement.X;
-            translateTransform.Y = displacement.Y;
-
-            DoIncZoom(zoom / zoomLevel, mapViewerCenter);
-        }
-        ///<summary>Absolute zoom into or out of the content relative to MapViewer center</summary>
-        /// <param name="zoom">Desired zoom level</param>
-        public void Zoom(double zoom)
-        {
-            var deltaZoom = zoom / zoomLevel;
-            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            DoIncZoom(deltaZoom, mapViewerCenter);
-        }
-        ///<summary>Incremental zoom into or out of the content relative to MapViewer center</summary>
-        /// <param name="deltaZoom">Factor to mutliply the zoom level by</param>
-        public void IncZoom(double deltaZoom)
-        {
-            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
-            DoIncZoom(deltaZoom, mapViewerCenter);
-        }
-
-        ///<summary>Reset to default zoom level and centered content</summary>
-        public void Reset()
-        {
-            ZoomTo(MinZoom, MapCenter);
-        }
+        //overlays
 
         /// <summary>Add a new overlay to MapViewer</summary>
         /// <param name="overlay"></param>
@@ -261,6 +215,59 @@ namespace AXToolbox.MapViewer
             overlays.Clear();
         }
 
+
+        //pan and zoom
+
+        ///<summary>Reset to default zoom level and centered content</summary>
+        public void Reset()
+        {
+            ZoomTo(MinZoom, MapCenter);
+        }
+        /// <summary>Center the desired point</summary>
+        /// <param name="mapPosition">Desired point in map coordinates</param>
+        public void PanTo(Point mapPosition)
+        {
+            var localPosition = FromMapToLocal(mapPosition);
+            var offset = new Point(translateTransform.X, translateTransform.Y);
+            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
+            var displacement = new Vector(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
+
+            LocalPanTo(displacement);
+        }
+        /// <summary>Zoom in/out and center to a desired point</summary>
+        /// <param name="zoom">Absolute zoom level</param>
+        /// <param name="mapPosition">Desired point in map coordinates</param>
+        public void ZoomTo(double zoom, Point mapPosition)
+        {
+            var localPosition = FromMapToLocal(mapPosition);
+            var offset = new Point(translateTransform.X, translateTransform.Y);
+            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
+            var displacement = new Point(mapViewerCenter.X - localPosition.X + offset.X, mapViewerCenter.Y - localPosition.Y + offset.Y);
+
+            translateTransform.X = displacement.X;
+            translateTransform.Y = displacement.Y;
+
+            DoIncZoom(zoom / zoomLevel, mapViewerCenter);
+        }
+        ///<summary>Absolute zoom into or out of the content relative to MapViewer center</summary>
+        /// <param name="zoom">Desired zoom level</param>
+        public void Zoom(double zoom)
+        {
+            var deltaZoom = zoom / zoomLevel;
+            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
+            DoIncZoom(deltaZoom, mapViewerCenter);
+        }
+        ///<summary>Incremental zoom into or out of the content relative to MapViewer center</summary>
+        /// <param name="deltaZoom">Factor to mutliply the zoom level by</param>
+        public void IncZoom(double deltaZoom)
+        {
+            var mapViewerCenter = new Point(ActualWidth / 2, ActualHeight / 2);
+            DoIncZoom(deltaZoom, mapViewerCenter);
+        }
+
+
+        //conversions
+
         /// <summary>Convert map coordinates to local (relative to mapviewer)</summary>
         /// <param name="mapPosition"></param>
         /// <returns></returns>
@@ -280,9 +287,11 @@ namespace AXToolbox.MapViewer
             return mapPosition;
         }
 
+
+        #region "private"
         /// <summary>Pan the content (absolute)</summary>
         /// <param name="localDisplacement">Displacement from origin in local coords</param>
-        private void LocalPanTo(Vector localDisplacement)
+        protected void LocalPanTo(Vector localDisplacement)
         {
             translateTransform.X = localDisplacement.X;
             translateTransform.Y = localDisplacement.Y;
@@ -290,7 +299,7 @@ namespace AXToolbox.MapViewer
         }
         /// <summary>Pan the content (relative)</summary>
         /// <param name="localDisplacement">Displacement in local coords</param>
-        private void LocalPan(Vector localDisplacement)
+        protected void LocalPan(Vector localDisplacement)
         {
             translateTransform.X += localDisplacement.X;
             translateTransform.Y += localDisplacement.Y;
@@ -300,7 +309,7 @@ namespace AXToolbox.MapViewer
         /// <summary>Absolute zoom into or out of the content relative to a point</summary>
         /// <param name="zoom">Desired zoom level</param>
         /// <param name="localPosition">Point in local coords to use as zoom center</param>
-        private void DoZoom(double zoom, Point localPosition)
+        protected void DoZoom(double zoom, Point localPosition)
         {
             var deltaZoom = zoom / zoomLevel;
             DoIncZoom(deltaZoom, localPosition);
@@ -308,7 +317,7 @@ namespace AXToolbox.MapViewer
         /// <summary>Incremental zoom into or out of the content relative to a point</summary>
         /// <param name="deltaZoom">Factor to mutliply the zoom level by</param>
         /// <param name="localPosition">Pointin local coords to use as zoom center</param>
-        private void DoIncZoom(double deltaZoom, Point localPosition)
+        protected void DoIncZoom(double deltaZoom, Point localPosition)
         {
             var currentZoom = zoomLevel;
             zoomLevel = Math.Max(MinZoom, Math.Min(MaxZoom, zoomLevel * deltaZoom));
@@ -329,7 +338,7 @@ namespace AXToolbox.MapViewer
 
         /// <summary>Refresh the overlays position and size after a pan or zoom</summary>
         /// <param name="regenerateTrackShapes">For optimal performance must be true if zoom level changed, false otherwise</param>
-        private void RefreshOverlays(bool regenerateTrackShapes)
+        protected void RefreshOverlays(bool regenerateTrackShapes)
         {
             foreach (var o in overlays)
             {
@@ -341,7 +350,7 @@ namespace AXToolbox.MapViewer
             }
         }
 
-        private void ComputeMapConstants()
+        protected void ComputeMapConstants()
         {
             BitmapCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
             MapCenter = mapTransform.FromBitmapToMap(BitmapCenter);
@@ -349,66 +358,10 @@ namespace AXToolbox.MapViewer
             MaxZoom = Math.Max(mapTransform.PixelWidth, mapTransform.PixelHeight);
             MinZoom = Math.Min(ActualWidth / BitmapWidth, ActualHeight / BitmapHeight); // fit to viewer
         }
+        #endregion
 
         #region "Event handlers"
-        protected void source_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            //Zoom to the mouse pointer position
-            //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
-            {
-                //Compute zoom delta according to wheel direction
-                double zoomFactor = DefaultZoomFactor;
-                if (e.Delta < 0)
-                    zoomFactor = 1.0 / DefaultZoomFactor;
-
-                //Perform the zoom
-                var position = e.GetPosition(this);
-                DoIncZoom(zoomFactor, position);
-            }
-        }
-        protected void source_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            //Get keyboard focus
-            Keyboard.Focus(this);
-
-            //Save starting point, used later when determining how much to scroll
-            startPosition = e.GetPosition(this);
-
-            startOffset = new Point(translateTransform.X, translateTransform.Y);
-            CaptureMouse();
-            Cursor = Cursors.ScrollAll;
-        }
-        protected void source_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (IsMouseCaptured)
-            {
-                //Move the content
-                var position = e.GetPosition(this);
-                var displacement = new Vector(position.X - startPosition.X + startOffset.X, position.Y - startPosition.Y + startOffset.Y);
-                LocalPanTo(displacement);
-            }
-        }
-        protected void source_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (IsMouseCaptured)
-            {
-                //Reset the cursor and release the mouse pointer
-                Cursor = Cursors.Arrow;
-                ReleaseMouseCapture();
-            }
-        }
-        protected void source_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-            if (!(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
-            {
-                var previousLocalCenter = new Point(e.PreviousSize.Width / 2, e.PreviousSize.Height / 2);
-                var previousMapCenter = FromLocalToMap(previousLocalCenter);
-                ComputeMapConstants();
-                PanTo(previousMapCenter);
-            }
-        }
-        protected void source_KeyDown(object sender, KeyEventArgs e)
+        protected void control_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -438,6 +391,63 @@ namespace AXToolbox.MapViewer
                 case Key.Right:
                     LocalPan(new Vector(50, 0));
                     break;
+            }
+        }
+        protected void control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //Get keyboard focus
+            Keyboard.Focus(this);
+
+            //Save starting point, used later when determining how much to scroll
+            startPosition = e.GetPosition(this);
+
+            startOffset = new Point(translateTransform.X, translateTransform.Y);
+            CaptureMouse();
+            Cursor = Cursors.ScrollAll;
+        }
+        protected void control_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (IsMouseCaptured)
+            {
+                //Reset the cursor and release the mouse pointer
+                Cursor = Cursors.Arrow;
+                ReleaseMouseCapture();
+            }
+        }
+        protected void control_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (IsMouseCaptured)
+            {
+                //Move the content
+                var position = e.GetPosition(this);
+                var displacement = new Vector(position.X - startPosition.X + startOffset.X, position.Y - startPosition.Y + startOffset.Y);
+                LocalPanTo(displacement);
+            }
+        }
+        protected void control_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            //Zoom to the mouse pointer position
+            //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+            {
+                //Compute zoom delta according to wheel direction
+                double zoomFactor = DefaultZoomFactor;
+                if (e.Delta < 0)
+                    zoomFactor = 1.0 / DefaultZoomFactor;
+
+                //Perform the zoom
+                var position = e.GetPosition(this);
+                DoIncZoom(zoomFactor, position);
+            }
+        }
+        protected void control_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+            if (!(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
+            {
+                var previousLocalCenter = new Point(e.PreviousSize.Width / 2, e.PreviousSize.Height / 2);
+                var previousMapCenter = FromLocalToMap(previousLocalCenter);
+                ComputeMapConstants();
+                PanTo(previousMapCenter);
             }
         }
         #endregion
