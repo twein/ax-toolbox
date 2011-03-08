@@ -41,70 +41,70 @@
   <ItemGroup>
     <Compile Include="MapOverlay.cs" />
     <Compile Include="MapTransform.cs" />
-    <Compile Include="Shapes\AngleOverlay.xaml.cs">
+    <Compile Include="Overlays\AngleOverlay.xaml.cs">
       <DependentUpon>AngleOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\DistanceOverlay.xaml.cs">
+    <Compile Include="Overlays\DistanceOverlay.xaml.cs">
       <DependentUpon>DistanceOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\WaypointOverlay.xaml.cs">
+    <Compile Include="Overlays\WaypointOverlay.xaml.cs">
       <DependentUpon>WaypointOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\PolygonalAreaOverlay.xaml.cs">
+    <Compile Include="Overlays\PolygonalAreaOverlay.xaml.cs">
       <DependentUpon>PolygonalAreaOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\CrosshairsOverlay.xaml.cs">
+    <Compile Include="Overlays\CrosshairsOverlay.xaml.cs">
       <DependentUpon>CrosshairsOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\CircularAreaOverlay.xaml.cs">
+    <Compile Include="Overlays\CircularAreaOverlay.xaml.cs">
       <DependentUpon>CircularAreaOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\TargetOverlay.xaml.cs">
+    <Compile Include="Overlays\TargetOverlay.xaml.cs">
       <DependentUpon>TargetOverlay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shapes\TrackOverlay.xaml.cs">
+    <Compile Include="Overlays\TrackOverlay.xaml.cs">
       <DependentUpon>TrackOverlay.xaml</DependentUpon>
     </Compile>
     <Compile Include="MapViewerControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shapes\MarkerOverlay.xaml.cs">
+    <Compile Include="Overlays\MarkerOverlay.xaml.cs">
       <DependentUpon>MarkerOverlay.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Shapes\AngleOverlay.xaml">
+    <Page Include="Overlays\AngleOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\DistanceOverlay.xaml">
+    <Page Include="Overlays\DistanceOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\WaypointOverlay.xaml">
+    <Page Include="Overlays\WaypointOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\PolygonalAreaOverlay.xaml">
+    <Page Include="Overlays\PolygonalAreaOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\CrosshairsOverlay.xaml">
+    <Page Include="Overlays\CrosshairsOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\CircularAreaOverlay.xaml">
+    <Page Include="Overlays\CircularAreaOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\TargetOverlay.xaml">
+    <Page Include="Overlays\TargetOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\TrackOverlay.xaml">
+    <Page Include="Overlays\TrackOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Shapes\MarkerOverlay.xaml">
+    <Page Include="Overlays\MarkerOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

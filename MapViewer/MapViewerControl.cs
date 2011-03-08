@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.IO;
 
 namespace AXToolbox.MapViewer
 {
@@ -164,15 +164,37 @@ namespace AXToolbox.MapViewer
             ComputeMapConstants();
             Reset();
         }
-        /// <summary>Save the actual view to a png file
+        /// <summary>Save the actual view to a graphics file.
+        /// The extension determines the file type. Supported types are: .bmp, .gif, .jpg, .png and .tif
         /// </summary>
-        /// <param name="fileName">desired png file path</param>
+        /// <param name="fileName">desired file path</param>
         public void SaveSnapshot(string fileName)
         {
-            var encoder = new PngBitmapEncoder();
             var bitmap = new RenderTargetBitmap((int)mainGrid.ActualWidth, (int)mainGrid.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(mainGrid);
             var frame = BitmapFrame.Create(bitmap);
+
+            BitmapEncoder encoder;
+            switch (Path.GetExtension(fileName).ToLower())
+            {
+                case ".bmp":
+                    encoder = new BmpBitmapEncoder();
+                    break;
+                case ".gif":
+                    encoder = new GifBitmapEncoder();
+                    break;
+                case ".jpg":
+                    encoder = new JpegBitmapEncoder();
+                    break;
+                case ".png":
+                    encoder = new PngBitmapEncoder();
+                    break;
+                case ".tif":
+                    encoder = new TiffBitmapEncoder();
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported image type");
+            }
             encoder.Frames.Add(frame);
 
             using (var stream = File.Create(fileName))
@@ -390,6 +412,9 @@ namespace AXToolbox.MapViewer
                     break;
                 case Key.Right:
                     LocalPan(new Vector(50, 0));
+                    break;
+                case Key.Multiply:
+                    SaveSnapshot("snapshot.png");
                     break;
             }
         }
