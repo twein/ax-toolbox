@@ -29,7 +29,6 @@ namespace AXToolbox.MapViewer
         public double PixelWidth { get; set; }
         public double PixelHeight { get; set; }
 
-
         // <summary>Compute the Compute the transformation parameters to convert bitmap coordinates from/to map coordinates</summary>
         // <param name="worldFileName">world file name</param>
 

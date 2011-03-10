@@ -1,0 +1,13 @@
+﻿<maps:MapOverlay
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="AXToolbox.MapViewer.CoordinateGridOverlay"
+    xmlns:maps="clr-namespace:AXToolbox.MapViewer"
+    IsHitTestVisible="False" >
+    <Grid Name="grid" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid.CacheMode>
+            <BitmapCache SnapsToDevicePixels="True"/>
+        </Grid.CacheMode>
+        <Line Name="xxx"></Line>
+    </Grid>
+</maps:MapOverlay>

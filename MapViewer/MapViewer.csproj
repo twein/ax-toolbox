@@ -44,6 +44,9 @@
     <Compile Include="Overlays\AngleOverlay.xaml.cs">
       <DependentUpon>AngleOverlay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Overlays\CoordinateGridOverlay.xaml.cs">
+      <DependentUpon>CoordinateGridOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Overlays\DistanceOverlay.xaml.cs">
       <DependentUpon>DistanceOverlay.xaml</DependentUpon>
     </Compile>
@@ -73,6 +76,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Overlays\AngleOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Overlays\CoordinateGridOverlay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
