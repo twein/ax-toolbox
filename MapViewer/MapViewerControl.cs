@@ -22,6 +22,9 @@ namespace AXToolbox.MapViewer
         protected Point BitmapCenter { get; set; }
         protected Point MapCenter { get; set; }
 
+        public Point MapTopLeft { get { return mapTransform.FromBitmapToMap(new Point(0, 0)); } }
+        public Point MapBottomRight { get { return mapTransform.FromBitmapToMap(new Point(BitmapWidth, BitmapHeight)); } }
+
         //zoom parameters
         protected double zoomLevel;
         public double ZoomLevel

@@ -29,6 +29,9 @@ namespace AXToolbox.Tests
                 map.LoadBitmap(dlg.FileName);
             }
 
+            //add a map grid
+            map.AddOverlay(new CoordinateGridOverlay(1000));
+
             // add a random track
             var rnd = new Random();
             var position = new Point(302263, 4609451);
