@@ -15,6 +15,6 @@
             <TextBlock Text="{Binding ElementName=map, Path=ZoomLevel}" IsHitTestVisible="False" Background="Silver"></TextBlock>
             <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="Silver"></TextBlock>
         </StackPanel>
-        <maps:MapViewerControl x:Name="map" Grid.Row="1"/>
+        <maps:MapViewerControl x:Name="map" Grid.Row="1" />
     </Grid>
 </Window>

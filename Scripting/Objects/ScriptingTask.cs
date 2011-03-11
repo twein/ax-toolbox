@@ -32,7 +32,10 @@ namespace AXToolbox.Scripting
         { }
 
         public override void Run(FlightReport report)
-        { }
+        {
+            //removes filter if any
+            ScriptingEngine.Instance.ValidTrackPoints = report.FlightTrack;
+        }
 
         public override MapOverlay GetOverlay()
         {

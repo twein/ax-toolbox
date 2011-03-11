@@ -43,7 +43,7 @@ namespace AXToolbox.MapViewer
                 using (var ctx = geometry.Open())
                 {
                     ctx.BeginFigure(localPoints[0], false, false);
-                    ctx.PolyLineTo(localPoints, true, true);
+                    ctx.PolyLineTo(localPoints, true, false);
                 }
                 geometry.Freeze(); //for additional performance benefits.
 

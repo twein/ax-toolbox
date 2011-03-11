@@ -71,6 +71,7 @@ namespace AXToolbox.MapViewer
             DefaultZoomFactor = 1.1;
             zoomLevel = 1;
         }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -132,7 +133,6 @@ namespace AXToolbox.MapViewer
                 BitmapHeight = bmp.Height;
                 mapCanvas.Children.Clear(); //delete blank map
                 mapCanvas.Children.Add(img);
-                mapLoaded = true;
 
                 //Load and parse the world file
                 //first naming convention
@@ -147,6 +147,8 @@ namespace AXToolbox.MapViewer
                 }
                 mapTransform = new MapTransform(worldFileName);
                 ComputeMapConstants();
+                mapLoaded = true;
+
                 Reset();
             }
             catch (Exception ex)
@@ -156,15 +158,23 @@ namespace AXToolbox.MapViewer
         }
         /// <summary>Use a white background as map
         /// </summary>
-        /// <param name="center">Map center coordinates</param>
-        public void LoadBlank(Point center)
+        /// <param name="topLeft">Top left corner coordinates</param>
+        /// <param name="bottomRight">Bottom right corner coordinates</param>
+        public void LoadBlank(Point topLeft, Point bottomRight)
         {
             //load blank map
-            BitmapWidth = 1e4;
-            BitmapHeight = 1e4;
+            var scale = 10.0;
+            var diffx = bottomRight.X - topLeft.X;
+            var diffy = bottomRight.Y - topLeft.Y;
+            BitmapWidth = Math.Abs(diffx) / scale;
+            BitmapHeight = Math.Abs(diffy) / scale;
+            var scalex = Math.Sign(diffx) * scale;
+            var scaley = Math.Sign(diffy) * scale;
             mapCanvas.Children.Add(new Border() { Width = BitmapWidth, Height = BitmapHeight, Background = Brushes.White });
-            mapTransform = new MapTransform(10, 0, 0, -10, center.X - 5e4, center.Y + 5e4);
+            mapTransform = new MapTransform(scalex, 0, 0, scaley, topLeft.X, topLeft.Y);
             ComputeMapConstants();
+            mapLoaded = true;
+
             Reset();
         }
         /// <summary>Save the actual view to a graphics file.
@@ -213,9 +223,8 @@ namespace AXToolbox.MapViewer
         /// <param name="overlay"></param>
         public void AddOverlay(MapOverlay overlay)
         {
-            //Load a blank map if adding the first overlay and no map is loaded
-            if (overlays.Count == 0 && !mapLoaded)
-                LoadBlank(overlay.Position);
+            if (!mapLoaded)
+                throw new InvalidOperationException("Must load a map before placing overlays");
 
             overlay.Map = this;
             overlaysCanvas.Children.Add(overlay);

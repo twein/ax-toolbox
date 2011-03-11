@@ -52,8 +52,8 @@ namespace AXToolbox.Scripting
                         else
                         {
                             isStatic = true;
-                            var lat = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
-                            var lng = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
+                            var lat = ParseDouble(parameters[0]);
+                            var lng = ParseDouble(parameters[1]);
                             var alt = ParseLength(parameters[2]);
                             point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, engine.Datum, engine.UtmZone);
                         }
@@ -68,8 +68,8 @@ namespace AXToolbox.Scripting
                         {
                             isStatic = true;
                             var zone = parameters[0].ToUpper();
-                            var easting = double.Parse(parameters[1], NumberFormatInfo.InvariantInfo);
-                            var northing = double.Parse(parameters[2], NumberFormatInfo.InvariantInfo);
+                            var easting = ParseDouble(parameters[1]);
+                            var northing = ParseDouble(parameters[2]);
                             var alt = ParseLength(parameters[3]);
                             point = new Point(DateTime.MinValue, engine.Datum, zone, easting, northing, alt, engine.Datum, engine.UtmZone);
                         }
