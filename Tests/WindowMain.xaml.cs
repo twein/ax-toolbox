@@ -106,10 +106,10 @@ namespace AXToolbox.Tests
             var sun = new Sun(lat, lng);
 
             var today = DateTime.Now;
-            //var from = today - new TimeSpan(30, 0, 0, 0);
-            //var to = today + new TimeSpan(30, 0, 0, 0);
-            var from = new DateTime(today.Year, 1, 1);
-            var to = new DateTime(today.Year, 12, 31);
+            var from = today - new TimeSpan(30, 0, 0, 0);
+            var to = today + new TimeSpan(30, 0, 0, 0);
+            //var from = new DateTime(today.Year, 1, 1);
+            //var to = new DateTime(today.Year, 12, 31);
 
             Print("Daylight hours");
             Print(string.Format("Location: ({0:0.000000}, {1:0.000000})", lat, lng));
@@ -130,26 +130,36 @@ namespace AXToolbox.Tests
             }
         }
 
-        private void buttonMap_Click(object sender, RoutedEventArgs e)
-        {
-            var w = new WindowMapViewer();
-            w.ShowDialog();
-        }
-
         private void buttonPdf_Click(object sender, RoutedEventArgs e)
         {
             var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "iTextsharp.pdf");
 
-            var pdftest = new PdfTest(fileName);
+            Print("Writing " + fileName);
+            try
+            {
+                var pdftest = new PdfTest(fileName);
 
-            var proc = new System.Diagnostics.Process();
-            proc.EnableRaisingEvents = false;
-            proc.StartInfo.FileName = fileName;
-            proc.Start();
+                var proc = new System.Diagnostics.Process();
+                proc.EnableRaisingEvents = false;
+                proc.StartInfo.FileName = fileName;
+                proc.Start();
+            }
+            catch (Exception ex)
+            {
+                Print(ex.Message);
+            }
+        }
+
+        private void buttonMap_Click(object sender, RoutedEventArgs e)
+        {
+            Print("Opening WindowMapViewer");
+            var w = new WindowMapViewer();
+            w.ShowDialog();
         }
 
         private void buttonScripting_Click(object sender, RoutedEventArgs e)
         {
+            Print("Opening WindowScripting");
             var w = new WindowScripting();
             w.ShowDialog();
         }

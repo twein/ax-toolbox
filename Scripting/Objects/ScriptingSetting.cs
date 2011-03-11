@@ -98,12 +98,6 @@ namespace AXToolbox.Scripting
         public override void CheckDisplayModeSyntax()
         { }
 
-        public override void Reset()
-        { }
-
-        public override void Run(FlightReport report)
-        { }
-
         public override MapOverlay GetOverlay()
         {
             return null;

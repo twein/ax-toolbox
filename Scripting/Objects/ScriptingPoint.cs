@@ -184,12 +184,16 @@ namespace AXToolbox.Scripting
 
         public override void Reset()
         {
+            base.Reset();
+
             if (!isStatic)
                 point = null;
         }
 
         public override void Run(FlightReport report)
         {
+            base.Run(report);
+
             var engine = ScriptingEngine.Instance;
 
             // parse pilot dependent types

@@ -76,7 +76,11 @@ namespace AXToolbox.Scripting
         public List<Trackpoint> ValidTrackPoints
         {
             get { return validTrackPoints; }
-            internal set { validTrackPoints = value; }
+            internal set
+            {
+                validTrackPoints = value;
+                LogLine(string.Format("{0} valid track points", validTrackPoints.Count));
+            }
         }
 
         private StringBuilder log;
@@ -90,10 +94,19 @@ namespace AXToolbox.Scripting
         {
             log = new StringBuilder();
             heap = new Dictionary<string, ScriptingObject>();
+            LogLine("Started ".PadRight(95, '='));
+        }
+
+        ~ScriptingEngine()
+        {
+            LogLine("Stopped ".PadRight(95, '='));
+            File.AppendAllText("scripting.log", log.ToString());
         }
 
         public void LoadScript(string scriptFileName)
         {
+            LogLine("Loading script '" + scriptFileName + "'");
+
             string line;
 
             heap.Clear();
@@ -101,38 +114,39 @@ namespace AXToolbox.Scripting
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(scriptFileName));
 
-            LogLine("Loading script '" + scriptFileName + "'");
             var lines = File.ReadAllLines(scriptFileName);
 
-            for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
+            int lineNumber = 0;
+            try
             {
-                line = lines[lineNumber].Trim();
 
-                //comments
-                if (line == "" || line.StartsWith("//"))
-                    continue;
-
-                //find token or die
-                MatchCollection matches = null;
-                if (objectRE.IsMatch(line))
-                    matches = objectRE.Matches(line);
-                else if (setRE.IsMatch(line))
-                    matches = setRE.Matches(line);
-
-                if (matches != null)
+                for (lineNumber = 0; lineNumber < lines.Length; lineNumber++)
                 {
-                    //parse the constructor and create the object or die
-                    var groups = matches[0].Groups;
+                    line = lines[lineNumber].Trim();
 
-                    var objectClass = groups["object"].Value.ToUpper();
-                    var name = groups["name"].Value;
-                    var type = groups["type"].Value.ToUpper(); ;
-                    var parms = SplitParameters(groups["parms"].Value);
-                    var displayMode = groups["display"].Value.ToUpper(); ;
-                    var displayParms = SplitParameters(groups["displayparms"].Value);
+                    //comments
+                    if (line == "" || line.StartsWith("//"))
+                        continue;
 
-                    try
+                    //find token or die
+                    MatchCollection matches = null;
+                    if (objectRE.IsMatch(line))
+                        matches = objectRE.Matches(line);
+                    else if (setRE.IsMatch(line))
+                        matches = setRE.Matches(line);
+
+                    if (matches != null)
                     {
+                        //parse the constructor and create the object or die
+                        var groups = matches[0].Groups;
+
+                        var objectClass = groups["object"].Value.ToUpper();
+                        var name = groups["name"].Value;
+                        var type = groups["type"].Value.ToUpper(); ;
+                        var parms = SplitParameters(groups["parms"].Value);
+                        var displayMode = groups["display"].Value.ToUpper(); ;
+                        var displayParms = SplitParameters(groups["displayparms"].Value);
+
                         var obj = ScriptingObject.Create(objectClass, name, type, parms, displayMode, displayParms);
 
                         if (objectClass == "MAP")
@@ -142,20 +156,24 @@ namespace AXToolbox.Scripting
                             //otherwise, place on heap
                             heap.Add(obj.Name, obj);
                     }
-                    catch (ArgumentException ex)
-                    {
-                        throw new ArgumentException("Line " + (lineNumber + 1).ToString() + ": " + ex.Message);
-                    }
-                }
 
-                else
-                    //no token match
-                    throw new ArgumentException("Line " + (lineNumber + 1).ToString() + ": Syntax error");
+                    else
+                        //no token match
+                        throw new ArgumentException("Syntax error");
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                var message = "line " + (lineNumber + 1).ToString() + ": " + ex.Message;
+                LogLine("Exception parsing " + message);
+                throw new ArgumentException(message);
             }
         }
 
         public void Run(FlightReport report)
         {
+            LogLine("Running " + report.ToString());
+
             foreach (var kvp in heap)
             {
                 var obj = kvp.Value;
@@ -180,7 +198,16 @@ namespace AXToolbox.Scripting
 
         public void LogLine(string str)
         {
-            log.AppendLine(DateTime.Now.ToShortTimeString() + " - ENGINE: " + str);
+            log.AppendLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - ENGINE - " + str);
+        }
+
+        public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)
+        {
+            return new Point(DateTime.Now, datum, utmZone, pointInUtm.X, pointInUtm.Y, 0, datum, utmZone);
+        }
+        public Point ConvertToPointFromLL(System.Windows.Point pointInLatLon)
+        {
+            return new Point(DateTime.Now, datum, pointInLatLon.X, pointInLatLon.Y, 0, datum, utmZone);
         }
     }
 }
