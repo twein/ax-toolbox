@@ -11,7 +11,7 @@ namespace AXToolbox.Scripting
     {
         private static readonly List<string> names = new List<string>
         {
-            "DATETIME","MAP","DATUM","UTMZONE","QNH","TASKORDER"
+            "DATETIME","DATUM","UTMZONE","QNH","TASKORDER"
         };
 
         internal ScriptingSetting(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -36,23 +36,10 @@ namespace AXToolbox.Scripting
                     if (time != "AM" && time != "PM")
                         throw new ArgumentException("Syntax error in DATETIME definition");
 
-                    engine.Date = DateTime.Parse(parameters[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
+                    engine.Date = ParseLocalDatetime(parameters[0]);
                     if (time == "PM")
                         engine.Date += new TimeSpan(12, 0, 0);
 
-                    break;
-
-                case "MAP":
-                    if (parameters.Length != 1)
-                        throw new ArgumentException("Syntax error in MAP definition");
-
-                    if (parameters[0].ToUpper() != "BLANK")
-                    {
-                        if (!File.Exists(parameters[0]))
-                            throw new ArgumentException("Map file not found '" + parameters[0] + "'");
-
-                        engine.MapFile = parameters[0];
-                    }
                     break;
 
                 case "DATUM":
@@ -82,7 +69,7 @@ namespace AXToolbox.Scripting
 
                     try
                     {
-                        engine.Qnh = double.Parse(parameters[0], NumberFormatInfo.InvariantInfo);
+                        engine.Qnh = ParseDouble(parameters[0]);
                     }
                     catch (Exception)
                     {

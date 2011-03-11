@@ -28,6 +28,10 @@ namespace AXToolbox.Tests
             {
                 map.LoadBitmap(dlg.FileName);
             }
+            else
+            {
+                map.LoadBlank(new Point(282000, 4632000), new Point(343000, 4594000));
+            }
 
             //add a map grid
             map.AddOverlay(new CoordinateGridOverlay(1000));

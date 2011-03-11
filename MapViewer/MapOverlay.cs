@@ -28,9 +28,7 @@ namespace AXToolbox.MapViewer
             {
                 if (value != map)
                 {
-                    map = value;
-                    RefreshShape();
-                    UpdateLocalPosition();
+                    SetMap(value);
                 }
             }
         }
@@ -52,6 +50,13 @@ namespace AXToolbox.MapViewer
             : this()
         {
             this.position = position;
+        }
+
+        public virtual void SetMap(MapViewerControl newMap)
+        {
+            map = newMap;
+            RefreshShape();
+            UpdateLocalPosition();
         }
 
         public virtual void UpdateLocalPosition()

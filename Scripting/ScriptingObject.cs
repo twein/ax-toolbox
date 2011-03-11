@@ -54,20 +54,23 @@ namespace AXToolbox.Scripting
 
             switch (objectClass)
             {
-                case "SET":
-                    obj = new ScriptingSetting(name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "TASK":
-                    obj = new ScriptingTask(name, type, parameters, displayMode, displayParameters);
-                    break;
                 case "AREA":
                     obj = new ScriptingArea(name, type, parameters, displayMode, displayParameters);
                     break;
                 case "FILTER":
                     obj = new ScriptingFilter(name, type, parameters, displayMode, displayParameters);
                     break;
+                case "MAP":
+                    obj = new ScriptingMap(name, type, parameters, displayMode, displayParameters);
+                    break;
                 case "POINT":
                     obj = new ScriptingPoint(name, type, parameters, displayMode, displayParameters);
+                    break;
+                case "SET":
+                    obj = new ScriptingSetting(name, type, parameters, displayMode, displayParameters);
+                    break;
+                case "TASK":
+                    obj = new ScriptingTask(name, type, parameters, displayMode, displayParameters);
                     break;
                 default:
                     throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
@@ -119,6 +122,14 @@ namespace AXToolbox.Scripting
             return str;
         }
 
+        protected static double ParseDouble(string str)
+        {
+            return double.Parse(str, NumberFormatInfo.InvariantInfo);
+        }
+        protected static DateTime ParseLocalDatetime(string str)
+        {
+            return DateTime.Parse(str, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
+        }
         protected static double ParseLength(string str)
         {
             double length = 0;
@@ -132,7 +143,7 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                length = double.Parse(matches[0].Groups["value"].Value, NumberFormatInfo.InvariantInfo);
+                length = ParseDouble(matches[0].Groups["value"].Value);
                 var units = matches[0].Groups["units"].Value;
                 switch (units)
                 {
@@ -174,5 +185,11 @@ namespace AXToolbox.Scripting
             else
                 throw new ArgumentException("Unknown display mode '" + str + "'");
         }
+
+        protected void LogLine(string str)
+        {
+            ScriptingEngine.Instance.Log.AppendLine(DateTime.Now.ToShortTimeString() + " - " + name + ": " + str);
+        }
+
     }
 }

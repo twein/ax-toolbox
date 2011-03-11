@@ -1,10 +1,16 @@
 ﻿set DateTime = 2010/10/28,PM
-set map=demo.png
-//set map=blank
 set Datum=European 1950
 set UTMZone=31T
 set QNH = 1012
 set TASKORDER=free
+
+map competitionMap = bitmap(demo.png) grid(1000)
+
+
+//blank map
+//point topleft=SUTM(31T,282000,4632000,0m)
+//point bottomright=SUTM(31T,343000,4594000,0m)
+//map competitionMap=BLANK(topleft,bottomright) grid(500)
 
 //task 4
 TASK Task4 = XDD()
@@ -18,7 +24,7 @@ TASK Task4 = XDD()
 	AREA T4Area = circle(T4AreaCenter,1000m) Default(green)
 	//AREA T4AnotherArea = poly(task4area.trk) Default(green)
 
-	//filter T4scoringPeriod = BEFORETIME(10:00:00)
+	//filter T4scoringPeriod = BEFORETIME(19:00:00)
 	//filter T4scoringArea = Inside(T4Area);
 
 	//POINT T4A = tafi(T4Area) marker(green)

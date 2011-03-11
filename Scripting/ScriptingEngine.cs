@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using System.Text;
 
 namespace AXToolbox.Scripting
 {
@@ -28,16 +29,6 @@ namespace AXToolbox.Scripting
         {
             get { return date; }
             set { date = value; }
-        }
-
-        private string mapFile;
-        public string MapFile
-        {
-            get { return mapFile; }
-            set
-            {
-                mapFile = value;
-            }
         }
 
         private Datum datum;
@@ -68,6 +59,13 @@ namespace AXToolbox.Scripting
             set { tasksByOrder = value; }
         }
 
+        private ScriptingMap map;
+        public ScriptingMap Map
+        {
+            get { return map; }
+            set { map = value; }
+        }
+
         private Dictionary<string, ScriptingObject> heap;
         public Dictionary<string, ScriptingObject> Heap
         {
@@ -81,8 +79,16 @@ namespace AXToolbox.Scripting
             internal set { validTrackPoints = value; }
         }
 
+        private StringBuilder log;
+        public StringBuilder Log
+        {
+            get { return log; }
+            set { log = value; }
+        }
+
         public ScriptingEngine()
         {
+            log = new StringBuilder();
             heap = new Dictionary<string, ScriptingObject>();
         }
 
@@ -95,6 +101,7 @@ namespace AXToolbox.Scripting
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(scriptFileName));
 
+            LogLine("Loading script '" + scriptFileName + "'");
             var lines = File.ReadAllLines(scriptFileName);
 
             for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
@@ -127,7 +134,13 @@ namespace AXToolbox.Scripting
                     try
                     {
                         var obj = ScriptingObject.Create(objectClass, name, type, parms, displayMode, displayParms);
-                        heap.Add(obj.Name, obj);
+
+                        if (objectClass == "MAP")
+                            //force only one map
+                            map = (ScriptingMap)obj;
+                        else
+                            //otherwise, place on heap
+                            heap.Add(obj.Name, obj);
                     }
                     catch (ArgumentException ex)
                     {
@@ -136,14 +149,13 @@ namespace AXToolbox.Scripting
                 }
 
                 else
+                    //no token match
                     throw new ArgumentException("Line " + (lineNumber + 1).ToString() + ": Syntax error");
             }
         }
 
         public void Run(FlightReport report)
         {
-            validTrackPoints = report.FlightTrack;
-
             foreach (var kvp in heap)
             {
                 var obj = kvp.Value;
@@ -164,6 +176,11 @@ namespace AXToolbox.Scripting
             }
 
             return split;
+        }
+
+        public void LogLine(string str)
+        {
+            log.AppendLine(DateTime.Now.ToShortTimeString() + " - ENGINE: " + str);
         }
     }
 }

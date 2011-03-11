@@ -32,10 +32,9 @@ namespace AXToolbox.Tests
                 if (dlg.ShowDialog(this) == true)
                 {
                     scriptingEngine.LoadScript(dlg.FileName);
-                    if (scriptingEngine.MapFile != null)
+                    if (scriptingEngine.Map != null)
                     {
-                        var completeFileName = Path.Combine(Directory.GetCurrentDirectory(), scriptingEngine.MapFile);
-                        map.LoadBitmap(completeFileName);
+                        scriptingEngine.Map.InitializeMapViewer(map);
                     }
 
                     MapOverlay ov;
