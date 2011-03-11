@@ -23,12 +23,13 @@ namespace AXToolbox.Scripting
             {"YELLOW", Brushes.Yellow}
         };
 
+        protected ScriptingEngine engine;
+
         protected string name;
         public string Name
         {
             get { return name; }
         }
-
         protected string type;
         protected string[] parameters;
         protected string displayMode;
@@ -44,29 +45,29 @@ namespace AXToolbox.Scripting
         /// <param name="displayMode"></param>
         /// <param name="displayParameters"></param>
         /// <returns></returns>
-        public static ScriptingObject Create(string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        public static ScriptingObject Create(ScriptingEngine engine, string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
             ScriptingObject obj = null;
 
             switch (objectClass)
             {
                 case "AREA":
-                    obj = new ScriptingArea(name, type, parameters, displayMode, displayParameters);
+                    obj = new ScriptingArea(engine, name, type, parameters, displayMode, displayParameters);
                     break;
                 case "FILTER":
-                    obj = new ScriptingFilter(name, type, parameters, displayMode, displayParameters);
+                    obj = new ScriptingFilter(engine, name, type, parameters, displayMode, displayParameters);
                     break;
                 case "MAP":
-                    obj = new ScriptingMap(name, type, parameters, displayMode, displayParameters);
+                    obj = new ScriptingMap(engine, name, type, parameters, displayMode, displayParameters);
                     break;
                 case "POINT":
-                    obj = new ScriptingPoint(name, type, parameters, displayMode, displayParameters);
+                    obj = new ScriptingPoint(engine, name, type, parameters, displayMode, displayParameters);
                     break;
                 case "SET":
-                    obj = new ScriptingSetting(name, type, parameters, displayMode, displayParameters);
+                    obj = new ScriptingSetting(engine, name, type, parameters, displayMode, displayParameters);
                     break;
                 case "TASK":
-                    obj = new ScriptingTask(name, type, parameters, displayMode, displayParameters);
+                    obj = new ScriptingTask(engine, name, type, parameters, displayMode, displayParameters);
                     break;
                 default:
                     throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
@@ -75,8 +76,9 @@ namespace AXToolbox.Scripting
             return obj;
         }
 
-        protected ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
+            this.engine = engine;
             this.name = name;
             this.type = type;
             this.parameters = parameters;
@@ -203,7 +205,7 @@ namespace AXToolbox.Scripting
         }
         protected void LogLine(string str)
         {
-            ScriptingEngine.Instance.Log.AppendLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - " + name + " - " + str);
+            engine.Log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + name + " - " + str);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace AXToolbox.Tests
     /// </summary>
     public partial class WindowScripting : Window
     {
-        private ScriptingEngine scriptingEngine;
+        private ScriptingEngine scriptingEngine = new ScriptingEngine();
 
         public WindowScripting()
         {
@@ -21,8 +21,6 @@ namespace AXToolbox.Tests
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            scriptingEngine = ScriptingEngine.Instance;
-
             try
             {
                 var dlg = new OpenFileDialog();

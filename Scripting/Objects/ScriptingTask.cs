@@ -13,8 +13,8 @@ namespace AXToolbox.Scripting
             "PDG","JDG","HWZ","FIN","FON","HNH","WSD","GBM","CRT","RTA","ELB","LRN","MDT","SFL","MDD","XDT","XDI","XDD","ANG","3DT"
         };
 
-        internal ScriptingTask(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(name, type, parameters, displayMode, displayParameters)
+        internal ScriptingTask(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+            : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
         public override void CheckConstructorSyntax()
@@ -36,8 +36,6 @@ namespace AXToolbox.Scripting
         public override void Run(FlightReport report)
         {
             base.Run(report);
-
-            var engine = ScriptingEngine.Instance;
 
             //removes filter if any
             engine.ValidTrackPoints = report.FlightTrack;

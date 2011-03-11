@@ -14,8 +14,8 @@ namespace AXToolbox.Scripting
             "DATETIME","DATUM","UTMZONE","QNH","TASKORDER"
         };
 
-        internal ScriptingSetting(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(name, type, parameters, displayMode, displayParameters)
+        internal ScriptingSetting(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+            : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
         public override void CheckConstructorSyntax()
@@ -25,7 +25,6 @@ namespace AXToolbox.Scripting
             if (!names.Contains(name))
                 throw new ArgumentException("Unknown setting '" + name + "'");
 
-            var engine = ScriptingEngine.Instance;
             switch (name)
             {
                 case "DATETIME":

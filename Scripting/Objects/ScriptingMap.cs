@@ -22,8 +22,8 @@ namespace AXToolbox.Scripting
         protected Point bottomRight;
         protected double gridWidth = 0;
 
-        internal ScriptingMap(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(name, type, parameters, displayMode, displayParameters)
+        internal ScriptingMap(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+            : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
         public override void CheckConstructorSyntax()
@@ -31,7 +31,6 @@ namespace AXToolbox.Scripting
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown map type '" + type + "'");
 
-            var engine = ScriptingEngine.Instance;
             switch (type)
             {
                 case "BITMAP":
@@ -86,7 +85,6 @@ namespace AXToolbox.Scripting
         {
             if (type == "BITMAP")
             {
-                var engine = ScriptingEngine.Instance;
                 map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
                 topLeft = new Point(DateTime.Now, engine.Datum, engine.UtmZone, map.MapTopLeft.X, map.MapTopLeft.Y, 0, engine.Datum, engine.UtmZone);
                 bottomRight = new Point(DateTime.Now, engine.Datum, engine.UtmZone, map.MapBottomRight.X, map.MapBottomRight.Y, 0, engine.Datum, engine.UtmZone);

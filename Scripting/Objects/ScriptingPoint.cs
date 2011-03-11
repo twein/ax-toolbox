@@ -29,8 +29,8 @@ namespace AXToolbox.Scripting
             "","NONE","WAYPOINT","TARGET","MARKER","CROSSHAIRS"
         };
 
-        internal ScriptingPoint(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(name, type, parameters, displayMode, displayParameters)
+        internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+            : base(engine, name, type, parameters, displayMode, displayParameters)
         {
         }
 
@@ -40,8 +40,6 @@ namespace AXToolbox.Scripting
                 throw new ArgumentException("Unknown point type '" + type + "'");
 
             //check syntax and resolve static point types
-            var engine = ScriptingEngine.Instance;
-
             switch (type)
             {
                 case "SLL": //WGS84 lat/lon
@@ -193,8 +191,6 @@ namespace AXToolbox.Scripting
         public override void Run(FlightReport report)
         {
             base.Run(report);
-
-            var engine = ScriptingEngine.Instance;
 
             // parse pilot dependent types
             switch (type)
