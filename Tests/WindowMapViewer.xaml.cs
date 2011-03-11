@@ -89,7 +89,7 @@ namespace AXToolbox.Tests
                 new Point(303000, 4612000)
             };
             var area = new PolygonalAreaOverlay(polygon, "AREA 1");
-            area.Color = Brushes.Blue;
+            area.Color = Brushes.Orange;
             map.AddOverlay(area);
 
             //add a PZ

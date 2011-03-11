@@ -36,18 +36,14 @@ namespace AXToolbox.Scripting
 
         protected Brush color = Brushes.Blue;
 
-        protected ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-        {
-            this.name = name;
-            this.type = type;
-            this.parameters = parameters;
-            this.displayMode = displayMode;
-            this.displayParameters = displayParameters;
-
-            CheckConstructorSyntax();
-            CheckDisplayModeSyntax();
-        }
-
+        /// <summary>Scripting object factory</summary>
+        /// <param name="objectClass"></param>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <param name="parameters"></param>
+        /// <param name="displayMode"></param>
+        /// <param name="displayParameters"></param>
+        /// <returns></returns>
         public static ScriptingObject Create(string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
             ScriptingObject obj = null;
@@ -79,20 +75,39 @@ namespace AXToolbox.Scripting
             return obj;
         }
 
-        /// <summary>Check constructor syntax and parse static definitions</summary>
+        protected ScriptingObject(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        {
+            this.name = name;
+            this.type = type;
+            this.parameters = parameters;
+            this.displayMode = displayMode;
+            this.displayParameters = displayParameters;
+
+            CheckConstructorSyntax();
+            CheckDisplayModeSyntax();
+
+            LogLine("constructor - " + ToString());
+        }
+
+        /// <summary>Check constructor syntax and parse static definitions or die</summary>
         public abstract void CheckConstructorSyntax();
-
-        /// <summary>Check display mode syntax and parse static definitions</summary>
+        /// <summary>Check display mode syntax and parse static definitions or die</summary>
         public abstract void CheckDisplayModeSyntax();
-
-        /// <summary>Clears the pilot dependent (non-static) values</summary>
-        public abstract void Reset();
-        /// <summary>Executes the script</summary>
-        /// <param name="report"></param>
-        public abstract void Run(FlightReport report);
-        /// <summary>Gets the overlay for the current object (or null if no overlay is defined)</summary>
+        /// <summary>Gets the MapOverlay for the current object (or null if no overlay is defined)</summary>
         /// <returns></returns>
         public abstract MapOverlay GetOverlay();
+
+        /// <summary>Clears the pilot dependent (non-static) values</summary>
+        public virtual void Reset()
+        {
+            LogLine("Resetting");
+        }
+        /// <summary>Executes the script</summary>
+        /// <param name="report"></param>
+        public virtual void Run(FlightReport report)
+        {
+            LogLine("Running");
+        }
 
         public override string ToString()
         {
@@ -122,6 +137,7 @@ namespace AXToolbox.Scripting
             return str;
         }
 
+        //helpers
         protected static double ParseDouble(string str)
         {
             return double.Parse(str, NumberFormatInfo.InvariantInfo);
@@ -185,11 +201,9 @@ namespace AXToolbox.Scripting
             else
                 throw new ArgumentException("Unknown display mode '" + str + "'");
         }
-
         protected void LogLine(string str)
         {
-            ScriptingEngine.Instance.Log.AppendLine(DateTime.Now.ToShortTimeString() + " - " + name + ": " + str);
+            ScriptingEngine.Instance.Log.AppendLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - " + name + " - " + str);
         }
-
     }
 }

@@ -7,8 +7,8 @@
             <Button Name="buttonClear" VerticalAlignment="Top" Height="23" Width="75" Click="buttonClear_Click">Clear Screen</Button>
             <Button Name="buttonCoords" VerticalAlignment="Top" Height="23" Width="75" Click="buttonCoords_Click">Coords</Button>
             <Button Name="buttonSun" VerticalAlignment="Top" Height="23" Width="75" Click="buttonSun_Click">Sun</Button>
-            <Button Name="buttonMap" VerticalAlignment="Top" Height="23" Width="75" Click="buttonMap_Click">Map</Button>
             <Button Name="buttonPdf" VerticalAlignment="Top" Height="23" Width="75" Click="buttonPdf_Click">Pdf</Button>
+            <Button Name="buttonMap" VerticalAlignment="Top" Height="23" Width="75" Click="buttonMap_Click">Map</Button>
             <Button Name="buttonScripting" VerticalAlignment="Top" Height="23" Width="75" Click="buttonScripting_Click">Scripting</Button>
         </StackPanel>
         <FlowDocumentReader ClipToBounds="True" Margin="0,25,0,0" ViewingMode="Scroll">

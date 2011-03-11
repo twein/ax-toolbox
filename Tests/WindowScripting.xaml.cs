@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using AXToolbox.MapViewer;
@@ -13,6 +12,7 @@ namespace AXToolbox.Tests
     /// </summary>
     public partial class WindowScripting : Window
     {
+        private ScriptingEngine scriptingEngine;
 
         public WindowScripting()
         {
@@ -21,7 +21,7 @@ namespace AXToolbox.Tests
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var scriptingEngine = ScriptingEngine.Instance;
+            scriptingEngine = ScriptingEngine.Instance;
 
             try
             {
@@ -70,8 +70,8 @@ namespace AXToolbox.Tests
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            var pos = map.FromLocalToMap(e.GetPosition(map));
-            textPosition.Text = string.Format("UTM: {0:0.0} {1:0.0}", pos.X, pos.Y);
+            var pos = scriptingEngine.ConvertToPointFromUTM(map.FromLocalToMap(e.GetPosition(map)));
+            textPosition.Text = pos.ToString(Common.PointInfo.UTMCoords | Common.PointInfo.CompetitionCoords);
         }
     }
 }
