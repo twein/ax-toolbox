@@ -18,8 +18,8 @@ namespace AXToolbox.Scripting
         private DateTime time;
         private double altitude;
 
-        internal ScriptingFilter(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(name, type, parameters, displayMode, displayParameters)
+        internal ScriptingFilter(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+            : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
         public override void CheckConstructorSyntax()
@@ -28,8 +28,6 @@ namespace AXToolbox.Scripting
                 throw new ArgumentException("Unknown filter type '" + type + "'");
 
             //parse static types
-            var engine = ScriptingEngine.Instance;
-
             switch (type)
             {
                 case "NONE":
@@ -82,8 +80,6 @@ namespace AXToolbox.Scripting
         public override void Run(FlightReport report)
         {
             base.Run(report);
-
-            var engine = ScriptingEngine.Instance;
 
             switch (type)
             {

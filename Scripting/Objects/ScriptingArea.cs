@@ -21,8 +21,8 @@ namespace AXToolbox.Scripting
         protected Point centerPoint = null;
         protected double radius = 0;
 
-        internal ScriptingArea(string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(name, type, parameters, displayMode, displayParameters)
+        internal ScriptingArea(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+            : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
         public override void CheckConstructorSyntax()
@@ -30,7 +30,6 @@ namespace AXToolbox.Scripting
             if (!types.Contains(type))
                 throw new ArgumentException("Unknown area type '" + type + "'");
 
-            var engine = ScriptingEngine.Instance;
             switch (type)
             {
                 case "CIRCLE":
@@ -86,7 +85,6 @@ namespace AXToolbox.Scripting
         {
             base.Run(report);
 
-            var engine = ScriptingEngine.Instance;
             switch (type)
             {
                 case "CIRCLE":

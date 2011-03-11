@@ -10,14 +10,14 @@ namespace AXToolbox.Scripting
 {
     public sealed class ScriptingEngine
     {
-        #region Singleton implementation
-        static readonly ScriptingEngine instance = new ScriptingEngine();
-        public static ScriptingEngine Instance
-        {
-            get { return instance; }
-        }
-        static ScriptingEngine() { }
-        #endregion
+        //#region Singleton implementation
+        //static readonly ScriptingEngine instance = new ScriptingEngine();
+        //public static ScriptingEngine Instance
+        //{
+        //    get { return instance; }
+        //}
+        //static ScriptingEngine() { }
+        //#endregion
 
         //Regular Expressions to parse commands. Use in this same order.
         static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
@@ -147,7 +147,7 @@ namespace AXToolbox.Scripting
                         var displayMode = groups["display"].Value.ToUpper(); ;
                         var displayParms = SplitParameters(groups["displayparms"].Value);
 
-                        var obj = ScriptingObject.Create(objectClass, name, type, parms, displayMode, displayParms);
+                        var obj = ScriptingObject.Create(this, objectClass, name, type, parms, displayMode, displayParms);
 
                         if (objectClass == "MAP")
                             //force only one map
@@ -198,7 +198,7 @@ namespace AXToolbox.Scripting
 
         public void LogLine(string str)
         {
-            log.AppendLine(DateTime.Now.ToString("HH:mm:ss.fff") + " - ENGINE - " + str);
+            log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
         }
 
         public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)
