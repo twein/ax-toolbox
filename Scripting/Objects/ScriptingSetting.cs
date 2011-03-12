@@ -11,8 +11,13 @@ namespace AXToolbox.Scripting
     {
         private static readonly List<string> names = new List<string>
         {
-            "DATETIME","DATUM","UTMZONE","QNH","TASKORDER"
+            "DATETIME","DATUM","UTMZONE","QNH","TASKORDER","DEFAULTALTITUDE","MAXDISTTOCROSSING","SMOOTHNESS","MINSPEED","MAXACCELERATION"
         };
+
+        private string StandardErrorMessage
+        {
+            get { return "Syntax error in " + name + " definition"; }
+        }
 
         internal ScriptingSetting(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -28,26 +33,27 @@ namespace AXToolbox.Scripting
             switch (name)
             {
                 case "DATETIME":
-                    if (parameters.Length != 2)
-                        throw new ArgumentException("Syntax error in DATETIME definition");
+                    {
+                        if (parameters.Length != 2)
+                            throw new ArgumentException(StandardErrorMessage);
 
-                    var time = parameters[1].ToUpper();
-                    if (time != "AM" && time != "PM")
-                        throw new ArgumentException("Syntax error in DATETIME definition");
+                        var time = parameters[1].ToUpper();
+                        if (time != "AM" && time != "PM")
+                            throw new ArgumentException(StandardErrorMessage);
 
-                    engine.Date = ParseLocalDatetime(parameters[0]);
-                    if (time == "PM")
-                        engine.Date += new TimeSpan(12, 0, 0);
-
+                        engine.Settings.Date = ParseLocalDatetime(parameters[0]);
+                        if (time == "PM")
+                            engine.Settings.Date += new TimeSpan(12, 0, 0);
+                    }
                     break;
 
                 case "DATUM":
                     if (parameters.Length != 1)
-                        throw new ArgumentException("Syntax error in DATUM definition");
+                        throw new ArgumentException(StandardErrorMessage);
 
                     try
                     {
-                        engine.Datum = Datum.GetInstance(parameters[0]);
+                        engine.Settings.Datum = Datum.GetInstance(parameters[0]);
                     }
                     catch (KeyNotFoundException)
                     {
@@ -57,32 +63,22 @@ namespace AXToolbox.Scripting
 
                 case "UTMZONE":
                     if (parameters.Length != 1)
-                        throw new ArgumentException("Syntax error in UTMZONE definition");
+                        throw new ArgumentException(StandardErrorMessage);
 
-                    engine.UtmZone = parameters[0];
+                    engine.Settings.UtmZone = parameters[0];
                     break;
 
                 case "QNH":
-                    if (parameters.Length != 1)
-                        throw new ArgumentException("Syntax error in QNH definition");
-
-                    try
-                    {
-                        engine.Qnh = ParseDouble(parameters[0]);
-                    }
-                    catch (Exception)
-                    {
-                        throw new ArgumentException("Syntax error in QNH definition '" + parameters[0] + "'");
-                    }
+                    engine.Settings.Qnh = ParseDoubleOrDie(ParseDouble);
                     break;
 
                 case "TASKORDER":
                     if (parameters.Length != 1)
-                        throw new ArgumentException("Syntax error in TASKORDER definition");
+                        throw new ArgumentException("StandardErrorMessage");
 
                     var order = parameters[0].ToUpper();
                     if (order != "BYORDER" && order != "FREE")
-                        throw new ArgumentException("Syntax error in TASKORDER definition");
+                        throw new ArgumentException(StandardErrorMessage + " '" + parameters[0] + "'");
 
                     if (parameters[0] == "BYORDER")
                         engine.TasksByOrder = true;
@@ -90,9 +86,58 @@ namespace AXToolbox.Scripting
                         engine.TasksByOrder = false;
 
                     break;
-            }
 
+                case "DEFAULTALTITUDE":
+                    engine.Settings.DefaultAltitude = ParseDoubleOrDie(ParseLength);
+                    break;
+
+                case "MAXDISTTOCROSSING":
+                    engine.Settings.MaxDistToCrossing = ParseDoubleOrDie(ParseLength);
+                    break;
+
+                case "SMOOTHNESS":
+                    if (parameters.Length != 1)
+                        throw new ArgumentException(StandardErrorMessage);
+
+                    try
+                    {
+                        engine.Settings.Smoothness = int.Parse(parameters[0]);
+                    }
+                    catch (Exception)
+                    {
+                        throw new ArgumentException(StandardErrorMessage + " '" + parameters[0] + "'");
+                    }
+                    break;
+
+                case "MINSPEED":
+                    engine.Settings.MinSpeed = ParseDoubleOrDie(ParseDouble);
+                    break;
+
+                case "MAXACCELERATION":
+                    engine.Settings.MaxAcceleration = ParseDoubleOrDie(ParseLength);
+                    break;
+            }
         }
+
+        /// <summary>Generic parse or die function for double values
+        /// </summary>
+        /// <param name="parseFunction">double returning function used to parse the string</param>
+        /// <returns></returns>
+        private double ParseDoubleOrDie(Func<string, double> parseFunction)
+        {
+            if (parameters.Length != 1)
+                throw new ArgumentException(StandardErrorMessage);
+
+            try
+            {
+                return parseFunction(parameters[0]);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException(StandardErrorMessage + " '" + parameters[0] + "'");
+            }
+        }
+
 
         public override void CheckDisplayModeSyntax()
         { }

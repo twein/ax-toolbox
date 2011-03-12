@@ -66,49 +66,6 @@ namespace AXToolbox.Common
 
             return str.ToString();
         }
-
-        //Tries to parse a string containing a waypoint definition in competition coords (ex: "Name 17:00:00 4512/1126 1000)
-        public static bool TryParseRelative(string str, FlightSettings settings, out Waypoint point)
-        {
-            var fields = str.Split(new char[] { ' ', '#', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
-
-
-            int tmpNumber = 0;
-            TimeSpan tmpTime = new TimeSpan(0);
-            double tmpEasting = 0, tmpNorthing = 0;
-            double altitude = settings.ReferencePoint.Altitude;
-
-            if (
-                (fields.Length == 4 || fields.Length == 5) &&
-                (int.TryParse(fields[0], out tmpNumber)) &&
-                (tmpNumber > 0) &&
-                (TimeSpan.TryParse(fields[1], out tmpTime)) &&
-                (double.TryParse(fields[2], out tmpEasting)) &&
-                (double.TryParse(fields[3], out tmpNorthing)) &&
-                (fields.Length != 5 || double.TryParse(fields[4], out altitude))
-                )
-            {
-                var number = tmpNumber.ToString("00");
-                var time = (settings.Date + tmpTime).ToUniversalTime();
-                var easting = settings.ComputeEasting(tmpEasting);
-                var northing = settings.ComputeNorthing(tmpNorthing);
-
-                point = new Waypoint(
-                    number,
-                    time,
-                    settings.ReferencePoint.Datum, settings.ReferencePoint.Zone, easting, northing, altitude,
-                    settings.ReferencePoint.Datum
-                    );
-
-                return true;
-            }
-
-            else
-            {
-                point = null;
-                return false;
-            }
-        }
     }
 
     public class WaypointComparer : IComparer<Waypoint>

@@ -90,8 +90,8 @@ namespace AXToolbox.Common.IO
                     easting: easting,
                     northing: northing,
                     altitude: altitude,
-                    utmDatum: settings.ReferencePoint.Datum,
-                    utmZone: settings.ReferencePoint.Zone);
+                    utmDatum: settings.Datum,
+                    utmZone: settings.UtmZone);
             }
             else
             {
@@ -112,8 +112,8 @@ namespace AXToolbox.Common.IO
                    latitude: latitude,
                    longitude: longitude,
                    altitude: altitude,
-                   utmDatum: settings.ReferencePoint.Datum,
-                   utmZone: settings.ReferencePoint.Zone);
+                   utmDatum: settings.Datum,
+                   utmZone: settings.UtmZone);
             }
 
             return wp;

@@ -10,14 +10,16 @@ namespace AXToolbox.Common.IO
     {
         private DateTime tmpDate;
 
-        public IGCFile(string filePath, FlightSettings settings)
-            : base(filePath, settings)
+        public IGCFile(string filePath)
+            : base(filePath)
         {
         }
 
+        protected override string GetLogFileExtension() { return ".igc"; }
+
         protected override void ParseLog()
         {
-            var content = from line in logFile
+            var content = from line in trackLogFile
                           where line.Length > 0
                           select line;
 
@@ -119,24 +121,26 @@ namespace AXToolbox.Common.IO
             {
             }
 
-            //parse goal
+            // coordinates declaration
             var strGoal = line.Substring(12).Split(',')[0];
             if (strGoal.Length == 3)
             {
                 //Type 000
                 try
                 {
-                    var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
+                    //TODO: PDG type 000
+                    throw new NotImplementedException();
+                    //var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
 
-                    var declaration = new Waypoint(number, p);
-                    declaration.Time = time;
-                    //use declared altitude if exists
-                    if (!double.IsNaN(altitude))
-                        declaration.Altitude = altitude;
-                    declaration.Description = description;
-                    declaration.Radius = settings.MaxDistToCrossing;
+                    //var declaration = new Waypoint(number, p);
+                    //declaration.Time = time;
+                    ////use declared altitude if exists
+                    //if (!double.IsNaN(altitude))
+                    //    declaration.Altitude = altitude;
+                    //declaration.Description = description;
+                    //declaration.Radius = settings.MaxDistToCrossing;
 
-                    declaredGoals.Add(declaration);
+                    //declaredGoals.Add(declaration);
                 }
                 catch (ArgumentNullException)
                 {
@@ -149,31 +153,29 @@ namespace AXToolbox.Common.IO
                 // type 0000/0000
 
                 // place the declaration in the correct map zone
-                var origin = settings.ReferencePoint;
-
-                var utmDatum = origin.Datum;
-                var utmZone = origin.Zone;
-                var easting = settings.ComputeEasting(double.Parse(strGoal.Substring(0, 4)));
-                var northing = settings.ComputeNorthing(double.Parse(strGoal.Substring(5, 4)));
+                var easting = settings.ResolvePdgEasting(double.Parse(strGoal.Substring(0, 4)));
+                var northing = settings.ResolvePdgNorthing(double.Parse(strGoal.Substring(5, 4)));
 
                 // use default altitude if not declared
                 if (double.IsNaN(altitude))
                 {
                     notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
-                    altitude = settings.ReferencePoint.Altitude;
+                    altitude = settings.DefaultAltitude;
                 }
 
                 var declaration = new Waypoint(
                     name: number,
                     time: time,
-                    datum: utmDatum,
-                    zone: utmZone,
+                    datum: settings.Datum,
+                    zone: settings.UtmZone,
                     easting: easting,
                     northing: northing,
                     altitude: altitude,
-                    utmDatum: utmDatum,
-                    utmZone: utmZone
-                    );
+                    utmDatum: settings.Datum,
+                    utmZone: settings.UtmZone
+                    ) { BarometricAltitude = altitude };
+                declaration.CorrectQnh(settings.Qnh);
+
                 declaration.Description = description;
                 declaration.Radius = settings.MaxDistToCrossing;
 
@@ -214,8 +216,8 @@ namespace AXToolbox.Common.IO
                 var longitude = (double.Parse(line.Substring(pos + 8, 3)) +
                     double.Parse(line.Substring(pos + 11, 5)) / 60000)
                     * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
-                var altitude = CorrectQnh(double.Parse(line.Substring(pos + 18, 5)));
-                //GpsAltitude = double.Parse(line.Substring(pos + 23, 5));
+                var altitude = double.Parse(line.Substring(pos + 18, 5));
+                var gpsAltitude = double.Parse(line.Substring(pos + 23, 5));
                 //Accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //Satellites = int.Parse(line.Substring(pos + 32, 2));
 
@@ -224,30 +226,14 @@ namespace AXToolbox.Common.IO
                     datum: Datum.WGS84,
                     latitude: latitude,
                     longitude: longitude,
-                    altitude: altitude,
-                    targetDatum: settings.ReferencePoint.Datum,
-                    utmZone: settings.ReferencePoint.Zone);
-
+                    altitude: gpsAltitude,
+                    targetDatum: settings.Datum,
+                    utmZone: settings.UtmZone) { BarometricAltitude = altitude };
+                p.CorrectQnh(settings.Qnh);
                 return p;
             }
             else
                 return null;
-        }
-
-        private double CorrectQnh(double altitude)
-        {
-            const double correctAbove = 0.121;
-            const double correctBelow = 0.119;
-            const double standardQNH = 1013.25;
-
-            double newAltitude;
-
-            if (settings.Qnh > standardQNH)
-                newAltitude = altitude + (settings.Qnh - standardQNH) / correctAbove;
-            else
-                newAltitude = altitude + (settings.Qnh - standardQNH) / correctBelow;
-
-            return newAltitude;
         }
 
         protected override SignatureStatus VerifySignature(string fileName)
@@ -261,11 +247,6 @@ namespace AXToolbox.Common.IO
                 signature = SignatureStatus.Counterfeit;
 
             return signature;
-        }
-
-        public override string GetLogFileExtension()
-        {
-            return ".igc";
         }
     }
 }

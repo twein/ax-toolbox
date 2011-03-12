@@ -19,6 +19,8 @@ namespace AXToolbox.Common
         protected double northing;
 
         protected double altitude;
+        protected double barometricAltitude = double.NaN;
+        
         protected DateTime time;
 
         /// <summary>WGS84 latitude</summary>
@@ -37,15 +39,19 @@ namespace AXToolbox.Common
             get { return altitude; }
             set { altitude = value; }
         }
+        public double BarometricAltitude
+        {
+            get { return barometricAltitude; }
+            set { barometricAltitude = value; }
+        }
+
         public DateTime Time
         {
             get { return time; }
             set { time = value; }
         }
 
-        protected Point()
-        {
-        }
+        protected Point() { }
         /// <summary>New point from arbitrary datum latlon</summary>
         public Point(DateTime time, Datum datum, double latitude, double longitude, double altitude, Datum targetDatum, string utmZone = "")
         {
@@ -170,43 +176,22 @@ namespace AXToolbox.Common
             return retVal;
         }
 
-        //Tries to parse a string containing a point definition in competition coords (ex: "17:00:00 4512/1126 1000)
-        public static bool TryParseRelative(string str, FlightSettings settings, out Point point)
+        //Provided by Marc André marc.andre@netline.ch
+        public void CorrectQnh(double qnh)
         {
-            var fields = str.Split(new char[] { ' ', '/', '(', ')' }, StringSplitOptions.RemoveEmptyEntries);
+            const double correctAbove = 0.121;
+            const double correctBelow = 0.119;
+            const double standardQNH = 1013.25;
 
-
-            TimeSpan tmpTime = new TimeSpan(0);
-            double tmpEasting = 0, tmpNorthing = 0;
-            double altitude = settings.ReferencePoint.Altitude;
-
-            if (
-                (fields.Length == 3 || fields.Length == 4) &&
-                (TimeSpan.TryParse(fields[1], out tmpTime)) &&
-                (double.TryParse(fields[2], out tmpEasting)) &&
-                (double.TryParse(fields[3], out tmpNorthing)) &&
-                (fields.Length != 5 || double.TryParse(fields[4], out altitude))
-                )
+            if (!double.IsNaN(barometricAltitude))
             {
-                var time = (settings.Date + tmpTime).ToUniversalTime();
-                var easting = settings.ComputeEasting(tmpEasting);
-                var northing = settings.ComputeNorthing(tmpNorthing);
-
-                point = new Point(
-                    time,
-                    settings.ReferencePoint.Datum, settings.ReferencePoint.Zone, easting, northing, altitude,
-                    settings.ReferencePoint.Datum
-                    );
-
-                return true;
-            }
-
-            else
-            {
-                point = null;
-                return false;
+                if (qnh > standardQNH)
+                    altitude = barometricAltitude + (qnh - standardQNH) / correctAbove;
+                else
+                    altitude = barometricAltitude + (qnh - standardQNH) / correctBelow;
             }
         }
+
 
         protected int GetZoneNumber(string zone)
         {
