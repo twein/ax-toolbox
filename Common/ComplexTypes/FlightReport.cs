@@ -15,12 +15,11 @@ namespace AXToolbox.Common
     {
         /// <summary>Format used in FlightReport serialization</summary>
         private const SerializationFormat serializationFormat = SerializationFormat.Binary;
+        public const string SerializedFileExtension = ".axr";
 
-        /// <summary>Smoothness factor for speed used in launch and landing detection</summary>
-        private const double Smoothness = 3;
-
-        protected string[] logFile;
         protected FlightSettings settings;
+        protected string[] trackLogFile;
+        protected DateTime date;
         protected int pilotId;
         protected SignatureStatus signature;
         protected string loggerModel;
@@ -33,52 +32,14 @@ namespace AXToolbox.Common
         protected Point landingPoint;
         protected ObservableCollection<string> notes;
 
-        public string FileName
-        {
-            get
-            {
-                return string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Am ? "AM" : "PM", pilotId);
-            }
-        }
-        public string ReportFilePath
-        {
-            get
-            {
-                return Path.Combine(settings.ReportFolder, Path.ChangeExtension(FileName, ".axr"));
-            }
-        }
-        public string LogFilePath
-        {
-            get
-            {
-                return Path.Combine(settings.LogFolder, Path.ChangeExtension(FileName, GetLogFileExtension()));
-            }
-        }
-        public string WptFilePath
-        {
-            get
-            {
-                return Path.Combine(settings.LogFolder, Path.ChangeExtension(FileName, ".wpt"));
-            }
-        }
-        public abstract string GetLogFileExtension();
 
-        public FlightSettings Settings
-        {
-            get { return settings; }
-            set
-            {
-                settings = value;
-                Reset();
-            }
-        }
         public DateTime Date
         {
-            get { return settings.Date; }
+            get { return date; }
         }
-        public bool Am
+        public string Time
         {
-            get { return settings.Am; }
+            get { return date.GetAmPm(); }
         }
         public int PilotId
         {
@@ -176,17 +137,95 @@ namespace AXToolbox.Common
                 return this.ToString();
             }
         }
+        protected abstract string GetLogFileExtension();
 
-        protected FlightReport(string filePath, FlightSettings settings)
+        //constructor
+        protected FlightReport(string filePath)
         {
-            this.settings = settings;
             signature = VerifySignature(filePath);
-            logFile = File.ReadAllLines(filePath, Encoding.ASCII);
-            Reset();
+            trackLogFile = File.ReadAllLines(filePath, Encoding.ASCII);
         }
 
-        public void Reset()
+        public override string ToString()
         {
+            return string.Format("{0:yyyy/MM/dd}{1} Pilot {2:000}", date, date.GetAmPm(), pilotId);
+        }
+        public string toShortString()
+        {
+            return string.Format("{0:yyyyMMdd}{1}{2:000}", date, date.GetAmPm(), pilotId);
+        }
+
+        //factory
+        public static FlightReport LoadFromFile(string filePath)
+        {
+            FlightReport report;
+
+            if (File.Exists(filePath))
+            {
+                switch (Path.GetExtension(filePath).ToLower())
+                {
+                    case ".igc":
+                        report = new IGCFile(filePath);
+                        report.IsDirty = true;
+                        break;
+                    case ".trk":
+                        report = new TRKFile(filePath);
+                        report.IsDirty = true;
+                        break;
+                    case SerializedFileExtension:
+                        report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+                        break;
+                    default:
+                        throw new InvalidOperationException("Logger file type not supported");
+                }
+                return report;
+            }
+            else
+                throw new FileNotFoundException();
+        }
+        public bool Save(string folder)
+        {
+            var ok = pilotId > 0;
+            if (ok)
+            {
+                var filename = Path.Combine(folder, toShortString() + SerializedFileExtension);
+                ObjectSerializer<FlightReport>.Save(this, filename, serializationFormat);
+                IsDirty = false;
+            }
+
+            return ok;
+        }
+        public bool ExportTrackLog(string folder)
+        {
+            var ok = pilotId > 0;
+            if (ok)
+            {
+                var filename = Path.Combine(folder, toShortString() + GetLogFileExtension());
+                File.WriteAllLines(filename, trackLogFile);
+            }
+
+            return ok;
+        }
+        public bool ExportWaypoints(string folder)
+        {
+            var ok = pilotId > 0;
+            if (ok)
+            {
+                var wpts = new List<Waypoint>();
+                wpts.Add(new Waypoint("Launch", launchPoint));
+                wpts.Add(new Waypoint("Landing", landingPoint));
+                wpts.AddRange(markers);
+                wpts.AddRange(declaredGoals);
+                var filename = Path.Combine(folder, toShortString() + ".wpt");
+                WPTFile.Save(wpts, filename);
+            }
+
+            return ok;
+        }
+
+        public void Process(FlightSettings settings)
+        {
+            this.settings = settings;
             pilotId = 0;
             loggerModel = "";
             loggerSerialNumber = "";
@@ -223,7 +262,7 @@ namespace AXToolbox.Common
 
             // remove points before/after valid times
             DateTime minTime, maxTime;
-            if (Am)
+            if (settings.Date.Hour < 12)
             {
                 minTime = Date.ToUniversalTime() + new TimeSpan(6, 0, 0);
                 maxTime = Date.ToUniversalTime() + new TimeSpan(12, 0, 0);
@@ -302,33 +341,7 @@ namespace AXToolbox.Common
                 }
             }
         }
-
-        public void AddMarker(Waypoint marker)
-        {
-            InsertIntoCollection(markers, marker);
-            notes.Add(string.Format("New marker added: {0}", marker));
-        }
-        public bool RemoveMarker(Waypoint marker)
-        {
-            var ok = markers.Remove(marker);
-            if (ok)
-                notes.Add(string.Format("Marker removed: {0}", marker));
-            return ok;
-        }
-        public void AddDeclaredGoal(Waypoint declaration)
-        {
-            InsertIntoCollection(declaredGoals, declaration);
-            notes.Add(string.Format("New goal declaration added: {0}", declaration));
-        }
-        public bool RemoveDeclaredGoal(Waypoint declaration)
-        {
-            var ok = declaredGoals.Remove(declaration);
-            if (ok)
-                notes.Add(string.Format("Goal declaration removed: {0}", declaration));
-            return ok;
-        }
-
-        private Trackpoint FindGroundContact(IEnumerable<Trackpoint> track, bool backwards)
+        protected Trackpoint FindGroundContact(IEnumerable<Trackpoint> track, bool backwards)
         {
             Point reference = null;
             Trackpoint groundContact = null;
@@ -354,9 +367,9 @@ namespace AXToolbox.Common
                     if (double.IsNaN(smoothedSpeed))
                         smoothedSpeed = Math.Abs(Physics.Velocity3D(point, point_m1));
                     else
-                        smoothedSpeed = (Math.Abs(Physics.Velocity3D(point, point_m1)) + smoothedSpeed * (Smoothness - 1)) / Smoothness;
+                        smoothedSpeed = (Math.Abs(Physics.Velocity3D(point, point_m1)) + smoothedSpeed * (settings.Smoothness - 1)) / settings.Smoothness;
 
-                    if (smoothedSpeed < settings.MinVelocity &&
+                    if (smoothedSpeed < settings.MinSpeed &&
                         // heuristics: launch can't be after first marker and landing can't be before last marker
                         (reference == null || (backwards && point.Time < reference.Time) || (!backwards && point.Time > reference.Time)))
                     {
@@ -371,76 +384,30 @@ namespace AXToolbox.Common
             return groundContact;
         }
 
-        public override string ToString()
+        public void AddMarker(Waypoint marker)
         {
-            return string.Format("{0:yyyy/MM/dd}{1} Pilot {2:000}", Date, Am ? "AM" : "PM", pilotId);
+            InsertIntoCollection(markers, marker);
+            notes.Add(string.Format("New marker added: {0}", marker));
         }
-
-        public bool Save()
+        public bool RemoveMarker(Waypoint marker)
         {
-            var ok = pilotId > 0;
+            var ok = markers.Remove(marker);
             if (ok)
-            {
-                ObjectSerializer<FlightReport>.Save(this, ReportFilePath, serializationFormat);
-                IsDirty = false;
-            }
-
+                notes.Add(string.Format("Marker removed: {0}", marker));
             return ok;
         }
-        public bool ExportLog()
+        public void AddDeclaredGoal(Waypoint declaration)
         {
-            var ok = pilotId > 0;
+            InsertIntoCollection(declaredGoals, declaration);
+            notes.Add(string.Format("New goal declaration added: {0}", declaration));
+        }
+        public bool RemoveDeclaredGoal(Waypoint declaration)
+        {
+            var ok = declaredGoals.Remove(declaration);
             if (ok)
-            {
-                File.WriteAllLines(LogFilePath, logFile);
-            }
-
+                notes.Add(string.Format("Goal declaration removed: {0}", declaration));
             return ok;
         }
-        public bool ExportWaypoints()
-        {
-            var ok = pilotId > 0;
-            if (ok)
-            {
-                var wpts = new List<Waypoint>();
-                wpts.Add(new Waypoint("Launch", launchPoint));
-                wpts.Add(new Waypoint("Landing", landingPoint));
-                wpts.AddRange(markers);
-                wpts.AddRange(declaredGoals);
-                WPTFile.Save(wpts, WptFilePath);
-            }
-
-            return ok;
-        }
-
-        public static FlightReport LoadFromFile(string filePath, FlightSettings settings)
-        {
-            FlightReport report;
-
-            if (File.Exists(filePath))
-            {
-                switch (Path.GetExtension(filePath).ToLower())
-                {
-                    case ".igc":
-                        report = new IGCFile(filePath, settings);
-                        report.IsDirty = true;
-                        break;
-                    case ".trk":
-                        report = new TRKFile(filePath, settings);
-                        report.IsDirty = true;
-                        break;
-                    case ".axr":
-                        report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
-                        break;
-                    default:
-                        throw new InvalidOperationException("Logger file type not supported");
-                }
-                return report;
-            }
-            else
-                throw new FileNotFoundException();
-        }
-        protected abstract SignatureStatus VerifySignature(string fileName);
         protected void InsertIntoCollection(Collection<Waypoint> collection, Waypoint point)
         {
             Waypoint next = null;
@@ -462,5 +429,7 @@ namespace AXToolbox.Common
                 collection.Insert(inext, point);
             }
         }
+
+        protected abstract SignatureStatus VerifySignature(string fileName);
     }
 }

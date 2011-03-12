@@ -48,7 +48,7 @@ namespace AXToolbox.Scripting
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in time definition");
                     else
-                        time = engine.Date + TimeSpan.Parse(parameters[0]); //TODO: check local-GMT conversion
+                        time = engine.Settings.Date + TimeSpan.Parse(parameters[0]); //TODO: check local-GMT conversion
                     break;
 
                 case "BEFOREPOINT":

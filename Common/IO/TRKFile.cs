@@ -12,14 +12,16 @@ namespace AXToolbox.Common.IO
         private Datum fileDatum = null;
         private bool utm = false;
 
-        public TRKFile(string filePath, FlightSettings settings)
-            : base(filePath, settings)
+        public TRKFile(string filePath)
+            : base(filePath)
         {
         }
 
+        protected override string GetLogFileExtension() { return ".trk"; }
+
         protected override void ParseLog()
         {
-            var content = from line in logFile
+            var content = from line in trackLogFile
                           where line.Length > 0
                           select line;
 
@@ -74,8 +76,8 @@ namespace AXToolbox.Common.IO
                     easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
                     northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
                     altitude: altitude,
-                    utmDatum: settings.ReferencePoint.Datum,
-                    utmZone: settings.ReferencePoint.Zone
+                    utmDatum: settings.Datum,
+                    utmZone: settings.UtmZone
                     );
             }
             else
@@ -96,8 +98,8 @@ namespace AXToolbox.Common.IO
                     latitude: lat,
                     longitude: lon,
                     altitude: altitude,
-                    utmDatum: settings.ReferencePoint.Datum,
-                    utmZone: settings.ReferencePoint.Zone
+                    utmDatum: settings.Datum,
+                    utmZone: settings.UtmZone
                     );
             }
 
@@ -106,11 +108,6 @@ namespace AXToolbox.Common.IO
         protected override SignatureStatus VerifySignature(string fileName)
         {
             return SignatureStatus.NotSigned;
-        }
-
-        public override string GetLogFileExtension()
-        {
-            return ".trk";
         }
     }
 }

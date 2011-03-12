@@ -53,7 +53,7 @@ namespace AXToolbox.Scripting
                             var lat = ParseDouble(parameters[0]);
                             var lng = ParseDouble(parameters[1]);
                             var alt = ParseLength(parameters[2]);
-                            point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, engine.Datum, engine.UtmZone);
+                            point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, engine.Settings.Datum, engine.Settings.UtmZone);
                         }
                     }
                     break;
@@ -69,7 +69,7 @@ namespace AXToolbox.Scripting
                             var easting = ParseDouble(parameters[1]);
                             var northing = ParseDouble(parameters[2]);
                             var alt = ParseLength(parameters[3]);
-                            point = new Point(DateTime.MinValue, engine.Datum, zone, easting, northing, alt, engine.Datum, engine.UtmZone);
+                            point = new Point(DateTime.MinValue, engine.Settings.Datum, zone, easting, northing, alt, engine.Settings.Datum, engine.Settings.UtmZone);
                         }
                     }
                     break;

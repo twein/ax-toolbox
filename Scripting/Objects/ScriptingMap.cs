@@ -22,6 +22,16 @@ namespace AXToolbox.Scripting
         protected Point bottomRight;
         protected double gridWidth = 0;
 
+        public Point TopLeft
+        {
+            get { return topLeft; }
+        }
+        public Point BottomRight
+        {
+            get { return bottomRight; }
+        }
+
+
         internal ScriptingMap(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
@@ -86,8 +96,8 @@ namespace AXToolbox.Scripting
             if (type == "BITMAP")
             {
                 map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
-                topLeft = new Point(DateTime.Now, engine.Datum, engine.UtmZone, map.MapTopLeft.X, map.MapTopLeft.Y, 0, engine.Datum, engine.UtmZone);
-                bottomRight = new Point(DateTime.Now, engine.Datum, engine.UtmZone, map.MapBottomRight.X, map.MapBottomRight.Y, 0, engine.Datum, engine.UtmZone);
+                topLeft = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.MapTopLeft.X, map.MapTopLeft.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
+                bottomRight = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.MapBottomRight.X, map.MapBottomRight.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
             }
 
             else
@@ -100,6 +110,15 @@ namespace AXToolbox.Scripting
         public override string ToString()
         {
             return "MAP " + base.ToString();
+        }
+
+        /// <summary>Checks if a point is inside the map boundaries
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public bool IsInside(Point p)
+        {
+            return (p.Easting >= topLeft.Easting && p.Easting <= bottomRight.Easting && p.Northing >= bottomRight.Northing && p.Northing <= topLeft.Northing);
         }
     }
 }

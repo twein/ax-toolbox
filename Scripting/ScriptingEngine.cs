@@ -24,46 +24,23 @@ namespace AXToolbox.Scripting
         static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
 
         //Settings
-        private DateTime date;
-        public DateTime Date
-        {
-            get { return date; }
-            set { date = value; }
-        }
-
-        private Datum datum;
-        public Datum Datum
-        {
-            get { return datum; }
-            set { datum = value; }
-        }
-
-        private string utmZone;
-        public string UtmZone
-        {
-            get { return utmZone; }
-            set { utmZone = value; }
-        }
-
-        private double qnh;
-        public double Qnh
-        {
-            get { return qnh; }
-            set { qnh = value; }
-        }
-
-        private bool tasksByOrder;
-        public bool TasksByOrder
-        {
-            get { return tasksByOrder; }
-            set { tasksByOrder = value; }
-        }
+        public FlightSettings Settings = new FlightSettings();
+        
+        public bool TasksByOrder { get; set; }
 
         private ScriptingMap map;
         public ScriptingMap Map
         {
             get { return map; }
-            set { map = value; }
+            set
+            {
+                if (map != value)
+                {
+                    map = value;
+                    Settings.TopLeft = map.TopLeft;
+                    Settings.BottomRight = map.BottomRight;
+                }
+            }
         }
 
         private Dictionary<string, ScriptingObject> heap;
@@ -168,6 +145,13 @@ namespace AXToolbox.Scripting
                 LogLine("Exception parsing " + message);
                 throw new ArgumentException(message);
             }
+
+            if (!Settings.AreWellInitialized())
+            {
+                var message = "The settings are not fully initialized";
+                LogLine("Exception: " + message);
+                throw new ArgumentException(message);
+            }
         }
 
         public void Run(FlightReport report)
@@ -203,11 +187,11 @@ namespace AXToolbox.Scripting
 
         public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)
         {
-            return new Point(DateTime.Now, datum, utmZone, pointInUtm.X, pointInUtm.Y, 0, datum, utmZone);
+            return new Point(DateTime.Now, Settings.Datum, Settings.UtmZone, pointInUtm.X, pointInUtm.Y, 0, Settings.Datum, Settings.UtmZone);
         }
         public Point ConvertToPointFromLL(System.Windows.Point pointInLatLon)
         {
-            return new Point(DateTime.Now, datum, pointInLatLon.X, pointInLatLon.Y, 0, datum, utmZone);
+            return new Point(DateTime.Now, Settings.Datum, pointInLatLon.X, pointInLatLon.Y, 0, Settings.Datum, Settings.UtmZone);
         }
     }
 }

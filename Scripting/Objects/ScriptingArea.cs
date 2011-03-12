@@ -94,6 +94,7 @@ namespace AXToolbox.Scripting
                     radius = ParseLength(parameters[1]);
                     break;
                 case "POLY":
+                    //TODO: polygonal scripting area Run()
                     throw new NotImplementedException();
             }
         }
@@ -112,6 +113,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "POLY":
+                    //TODO: polygonal scripting area GetOverlay()
                     throw new NotImplementedException();
             }
 
@@ -125,6 +127,7 @@ namespace AXToolbox.Scripting
 
         public bool Contains(Trackpoint p)
         {
+            //TODO: polygonal scripting area Contains()
             throw new NotImplementedException();
         }
     }

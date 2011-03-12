@@ -81,13 +81,14 @@
   <ItemGroup>
     <Compile Include="BasicTypes\PointInfo.cs" />
     <Compile Include="BasicTypes\Trackpoint.cs" />
+    <Compile Include="ComplexTypes\FlightSettings.cs" />
+    <Compile Include="Extensions\Double.cs" />
     <Compile Include="General\Singleton.cs" />
     <Compile Include="Geodesy\Coordinates.cs" />
     <Compile Include="BasicTypes\Point.cs" />
     <Compile Include="BasicTypes\Waypoint.cs" />
     <Compile Include="ComplexTypes\BindableObject.cs" />
     <Compile Include="ComplexTypes\FlightReport.cs" />
-    <Compile Include="ComplexTypes\FlightSettings.cs" />
     <Compile Include="Extensions\DateTime.cs" />
     <Compile Include="Extensions\String.cs" />
     <Compile Include="Geodesy\Angle.cs" />
