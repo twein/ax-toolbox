@@ -3,11 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="AXToolbox.MapViewer.TargetOverlay" 
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
-    IsHitTestVisible="False" >
-    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" UseLayoutRounding="True">
-        <Grid.CacheMode>
-            <BitmapCache SnapsToDevicePixels="True"/>
-        </Grid.CacheMode>
+    IsHitTestVisible="False" UseLayoutRounding="True">
+    <Grid>
         <Ellipse Name="area" Height="100" Width="100" Margin="-50" HorizontalAlignment="Left" VerticalAlignment="Top"
                  Fill="Silver" Stroke="Black" Opacity=".25" />
         <Path Name="target" Height="25" Width="25" Margin="-12.5" HorizontalAlignment="Left" VerticalAlignment="Top"

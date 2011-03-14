@@ -3,11 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="AXToolbox.MapViewer.MarkerOverlay" 
 	xmlns:maps="clr-namespace:AXToolbox.MapViewer"
-	IsHitTestVisible="False" >
-	<Grid HorizontalAlignment="Left" VerticalAlignment="Top">
-        <Grid.CacheMode>
-            <BitmapCache SnapsToDevicePixels="True"/>
-        </Grid.CacheMode>
+	IsHitTestVisible="False" UseLayoutRounding="True">
+    <Grid>
         <Path Name="flag" HorizontalAlignment="Left" VerticalAlignment="Top" 
 			  Stroke="Black" Fill="Red" StrokeThickness="1" Opacity=".67"
 			  Data="M0,-15 L0,-25 L15,-20 L0,-15" />

@@ -39,7 +39,6 @@ namespace AXToolbox.MapViewer
         protected Canvas overlaysCanvas;
         protected List<MapOverlay> overlays;
 
-        //bitmap transformation
         protected GeoreferencedImage geoImage;
 
         //WPF transforms
@@ -70,11 +69,9 @@ namespace AXToolbox.MapViewer
             // set up layout
             mapCanvas = new Canvas();
             overlaysCanvas = new Canvas();
-
             mainGrid = new Grid();
             mainGrid.Children.Add(mapCanvas);
             mainGrid.Children.Add(overlaysCanvas);
-
             AddChild(mainGrid);
 
             // add transforms
@@ -109,7 +106,7 @@ namespace AXToolbox.MapViewer
             try
             {
                 geoImage = new GeoreferencedImage(bitmapFileName);
-                mapCanvas.Children.Clear(); //delete blank map
+                mapCanvas.Children.Clear();
                 mapCanvas.Children.Add(geoImage.RawImage);
                 ComputeMapConstants();
                 mapLoaded = true;
@@ -129,6 +126,7 @@ namespace AXToolbox.MapViewer
         {
             //load blank map
             geoImage = new GeoreferencedImage(topLeft, bottomRight);
+            mapCanvas.Children.Clear();
             mapCanvas.Children.Add(geoImage.RawImage);
             ComputeMapConstants();
             mapLoaded = true;

@@ -3,11 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="AXToolbox.MapViewer.DistanceOverlay"
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
-    IsHitTestVisible="False" >
-    <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
-        <Grid.CacheMode>
-            <BitmapCache SnapsToDevicePixels="True"/>
-        </Grid.CacheMode>
+    IsHitTestVisible="False" UseLayoutRounding="True">
+    <Grid >
         <Path Name="distance" Stroke="Black" StrokeThickness="1" Data="M-50,-50 L50,50"/>
         <TextBlock Name="label" TextOptions.TextFormattingMode="Display">Label</TextBlock>
     </Grid>
