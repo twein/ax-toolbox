@@ -2,7 +2,6 @@
 set Datum=European 1950
 set UTMZone=31T
 set QNH = 1012
-set TASKORDER=free
 
 map competitionMap = bitmap(demo.png) grid(1000)
 

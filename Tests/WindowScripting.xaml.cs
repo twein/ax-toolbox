@@ -30,18 +30,7 @@ namespace AXToolbox.Tests
                 if (dlg.ShowDialog(this) == true)
                 {
                     scriptingEngine.LoadScript(dlg.FileName);
-                    if (scriptingEngine.Map != null)
-                    {
-                        scriptingEngine.Map.InitializeMapViewer(map);
-                    }
-
-                    MapOverlay ov;
-                    foreach (var o in scriptingEngine.Heap)
-                    {
-                        ov = o.Value.GetOverlay();
-                        if (ov != null)
-                            map.AddOverlay(ov);
-                    }
+                    scriptingEngine.RefreshMapViewer(map);
                 }
                 else
                 {

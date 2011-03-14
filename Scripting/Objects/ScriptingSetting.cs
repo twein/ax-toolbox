@@ -11,7 +11,7 @@ namespace AXToolbox.Scripting
     {
         private static readonly List<string> names = new List<string>
         {
-            "DATETIME","DATUM","UTMZONE","QNH","TASKORDER","DEFAULTALTITUDE","MAXDISTTOCROSSING","SMOOTHNESS","MINSPEED","MAXACCELERATION"
+            "DATETIME","DATUM","UTMZONE","QNH","DEFAULTALTITUDE","MAXDISTTOCROSSING","SMOOTHNESS","MINSPEED","MAXACCELERATION"
         };
 
         private string StandardErrorMessage
@@ -70,21 +70,6 @@ namespace AXToolbox.Scripting
 
                 case "QNH":
                     engine.Settings.Qnh = ParseDoubleOrDie(ParseDouble);
-                    break;
-
-                case "TASKORDER":
-                    if (parameters.Length != 1)
-                        throw new ArgumentException("StandardErrorMessage");
-
-                    var order = parameters[0].ToUpper();
-                    if (order != "BYORDER" && order != "FREE")
-                        throw new ArgumentException(StandardErrorMessage + " '" + parameters[0] + "'");
-
-                    if (parameters[0] == "BYORDER")
-                        engine.TasksByOrder = true;
-                    else
-                        engine.TasksByOrder = false;
-
                     break;
 
                 case "DEFAULTALTITUDE":

@@ -9,6 +9,7 @@ namespace AXToolbox.Common
     {
         //TODO: document all this
         public DateTime Date { get; set; }
+
         public Datum Datum { get; set; }
         public string UtmZone { get; set; }
         public Point TopLeft { get; set; }
