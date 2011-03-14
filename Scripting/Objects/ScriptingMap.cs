@@ -17,20 +17,9 @@ namespace AXToolbox.Scripting
             "", "GRID"
         };
 
-        protected string bitmapFile = "";
         protected Point topLeft;
         protected Point bottomRight;
         protected double gridWidth = 0;
-
-        public Point TopLeft
-        {
-            get { return topLeft; }
-        }
-        public Point BottomRight
-        {
-            get { return bottomRight; }
-        }
-
 
         internal ScriptingMap(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -47,10 +36,10 @@ namespace AXToolbox.Scripting
                     if (parameters.Length != 1)
                         throw new ArgumentException("Syntax error in bitmap definition");
 
-                    if (!File.Exists(parameters[0]))
-                        throw new ArgumentException("Bitmap file not found '" + parameters[0] + "'");
-
-                    bitmapFile = parameters[0];
+                    //load the georeferenced image to retrieve top-left and bottom-right corners
+                    var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
+                    topLeft = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.TopLeft.X, map.TopLeft.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
+                    bottomRight = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.BottomRight.X, map.BottomRight.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
 
                     break;
 
@@ -68,6 +57,9 @@ namespace AXToolbox.Scripting
 
                     break;
             }
+
+            engine.Settings.TopLeft = topLeft;
+            engine.Settings.BottomRight = bottomRight;
         }
 
         public override void CheckDisplayModeSyntax()
@@ -93,13 +85,10 @@ namespace AXToolbox.Scripting
 
         public void InitializeMapViewer(MapViewerControl map)
         {
-            if (type == "BITMAP")
-            {
-                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
-                topLeft = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.MapTopLeft.X, map.MapTopLeft.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
-                bottomRight = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.MapBottomRight.X, map.MapBottomRight.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
-            }
+            map.ClearOverlays();
 
+            if (type == "BITMAP")
+                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
             else
                 map.LoadBlank(new System.Windows.Point(topLeft.Easting, topLeft.Northing), new System.Windows.Point(bottomRight.Easting, bottomRight.Northing));
 

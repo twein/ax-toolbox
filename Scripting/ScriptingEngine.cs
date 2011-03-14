@@ -24,30 +24,10 @@ namespace AXToolbox.Scripting
         static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
 
         //Settings
-        public FlightSettings Settings = new FlightSettings();
-        
-        public bool TasksByOrder { get; set; }
+        public FlightSettings Settings { get; private set; }
+        public ScriptingMap Map { get; private set; }
 
-        private ScriptingMap map;
-        public ScriptingMap Map
-        {
-            get { return map; }
-            set
-            {
-                if (map != value)
-                {
-                    map = value;
-                    Settings.TopLeft = map.TopLeft;
-                    Settings.BottomRight = map.BottomRight;
-                }
-            }
-        }
-
-        private Dictionary<string, ScriptingObject> heap;
-        public Dictionary<string, ScriptingObject> Heap
-        {
-            get { return heap; }
-        }
+        public Dictionary<string, ScriptingObject> Heap { get; private set; }
 
         private List<Trackpoint> validTrackPoints;
         public List<Trackpoint> ValidTrackPoints
@@ -60,24 +40,20 @@ namespace AXToolbox.Scripting
             }
         }
 
-        private StringBuilder log;
-        public StringBuilder Log
-        {
-            get { return log; }
-            set { log = value; }
-        }
+        public StringBuilder Log { get; private set; }
 
         public ScriptingEngine()
         {
-            log = new StringBuilder();
-            heap = new Dictionary<string, ScriptingObject>();
+            Settings = new FlightSettings();
+            Log = new StringBuilder();
+            Heap = new Dictionary<string, ScriptingObject>();
             LogLine("Started ".PadRight(95, '='));
         }
 
         ~ScriptingEngine()
         {
             LogLine("Stopped ".PadRight(95, '='));
-            File.AppendAllText("scripting.log", log.ToString());
+            File.AppendAllText("scripting.log", Log.ToString());
         }
 
         public void LoadScript(string scriptFileName)
@@ -86,7 +62,7 @@ namespace AXToolbox.Scripting
 
             string line;
 
-            heap.Clear();
+            Heap.Clear();
             //TODO: initialize all variables
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(scriptFileName));
@@ -128,10 +104,10 @@ namespace AXToolbox.Scripting
 
                         if (objectClass == "MAP")
                             //force only one map
-                            map = (ScriptingMap)obj;
+                            Map = (ScriptingMap)obj;
                         else
                             //otherwise, place on heap
-                            heap.Add(obj.Name, obj);
+                            Heap.Add(obj.Name, obj);
                     }
 
                     else
@@ -154,11 +130,24 @@ namespace AXToolbox.Scripting
             }
         }
 
+        public void RefreshMapViewer(MapViewerControl map)
+        {
+            Map.InitializeMapViewer(map);
+
+            MapOverlay ov;
+            foreach (var o in Heap)
+            {
+                ov = o.Value.GetOverlay();
+                if (ov != null)
+                    map.AddOverlay(ov);
+            }
+        }
+
         public void Run(FlightReport report)
         {
             LogLine("Running " + report.ToString());
 
-            foreach (var kvp in heap)
+            foreach (var kvp in Heap)
             {
                 var obj = kvp.Value;
                 obj.Reset();
@@ -182,7 +171,7 @@ namespace AXToolbox.Scripting
 
         public void LogLine(string str)
         {
-            log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
+            Log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
         }
 
         public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)
