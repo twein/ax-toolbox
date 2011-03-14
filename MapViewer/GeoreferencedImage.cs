@@ -2,10 +2,13 @@
 using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AXToolbox.MapViewer
 {
-    public class MapTransform
+    public class GeoreferencedImage
     {
 
         //World file transformation parameters
@@ -29,26 +32,72 @@ namespace AXToolbox.MapViewer
         public double PixelWidth { get; set; }
         public double PixelHeight { get; set; }
 
-        // <summary>Compute the Compute the transformation parameters to convert bitmap coordinates from/to map coordinates</summary>
-        // <param name="worldFileName">world file name</param>
+        //bitmap
+        public UIElement RawImage { get; private set; }
+        public double BitmapWidth { get; private set; }
+        public double BitmapHeight { get; private set; }
+        public Point BitmapCenter { get; private set; }
 
-        /// <summary>Create a Map transform from discrete parameters</summary>
-        /// <param name="wf1">1st transform matrix coefficient</param>
-        /// <param name="wf2">2nd transform matrix coefficient</param>
-        /// <param name="wf3">3rd transform matrix coefficient</param>
-        /// <param name="wf4">4th transform matrix coefficient</param>
-        /// <param name="wf5">delta x</param>
-        /// <param name="wf6">delta y</param>
-        public MapTransform(double wf1, double wf2, double wf3, double wf4, double wf5, double wf6)
+        //map
+        public Point TopLeft { get; private set; }
+        public Point BottomRight { get; private set; }
+        public Point Center { get; private set; }
+
+        /// <summary>Use a white background as map
+        /// </summary>
+        /// <param name="topLeft">Top left corner coordinates</param>
+        /// <param name="bottomRight">Bottom right corner coordinates</param>
+        public GeoreferencedImage(Point topLeft, Point bottomRight)
         {
-            ComputeMapTransformParameters(wf1, wf2, wf3, wf4, wf5, wf6);
+            var scale = 10.0;
+            var diffx = bottomRight.X - topLeft.X;
+            var diffy = bottomRight.Y - topLeft.Y;
+            BitmapWidth = Math.Abs(diffx) / scale;
+            BitmapHeight = Math.Abs(diffy) / scale;
+            var scalex = Math.Sign(diffx) * scale;
+            var scaley = Math.Sign(diffy) * scale;
+            ComputeMapTransformParameters(scalex, 0, 0, scaley, topLeft.X, topLeft.Y);
+            ComputeConstants();
+
+            RawImage = new Border() { Width = BitmapWidth, Height = BitmapHeight, Background = Brushes.White, BorderBrush = Brushes.Black, BorderThickness = new Thickness(2) };
         }
 
-        /// <summary>Create a Map transform from a world file</summary>
-        /// <param name="worldFileName">world file name</param>
-        public MapTransform(string worldFileName)
+        /// <summary>Load a georeferenced image file as map</summary>
+        /// <param name="bitmapFileName">
+        /// Bitmap file name. An ESRI world file following the standard naming conventions must exist.
+        /// http://en.wikipedia.org/wiki/World_file
+        /// </param>
+        public GeoreferencedImage(string bitmapFileName)
         {
-            //read world file
+            if (!File.Exists(bitmapFileName))
+                throw new ArgumentException("Bitmap file not found");
+
+            //Load the bitmap file
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.UriSource = new Uri(bitmapFileName);
+            bmp.EndInit();
+
+            RawImage = new Image() { Source = bmp };
+
+            BitmapWidth = bmp.Width;
+            BitmapHeight = bmp.Height;
+
+            //Load and parse the world file
+            //first naming convention
+            var bitmapFileExtension = System.IO.Path.GetExtension(bitmapFileName);
+            var worldFileExtension = "." + bitmapFileExtension[1] + bitmapFileExtension[3] + "w";
+            var worldFileName = System.IO.Path.ChangeExtension(bitmapFileName, worldFileExtension);
+            if (!File.Exists(worldFileName))
+            {
+                //second naming convention
+                worldFileExtension = bitmapFileExtension + "w";
+                worldFileName = System.IO.Path.ChangeExtension(bitmapFileName, worldFileExtension);
+                if (!System.IO.File.Exists(worldFileName))
+                    throw new FileNotFoundException("World file not found");
+            }
+
+            //read world file or die
             var lines = File.ReadAllLines(worldFileName);
 
             ComputeMapTransformParameters(
@@ -59,6 +108,8 @@ namespace AXToolbox.MapViewer
                 double.Parse(lines[4], NumberFormatInfo.InvariantInfo),
                 double.Parse(lines[5], NumberFormatInfo.InvariantInfo)
             );
+
+            ComputeConstants();
         }
 
         /// <summary>Converts units from bitmap coords to map coords</summary>
@@ -117,6 +168,14 @@ namespace AXToolbox.MapViewer
             //zoom limits
             PixelWidth = Math.Sqrt(TransformMatrixA * TransformMatrixA + TransformMatrixC * TransformMatrixC);
             PixelHeight = Math.Sqrt(TransformMatrixB * TransformMatrixB + TransformMatrixD * TransformMatrixD);
+        }
+
+        private void ComputeConstants()
+        {
+            TopLeft = FromBitmapToMap(new Point(0, 0));
+            BottomRight = FromBitmapToMap(new Point(BitmapWidth, BitmapHeight));
+            BitmapCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
+            Center = FromBitmapToMap(BitmapCenter);
         }
     }
 }
