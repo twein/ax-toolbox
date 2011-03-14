@@ -14,16 +14,8 @@ namespace AXToolbox.MapViewer
     {
         protected bool mapLoaded = false;
 
-        //bitmap size
-        protected double BitmapWidth { get; set; }
-        protected double BitmapHeight { get; set; }
-
-        //map center
-        protected Point BitmapCenter { get; set; }
-        protected Point MapCenter { get; set; }
-
-        public Point MapTopLeft { get { return mapTransform.FromBitmapToMap(new Point(0, 0)); } }
-        public Point MapBottomRight { get { return mapTransform.FromBitmapToMap(new Point(BitmapWidth, BitmapHeight)); } }
+        public Point MapTopLeft { get { return geoImage.TopLeft; } }
+        public Point MapBottomRight { get { return geoImage.BottomRight; } }
 
         //zoom parameters
         protected double zoomLevel;
@@ -38,8 +30,8 @@ namespace AXToolbox.MapViewer
                 }
             }
         }
-        public double MaxZoom { get; set; }
-        public double MinZoom { get; set; }
+        public double MaxZoom { get; protected set; }
+        public double MinZoom { get; protected set; }
         public double DefaultZoomFactor { get; set; }
 
         protected Grid mainGrid;
@@ -48,13 +40,12 @@ namespace AXToolbox.MapViewer
         protected List<MapOverlay> overlays;
 
         //bitmap transformation
-        protected MapTransform mapTransform;
+        protected GeoreferencedImage geoImage;
 
         //WPF transforms
         protected TranslateTransform translateTransform;
         protected ScaleTransform zoomTransform;
         protected TransformGroup mapTransformGroup;
-        protected TransformGroup overlayTransformGroup;
 
         //mouse pan parameters
         protected Point startPosition;
@@ -95,10 +86,6 @@ namespace AXToolbox.MapViewer
             mapTransformGroup.Children.Add(translateTransform);
             mapCanvas.RenderTransform = mapTransformGroup;
 
-            overlayTransformGroup = new TransformGroup();
-            overlayTransformGroup.Children.Add(translateTransform);
-
-
             // events
             Focusable = true;
             KeyDown += new KeyEventHandler(control_KeyDown);
@@ -121,31 +108,9 @@ namespace AXToolbox.MapViewer
         {
             try
             {
-                //Load the bitmap file
-                var bmp = new BitmapImage();
-                bmp.BeginInit();
-                bmp.UriSource = new Uri(bitmapFileName);
-                bmp.EndInit();
-
-                var img = new Image() { Source = bmp };
-
-                BitmapWidth = bmp.Width;
-                BitmapHeight = bmp.Height;
+                geoImage = new GeoreferencedImage(bitmapFileName);
                 mapCanvas.Children.Clear(); //delete blank map
-                mapCanvas.Children.Add(img);
-
-                //Load and parse the world file
-                //first naming convention
-                var bitmapFileExtension = System.IO.Path.GetExtension(bitmapFileName);
-                var worldFileExtension = "." + bitmapFileExtension[1] + bitmapFileExtension[3] + "w";
-                var worldFileName = System.IO.Path.ChangeExtension(bitmapFileName, worldFileExtension);
-                if (!System.IO.File.Exists(worldFileName))
-                {
-                    //second naming convention
-                    worldFileExtension = bitmapFileExtension + "w";
-                    worldFileName = System.IO.Path.ChangeExtension(bitmapFileName, worldFileExtension);
-                }
-                mapTransform = new MapTransform(worldFileName);
+                mapCanvas.Children.Add(geoImage.RawImage);
                 ComputeMapConstants();
                 mapLoaded = true;
 
@@ -163,15 +128,8 @@ namespace AXToolbox.MapViewer
         public void LoadBlank(Point topLeft, Point bottomRight)
         {
             //load blank map
-            var scale = 10.0;
-            var diffx = bottomRight.X - topLeft.X;
-            var diffy = bottomRight.Y - topLeft.Y;
-            BitmapWidth = Math.Abs(diffx) / scale;
-            BitmapHeight = Math.Abs(diffy) / scale;
-            var scalex = Math.Sign(diffx) * scale;
-            var scaley = Math.Sign(diffy) * scale;
-            mapCanvas.Children.Add(new Border() { Width = BitmapWidth, Height = BitmapHeight, Background = Brushes.White });
-            mapTransform = new MapTransform(scalex, 0, 0, scaley, topLeft.X, topLeft.Y);
+            geoImage = new GeoreferencedImage(topLeft, bottomRight);
+            mapCanvas.Children.Add(geoImage.RawImage);
             ComputeMapConstants();
             mapLoaded = true;
 
@@ -255,7 +213,7 @@ namespace AXToolbox.MapViewer
         ///<summary>Reset to default zoom level and centered content</summary>
         public void Reset()
         {
-            ZoomTo(MinZoom, MapCenter);
+            ZoomTo(MinZoom, geoImage.Center);
         }
         /// <summary>Center the desired point</summary>
         /// <param name="mapPosition">Desired point in map coordinates</param>
@@ -307,7 +265,7 @@ namespace AXToolbox.MapViewer
         /// <returns></returns>
         public Point FromMapToLocal(Point mapPosition)
         {
-            var bitmapPosition = mapTransform.FromMapToBitmap(mapPosition);
+            var bitmapPosition = geoImage.FromMapToBitmap(mapPosition);
             var localPosition = mapTransformGroup.Transform(bitmapPosition);
             return localPosition;
         }
@@ -317,7 +275,7 @@ namespace AXToolbox.MapViewer
         public Point FromLocalToMap(Point localPosition)
         {
             var bitmapPosition = mapTransformGroup.Inverse.Transform(localPosition);
-            var mapPosition = mapTransform.FromBitmapToMap(bitmapPosition);
+            var mapPosition = geoImage.FromBitmapToMap(bitmapPosition);
             return mapPosition;
         }
 
@@ -386,11 +344,8 @@ namespace AXToolbox.MapViewer
 
         protected void ComputeMapConstants()
         {
-            BitmapCenter = new Point(BitmapWidth / 2, BitmapHeight / 2);
-            MapCenter = mapTransform.FromBitmapToMap(BitmapCenter);
-
-            MaxZoom = Math.Max(mapTransform.PixelWidth, mapTransform.PixelHeight);
-            MinZoom = Math.Min(ActualWidth / BitmapWidth, ActualHeight / BitmapHeight); // fit to viewer
+            MaxZoom = Math.Max(geoImage.PixelWidth, geoImage.PixelHeight);
+            MinZoom = Math.Min(ActualWidth / geoImage.BitmapWidth, ActualHeight / geoImage.BitmapHeight); // fit to viewer
         }
         #endregion
 

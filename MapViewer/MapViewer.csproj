@@ -39,8 +39,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeoreferencedImage.cs" />
     <Compile Include="MapOverlay.cs" />
-    <Compile Include="MapTransform.cs" />
     <Compile Include="Overlays\AngleOverlay.xaml.cs">
       <DependentUpon>AngleOverlay.xaml</DependentUpon>
     </Compile>
