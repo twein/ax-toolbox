@@ -3,11 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="AXToolbox.MapViewer.WaypointOverlay" 
     xmlns:maps="clr-namespace:AXToolbox.MapViewer"
-    IsHitTestVisible="False" >
-    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" UseLayoutRounding="True">
-        <Grid.CacheMode>
-            <BitmapCache SnapsToDevicePixels="True"/>
-        </Grid.CacheMode>
+    IsHitTestVisible="False"  UseLayoutRounding="True">
+    <Grid>
         <Path Name="center" Height="9" Width="9" HorizontalAlignment="Left" VerticalAlignment="Top"
               Stroke="Black" Fill="Black"
               Data="M0,0 L9,6 L6,9 L0,0" />

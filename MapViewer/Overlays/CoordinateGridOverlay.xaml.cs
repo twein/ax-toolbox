@@ -45,6 +45,37 @@ namespace AXToolbox.MapViewer
                 var endX = GridWidth * Math.Floor(br.X / GridWidth);
                 var endY = GridWidth * Math.Floor(br.Y / GridWidth);
 
+
+
+                
+                StreamGeometry geometry = new StreamGeometry();
+                using (StreamGeometryContext ctx = geometry.Open())
+                {
+                    Point p1, p2;
+                    var localPosition = Map.FromMapToLocal(tl);
+                    ctx.BeginFigure(new Point(0, 0), false, false);
+                    //vertical
+                    for (double x = startX; Math.Abs(x - startX) <= Math.Abs(endX - startX); x += incX)
+                    {
+                        p1 = (Point)(Map.FromMapToLocal(new Point(x, tl.Y)) - localPosition);
+                        p2 = (Point)(Map.FromMapToLocal(new Point(x, br.Y)) - localPosition);
+                        ctx.LineTo(p1, false, false);
+                        ctx.LineTo(p2, true, false);
+
+                    }
+                    //horizontal
+                    for (double y = startY; Math.Abs(y - startY) <= Math.Abs(endY - startY); y += incY)
+                    {
+                        p1 = (Point)(Map.FromMapToLocal(new Point(tl.X, y)) - localPosition);
+                        p2 = (Point)(Map.FromMapToLocal(new Point(br.X, y)) - localPosition);
+                        ctx.LineTo(p1, false, false);
+                        ctx.LineTo(p2, true, false);
+                    }
+                }
+                geometry.Freeze();
+                mesh.Data = geometry;
+                
+                /*
                 grid.Children.Clear();
                 Vector p1, p2;
                 var localPosition = Map.FromMapToLocal(tl);
@@ -62,6 +93,7 @@ namespace AXToolbox.MapViewer
                     p2 = Map.FromMapToLocal(new Point(br.X, y)) - localPosition;
                     grid.Children.Add(new Line() { X1 = p1.X, Y1 = p1.Y, X2 = p2.X, Y2 = p2.Y, Stroke = Brushes.Gray, StrokeThickness = 1 });
                 }
+                */
             }
         }
     }

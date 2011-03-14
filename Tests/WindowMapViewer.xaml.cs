@@ -39,13 +39,13 @@ namespace AXToolbox.Tests
             // add a random track
             var rnd = new Random();
             var position = new Point(302263, 4609451);
-            var trackLog = new Point[1000];
+            var trackLog = new Point[6000];
             var utm = new Point(position.X, position.Y);
             trackLog[0] = position;
 
-            double amplitude = Math.PI / 6, stroke = 25;
+            double amplitude = Math.PI / 6, stroke = 10;
             double ang = 0, dist;
-            for (var i = 1; i < 1000; i++)
+            for (var i = 1; i < trackLog.Length; i++)
             {
                 ang += amplitude * (rnd.NextDouble() - 0.5);
                 dist = stroke * (1 + rnd.NextDouble()) / 2;
