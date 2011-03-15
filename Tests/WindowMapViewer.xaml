@@ -12,7 +12,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical" Grid.Row="0">
-            <TextBlock Text="{Binding ElementName=map, Path=ZoomLevel}" IsHitTestVisible="False" Background="Silver"></TextBlock>
+            <TextBlock Text="{Binding ElementName=map, Path=ZoomLevelPct}" IsHitTestVisible="False" Background="Silver"></TextBlock>
             <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="Silver"></TextBlock>
         </StackPanel>
         <maps:MapViewerControl x:Name="map" Grid.Row="1"/>
