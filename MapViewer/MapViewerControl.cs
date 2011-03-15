@@ -367,50 +367,56 @@ namespace AXToolbox.MapViewer
         #region "Event handlers"
         protected void control_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            if (mapLoaded)
             {
-                case Key.Escape:
-                    Reset();
-                    break;
-                case Key.OemPlus:
-                case Key.Add:
-                    ZoomLevel *= DefaultZoomFactor;
-                    break;
-                case Key.OemMinus:
-                case Key.Subtract:
-                    ZoomLevel /= DefaultZoomFactor;
-                    break;
-                case Key.OemPeriod:
-                    ZoomLevel = 1;
-                    break;
-                case Key.Up:
-                    LocalPan(new Vector(0, -50));
-                    break;
-                case Key.Down:
-                    LocalPan(new Vector(0, 50));
-                    break;
-                case Key.Left:
-                    LocalPan(new Vector(-50, 0));
-                    break;
-                case Key.Right:
-                    LocalPan(new Vector(50, 0));
-                    break;
-                case Key.Multiply:
-                    SaveSnapshot("snapshot.png");
-                    break;
+                switch (e.Key)
+                {
+                    case Key.Escape:
+                        Reset();
+                        break;
+                    case Key.OemPlus:
+                    case Key.Add:
+                        ZoomLevel *= DefaultZoomFactor;
+                        break;
+                    case Key.OemMinus:
+                    case Key.Subtract:
+                        ZoomLevel /= DefaultZoomFactor;
+                        break;
+                    case Key.OemPeriod:
+                        ZoomLevel = 1;
+                        break;
+                    case Key.Up:
+                        LocalPan(new Vector(0, -50));
+                        break;
+                    case Key.Down:
+                        LocalPan(new Vector(0, 50));
+                        break;
+                    case Key.Left:
+                        LocalPan(new Vector(-50, 0));
+                        break;
+                    case Key.Right:
+                        LocalPan(new Vector(50, 0));
+                        break;
+                    case Key.Multiply:
+                        SaveSnapshot("snapshot.png");
+                        break;
+                }
             }
         }
         protected void control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //Get keyboard focus
-            Keyboard.Focus(this);
+            if (mapLoaded)
+            {
+                //Get keyboard focus
+                Keyboard.Focus(this);
 
-            //Save starting point, used later when determining how much to scroll
-            startPosition = e.GetPosition(this);
+                //Save starting point, used later when determining how much to scroll
+                startPosition = e.GetPosition(this);
 
-            startOffset = new Point(translateTransform.X, translateTransform.Y);
-            CaptureMouse();
-            Cursor = Cursors.ScrollAll;
+                startOffset = new Point(translateTransform.X, translateTransform.Y);
+                CaptureMouse();
+                Cursor = Cursors.ScrollAll;
+            }
         }
         protected void control_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -433,23 +439,25 @@ namespace AXToolbox.MapViewer
         }
         protected void control_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            //Zoom to the mouse pointer position
-            //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+            if (mapLoaded)
             {
-                //Compute zoom delta according to wheel direction
-                double zoomFactor = DefaultZoomFactor;
-                if (e.Delta < 0)
-                    zoomFactor = 1.0 / DefaultZoomFactor;
+                //Zoom to the mouse pointer position
+                //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+                {
+                    //Compute zoom delta according to wheel direction
+                    double zoomFactor = DefaultZoomFactor;
+                    if (e.Delta < 0)
+                        zoomFactor = 1.0 / DefaultZoomFactor;
 
-                //Perform the zoom
-                var position = e.GetPosition(this);
-                DoIncZoom(zoomFactor, position);
+                    //Perform the zoom
+                    var position = e.GetPosition(this);
+                    DoIncZoom(zoomFactor, position);
+                }
             }
         }
         protected void control_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-
-            if (!(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
+            if (mapLoaded && !(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
             {
                 var previousLocalCenter = new Point(e.PreviousSize.Width / 2, e.PreviousSize.Height / 2);
                 var previousMapCenter = FromLocalToMap(previousLocalCenter);

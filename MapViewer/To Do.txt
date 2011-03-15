@@ -1,4 +1,1 @@
-﻿Bug: look for workaround to avoid the blurry WPF text rendering issue
-
-Ideas:
-Optimize the speed of Grid overlay.
+﻿

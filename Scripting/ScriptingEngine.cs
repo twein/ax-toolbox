@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
-using System.Text;
 
 namespace AXToolbox.Scripting
 {
     public sealed class ScriptingEngine
     {
-        //#region Singleton implementation
-        //static readonly ScriptingEngine instance = new ScriptingEngine();
-        //public static ScriptingEngine Instance
-        //{
-        //    get { return instance; }
-        //}
-        //static ScriptingEngine() { }
-        //#endregion
 
         //Regular Expressions to parse commands. Use in this same order.
         static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
