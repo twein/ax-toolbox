@@ -12,11 +12,12 @@ namespace AXToolbox.MapViewer
 {
     public class MapViewerControl : ContentControl, INotifyPropertyChanged
     {
-        protected bool mapLoaded = false;
+        public bool IsMapLoaded { get; private set; }
 
         public Point MapTopLeft { get { return geoImage.TopLeft; } }
         public Point MapBottomRight { get { return geoImage.BottomRight; } }
 
+        public Point PointerPosition { get; private set; }
         //zoom parameters
         protected double zoomLevel;
         public double ZoomLevel
@@ -74,6 +75,7 @@ namespace AXToolbox.MapViewer
 
             DefaultZoomFactor = 1.1;
             zoomLevel = 1;
+            IsMapLoaded = false;
         }
 
         public override void OnApplyTemplate()
@@ -123,7 +125,7 @@ namespace AXToolbox.MapViewer
                 mapCanvas.Children.Clear();
                 mapCanvas.Children.Add(geoImage.RawImage);
                 ComputeMapConstants();
-                mapLoaded = true;
+                IsMapLoaded = true;
 
                 Reset();
             }
@@ -143,7 +145,7 @@ namespace AXToolbox.MapViewer
             mapCanvas.Children.Clear();
             mapCanvas.Children.Add(geoImage.RawImage);
             ComputeMapConstants();
-            mapLoaded = true;
+            IsMapLoaded = true;
 
             Reset();
         }
@@ -193,7 +195,7 @@ namespace AXToolbox.MapViewer
         /// <param name="overlay"></param>
         public void AddOverlay(MapOverlay overlay)
         {
-            if (!mapLoaded)
+            if (!IsMapLoaded)
                 throw new InvalidOperationException("Must load a map before placing overlays");
 
             overlay.Map = this;
@@ -367,7 +369,7 @@ namespace AXToolbox.MapViewer
         #region "Event handlers"
         protected void control_KeyDown(object sender, KeyEventArgs e)
         {
-            if (mapLoaded)
+            if (IsMapLoaded && !IsMouseCaptured)
             {
                 switch (e.Key)
                 {
@@ -405,7 +407,7 @@ namespace AXToolbox.MapViewer
         }
         protected void control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (mapLoaded)
+            if (IsMapLoaded)
             {
                 //Get keyboard focus
                 Keyboard.Focus(this);
@@ -429,17 +431,26 @@ namespace AXToolbox.MapViewer
         }
         protected void control_MouseMove(object sender, MouseEventArgs e)
         {
-            if (IsMouseCaptured)
+            if (IsLoaded)
             {
-                //Move the content
                 var position = e.GetPosition(this);
-                var displacement = new Vector(position.X - startPosition.X + startOffset.X, position.Y - startPosition.Y + startOffset.Y);
-                LocalPanTo(displacement);
+
+                if (IsMouseCaptured)
+                {
+                    //Move the content
+                    var displacement = new Vector(position.X - startPosition.X + startOffset.X, position.Y - startPosition.Y + startOffset.Y);
+                    LocalPanTo(displacement);
+                }
+                else
+                {
+                    PointerPosition = FromLocalToMap(position);
+                    NotifyPropertyChanged("PointerPosition");
+                }
             }
         }
         protected void control_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (mapLoaded)
+            if (IsMapLoaded && !IsMouseCaptured)
             {
                 //Zoom to the mouse pointer position
                 //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
@@ -457,7 +468,7 @@ namespace AXToolbox.MapViewer
         }
         protected void control_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (mapLoaded && !(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
+            if (IsMapLoaded && !(e.PreviousSize.Height == 0 && e.PreviousSize.Width == 0))
             {
                 var previousLocalCenter = new Point(e.PreviousSize.Width / 2, e.PreviousSize.Height / 2);
                 var previousMapCenter = FromLocalToMap(previousLocalCenter);

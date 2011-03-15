@@ -2,36 +2,41 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Width="1024" Height="576" WindowState="Maximized">
     <DockPanel LastChildFill="True">
+        <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Name="textZoom" Text="{Binding ElementName=map, Path=ZoomLevelPct, StringFormat=Zoom: {0:0.00}%}" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Position: {0:0},{1:0}">
+                            <Binding ElementName="map" Path="PointerPosition.X" />
+                            <Binding ElementName="map" Path="PointerPosition.Y" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
             <StackPanel Orientation="Vertical">
-                <Expander ExpandDirection="Down" IsExpanded="True" BorderBrush="Gray" MaxWidth="300">
+                <Expander ExpandDirection="Down" MaxWidth="300" Background="LightGray" >
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                            <TextBlock VerticalAlignment="Center" FontWeight="Bold">Script</TextBlock>
-                            <Button Margin="0" ToolTip="Load script file">Load</Button>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock VerticalAlignment="Top" FontWeight="Bold">Script</TextBlock>
+                                <TextBlock VerticalAlignment="Top">Script description</TextBlock>
+                            </StackPanel>
+                            <Button Height="22" ToolTip="Load script file" Click="Button_Click">Load</Button>
                         </StackPanel>
                     </Expander.Header>
-                    <ContentControl>
-                        <TextBlock>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</TextBlock>
-                    </ContentControl>
-                </Expander>
-                <Expander ExpandDirection="Down" IsExpanded="True" BorderBrush="Gray"  MaxWidth="300">
-                    <Expander.Header>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                            <TextBlock VerticalAlignment="Center" FontWeight="Bold">Flight report</TextBlock>
-                            <Button Margin="0" ToolTip="Load log file">Load</Button>
-                        </StackPanel>
-                    </Expander.Header>
-                    <ContentControl>
-                        <TextBlock>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</TextBlock>
-                    </ContentControl>
+                    <TextBlock TextWrapping="Wrap" Background="White">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</TextBlock>
                 </Expander>
             </StackPanel>
         </ScrollViewer>
         <Border BorderBrush="Black" BorderThickness="1">
-            <maps:MapViewerControl x:Name="map" MinWidth="640" MinHeight="480"/>
+            <maps:MapViewerControl x:Name="map" />
         </Border>
     </DockPanel>
 </Window>
