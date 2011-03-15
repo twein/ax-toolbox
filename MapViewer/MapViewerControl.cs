@@ -21,13 +21,27 @@ namespace AXToolbox.MapViewer
         protected double zoomLevel;
         public double ZoomLevel
         {
-            get { return zoomLevel; }
+            get
+            {
+                return zoomLevel;
+            }
             set
             {
                 if (zoomLevel != value)
                 {
                     Zoom(value);
                 }
+            }
+        }
+        public double ZoomLevelPct
+        {
+            get
+            {
+                return Math.Round(zoomLevel * 100, 2);
+            }
+            set
+            {
+                ZoomLevel = value / 100;
             }
         }
         public double MaxZoom { get; protected set; }
@@ -323,7 +337,10 @@ namespace AXToolbox.MapViewer
             RefreshOverlays(currentZoom != zoomLevel);
 
             if (zoomLevel != currentZoom)
+            {
                 NotifyPropertyChanged("ZoomLevel");
+                NotifyPropertyChanged("ZoomLevelPct");
+            }
         }
 
         /// <summary>Refresh the overlays position and size after a pan or zoom</summary>

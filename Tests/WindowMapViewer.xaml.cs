@@ -43,7 +43,7 @@ namespace AXToolbox.Tests
             var utm = new Point(position.X, position.Y);
             trackLog[0] = position;
 
-            double amplitude = Math.PI / 6, stroke = 10;
+            double amplitude = Math.PI / 10, stroke = 10;
             double ang = 0, dist;
             for (var i = 1; i < trackLog.Length; i++)
             {
