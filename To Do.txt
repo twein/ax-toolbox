@@ -1,3 +1,6 @@
+BUGS:
+In FlightAnalyzer, application crashes when loading a second script.
+
 TO DO
 Add notes for every user action.
 Keep track of debriefer identity. Assign pilot ranges to each debriefer?
