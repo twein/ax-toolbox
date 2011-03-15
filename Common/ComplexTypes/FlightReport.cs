@@ -183,6 +183,7 @@ namespace AXToolbox.Common
             else
                 throw new FileNotFoundException();
         }
+
         public bool Save(string folder)
         {
             var ok = pilotId > 0;
