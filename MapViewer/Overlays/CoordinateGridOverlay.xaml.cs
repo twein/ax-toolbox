@@ -25,7 +25,9 @@ namespace AXToolbox.MapViewer
 
         public override void SetMap(MapViewerControl newMap)
         {
-            position = newMap.MapTopLeft;
+            if (newMap != null)
+                position = newMap.MapTopLeft;
+
             base.SetMap(newMap);
         }
 
@@ -47,7 +49,7 @@ namespace AXToolbox.MapViewer
 
 
 
-                
+
                 StreamGeometry geometry = new StreamGeometry();
                 using (StreamGeometryContext ctx = geometry.Open())
                 {
@@ -74,7 +76,7 @@ namespace AXToolbox.MapViewer
                 }
                 geometry.Freeze();
                 mesh.Data = geometry;
-                
+
                 /*
                 grid.Children.Clear();
                 Vector p1, p2;
