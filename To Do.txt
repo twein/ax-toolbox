@@ -1,10 +1,8 @@
-BUGS:
-In FlightAnalyzer, application crashes when loading a second script.
+BUGS
 
 TO DO
 Add notes for every user action.
 Keep track of debriefer identity. Assign pilot ranges to each debriefer?
-
 Don't score counterfeit logs.
 Mark manually added markers and declarations. Don't allow to delete non-manual ones.
 Perform all measurements and penalizations in FlightAnalyzer.

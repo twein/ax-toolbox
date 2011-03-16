@@ -20,6 +20,37 @@ namespace AXToolbox.Tests
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+        }
+
+        private double Distance(Point p1, Point p2)
+        {
+            return Math.Sqrt((p2.X - p1.X) * (p2.X - p1.X) + (p2.Y - p1.Y) * (p2.Y - p1.Y));
+        }
+        private double Angle(Point a, Point b, Point c)
+        {
+            var ab = b - a;
+            var cb = b - c;
+
+            var angba = Math.Atan2(ab.Y, ab.X);
+            var angbc = Math.Atan2(cb.Y, cb.X);
+            var angle = angba - angbc;
+
+            return (360 + (angle * 180) / Math.PI) % 360;
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            map.Clear();
+        }
+
+        private void btnBlank_Click(object sender, RoutedEventArgs e)
+        {
+            map.LoadBlank(new Point(282000, 4632000), new Point(343000, 4594000));
+            InitMap();
+        }
+
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
             var dlg = new OpenFileDialog();
             dlg.Filter = "Image Files (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png|All Files (*.*)|*.*";
             dlg.InitialDirectory = Environment.CurrentDirectory;
@@ -27,12 +58,12 @@ namespace AXToolbox.Tests
             if (dlg.ShowDialog(this) == true)
             {
                 map.LoadBitmap(dlg.FileName);
+                InitMap();
             }
-            else
-            {
-                map.LoadBlank(new Point(282000, 4632000), new Point(343000, 4594000));
-            }
+        }
 
+        private void InitMap()
+        {
             //add a map grid
             map.AddOverlay(new CoordinateGridOverlay(1000));
 
@@ -111,43 +142,6 @@ namespace AXToolbox.Tests
                 var angle = new AngleOverlay(track.Position, crosshairs.Position, trackLog[trackLog.Length - 1], "Angle alpha" + Environment.NewLine + a.ToString("0.00°"));
                 map.AddOverlay(angle);
             }
-
-        }
-
-        private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            map.SaveSnapshot("snapshot.png");
-
-            var pos = e.GetPosition(this);
-            var utmPos = map.FromLocalToMap(pos);
-            MessageBox.Show(
-                string.Format("Local: {0:0}; {1:0}\n", pos.X, pos.Y) +
-                string.Format("UTM: {0:0.0}; {1:0.0}\n", utmPos.X, utmPos.Y) +
-                string.Format("Zoom: {0: 0.0}%\n", 100 * map.ZoomLevel) +
-                "Snapshot saved to 'snapshot.png'"
-                );
-        }
-
-        private void Window_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = map.FromLocalToMap(e.GetPosition(map));
-            textPosition.Text = string.Format("UTM: {0:0.0} {1:0.0}", pos.X, pos.Y);
-        }
-
-        private double Distance(Point p1, Point p2)
-        {
-            return Math.Sqrt((p2.X - p1.X) * (p2.X - p1.X) + (p2.Y - p1.Y) * (p2.Y - p1.Y));
-        }
-        private double Angle(Point a, Point b, Point c)
-        {
-            var ab = b - a;
-            var cb = b - c;
-
-            var angba = Math.Atan2(ab.Y, ab.X);
-            var angbc = Math.Atan2(cb.Y, cb.X);
-            var angle = angba - angbc;
-
-            return (360 + (angle * 180) / Math.PI) % 360;
         }
     }
 }

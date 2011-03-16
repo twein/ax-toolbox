@@ -28,7 +28,8 @@ namespace AXToolbox.Scripting
             internal set
             {
                 validTrackPoints = value;
-                LogLine(string.Format("{0} valid track points", validTrackPoints.Count));
+                if (validTrackPoints != null)
+                    LogLine(string.Format("{0} valid track points", validTrackPoints.Count));
             }
         }
 
@@ -52,15 +53,17 @@ namespace AXToolbox.Scripting
         {
             LogLine("Loading script '" + scriptFileName + "'");
 
-            string line;
-
+            Map = null;
+            Settings = new FlightSettings();
             Heap.Clear();
+            validTrackPoints = null;
             //TODO: initialize all variables
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(scriptFileName));
 
             var lines = File.ReadAllLines(scriptFileName);
 
+            string line;
             int lineNumber = 0;
             try
             {

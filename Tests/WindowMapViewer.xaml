@@ -4,17 +4,30 @@
     xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
     Title="MapViewer test" Width="1024" Height="768" WindowState="Maximized"
         Loaded="Window_Loaded"
-        MouseRightButtonUp="Window_MouseRightButtonUp"
-        MouseMove="Window_MouseMove" Icon="/AXToolbox.Tests;component/balloon.ico">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical" Grid.Row="0">
-            <TextBlock Text="{Binding ElementName=map, Path=ZoomLevelPct}" IsHitTestVisible="False" Background="Silver"></TextBlock>
-            <TextBlock x:Name="textPosition" IsHitTestVisible="False" Background="Silver"></TextBlock>
+        Icon="/AXToolbox.Tests;component/balloon.ico">
+    <DockPanel LastChildFill="True">
+        <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Name="textZoom" Text="{Binding ElementName=map, Path=ZoomLevelPct, StringFormat=Zoom: {0:0.00}%}" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Position: {0:0},{1:0}">
+                            <Binding ElementName="map" Path="PointerPosition.X" />
+                            <Binding ElementName="map" Path="PointerPosition.Y" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <Button Name="btnClear" Click="btnClear_Click">Clear</Button>
+            <Button Name="btnBlank" Click="btnBlank_Click">Blank</Button>
+            <Button Name="btnLoad" Click="btnLoad_Click">Load</Button>
         </StackPanel>
-        <maps:MapViewerControl x:Name="map" Grid.Row="1"/>
-    </Grid>
+
+        <maps:MapViewerControl x:Name="map" />
+    </DockPanel>
 </Window>

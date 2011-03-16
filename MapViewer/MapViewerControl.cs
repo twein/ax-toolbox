@@ -10,50 +10,50 @@ using System.Windows.Media.Imaging;
 
 namespace AXToolbox.MapViewer
 {
-    public class MapViewerControl : ContentControl, INotifyPropertyChanged
+    public class MapViewerControl : Border, INotifyPropertyChanged
     {
+        static Point ORIGIN = new Point(0, 0);
+
         public bool IsMapLoaded { get; private set; }
 
         public Point MapTopLeft { get { return geoImage.TopLeft; } }
         public Point MapBottomRight { get { return geoImage.BottomRight; } }
 
-        public Point PointerPosition { get; private set; }
-        //zoom parameters
+        protected Point pointerPosition;
         protected double zoomLevel;
+
+        protected void SetPointerPosition(Point newPosition)
+        {
+            if (pointerPosition != newPosition)
+            {
+                pointerPosition = newPosition;
+                NotifyPropertyChanged("PointerPosition");
+            }
+        }
+
+        //begin INotifyPropertyChanged properties
+        public Point PointerPosition
+        {
+            get { return pointerPosition; }
+        }
         public double ZoomLevel
         {
-            get
-            {
-                return zoomLevel;
-            }
-            set
-            {
-                if (zoomLevel != value)
-                {
-                    Zoom(value);
-                }
-            }
+            get { return zoomLevel; }
         }
         public double ZoomLevelPct
         {
-            get
-            {
-                return Math.Round(zoomLevel * 100, 2);
-            }
-            set
-            {
-                ZoomLevel = value / 100;
-            }
+            get { return Math.Round(zoomLevel * 100, 2); }
         }
-        public double MaxZoom { get; protected set; }
-        public double MinZoom { get; protected set; }
+        //end INotifyPropertyChanged properties
+
+        public double MaxZoom { get; set; }
+        public double MinZoom { get; set; }
         public double DefaultZoomFactor { get; set; }
 
         protected Grid mainGrid;
         protected Canvas mapCanvas;
         protected Canvas overlaysCanvas;
         protected List<MapOverlay> overlays;
-
         protected GeoreferencedImage geoImage;
 
         //WPF transforms
@@ -69,18 +69,14 @@ namespace AXToolbox.MapViewer
         {
             UseLayoutRounding = true;
             ClipToBounds = true;
+            Focusable = true;
 
-            startPosition = new Point(0, 0);
+            startPosition = ORIGIN;
             overlays = new List<MapOverlay>();
 
             DefaultZoomFactor = 1.1;
             zoomLevel = 1;
             IsMapLoaded = false;
-        }
-
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
 
             // set up layout
             mapCanvas = new Canvas();
@@ -88,7 +84,7 @@ namespace AXToolbox.MapViewer
             mainGrid = new Grid();
             mainGrid.Children.Add(mapCanvas);
             mainGrid.Children.Add(overlaysCanvas);
-            AddChild(mainGrid);
+            Child = mainGrid;
 
             // add transforms
             translateTransform = new TranslateTransform();
@@ -100,7 +96,6 @@ namespace AXToolbox.MapViewer
             mapCanvas.RenderTransform = mapTransformGroup;
 
             // events
-            Focusable = true;
             KeyDown += new KeyEventHandler(control_KeyDown);
             MouseLeftButtonDown += new MouseButtonEventHandler(control_MouseLeftButtonDown);
             MouseLeftButtonUp += new MouseButtonEventHandler(control_MouseLeftButtonUp);
@@ -121,8 +116,8 @@ namespace AXToolbox.MapViewer
         {
             try
             {
+                Clear();
                 geoImage = new GeoreferencedImage(bitmapFileName);
-                mapCanvas.Children.Clear();
                 mapCanvas.Children.Add(geoImage.RawImage);
                 ComputeMapConstants();
                 IsMapLoaded = true;
@@ -141,8 +136,8 @@ namespace AXToolbox.MapViewer
         public void LoadBlank(Point topLeft, Point bottomRight)
         {
             //load blank map
+            Clear();
             geoImage = new GeoreferencedImage(topLeft, bottomRight);
-            mapCanvas.Children.Clear();
             mapCanvas.Children.Add(geoImage.RawImage);
             ComputeMapConstants();
             IsMapLoaded = true;
@@ -188,6 +183,17 @@ namespace AXToolbox.MapViewer
             }
         }
 
+        public void Clear()
+        {
+            IsMapLoaded = false;
+            geoImage = null;
+            overlays.Clear();
+            overlaysCanvas.Children.Clear();
+            mapCanvas.Children.Clear();
+            zoomLevel = 1;
+            NotifyPropertyChanged("ZoomLevel");
+            NotifyPropertyChanged("ZoomLevelPct");
+        }
 
         //overlays
 
@@ -378,14 +384,14 @@ namespace AXToolbox.MapViewer
                         break;
                     case Key.OemPlus:
                     case Key.Add:
-                        ZoomLevel *= DefaultZoomFactor;
+                        Zoom(ZoomLevel * DefaultZoomFactor);
                         break;
                     case Key.OemMinus:
                     case Key.Subtract:
-                        ZoomLevel /= DefaultZoomFactor;
+                        Zoom(ZoomLevel / DefaultZoomFactor);
                         break;
                     case Key.OemPeriod:
-                        ZoomLevel = 1;
+                        Zoom(1);
                         break;
                     case Key.Up:
                         LocalPan(new Vector(0, -50));
@@ -431,7 +437,7 @@ namespace AXToolbox.MapViewer
         }
         protected void control_MouseMove(object sender, MouseEventArgs e)
         {
-            if (IsLoaded)
+            if (IsMapLoaded)
             {
                 var position = e.GetPosition(this);
 
@@ -442,11 +448,10 @@ namespace AXToolbox.MapViewer
                     LocalPanTo(displacement);
                 }
                 else
-                {
-                    PointerPosition = FromLocalToMap(position);
-                    NotifyPropertyChanged("PointerPosition");
-                }
+                    SetPointerPosition(FromLocalToMap(position));
             }
+            else
+                SetPointerPosition(ORIGIN);
         }
         protected void control_MouseWheel(object sender, MouseWheelEventArgs e)
         {

@@ -85,8 +85,6 @@ namespace AXToolbox.Scripting
 
         public void InitializeMapViewer(MapViewerControl map)
         {
-            map.ClearOverlays();
-
             if (type == "BITMAP")
                 map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
             else
