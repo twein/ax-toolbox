@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AXToolbox.Common
 {
-    public class FlightSettings
+    public class FlightSettings : BindableObject
     {
         //TODO: document all this
         public DateTime Date { get; set; }
@@ -73,6 +73,14 @@ namespace AXToolbox.Common
                 northing += 1e5;
 
             return northing;
+        }
+
+        public override string ToString()
+        {
+            if (AreWellInitialized())
+                return string.Format("{0:yyyy/MM/dd} {1}", Date, Date.GetAmPm());
+            else
+                return "<empty>";
         }
     }
 }

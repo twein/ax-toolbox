@@ -26,12 +26,12 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock VerticalAlignment="Top" FontWeight="Bold">Script</TextBlock>
-                                <TextBlock VerticalAlignment="Top">Script description</TextBlock>
+                                <TextBlock VerticalAlignment="Top" Text="{Binding Path=Engine.ShortDescription}"></TextBlock>
                             </StackPanel>
                             <Button Height="22" ToolTip="Load script file" Click="Button_Click">Load</Button>
                         </StackPanel>
                     </Expander.Header>
-                    <TextBlock TextWrapping="Wrap" Background="White">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Engine.Detail}"/>
                 </Expander>
             </StackPanel>
         </ScrollViewer>
