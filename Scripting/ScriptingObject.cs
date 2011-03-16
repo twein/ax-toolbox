@@ -111,6 +111,11 @@ namespace AXToolbox.Scripting
             LogLine("Running");
         }
 
+        public string ToShortString()
+        {
+            return type;
+        }
+
         public override string ToString()
         {
             string str = name + " = ";

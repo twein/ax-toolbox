@@ -5,22 +5,41 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using System.Linq;
+using System.ComponentModel;
 
 namespace AXToolbox.Scripting
 {
-    public sealed class ScriptingEngine
+    public sealed class ScriptingEngine : BindableObject
     {
-
         //Regular Expressions to parse commands. Use in this same order.
         static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
         static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
 
-        //Settings
+
+        public string ShortDescription
+        {
+            get
+            {
+                var l = "";
+                foreach (var item in Heap.Values.Where(h => h is ScriptingTask))
+                    l += ((ScriptingTask)item).ToShortString() + ",";
+                l = l.Trim(new char[] { ',' });
+                return string.Format("{0} {1}", Settings.ToString(), l);
+            }
+        }
+        public string Detail
+        {
+            get
+            {
+                var str = "";
+                foreach (var i in Heap.Values)
+                    str += i.ToString() + Environment.NewLine;
+                return str;
+            }
+        }
         public FlightSettings Settings { get; private set; }
-        public ScriptingMap Map { get; private set; }
-
-        public Dictionary<string, ScriptingObject> Heap { get; private set; }
-
+        public StringBuilder Log { get; private set; }
         private List<Trackpoint> validTrackPoints;
         public List<Trackpoint> ValidTrackPoints
         {
@@ -33,7 +52,9 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public StringBuilder Log { get; private set; }
+
+        internal ScriptingMap Map { get; private set; }
+        internal Dictionary<string, ScriptingObject> Heap { get; private set; }
 
         public ScriptingEngine()
         {
@@ -98,11 +119,11 @@ namespace AXToolbox.Scripting
                         var obj = ScriptingObject.Create(this, objectClass, name, type, parms, displayMode, displayParms);
 
                         if (objectClass == "MAP")
-                            //force only one map
+                            //we'll need it later
                             Map = (ScriptingMap)obj;
-                        else
-                            //otherwise, place on heap
-                            Heap.Add(obj.Name, obj);
+
+                        //place on heap
+                        Heap.Add(obj.Name, obj);
                     }
 
                     else
@@ -123,6 +144,10 @@ namespace AXToolbox.Scripting
                 LogLine("Exception: " + message);
                 throw new ArgumentException(message);
             }
+
+            RaisePropertyChanged("Settings");
+            RaisePropertyChanged("ShortDescription");
+            RaisePropertyChanged("Detail");
         }
 
         public void RefreshMapViewer(MapViewerControl map)
@@ -167,6 +192,7 @@ namespace AXToolbox.Scripting
         public void LogLine(string str)
         {
             Log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
+            RaisePropertyChanged("Log");
         }
 
         public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)
