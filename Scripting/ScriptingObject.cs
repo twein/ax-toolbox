@@ -210,7 +210,7 @@ namespace AXToolbox.Scripting
         }
         protected void LogLine(string str)
         {
-            engine.Log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + name + " - " + str);
+            engine.Log.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + name + " - " + str);
         }
     }
 }

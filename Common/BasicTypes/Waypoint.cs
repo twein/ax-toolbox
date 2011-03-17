@@ -26,14 +26,14 @@ namespace AXToolbox.Common
             : base()
         {
             Name = name;
-            time = point.Time;
-            latitude = point.Latitude;
-            longitude = point.Longitude;
-            datum = point.Datum;
-            zone = point.Zone;
-            easting = point.Easting;
-            northing = point.Northing;
-            altitude = point.Altitude;
+            Time = point.Time;
+            Latitude = point.Latitude;
+            Longitude = point.Longitude;
+            Datum = point.Datum;
+            Zone = point.Zone;
+            Easting = point.Easting;
+            Northing = point.Northing;
+            Altitude = point.Altitude;
             Radius = 0;
         }
 
