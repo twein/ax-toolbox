@@ -64,7 +64,7 @@ namespace AXToolbox.Scripting
         ~ScriptingEngine()
         {
             LogLine("Stopped ".PadRight(95, '='));
-            File.AppendAllText("scripting.log", Log.ToString());
+            File.AppendAllLines("scripting.log", Log);
         }
 
         public void LoadScript(string scriptFileName)
