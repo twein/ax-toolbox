@@ -20,6 +20,8 @@ namespace AXToolbox.Scripting
 
         protected Point centerPoint = null;
         protected double radius = 0;
+        protected List<System.Windows.Point> outline;
+
 
         internal ScriptingArea(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -50,6 +52,9 @@ namespace AXToolbox.Scripting
 
                     if (!File.Exists(parameters[0]))
                         throw new ArgumentException("Track file not found '" + parameters[0] + "'");
+
+                    //outline = FlightReport.LoadFromFile(parameters[0]).OriginalTrack;
+                    throw new NotImplementedException();
                     break;
             }
         }
@@ -115,6 +120,7 @@ namespace AXToolbox.Scripting
                 case "POLY":
                     //TODO: polygonal scripting area GetOverlay()
                     throw new NotImplementedException();
+                    break;
             }
 
             return overlay;

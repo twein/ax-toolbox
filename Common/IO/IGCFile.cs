@@ -1,107 +1,131 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
-using System.IO;
 
 namespace AXToolbox.Common.IO
 {
-    [Serializable]
-    public class IGCFile : FlightReport
+    public class IGCFile : LoggerFile
     {
-        private DateTime tmpDate;
-
         public IGCFile(string filePath)
             : base(filePath)
         {
+            logFileExtension = ".igc";
+
+            //get signature info
+            var v = new Verifier();
+            if (v.Verify(filePath))
+            {
+                signatureStatus = SignatureStatus.Genuine;
+                Notes.Add("The log file is signed and OK.");
+            }
+            else
+            {
+                signatureStatus = SignatureStatus.Counterfeit;
+                Notes.Add("THE LOG FILE HAS BEEN TAMPERED WITH!");
+            }
+
+            //get logger info
+            try
+            {
+                var loggerInfo = TrackLogLines.First(l => l.StartsWith("AXXX"));
+                loggerModel = loggerInfo.Substring(7);
+                loggerSerialNumber = loggerInfo.Substring(4, 3);
+            }
+            catch (InvalidOperationException) { }
+
+            //get pilot info
+            try
+            {
+                var pilotInfo = TrackLogLines.First(l => l.StartsWith("HFPID"));
+                pilotId = int.Parse(pilotInfo.Substring(5));
+            }
+            catch (InvalidOperationException) { }
+
+
+            //get date
+            try
+            {
+                var dateInfo = TrackLogLines.First(l => l.StartsWith("HFDTE"));
+                loggerDate = ParseDateAt(dateInfo, 9);
+
+            }
+            catch (InvalidOperationException) { }
+            try
+            {
+                var dateInfo = TrackLogLines.Last(l => l.StartsWith("K"));
+                loggerDate = ParseDateAt(dateInfo, 11);
+            }
+            catch (InvalidOperationException) { }
+
+            //check datum
+            try
+            {
+                var datumInfo = TrackLogLines.Last(l => l.StartsWith("HFDTM"));
+                var loggerDatum = datumInfo.Substring(8);
+                if (loggerDatum != "WGS84")
+                    throw new InvalidOperationException("IGC file datum must be WGS84");
+            }
+            catch (InvalidOperationException) { }
+
         }
 
-        protected override string GetLogFileExtension() { return ".igc"; }
-
-        protected override void ParseLog()
+        public override List<Trackpoint> GetTrackLog(FlightSettings settings)
         {
-            var content = from line in trackLogFile
-                          where line.Length > 0
-                          select line;
+            var track = new List<Trackpoint>();
 
-            foreach (var line in content)
+            foreach (var line in TrackLogLines.Where(l => l.StartsWith("B")))
             {
-                switch (line[0])
-                {
-                    case 'A':
-                        //Logger info
-                        if (line.Substring(0, 4) == "AXXX")
-                        {
-                            loggerModel = line.Substring(7);
-                            loggerSerialNumber = line.Substring(4, 3);
-                        }
-                        break;
-                    case 'H':
-                        //Header
-                        switch (line.Substring(0, 5))
-                        {
-                            case "HFPID":
-                                //Pilot id
-                                pilotId = int.Parse(line.Substring(5));
-                                break;
-                            case "HFATS":
-                                //Qnh entered by the pilot
-                                loggerQnh = int.Parse(line.Substring(5));
-                                break;
-                            case "HFDTM":
-                                //Datum
-                                var loggerDatum = line.Substring(8);
-                                if (loggerDatum != "WGS84")
-                                    throw new InvalidOperationException("IGC file datum must be WGS84");
-                                break;
-                            case "HFDTE":
-                                //Date
-                                tmpDate = ParseDateAt(line, 9);
-                                break;
-                        }
-                        break;
-                    case 'K':
-                        //Date update
-                        tmpDate = ParseDateAt(line, 11);
-                        break;
-                    case 'B':
-                        //Track point
-                        ParseTrackPoint(line);
-                        break;
-                    case 'E':
-                        switch (line.Substring(7, 3))
-                        {
-                            case "XX0":
-                                //marker
-                                ParseMarker(line);
-                                break;
-                            case "XX1":
-                                //goal declaration
-                                ParseDeclaration(line);
-                                break;
-                        }
-                        break;
-                }
+                var p = ParseTrackPoint(line, settings);
+                if (p != null && p.Time.Date == settings.Date && p.Time.GetAmPm() == settings.Date.GetAmPm())
+                    track.Add(new Trackpoint(p));
             }
+
+            return track;
+        }
+        public override ObservableCollection<Waypoint> GetMarkers(FlightSettings settings)
+        {
+            var markers = new ObservableCollection<Waypoint>();
+            foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX0"))
+            {
+                var wp = ParseMarker(line, settings);
+                if (wp != null && wp.Time.Date == settings.Date && wp.Time.GetAmPm() == settings.Date.GetAmPm())
+                    markers.Add(wp);
+            }
+            return markers;
+        }
+        public override ObservableCollection<Waypoint> GetDeclarations(FlightSettings settings)
+        {
+            var declarations = new ObservableCollection<Waypoint>();
+            foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX1"))
+            {
+                var wp = ParseDeclaration(line, settings);
+                if (wp != null && wp.Time.Date == settings.Date && wp.Time.GetAmPm() == settings.Date.GetAmPm())
+                    declarations.Add(wp);
+            }
+            return declarations;
         }
 
         //main parser functions
-        private void ParseTrackPoint(string line)
+        private Point ParseTrackPoint(string line, FlightSettings settings)
         {
-            var p = ParseFixAt(line, 7);
-
-            if (p != null)
-                track.Add(new Trackpoint(p));
+            return ParseFixAt(line, 7, settings);
         }
-        private void ParseMarker(string line)
+        private Waypoint ParseMarker(string line, FlightSettings settings)
         {
             var number = line.Substring(10, 2);
-            var p = ParseFixAt(line, 12);
+            var p = ParseFixAt(line, 12, settings);
 
             if (p != null)
-                markers.Add(new Waypoint(number, p));
+                return new Waypoint(number, p);
+            else
+                return null;
         }
-        private void ParseDeclaration(string line)
+        private Waypoint ParseDeclaration(string line, FlightSettings settings)
         {
+            Waypoint declaration=null;
+
             var time = ParseTimeAt(line, 1);
             var number = line.Substring(10, 2);
             var description = "[" + line.Substring(10) + "]";
@@ -119,6 +143,7 @@ namespace AXToolbox.Common.IO
             }
             else //no valid altitude
             {
+                throw new InvalidOperationException("Unsupported altitude unit in declaration");
             }
 
             // coordinates declaration
@@ -144,7 +169,7 @@ namespace AXToolbox.Common.IO
                 }
                 catch (ArgumentNullException)
                 {
-                    notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
+                    Notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
                 }
             }
 
@@ -155,7 +180,7 @@ namespace AXToolbox.Common.IO
                 // use default altitude if not declared
                 if (double.IsNaN(altitude))
                 {
-                    notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
+                    Notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
                     altitude = settings.DefaultAltitude;
                 }
 
@@ -166,18 +191,18 @@ namespace AXToolbox.Common.IO
                     northing4Digits: double.Parse(strGoal.Substring(5, 4)),
                     altitude: altitude);
 
-                var declaration = new Waypoint(name: number, point: p);
+                declaration = new Waypoint(name: number, point: p);
                 declaration.Description = description;
                 declaration.Radius = settings.MaxDistToCrossing;
-
-                declaredGoals.Add(declaration);
             }
 
             else
             {
                 // invalid declaration
-                notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
+                Notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
             }
+
+            return declaration;
         }
 
         //aux parser functions
@@ -193,9 +218,9 @@ namespace AXToolbox.Common.IO
             int hour = int.Parse(line.Substring(pos, 2));
             int minute = int.Parse(line.Substring(pos + 2, 2));
             int second = int.Parse(line.Substring(pos + 4, 2));
-            return new DateTime(tmpDate.Year, tmpDate.Month, tmpDate.Day, hour, minute, second, DateTimeKind.Utc);
+            return new DateTime(loggerDate.Year, loggerDate.Month, loggerDate.Day, hour, minute, second, DateTimeKind.Utc);
         }
-        private Point ParseFixAt(string line, int pos)
+        private Point ParseFixAt(string line, int pos, FlightSettings settings)
         {
             var isValid = line.Substring(pos + 17, 1) == "A";
             if (isValid)
@@ -227,17 +252,5 @@ namespace AXToolbox.Common.IO
                 return null;
         }
 
-        protected override SignatureStatus VerifySignature(string fileName)
-        {
-            var signature = SignatureStatus.NotSigned;
-
-            var v = new Verifier();
-            if (v.Verify(fileName))
-                signature = SignatureStatus.Genuine;
-            else
-                signature = SignatureStatus.Counterfeit;
-
-            return signature;
-        }
     }
 }
