@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
-using System.Linq;
-using System.ComponentModel;
 
 namespace AXToolbox.Scripting
 {
@@ -39,7 +38,7 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
-        public StringBuilder Log { get; private set; }
+        public ObservableCollection<string> Log { get; private set; }
         private List<Trackpoint> validTrackPoints;
         public List<Trackpoint> ValidTrackPoints
         {
@@ -52,14 +51,12 @@ namespace AXToolbox.Scripting
             }
         }
 
-
-        internal ScriptingMap Map { get; private set; }
         internal Dictionary<string, ScriptingObject> Heap { get; private set; }
 
         public ScriptingEngine()
         {
             Settings = new FlightSettings();
-            Log = new StringBuilder();
+            Log = new ObservableCollection<string>();
             Heap = new Dictionary<string, ScriptingObject>();
             LogLine("Started ".PadRight(95, '='));
         }
@@ -74,7 +71,6 @@ namespace AXToolbox.Scripting
         {
             LogLine("Loading script '" + scriptFileName + "'");
 
-            Map = null;
             Settings = new FlightSettings();
             Heap.Clear();
             validTrackPoints = null;
@@ -118,10 +114,6 @@ namespace AXToolbox.Scripting
 
                         var obj = ScriptingObject.Create(this, objectClass, name, type, parms, displayMode, displayParms);
 
-                        if (objectClass == "MAP")
-                            //we'll need it later
-                            Map = (ScriptingMap)obj;
-
                         //place on heap
                         Heap.Add(obj.Name, obj);
                     }
@@ -152,7 +144,8 @@ namespace AXToolbox.Scripting
 
         public void RefreshMapViewer(MapViewerControl map)
         {
-            Map.InitializeMapViewer(map);
+            var sMap = (ScriptingMap)Heap.Values.First(i => i is ScriptingMap);
+            sMap.InitializeMapViewer(map);
 
             MapOverlay ov;
             foreach (var o in Heap)
@@ -191,8 +184,7 @@ namespace AXToolbox.Scripting
 
         public void LogLine(string str)
         {
-            Log.AppendLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
-            RaisePropertyChanged("Log");
+            Log.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
         }
 
         public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)

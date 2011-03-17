@@ -50,29 +50,48 @@ namespace AXToolbox.Common
                 );
         }
 
-        public double ResolvePdgEasting(double easting4Figures)
+        /// <summary>Resolves a point in competition coordinates (4 digit easting, 4 digit northing)
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="easting4Digits"></param>
+        /// <param name="northing4Digits"></param>
+        /// <param name="altitude"></param>
+        /// <returns></returns>
+        public Point ResolveCompetitionCoordinates(DateTime time, double easting4Digits, double northing4Digits, double altitude)
         {
             //1e5 = 100km
 
-            var easting = TopLeft.Easting - TopLeft.Easting % 1e5 + easting4Figures * 10;
-
+            var easting = TopLeft.Easting - TopLeft.Easting % 1e5 + easting4Digits * 10;
             //check for major tick change (hundreds of km)
             if (!easting.IsBetween(TopLeft.Easting, BottomRight.Easting))
                 easting += 1e5;
 
-            return easting;
-        }
-        public double ResolvePdgNorthing(double northing4Figures)
-        {
-            //1e5 = 100km
-
-            var northing = BottomRight.Northing + BottomRight.Northing % 1e5 + northing4Figures * 10;
-
+            var northing = BottomRight.Northing + BottomRight.Northing % 1e5 + northing4Digits * 10;
             //check for major tick change (hundreds of km)
             if (!northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
                 northing += 1e5;
 
-            return northing;
+            return new Point(time, Datum, UtmZone, easting, northing, altitude, Datum, UtmZone);
+        }
+
+        /// <summary>Corrects a barometric altitude to the current qnh
+        /// Provided by Marc André marc.andre@netline.ch
+        /// </summary>
+        /// <param name="barometricAltitude"></param>
+        /// <returns></returns>
+        public double CorrectAltitudeQnh(double barometricAltitude)
+        {
+            const double correctAbove = 0.121;
+            const double correctBelow = 0.119;
+            const double standardQNH = 1013.25;
+
+            double correctedAltitude;
+            if (Qnh > standardQNH)
+                correctedAltitude = barometricAltitude + (Qnh - standardQNH) / correctAbove;
+            else
+                correctedAltitude = barometricAltitude + (Qnh - standardQNH) / correctBelow;
+
+            return correctedAltitude;
         }
 
         public override string ToString()

@@ -152,10 +152,6 @@ namespace AXToolbox.Common.IO
             {
                 // type 0000/0000
 
-                // place the declaration in the correct map zone
-                var easting = settings.ResolvePdgEasting(double.Parse(strGoal.Substring(0, 4)));
-                var northing = settings.ResolvePdgNorthing(double.Parse(strGoal.Substring(5, 4)));
-
                 // use default altitude if not declared
                 if (double.IsNaN(altitude))
                 {
@@ -163,19 +159,14 @@ namespace AXToolbox.Common.IO
                     altitude = settings.DefaultAltitude;
                 }
 
-                var declaration = new Waypoint(
-                    name: number,
+                // place the declaration in the correct map zone
+                var p = settings.ResolveCompetitionCoordinates(
                     time: time,
-                    datum: settings.Datum,
-                    zone: settings.UtmZone,
-                    easting: easting,
-                    northing: northing,
-                    altitude: altitude,
-                    utmDatum: settings.Datum,
-                    utmZone: settings.UtmZone
-                    ) { BarometricAltitude = altitude };
-                declaration.CorrectQnh(settings.Qnh);
+                    easting4Digits: double.Parse(strGoal.Substring(0, 4)),
+                    northing4Digits: double.Parse(strGoal.Substring(5, 4)),
+                    altitude: altitude);
 
+                var declaration = new Waypoint(name: number, point: p);
                 declaration.Description = description;
                 declaration.Radius = settings.MaxDistToCrossing;
 
@@ -226,10 +217,10 @@ namespace AXToolbox.Common.IO
                     datum: Datum.WGS84,
                     latitude: latitude,
                     longitude: longitude,
-                    altitude: gpsAltitude,
+                    altitude: settings.CorrectAltitudeQnh(altitude),
                     targetDatum: settings.Datum,
                     utmZone: settings.UtmZone) { BarometricAltitude = altitude };
-                p.CorrectQnh(settings.Qnh);
+
                 return p;
             }
             else

@@ -13,6 +13,7 @@ namespace AXToolbox.Common
     /// classes to raise the PropertyChange event.  The event 
     /// arguments created by this class are cached to prevent 
     /// managed heap fragmentation.
+    /// Also makes it serializable.
     /// </summary>
     [Serializable]
     public abstract class BindableObject : INotifyPropertyChanged
