@@ -77,7 +77,7 @@ namespace AXToolbox.Common
             }
         }
         public ObservableCollection<Waypoint> Markers { get; protected set; }
-        public ObservableCollection<Waypoint> DeclaredGoals { get; protected set; }
+        public ObservableCollection<GoalDeclaration> DeclaredGoals { get; protected set; }
         public ObservableCollection<string> Notes { get; protected set; }
 
         public string Description { get { return this.ToString(); } }
@@ -102,7 +102,7 @@ namespace AXToolbox.Common
             LoggerSerialNumber = "";
             OriginalTrack = new List<Trackpoint>();
             Markers = new ObservableCollection<Waypoint>();
-            DeclaredGoals = new ObservableCollection<Waypoint>();
+            DeclaredGoals = new ObservableCollection<GoalDeclaration>();
             Notes = new ObservableCollection<string>();
         }
 
@@ -115,10 +115,8 @@ namespace AXToolbox.Common
             switch (ext)
             {
                 case ".igc":
-                    logFile = new IGCFile(filePath);
-                    break;
                 case ".trk":
-                    logFile = new TRKFile(filePath);
+                    logFile = LoggerFile.Load(filePath);
                     break;
                 case SerializedFileExtension:
                     report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
@@ -137,9 +135,9 @@ namespace AXToolbox.Common
                     pilotId = logFile.PilotId,
                     LoggerModel = logFile.LoggerModel,
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
-                    OriginalTrack = logFile.GetTrackLog(settings),
-                    Markers = logFile.GetMarkers(settings),
-                    DeclaredGoals = logFile.GetDeclarations(settings),
+                    OriginalTrack = logFile.GetTrackLog(),
+                    Markers = logFile.GetMarkers(),
+                    DeclaredGoals = logFile.GetGoalDeclarations(),
                     Notes = logFile.Notes
                 };
 
@@ -178,7 +176,8 @@ namespace AXToolbox.Common
                 wpts.Add(new Waypoint("Launch", launchPoint));
                 wpts.Add(new Waypoint("Landing", landingPoint));
                 wpts.AddRange(Markers);
-                wpts.AddRange(DeclaredGoals);
+                throw new NotImplementedException();
+                //wpts.AddRange(DeclaredGoals);
                 var filename = Path.Combine(folder, toShortString() + ".wpt");
                 WPTFile.Save(wpts, filename);
             }
@@ -328,15 +327,17 @@ namespace AXToolbox.Common
         }
         public void AddDeclaredGoal(Waypoint declaration)
         {
-            InsertIntoCollection(DeclaredGoals, declaration);
-            Notes.Add(string.Format("New goal declaration added: {0}", declaration));
+            throw new NotImplementedException();
+            //InsertIntoCollection(DeclaredGoals, declaration);
+            //Notes.Add(string.Format("New goal declaration added: {0}", declaration));
         }
         public bool RemoveDeclaredGoal(Waypoint declaration)
         {
-            var ok = DeclaredGoals.Remove(declaration);
-            if (ok)
-                Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
-            return ok;
+            throw new NotImplementedException();
+            //var ok = DeclaredGoals.Remove(declaration);
+            //if (ok)
+            //    Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
+            //return ok;
         }
         protected void InsertIntoCollection(Collection<Waypoint> collection, Waypoint point)
         {

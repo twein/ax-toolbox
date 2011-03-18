@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
+using AXToolbox.Common.IO;
 using AXToolbox.MapViewer;
 using Microsoft.Win32;
+using System.Collections.Generic;
 
 namespace AXToolbox.Tests
 {
@@ -38,18 +39,18 @@ namespace AXToolbox.Tests
             return (360 + (angle * 180) / Math.PI) % 360;
         }
 
-        private void btnClear_Click(object sender, RoutedEventArgs e)
+        private void btnClearMap_Click(object sender, RoutedEventArgs e)
         {
             map.Clear();
         }
 
-        private void btnBlank_Click(object sender, RoutedEventArgs e)
+        private void btnBlankMap_Click(object sender, RoutedEventArgs e)
         {
             map.LoadBlank(new Point(282000, 4632000), new Point(343000, 4594000));
             InitMap();
         }
 
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        private void btnLoadMap_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
             dlg.Filter = "Image Files (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png|All Files (*.*)|*.*";
@@ -59,6 +60,32 @@ namespace AXToolbox.Tests
             {
                 map.LoadBitmap(dlg.FileName);
                 InitMap();
+            }
+        }
+
+        private void btnLoadTrack_Click(object sender, RoutedEventArgs e)
+        {
+            var settings = new Common.FlightSettings();
+            var datum = Common.Datum.GetInstance("European 1950");
+            var utmZone = "31T";
+
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "Track Files (*.igc, *.trk)|*.igc;*.trk|All Files (*.*)|*.*";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            //dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog(this) == true)
+            {
+                var logFile = LoggerFile.Load(dlg.FileName);
+                var trackLog = logFile.GetTrackLog();
+                var track = new Point[trackLog.Count];
+                Common.Point p, tmpPoint = null;
+                for (var i = 0; i < trackLog.Count; i++)
+                {
+                    p = trackLog[i];
+                    tmpPoint = new Common.Point(p.Time, p.Datum, p.Latitude, p.Longitude, p.Altitude, datum, utmZone);
+                    track[i] = new Point(tmpPoint.Easting, tmpPoint.Northing);
+                }
+                map.AddOverlay(new TrackOverlay(track, 2));
             }
         }
 

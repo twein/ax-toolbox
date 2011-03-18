@@ -4,11 +4,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 
-namespace AXToolbox.Common
+namespace AXToolbox.Common.IO
 {
     public abstract class LoggerFile
     {
         protected DateTime loggerDate;
+        protected Datum loggerDatum;
         protected string logFileExtension;
         protected SignatureStatus signatureStatus;
         protected string loggerModel = "";
@@ -32,10 +33,26 @@ namespace AXToolbox.Common
             Notes.Add("File " + filePath);
         }
 
-        public abstract List<Trackpoint> GetTrackLog(FlightSettings settings);
-        public abstract ObservableCollection<Waypoint> GetMarkers(FlightSettings settings);
-        public abstract ObservableCollection<Waypoint> GetDeclarations(FlightSettings settings);
+        public abstract List<Trackpoint> GetTrackLog();
+        public abstract ObservableCollection<Waypoint> GetMarkers();
+        public abstract ObservableCollection<GoalDeclaration> GetGoalDeclarations();
 
+        public static LoggerFile Load(string fileName)
+        {
+            LoggerFile logFile = null;
+            switch (Path.GetExtension(fileName).ToLower())
+            {
+                case ".igc":
+                    logFile = new IGCFile(fileName);
+                    break;
+                case ".trk":
+                    logFile = new TRKFile(fileName);
+                    break;
+                default:
+                    throw new InvalidOperationException("Logger file type not supported");
+            }
+            return logFile;
+        }
         public void Save(string fileName)
         {
             File.WriteAllLines(Path.ChangeExtension(fileName, logFileExtension), TrackLogLines);
