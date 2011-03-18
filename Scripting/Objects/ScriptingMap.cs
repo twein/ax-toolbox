@@ -17,8 +17,8 @@ namespace AXToolbox.Scripting
             "", "GRID"
         };
 
-        protected Point topLeft;
-        protected Point bottomRight;
+        protected AXPoint topLeft;
+        protected AXPoint bottomRight;
         protected double gridWidth = 0;
 
         internal ScriptingMap(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -38,8 +38,8 @@ namespace AXToolbox.Scripting
 
                     //load the georeferenced image to retrieve top-left and bottom-right corners
                     var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
-                    topLeft = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.TopLeft.X, map.TopLeft.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
-                    bottomRight = new Point(DateTime.Now, engine.Settings.Datum, engine.Settings.UtmZone, map.BottomRight.X, map.BottomRight.Y, 0, engine.Settings.Datum, engine.Settings.UtmZone);
+                    topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
+                    bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
 
                     break;
 
@@ -103,7 +103,7 @@ namespace AXToolbox.Scripting
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
-        public bool IsInside(Point p)
+        public bool IsInside(AXPoint p)
         {
             return (p.Easting >= topLeft.Easting && p.Easting <= bottomRight.Easting && p.Northing >= bottomRight.Northing && p.Northing <= topLeft.Northing);
         }

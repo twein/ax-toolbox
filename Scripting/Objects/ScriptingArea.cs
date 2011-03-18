@@ -18,7 +18,7 @@ namespace AXToolbox.Scripting
         };
 
 
-        protected Point centerPoint = null;
+        protected AXPoint centerPoint = null;
         protected double radius = 0;
         protected List<System.Windows.Point> outline;
 
@@ -55,6 +55,7 @@ namespace AXToolbox.Scripting
 
                     //outline = FlightReport.LoadFromFile(parameters[0]).OriginalTrack;
                     throw new NotImplementedException();
+                    //TODO: Polygonal scripting area
                     break;
             }
         }

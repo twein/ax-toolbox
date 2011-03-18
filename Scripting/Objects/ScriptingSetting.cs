@@ -53,7 +53,7 @@ namespace AXToolbox.Scripting
 
                     try
                     {
-                        engine.Settings.Datum = Datum.GetInstance(parameters[0]);
+                        engine.Settings.DatumName = parameters[0];
                     }
                     catch (KeyNotFoundException)
                     {

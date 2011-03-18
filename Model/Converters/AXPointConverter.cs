@@ -6,20 +6,20 @@ using AXToolbox.Common;
 
 namespace AXToolbox.Model.Converters
 {
-    [ValueConversion(typeof(Point), typeof(String))]
-    public class PointConverter : IValueConverter
+    [ValueConversion(typeof(AXPoint), typeof(String))]
+    public class AXPointConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Point point = value as Point;
-            return point.ToString(AXPointInfo.Datum | AXPointInfo.UTMCoords | AXPointInfo.Altitude).TrimEnd();
+            AXPoint point = value as AXPoint;
+            return point.ToString(AXPointInfo.Coords | AXPointInfo.Altitude).TrimEnd();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string strValue = value as string;
-            Point resultPoint;
-            if (Point.TryParse(strValue, out resultPoint))
+            AXPoint resultPoint;
+            if (AXPoint.TryParse(strValue, out resultPoint))
                 return resultPoint;
             else
             {

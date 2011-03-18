@@ -8,7 +8,7 @@ namespace AXToolbox.Common
         //TODO: document all this
         public DateTime Date { get; set; }
 
-        public Datum Datum { get; set; }
+        public string DatumName { get; set; }
         public string UtmZone { get; set; }
         public AXPoint TopLeft { get; set; }
         public AXPoint BottomRight { get; set; }
@@ -40,7 +40,7 @@ namespace AXToolbox.Common
         {
             return !(
                 Date < new DateTime(2000, 01, 01) ||
-                Datum == null ||
+                DatumName == null ||
                 UtmZone == null ||
                 TopLeft == null ||
                 BottomRight == null ||
@@ -50,7 +50,7 @@ namespace AXToolbox.Common
 
         public AXPoint FromGeoToAXPoint(GeoPoint geoPoint, bool isBarometricAltitude)
         {
-            var utmCoords = geoPoint.Coordinates.ToUtm(Datum, UtmZone);
+            var utmCoords = geoPoint.Coordinates.ToUtm(Datum.GetInstance(DatumName), UtmZone);
             double altitude = utmCoords.Altitude;
             if (isBarometricAltitude)
                 altitude = CorrectAltitudeQnh(utmCoords.Altitude);
@@ -60,7 +60,7 @@ namespace AXToolbox.Common
 
         public AXTrackpoint FromGeoToAXTrackpoint(GeoPoint geoPoint, bool isBarometricAltitude)
         {
-            var utmCoords = geoPoint.Coordinates.ToUtm(Datum, UtmZone);
+            var utmCoords = geoPoint.Coordinates.ToUtm(Datum.GetInstance(DatumName), UtmZone);
             double altitude = utmCoords.Altitude;
             if (isBarometricAltitude)
                 altitude = CorrectAltitudeQnh(utmCoords.Altitude);
@@ -70,7 +70,7 @@ namespace AXToolbox.Common
 
         public AXWaypoint FromGeoToAXWaypoint(GeoWaypoint geoWaypoint, bool isBarometricAltitude)
         {
-            var utmCoords = geoWaypoint.Coordinates.ToUtm(Datum, UtmZone);
+            var utmCoords = geoWaypoint.Coordinates.ToUtm(Datum.GetInstance(DatumName), UtmZone);
             double altitude = utmCoords.Altitude;
             if (isBarometricAltitude)
                 altitude = CorrectAltitudeQnh(utmCoords.Altitude);

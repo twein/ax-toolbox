@@ -11,11 +11,7 @@ namespace AXToolbox.Scripting
         protected bool isStatic = false;
 
         //type fields
-        protected Point point = null;
-        public Point Point
-        {
-            get { return point; }
-        }
+        public AXPoint Point { get; protected set; }
 
         //display fields
         protected double radius = 0;
@@ -53,23 +49,23 @@ namespace AXToolbox.Scripting
                             var lat = ParseDouble(parameters[0]);
                             var lng = ParseDouble(parameters[1]);
                             var alt = ParseLength(parameters[2]);
-                            point = new Point(DateTime.MinValue, Datum.WGS84, lat, lng, alt, engine.Settings.Datum, engine.Settings.UtmZone);
                         }
                     }
+                    throw new NotImplementedException();
+                    //TODO:SLL
                     break;
                 case "SUTM": //UTM
                     //SUTM(<utmZone>, <easting>, <northing>, <alt>)
                     {
-                        if (parameters.Length != 4)
+                        if (parameters.Length != 3)
                             throw new ArgumentException("Syntax error in point definition");
                         else
                         {
                             isStatic = true;
-                            var zone = parameters[0].ToUpper();
-                            var easting = ParseDouble(parameters[1]);
-                            var northing = ParseDouble(parameters[2]);
-                            var alt = ParseLength(parameters[3]);
-                            point = new Point(DateTime.MinValue, engine.Settings.Datum, zone, easting, northing, alt, engine.Settings.Datum, engine.Settings.UtmZone);
+                            var easting = ParseDouble(parameters[0]);
+                            var northing = ParseDouble(parameters[1]);
+                            var alt = ParseLength(parameters[2]);
+                            Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
                         }
                     }
                     break;
@@ -185,7 +181,7 @@ namespace AXToolbox.Scripting
             base.Reset();
 
             if (!isStatic)
-                point = null;
+                Point = null;
         }
 
         public override void Run(FlightReport report)
@@ -229,7 +225,7 @@ namespace AXToolbox.Scripting
                     //TLCH()
                     {
                         if (report != null)
-                            point = report.LaunchPoint;
+                            Point = report.LaunchPoint;
                     }
                     break;
                 case "TLND":
@@ -237,7 +233,7 @@ namespace AXToolbox.Scripting
                     //TLND()
                     {
                         if (report != null)
-                            point = report.LandingPoint;
+                            Point = report.LandingPoint;
                     }
                     break;
                 case "TNP":
@@ -279,7 +275,7 @@ namespace AXToolbox.Scripting
         public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;
-            if (point != null)
+            if (Point != null)
             {
                 switch (displayMode)
                 {
@@ -289,7 +285,7 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
                             overlay = new WaypointOverlay(position, Name);
                             overlay.Color = color;
                         }
@@ -297,7 +293,7 @@ namespace AXToolbox.Scripting
 
                     case "TARGET":
                         {
-                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
                             overlay = new TargetOverlay(position, radius, Name);
                             overlay.Color = color;
                         }
@@ -305,14 +301,14 @@ namespace AXToolbox.Scripting
 
                     case "MARKER":
                         {
-                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
                             overlay = new MarkerOverlay(position, Name);
                             overlay.Color = color;
                         } break;
 
                     case "CROSSHAIRS":
                         {
-                            var position = new System.Windows.Point(point.Easting, point.Northing);
+                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
                             overlay = new CrosshairsOverlay(position);
                             overlay.Color = color;
                         }
