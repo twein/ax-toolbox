@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace AXToolbox.Model.Validation
 {
-    public class PointValidationRule : ValidationRule
+    public class AXPointValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            Point point;
-            if (Point.TryParse((string)value, out point))
+            AXPoint point;
+            if (AXPoint.TryParse((string)value, out point))
             {
                 return new ValidationResult(true, null);
             }

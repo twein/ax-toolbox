@@ -186,14 +186,5 @@ namespace AXToolbox.Scripting
         {
             Log.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
         }
-
-        public Point ConvertToPointFromUTM(System.Windows.Point pointInUtm)
-        {
-            return new Point(DateTime.Now, Settings.Datum, Settings.UtmZone, pointInUtm.X, pointInUtm.Y, 0, Settings.Datum, Settings.UtmZone);
-        }
-        public Point ConvertToPointFromLL(System.Windows.Point pointInLatLon)
-        {
-            return new Point(DateTime.Now, Settings.Datum, pointInLatLon.X, pointInLatLon.Y, 0, Settings.Datum, Settings.UtmZone);
-        }
     }
 }
