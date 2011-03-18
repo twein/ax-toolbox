@@ -24,10 +24,9 @@ namespace AXToolbox.Common.IO
             catch (InvalidOperationException) { }
         }
 
-        public override List<Trackpoint> GetTrackLog(FlightSettings settings)
+        public override List<Trackpoint> GetTrackLog()
         {
 
-            Datum fileDatum = null;
             var utm = false;
             var track = new List<Trackpoint>();
 
@@ -41,7 +40,7 @@ namespace AXToolbox.Common.IO
                             var strFileDatum = line.Substring(2).Trim();
                             if (strFileDatum == "WGS 84") //Dirty hack!!!
                                 strFileDatum = "WGS84";
-                            fileDatum = Datum.GetInstance(strFileDatum);
+                            loggerDatum = Datum.GetInstance(strFileDatum);
                         }
                         break;
                     //case 'L':
@@ -54,54 +53,45 @@ namespace AXToolbox.Common.IO
                             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                             var time = DateTime.Parse(fields[4] + " " + fields[5]);
-                            if (time.Date != settings.Date.Date || time.GetAmPm() != settings.Date.GetAmPm())
+                            var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
+                            Trackpoint p;
+
+                            if (utm)
                             {
-                                // out of time point filtered
+                                //file with utm coordinates
+                                p = new Trackpoint(
+                                    time: time,
+                                    datum: loggerDatum,
+                                    zone: fields[1],
+                                    easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
+                                    northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
+                                    altitude: altitude,
+                                    utmDatum: loggerDatum
+                                    );
                             }
                             else
                             {
-                                var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
-                                Trackpoint p;
+                                //file with latlon coordinates
+                                // WARNING: 'º' is out of ASCII table: don't use split
+                                var strLatitude = fields[2].Left(fields[2].Length - 2);
+                                var ns = fields[2].Right(1);
+                                var strLongitude = fields[3].Left(fields[3].Length - 2);
+                                var ew = fields[3].Right(1);
 
-                                if (utm)
-                                {
-                                    //file with utm coordinates
-                                    p = new Trackpoint(
-                                        time: time,
-                                        datum: fileDatum,
-                                        zone: fields[1],
-                                        easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
-                                        northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
-                                        altitude: altitude,
-                                        utmDatum: settings.Datum,
-                                        utmZone: settings.UtmZone
-                                        );
-                                }
-                                else
-                                {
-                                    //file with latlon coordinates
-                                    // WARNING: 'º' is out of ASCII table: don't use split
-                                    var strLatitude = fields[2].Left(fields[2].Length - 2);
-                                    var ns = fields[2].Right(1);
-                                    var strLongitude = fields[3].Left(fields[3].Length - 2);
-                                    var ew = fields[3].Right(1);
+                                var lat = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
+                                var lon = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
 
-                                    var lat = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
-                                    var lon = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
-
-                                    p = new Trackpoint(
-                                        time: time,
-                                        datum: fileDatum,
-                                        latitude: lat,
-                                        longitude: lon,
-                                        altitude: altitude,
-                                        utmDatum: settings.Datum,
-                                        utmZone: settings.UtmZone
-                                        );
-                                }
-
-                                track.Add(p);
+                                p = new Trackpoint(
+                                    time: time,
+                                    datum: loggerDatum,
+                                    latitude: lat,
+                                    longitude: lon,
+                                    altitude: altitude,
+                                    utmDatum: loggerDatum
+                                    );
                             }
+
+                            track.Add(p);
                         }
                         break;
                     case 'U':
@@ -116,13 +106,13 @@ namespace AXToolbox.Common.IO
 
             return track;
         }
-        public override ObservableCollection<Waypoint> GetMarkers(FlightSettings settings)
+        public override ObservableCollection<Waypoint> GetMarkers()
         {
             return new ObservableCollection<Waypoint>();
         }
-        public override ObservableCollection<Waypoint> GetDeclarations(FlightSettings settings)
+        public override ObservableCollection<GoalDeclaration> GetGoalDeclarations()
         {
-            return new ObservableCollection<Waypoint>();
+            return new ObservableCollection<GoalDeclaration>();
         }
     }
 }

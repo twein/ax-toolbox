@@ -63,71 +63,69 @@ namespace AXToolbox.Common.IO
             try
             {
                 var datumInfo = TrackLogLines.Last(l => l.StartsWith("HFDTM"));
-                var loggerDatum = datumInfo.Substring(8);
-                if (loggerDatum != "WGS84")
+                loggerDatum = Datum.GetInstance(datumInfo.Substring(8));
+                if (loggerDatum.Name != "WGS84")
                     throw new InvalidOperationException("IGC file datum must be WGS84");
             }
             catch (InvalidOperationException) { }
 
         }
 
-        public override List<Trackpoint> GetTrackLog(FlightSettings settings)
+        public override List<Trackpoint> GetTrackLog()
         {
             var track = new List<Trackpoint>();
 
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("B")))
             {
-                var p = ParseTrackPoint(line, settings);
-                if (p != null && p.Time.Date == settings.Date && p.Time.GetAmPm() == settings.Date.GetAmPm())
+                var p = ParseTrackPoint(line);
+                if (p != null)
                     track.Add(new Trackpoint(p));
             }
 
             return track;
         }
-        public override ObservableCollection<Waypoint> GetMarkers(FlightSettings settings)
+        public override ObservableCollection<Waypoint> GetMarkers()
         {
             var markers = new ObservableCollection<Waypoint>();
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX0"))
             {
-                var wp = ParseMarker(line, settings);
-                if (wp != null && wp.Time.Date == settings.Date && wp.Time.GetAmPm() == settings.Date.GetAmPm())
-                    markers.Add(wp);
+                var wp = ParseMarker(line);
+                markers.Add(wp);
             }
             return markers;
         }
-        public override ObservableCollection<Waypoint> GetDeclarations(FlightSettings settings)
+        public override ObservableCollection<GoalDeclaration> GetGoalDeclarations()
         {
-            var declarations = new ObservableCollection<Waypoint>();
+            var declarations = new ObservableCollection<GoalDeclaration>();
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX1"))
             {
-                var wp = ParseDeclaration(line, settings);
-                if (wp != null && wp.Time.Date == settings.Date && wp.Time.GetAmPm() == settings.Date.GetAmPm())
-                    declarations.Add(wp);
+                var wp = ParseDeclaration(line);
+                declarations.Add(wp);
             }
             return declarations;
         }
 
         //main parser functions
-        private Point ParseTrackPoint(string line, FlightSettings settings)
+        private Point ParseTrackPoint(string line)
         {
-            return ParseFixAt(line, 7, settings);
+            return ParseFixAt(line, 7);
         }
-        private Waypoint ParseMarker(string line, FlightSettings settings)
+        private Waypoint ParseMarker(string line)
         {
             var number = line.Substring(10, 2);
-            var p = ParseFixAt(line, 12, settings);
+            var p = ParseFixAt(line, 12);
 
             if (p != null)
                 return new Waypoint(number, p);
             else
                 return null;
         }
-        private Waypoint ParseDeclaration(string line, FlightSettings settings)
+        private GoalDeclaration ParseDeclaration(string line)
         {
-            Waypoint declaration=null;
+            GoalDeclaration declaration = null;
 
             var time = ParseTimeAt(line, 1);
-            var number = line.Substring(10, 2);
+            var number = int.Parse(line.Substring(10, 2));
             var description = "[" + line.Substring(10) + "]";
 
             //parse altitude
@@ -146,54 +144,21 @@ namespace AXToolbox.Common.IO
                 throw new InvalidOperationException("Unsupported altitude unit in declaration");
             }
 
-            // coordinates declaration
+            // position declaration
             var strGoal = line.Substring(12).Split(',')[0];
             if (strGoal.Length == 3)
             {
                 //Type 000
-                try
-                {
-                    //TODO: PDG type 000
-                    throw new NotImplementedException();
-                    //var p = settings.AllowedGoals.Find(g => g.Name == strGoal);
-
-                    //var declaration = new Waypoint(number, p);
-                    //declaration.Time = time;
-                    ////use declared altitude if exists
-                    //if (!double.IsNaN(altitude))
-                    //    declaration.Altitude = altitude;
-                    //declaration.Description = description;
-                    //declaration.Radius = settings.MaxDistToCrossing;
-
-                    //declaredGoals.Add(declaration);
-                }
-                catch (ArgumentNullException)
-                {
-                    Notes.Add(string.Format("Goal \"{0}\" not found: [{1}]", strGoal, line));
-                }
+                declaration = new GoalDeclaration(number, time, strGoal, altitude) { Description = description };
             }
 
             else if (strGoal.Length == 9)
             {
                 // type 0000/0000
+                var easting4Digits = double.Parse(strGoal.Substring(0, 4));
+                var northing4Digits = double.Parse(strGoal.Substring(5, 4));
 
-                // use default altitude if not declared
-                if (double.IsNaN(altitude))
-                {
-                    Notes.Add(string.Format("Using default goal altitude in goal \"{0}\": [{1}]", strGoal, line));
-                    altitude = settings.DefaultAltitude;
-                }
-
-                // place the declaration in the correct map zone
-                var p = settings.ResolveCompetitionCoordinates(
-                    time: time,
-                    easting4Digits: double.Parse(strGoal.Substring(0, 4)),
-                    northing4Digits: double.Parse(strGoal.Substring(5, 4)),
-                    altitude: altitude);
-
-                declaration = new Waypoint(name: number, point: p);
-                declaration.Description = description;
-                declaration.Radius = settings.MaxDistToCrossing;
+                declaration = new GoalDeclaration(number, time, easting4Digits, northing4Digits, altitude) { Description = description };
             }
 
             else
@@ -220,7 +185,7 @@ namespace AXToolbox.Common.IO
             int second = int.Parse(line.Substring(pos + 4, 2));
             return new DateTime(loggerDate.Year, loggerDate.Month, loggerDate.Day, hour, minute, second, DateTimeKind.Utc);
         }
-        private Point ParseFixAt(string line, int pos, FlightSettings settings)
+        private Point ParseFixAt(string line, int pos)
         {
             var isValid = line.Substring(pos + 17, 1) == "A";
             if (isValid)
@@ -242,9 +207,8 @@ namespace AXToolbox.Common.IO
                     datum: Datum.WGS84,
                     latitude: latitude,
                     longitude: longitude,
-                    altitude: settings.CorrectAltitudeQnh(altitude),
-                    targetDatum: settings.Datum,
-                    utmZone: settings.UtmZone) { BarometricAltitude = altitude };
+                    altitude: altitude,
+                    targetDatum: loggerDatum) { BarometricAltitude = altitude };
 
                 return p;
             }

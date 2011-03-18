@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicTypes\DeclaredGoal.cs" />
     <Compile Include="BasicTypes\PointInfo.cs" />
     <Compile Include="BasicTypes\Trackpoint.cs" />
     <Compile Include="ComplexTypes\FlightSettings.cs" />

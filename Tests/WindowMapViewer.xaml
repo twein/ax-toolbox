@@ -23,9 +23,10 @@
         </StatusBar>
 
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <Button Name="btnClear" Click="btnClear_Click">Clear</Button>
-            <Button Name="btnBlank" Click="btnBlank_Click">Blank</Button>
-            <Button Name="btnLoad" Click="btnLoad_Click">Load</Button>
+            <Button Name="btnClearMap" Click="btnClearMap_Click">Clear map</Button>
+            <Button Name="btnBlankMap" Click="btnBlankMap_Click">Blank map</Button>
+            <Button Name="btnLoadMap" Click="btnLoadMap_Click">Load map</Button>
+            <Button Name="btnLoadTrack" Click="btnLoadTrack_Click">Load track</Button>
         </StackPanel>
 
         <maps:MapViewerControl x:Name="map" />

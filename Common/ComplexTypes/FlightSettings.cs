@@ -50,6 +50,41 @@ namespace AXToolbox.Common
                 );
         }
 
+        /// <summary>Creates a new point with utm coordinates in the right datum and zone
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public Point CorrectUtmCoordinates(Point p)
+        {
+            Point point = null;
+            if (p.Datum == Datum && p.Zone == UtmZone)
+                point = p;
+            else
+                point= new Point(p.Time, p.Datum, p.Latitude, p.Longitude, p.Altitude, Datum, UtmZone) { BarometricAltitude = p.BarometricAltitude };
+
+            return point;
+        }
+
+        /// <summary>Corrects a barometric altitude to the current qnh
+        /// Provided by Marc André marc.andre@netline.ch
+        /// </summary>
+        /// <param name="barometricAltitude"></param>
+        /// <returns></returns>
+        public double CorrectAltitudeQnh(double barometricAltitude)
+        {
+            const double correctAbove = 0.121;
+            const double correctBelow = 0.119;
+            const double standardQNH = 1013.25;
+
+            double correctedAltitude;
+            if (Qnh > standardQNH)
+                correctedAltitude = barometricAltitude + (Qnh - standardQNH) / correctAbove;
+            else
+                correctedAltitude = barometricAltitude + (Qnh - standardQNH) / correctBelow;
+
+            return correctedAltitude;
+        }
+
         /// <summary>Resolves a point in competition coordinates (4 digit easting, 4 digit northing)
         /// </summary>
         /// <param name="time"></param>
@@ -72,26 +107,6 @@ namespace AXToolbox.Common
                 northing += 1e5;
 
             return new Point(time, Datum, UtmZone, easting, northing, altitude, Datum, UtmZone);
-        }
-
-        /// <summary>Corrects a barometric altitude to the current qnh
-        /// Provided by Marc André marc.andre@netline.ch
-        /// </summary>
-        /// <param name="barometricAltitude"></param>
-        /// <returns></returns>
-        public double CorrectAltitudeQnh(double barometricAltitude)
-        {
-            const double correctAbove = 0.121;
-            const double correctBelow = 0.119;
-            const double standardQNH = 1013.25;
-
-            double correctedAltitude;
-            if (Qnh > standardQNH)
-                correctedAltitude = barometricAltitude + (Qnh - standardQNH) / correctAbove;
-            else
-                correctedAltitude = barometricAltitude + (Qnh - standardQNH) / correctBelow;
-
-            return correctedAltitude;
         }
 
         public override string ToString()
