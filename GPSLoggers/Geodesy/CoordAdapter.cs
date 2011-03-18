@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AXToolbox.Common
+namespace AXToolbox.GPSLoggers
 {
     //TODO: check all quadrants of latitude and longitude
     internal class CoordAdapter
@@ -64,7 +64,7 @@ namespace AXToolbox.Common
         {
             UtmCoordinates p2;
 
-            if (performHelmert || int.Parse(p1.Zone.Substring(0, 2)) != zoneNumber)
+            if (performHelmert || int.Parse(p1.UtmZone.Substring(0, 2)) != zoneNumber)
                 return ToUTM(UTMtoLatLong(p1, datum1), zoneNumber);
             else
                 p2 = p1;
@@ -208,14 +208,14 @@ namespace AXToolbox.Common
             double e2 = datum.e2;
             double ep2 = (e2) / (1 - e2);
             double e1 = (1 - Math.Sqrt(1 - e2)) / (1 + Math.Sqrt(1 - e2));
-            int nUTMZoneLen = p1.Zone.Length;
-            char ZoneLetter = p1.Zone[nUTMZoneLen - 1];
+            int nUTMZoneLen = p1.UtmZone.Length;
+            char ZoneLetter = p1.UtmZone[nUTMZoneLen - 1];
             //int NorthernHemisphere; //1 for northern hemispher, 0 for southern
 
             double x = p1.Easting - 500000.0; //remove 500,000 meter offset for longitude
             double y = p1.Northing;
 
-            int ZoneNumber = Int16.Parse(p1.Zone.Substring(0, nUTMZoneLen - 1));
+            int ZoneNumber = Int16.Parse(p1.UtmZone.Substring(0, nUTMZoneLen - 1));
             if ((ZoneLetter - 'N') >= 0)
             {
                 //point is in northern hemisphere

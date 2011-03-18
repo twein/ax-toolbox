@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 
 
-namespace AXToolbox.Common.IO
+namespace AXToolbox.GPSLoggers
 {
     public class WPTFile
     {
-        public static List<Waypoint> Load(string filePath, FlightSettings settings)
+        public static List<GeoWaypoint> Load(string filePath)
         {
-            var waypoints = new List<Waypoint>();
+            var waypoints = new List<GeoWaypoint>();
             Datum fileDatum = null;
 
             var content = from line in File.ReadAllLines(filePath, Encoding.ASCII)
@@ -32,7 +32,7 @@ namespace AXToolbox.Common.IO
                         break;
                     case 'W':
                         //Track point
-                        var p = ParseWaypoint(line, fileDatum, settings);
+                        var p = ParseWaypoint(line, fileDatum);
                         if (p != null)
                             waypoints.Add(p);
                         break;
@@ -41,32 +41,36 @@ namespace AXToolbox.Common.IO
 
             return waypoints;
         }
-        public static void Save(List<Waypoint> waypoints, string filePath)
+        public static void Save(List<GeoWaypoint> waypoints, string filePath)
         {
             StreamWriter sw = new StreamWriter(filePath, false);
 
-            sw.WriteLine("G {0}", waypoints[0].Datum.ToString());
+            sw.WriteLine("G {0}", waypoints[0].Coordinates.Datum.ToString());
             sw.WriteLine("U 0"); //utm units
+            UtmCoordinates coord;
             foreach (var wp in waypoints)
             {
+                coord = wp.Coordinates.ToUtm(waypoints[0].Coordinates.Datum);
+
                 sw.WriteLine("W {0} {1} {2} {3} {4} {5} {6}",
                     wp.Name,
-                    wp.Zone,
-                    wp.Easting.ToString("0.0", NumberFormatInfo.InvariantInfo),
-                    wp.Northing.ToString("0.0", NumberFormatInfo.InvariantInfo),
+                    coord.UtmZone,
+                    coord.Easting.ToString("0.0", NumberFormatInfo.InvariantInfo),
+                    coord.Northing.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     wp.Time.ToString("dd-MMM-yy HH:mm:ss", NumberFormatInfo.InvariantInfo).ToUpper(),
-                    wp.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo),
+                    coord.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     ""); //description
-                if (wp.Radius > 0)
-                    sw.WriteLine(string.Format("w Waypoint,0,0.0,63736,0,0,39,,{0},,-1,0", wp.Radius));
+                //TODO: fix waypoint radius
+                //if (wp.Radius > 0)
+                //    sw.WriteLine(string.Format("w Waypoint,0,0.0,63736,0,0,39,,{0},,-1,0", wp.Radius));
             }
             sw.Close();
         }
 
 
-        private static Waypoint ParseWaypoint(string line, Datum fileDatum, FlightSettings settings)
+        private static GeoWaypoint ParseWaypoint(string line, Datum fileDatum)
         {
-            Waypoint wp;
+            GeoWaypoint wp;
 
             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -82,38 +86,34 @@ namespace AXToolbox.Common.IO
                 var easting = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
                 var northing = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 
-                wp = new Waypoint(
+                wp = new GeoWaypoint(
                     name: name,
                     time: time,
                     datum: fileDatum,
                     zone: zone,
                     easting: easting,
                     northing: northing,
-                    altitude: altitude,
-                    utmDatum: settings.Datum,
-                    utmZone: settings.UtmZone);
+                    altitude: altitude);
             }
             else
             {
                 //file with latlon coordinates
                 // WARNING: 'º' is out of ASCII table: don't use split
-                var strLatitude = fields[3].Left(fields[3].Length - 2);
-                var ns = fields[3].Right(1);
-                var strLongitude = fields[4].Left(fields[4].Length - 2);
-                var ew = fields[4].Right(1);
+                var strLatitude = fields[3].Substring(0, fields[3].Length - 2);
+                var ns = fields[3][fields[3].Length - 1];
+                var strLongitude = fields[4].Substring(0, fields[4].Length - 2);
+                var ew = fields[4][fields[4].Length - 1];
 
-                var latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
-                var longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
+                var latitude = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == 'S' ? -1 : 1);
+                var longitude = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == 'W' ? -1 : 1);
 
-                wp = new Waypoint(
+                wp = new GeoWaypoint(
                    name: name,
                    time: time,
                    datum: fileDatum,
                    latitude: latitude,
                    longitude: longitude,
-                   altitude: altitude,
-                   utmDatum: settings.Datum,
-                   utmZone: settings.UtmZone);
+                   altitude: altitude);
             }
 
             return wp;

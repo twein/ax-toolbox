@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AXToolbox.Common
+namespace AXToolbox.GPSLoggers
 {
     // Angle in degres 
     [Serializable]

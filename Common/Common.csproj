@@ -68,42 +68,28 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BalloonLoggerSignature">
-      <HintPath>..\ThirdParty\SignatureLib\BalloonLoggerSignature.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicTypes\DeclaredGoal.cs" />
-    <Compile Include="BasicTypes\PointInfo.cs" />
-    <Compile Include="BasicTypes\Trackpoint.cs" />
+    <Compile Include="BasicTypes\AXTrackpoint.cs" />
     <Compile Include="ComplexTypes\FlightSettings.cs" />
+    <Compile Include="ComplexTypes\ObjectSerializer.cs" />
     <Compile Include="Extensions\Double.cs" />
     <Compile Include="General\Singleton.cs" />
-    <Compile Include="Geodesy\Coordinates.cs" />
-    <Compile Include="BasicTypes\Point.cs" />
-    <Compile Include="BasicTypes\Waypoint.cs" />
-    <Compile Include="ComplexTypes\BindableObject.cs" />
+    <Compile Include="BasicTypes\AXPoint.cs" />
+    <Compile Include="BasicTypes\AXWaypoint.cs" />
+    <Compile Include="General\BindableObject.cs" />
     <Compile Include="ComplexTypes\FlightReport.cs" />
     <Compile Include="Extensions\DateTime.cs" />
     <Compile Include="Extensions\String.cs" />
-    <Compile Include="Geodesy\Angle.cs" />
-    <Compile Include="Geodesy\CoordAdapter.cs" />
-    <Compile Include="Geodesy\Datum.cs" />
-    <Compile Include="Geodesy\GeodeticCurve.cs" />
-    <Compile Include="Geodesy\Sun.cs" />
-    <Compile Include="IO\IGCFile.cs" />
-    <Compile Include="IO\LoggerFile.cs" />
-    <Compile Include="IO\TRKFile.cs" />
-    <Compile Include="IO\WPTFile.cs" />
     <Compile Include="Physics\Physics.cs" />
-    <Compile Include="ComplexTypes\ErrorLog.cs" />
-    <Compile Include="IO\ObjectSerializer.cs" />
+    <Compile Include="General\SysLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -124,7 +110,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Geodesy\helmert.ods" />
+    <ProjectReference Include="..\GPSLoggers\GPSLoggers.csproj">
+      <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
+      <Name>GPSLoggers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

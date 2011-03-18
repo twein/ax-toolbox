@@ -131,7 +131,7 @@ namespace AXToolbox.Scripting
             return "AREA " + base.ToString();
         }
 
-        public bool Contains(Trackpoint p)
+        public bool Contains(AXTrackpoint p)
         {
             //TODO: polygonal scripting area Contains()
             throw new NotImplementedException();

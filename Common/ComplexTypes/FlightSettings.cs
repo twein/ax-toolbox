@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Common
 {
@@ -12,8 +10,8 @@ namespace AXToolbox.Common
 
         public Datum Datum { get; set; }
         public string UtmZone { get; set; }
-        public Point TopLeft { get; set; }
-        public Point BottomRight { get; set; }
+        public AXPoint TopLeft { get; set; }
+        public AXPoint BottomRight { get; set; }
 
         public double Qnh { get; set; }
 
@@ -50,27 +48,44 @@ namespace AXToolbox.Common
                 );
         }
 
-        /// <summary>Creates a new point with utm coordinates in the right datum and zone
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public Point CorrectUtmCoordinates(Point p)
+        public AXPoint FromGeoToAXPoint(GeoPoint geoPoint, bool isBarometricAltitude)
         {
-            Point point = null;
-            if (p.Datum == Datum && p.Zone == UtmZone)
-                point = p;
-            else
-                point= new Point(p.Time, p.Datum, p.Latitude, p.Longitude, p.Altitude, Datum, UtmZone) { BarometricAltitude = p.BarometricAltitude };
+            var utmCoords = geoPoint.Coordinates.ToUtm(Datum, UtmZone);
+            double altitude = utmCoords.Altitude;
+            if (isBarometricAltitude)
+                altitude = CorrectAltitudeQnh(utmCoords.Altitude);
 
-            return point;
+            return new AXPoint(geoPoint.Time, utmCoords.Easting, utmCoords.Northing, altitude);
         }
+
+        public AXTrackpoint FromGeoToAXTrackpoint(GeoPoint geoPoint, bool isBarometricAltitude)
+        {
+            var utmCoords = geoPoint.Coordinates.ToUtm(Datum, UtmZone);
+            double altitude = utmCoords.Altitude;
+            if (isBarometricAltitude)
+                altitude = CorrectAltitudeQnh(utmCoords.Altitude);
+
+            return new AXTrackpoint(geoPoint.Time, utmCoords.Easting, utmCoords.Northing, altitude);
+        }
+
+        public AXWaypoint FromGeoToAXWaypoint(GeoWaypoint geoWaypoint, bool isBarometricAltitude)
+        {
+            var utmCoords = geoWaypoint.Coordinates.ToUtm(Datum, UtmZone);
+            double altitude = utmCoords.Altitude;
+            if (isBarometricAltitude)
+                altitude = CorrectAltitudeQnh(utmCoords.Altitude);
+
+            return new AXWaypoint(geoWaypoint.Name, geoWaypoint.Time, utmCoords.Easting, utmCoords.Northing, altitude);
+        }
+
+
 
         /// <summary>Corrects a barometric altitude to the current qnh
         /// Provided by Marc André marc.andre@netline.ch
         /// </summary>
         /// <param name="barometricAltitude"></param>
         /// <returns></returns>
-        public double CorrectAltitudeQnh(double barometricAltitude)
+        protected double CorrectAltitudeQnh(double barometricAltitude)
         {
             const double correctAbove = 0.121;
             const double correctBelow = 0.119;
@@ -92,7 +107,7 @@ namespace AXToolbox.Common
         /// <param name="northing4Digits"></param>
         /// <param name="altitude"></param>
         /// <returns></returns>
-        public Point ResolveCompetitionCoordinates(DateTime time, double easting4Digits, double northing4Digits, double altitude)
+        public AXPoint ResolveCompetitionCoordinates(DateTime time, double easting4Digits, double northing4Digits, double altitude)
         {
             //1e5 = 100km
 
@@ -106,7 +121,7 @@ namespace AXToolbox.Common
             if (!northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
                 northing += 1e5;
 
-            return new Point(time, Datum, UtmZone, easting, northing, altitude, Datum, UtmZone);
+            return new AXPoint(time, easting, northing, altitude);
         }
 
         public override string ToString()

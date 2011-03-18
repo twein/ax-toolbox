@@ -4,25 +4,26 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
 
-namespace AXToolbox.Common.IO
+namespace AXToolbox.GPSLoggers
 {
     public class IGCFile : LoggerFile
     {
         public IGCFile(string filePath)
             : base(filePath)
         {
-            logFileExtension = ".igc";
+            IsAltitudeBarometric = true;
+            LogFileExtension = ".igc";
 
             //get signature info
             var v = new Verifier();
             if (v.Verify(filePath))
             {
-                signatureStatus = SignatureStatus.Genuine;
+                SignatureStatus = SignatureStatus.Genuine;
                 Notes.Add("The log file is signed and OK.");
             }
             else
             {
-                signatureStatus = SignatureStatus.Counterfeit;
+                SignatureStatus = SignatureStatus.Counterfeit;
                 Notes.Add("THE LOG FILE HAS BEEN TAMPERED WITH!");
             }
 
@@ -30,8 +31,8 @@ namespace AXToolbox.Common.IO
             try
             {
                 var loggerInfo = TrackLogLines.First(l => l.StartsWith("AXXX"));
-                loggerModel = loggerInfo.Substring(7);
-                loggerSerialNumber = loggerInfo.Substring(4, 3);
+                LoggerModel = loggerInfo.Substring(7);
+                LoggerSerialNumber = loggerInfo.Substring(4, 3);
             }
             catch (InvalidOperationException) { }
 
@@ -39,7 +40,7 @@ namespace AXToolbox.Common.IO
             try
             {
                 var pilotInfo = TrackLogLines.First(l => l.StartsWith("HFPID"));
-                pilotId = int.Parse(pilotInfo.Substring(5));
+                PilotId = int.Parse(pilotInfo.Substring(5));
             }
             catch (InvalidOperationException) { }
 
@@ -71,26 +72,27 @@ namespace AXToolbox.Common.IO
 
         }
 
-        public override List<Trackpoint> GetTrackLog()
+        public override List<GeoPoint> GetTrackLog()
         {
-            var track = new List<Trackpoint>();
+            var track = new List<GeoPoint>();
 
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("B")))
             {
                 var p = ParseTrackPoint(line);
                 if (p != null)
-                    track.Add(new Trackpoint(p));
+                    track.Add(p);
             }
 
             return track;
         }
-        public override ObservableCollection<Waypoint> GetMarkers()
+        public override ObservableCollection<GeoWaypoint> GetMarkers()
         {
-            var markers = new ObservableCollection<Waypoint>();
+            var markers = new ObservableCollection<GeoWaypoint>();
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX0"))
             {
                 var wp = ParseMarker(line);
-                markers.Add(wp);
+                if (wp != null)
+                    markers.Add(wp);
             }
             return markers;
         }
@@ -106,17 +108,17 @@ namespace AXToolbox.Common.IO
         }
 
         //main parser functions
-        private Point ParseTrackPoint(string line)
+        private GeoPoint ParseTrackPoint(string line)
         {
             return ParseFixAt(line, 7);
         }
-        private Waypoint ParseMarker(string line)
+        private GeoWaypoint ParseMarker(string line)
         {
             var number = line.Substring(10, 2);
             var p = ParseFixAt(line, 12);
 
             if (p != null)
-                return new Waypoint(number, p);
+                return new GeoWaypoint(number, p);
             else
                 return null;
         }
@@ -185,7 +187,7 @@ namespace AXToolbox.Common.IO
             int second = int.Parse(line.Substring(pos + 4, 2));
             return new DateTime(loggerDate.Year, loggerDate.Month, loggerDate.Day, hour, minute, second, DateTimeKind.Utc);
         }
-        private Point ParseFixAt(string line, int pos)
+        private GeoPoint ParseFixAt(string line, int pos)
         {
             var isValid = line.Substring(pos + 17, 1) == "A";
             if (isValid)
@@ -198,23 +200,22 @@ namespace AXToolbox.Common.IO
                     double.Parse(line.Substring(pos + 11, 5)) / 60000)
                     * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
                 var altitude = double.Parse(line.Substring(pos + 18, 5));
-                var gpsAltitude = double.Parse(line.Substring(pos + 23, 5));
-                //Accuracy = int.Parse(line.Substring(pos + 28, 4));
-                //Satellites = int.Parse(line.Substring(pos + 32, 2));
+                //var gpsAltitude = double.Parse(line.Substring(pos + 23, 5));
+                //var accuracy = int.Parse(line.Substring(pos + 28, 4));
+                //var satellites = int.Parse(line.Substring(pos + 32, 2));
 
-                var p = new Point(
+                var p = new GeoPoint(
                     time: time,
                     datum: Datum.WGS84,
                     latitude: latitude,
                     longitude: longitude,
-                    altitude: altitude,
-                    targetDatum: loggerDatum) { BarometricAltitude = altitude };
+                    altitude: altitude
+                    );
 
                 return p;
             }
             else
                 return null;
         }
-
     }
 }
