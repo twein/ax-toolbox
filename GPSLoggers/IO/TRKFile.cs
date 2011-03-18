@@ -4,31 +4,30 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 
-namespace AXToolbox.Common.IO
+namespace AXToolbox.GPSLoggers
 {
-    [Serializable]
     public class TRKFile : LoggerFile
     {
         public TRKFile(string filePath)
             : base(filePath)
         {
-            logFileExtension = ".trk";
-            signatureStatus = SignatureStatus.NotSigned;
+            LogFileExtension = ".trk";
+            SignatureStatus = SignatureStatus.NotSigned;
             Notes.Add("The log file is not signed");
 
             //get logger info
             try
             {
-                loggerModel = TrackLogLines.First(l => l[0] == 'P').Substring(2).Trim();
+                LoggerModel = TrackLogLines.First(l => l[0] == 'P').Substring(2).Trim();
             }
             catch (InvalidOperationException) { }
         }
 
-        public override List<Trackpoint> GetTrackLog()
+        public override List<GeoPoint> GetTrackLog()
         {
 
             var utm = false;
-            var track = new List<Trackpoint>();
+            var track = new List<GeoPoint>();
 
             foreach (var line in TrackLogLines.Where(l => l.Length > 0))
             {
@@ -54,40 +53,37 @@ namespace AXToolbox.Common.IO
 
                             var time = DateTime.Parse(fields[4] + " " + fields[5]);
                             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
-                            Trackpoint p;
+                            GeoPoint p;
 
                             if (utm)
                             {
                                 //file with utm coordinates
-                                p = new Trackpoint(
+                                p = new GeoPoint(
                                     time: time,
                                     datum: loggerDatum,
                                     zone: fields[1],
                                     easting: double.Parse(fields[2], NumberFormatInfo.InvariantInfo),
                                     northing: double.Parse(fields[3], NumberFormatInfo.InvariantInfo),
-                                    altitude: altitude,
-                                    utmDatum: loggerDatum
-                                    );
+                                    altitude: altitude);
                             }
                             else
                             {
                                 //file with latlon coordinates
                                 // WARNING: 'º' is out of ASCII table: don't use split
-                                var strLatitude = fields[2].Left(fields[2].Length - 2);
-                                var ns = fields[2].Right(1);
-                                var strLongitude = fields[3].Left(fields[3].Length - 2);
-                                var ew = fields[3].Right(1);
+                                var strLatitude = fields[2].Substring(0, fields[2].Length - 2);
+                                var ns = fields[2][fields[2].Length - 1];
+                                var strLongitude = fields[3].Substring(0, fields[3].Length - 2);
+                                var ew = fields[3][fields[3].Length - 1];
 
-                                var lat = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == "S" ? -1 : 1);
-                                var lon = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == "W" ? -1 : 1);
+                                var lat = double.Parse(strLatitude, NumberFormatInfo.InvariantInfo) * (ns == 'S' ? -1 : 1);
+                                var lon = double.Parse(strLongitude, NumberFormatInfo.InvariantInfo) * (ew == 'W' ? -1 : 1);
 
-                                p = new Trackpoint(
+                                p = new GeoPoint(
                                     time: time,
                                     datum: loggerDatum,
                                     latitude: lat,
                                     longitude: lon,
-                                    altitude: altitude,
-                                    utmDatum: loggerDatum
+                                    altitude: altitude
                                     );
                             }
 
@@ -106,9 +102,9 @@ namespace AXToolbox.Common.IO
 
             return track;
         }
-        public override ObservableCollection<Waypoint> GetMarkers()
+        public override ObservableCollection<GeoWaypoint> GetMarkers()
         {
-            return new ObservableCollection<Waypoint>();
+            return new ObservableCollection<GeoWaypoint>();
         }
         public override ObservableCollection<GoalDeclaration> GetGoalDeclarations()
         {

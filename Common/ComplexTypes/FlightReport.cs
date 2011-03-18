@@ -4,10 +4,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using AXToolbox.Common.IO;
+using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Common
 {
-    public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
 
     [Serializable]
     public class FlightReport : BindableObject
@@ -41,15 +41,15 @@ namespace AXToolbox.Common
         public string LoggerSerialNumber { get; protected set; }
         /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
         /// </summary>
-        public List<Trackpoint> OriginalTrack { get; protected set; }
+        public List<AXTrackpoint> OriginalTrack { get; protected set; }
         /// <summary>Track without spikes and dupes. May contain points before launch and after landing
         /// </summary>
-        public List<Trackpoint> CleanTrack { get { return OriginalTrack.Where(p => p.IsValid).ToList(); } }
+        public List<AXTrackpoint> CleanTrack { get { return OriginalTrack.Where(p => p.IsValid).ToList(); } }
         /// <summary>Clean track from launch to landing
         /// </summary>
-        public List<Trackpoint> FlightTrack { get { return OriginalTrack.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); } }
-        protected Point launchPoint;
-        public Point LaunchPoint
+        public List<AXTrackpoint> FlightTrack { get { return OriginalTrack.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); } }
+        protected AXPoint launchPoint;
+        public AXPoint LaunchPoint
         {
             get { return launchPoint; }
             set
@@ -62,8 +62,8 @@ namespace AXToolbox.Common
                 }
             }
         }
-        protected Point landingPoint;
-        public Point LandingPoint
+        protected AXPoint landingPoint;
+        public AXPoint LandingPoint
         {
             get { return landingPoint; }
             set
@@ -76,7 +76,7 @@ namespace AXToolbox.Common
                 }
             }
         }
-        public ObservableCollection<Waypoint> Markers { get; protected set; }
+        public ObservableCollection<AXWaypoint> Markers { get; protected set; }
         public ObservableCollection<GoalDeclaration> DeclaredGoals { get; protected set; }
         public ObservableCollection<string> Notes { get; protected set; }
 
@@ -100,8 +100,8 @@ namespace AXToolbox.Common
             pilotId = 0;
             LoggerModel = "";
             LoggerSerialNumber = "";
-            OriginalTrack = new List<Trackpoint>();
-            Markers = new ObservableCollection<Waypoint>();
+            OriginalTrack = new List<AXTrackpoint>();
+            Markers = new ObservableCollection<AXWaypoint>();
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
             Notes = new ObservableCollection<string>();
         }
@@ -127,6 +127,16 @@ namespace AXToolbox.Common
 
             if (ext != SerializedFileExtension)
             {
+                //Convert geographical coordinates to AX coordinates
+                var track = new List<AXTrackpoint>();
+                foreach (var p in logFile.GetTrackLog())
+                    track.Add(settings.FromGeoToAXTrackpoint(p, logFile.IsAltitudeBarometric));
+
+                var markers = new ObservableCollection<AXWaypoint>();
+                foreach (var p in logFile.GetMarkers())
+                    markers.Add(settings.FromGeoToAXWaypoint(p, logFile.IsAltitudeBarometric));
+
+
                 report = new FlightReport(settings)
                 {
                     IsDirty = true,
@@ -135,8 +145,8 @@ namespace AXToolbox.Common
                     pilotId = logFile.PilotId,
                     LoggerModel = logFile.LoggerModel,
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
-                    OriginalTrack = logFile.GetTrackLog(),
-                    Markers = logFile.GetMarkers(),
+                    OriginalTrack = track,
+                    Markers = markers,
                     DeclaredGoals = logFile.GetGoalDeclarations(),
                     Notes = logFile.Notes
                 };
@@ -169,12 +179,14 @@ namespace AXToolbox.Common
         }
         public bool ExportWaypoints(string folder)
         {
+            throw new NotImplementedException();
+            /*
             var ok = pilotId > 0;
             if (ok)
             {
-                var wpts = new List<Waypoint>();
-                wpts.Add(new Waypoint("Launch", launchPoint));
-                wpts.Add(new Waypoint("Landing", landingPoint));
+                var wpts = new List<AXWaypoint>();
+                wpts.Add(new AXWaypoint("Launch", launchPoint));
+                wpts.Add(new AXWaypoint("Landing", landingPoint));
                 wpts.AddRange(Markers);
                 throw new NotImplementedException();
                 //wpts.AddRange(DeclaredGoals);
@@ -183,6 +195,7 @@ namespace AXToolbox.Common
             }
 
             return ok;
+            */
         }
 
         public void RemoveInvalidPoints()
@@ -210,8 +223,8 @@ namespace AXToolbox.Common
 
             // remove dupes and spikes
             //TODO: consider removing spikes by change in direction
-            Trackpoint point_m1 = null;
-            Trackpoint point_m2 = null;
+            AXTrackpoint point_m1 = null;
+            AXTrackpoint point_m2 = null;
             foreach (var point in OriginalTrack.Where(p => p.IsValid))
             {
                 // remove dupe
@@ -244,7 +257,7 @@ namespace AXToolbox.Common
         public void DetectLaunchAndLanding()
         {
             // find the highest point in flight
-            Trackpoint highest = null;
+            AXTrackpoint highest = null;
             foreach (var point in OriginalTrack.Where(p => p.IsValid))
             {
                 if (highest == null || point.Altitude > highest.Altitude)
@@ -270,11 +283,11 @@ namespace AXToolbox.Common
                 }
             }
         }
-        protected Trackpoint FindGroundContact(IEnumerable<Trackpoint> track, bool backwards)
+        protected AXTrackpoint FindGroundContact(IEnumerable<AXTrackpoint> track, bool backwards)
         {
-            Point reference = null;
-            Trackpoint groundContact = null;
-            Trackpoint point_m1 = null;
+            AXPoint reference = null;
+            AXTrackpoint groundContact = null;
+            AXTrackpoint point_m1 = null;
             double smoothedSpeed = double.NaN;
 
             if (backwards)
@@ -313,25 +326,25 @@ namespace AXToolbox.Common
             return groundContact;
         }
 
-        public void AddMarker(Waypoint marker)
+        public void AddMarker(AXWaypoint marker)
         {
             InsertIntoCollection(Markers, marker);
             Notes.Add(string.Format("New marker added: {0}", marker));
         }
-        public bool RemoveMarker(Waypoint marker)
+        public bool RemoveMarker(AXWaypoint marker)
         {
             var ok = Markers.Remove(marker);
             if (ok)
                 Notes.Add(string.Format("Marker removed: {0}", marker));
             return ok;
         }
-        public void AddDeclaredGoal(Waypoint declaration)
+        public void AddDeclaredGoal(AXWaypoint declaration)
         {
             throw new NotImplementedException();
             //InsertIntoCollection(DeclaredGoals, declaration);
             //Notes.Add(string.Format("New goal declaration added: {0}", declaration));
         }
-        public bool RemoveDeclaredGoal(Waypoint declaration)
+        public bool RemoveDeclaredGoal(AXWaypoint declaration)
         {
             throw new NotImplementedException();
             //var ok = DeclaredGoals.Remove(declaration);
@@ -339,9 +352,9 @@ namespace AXToolbox.Common
             //    Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
             //return ok;
         }
-        protected void InsertIntoCollection(Collection<Waypoint> collection, Waypoint point)
+        protected void InsertIntoCollection(Collection<AXWaypoint> collection, AXWaypoint point)
         {
-            Waypoint next = null;
+            AXWaypoint next = null;
             try
             {
                 next = collection.First(m => m.Time > point.Time);

@@ -12,7 +12,7 @@ namespace AXToolbox.Model.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Point point = value as Point;
-            return point.ToString(PointInfo.Datum | PointInfo.UTMCoords | PointInfo.Altitude).TrimEnd();
+            return point.ToString(AXPointInfo.Datum | AXPointInfo.UTMCoords | AXPointInfo.Altitude).TrimEnd();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

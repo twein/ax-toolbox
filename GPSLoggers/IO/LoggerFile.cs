@@ -4,23 +4,22 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 
-namespace AXToolbox.Common.IO
+namespace AXToolbox.GPSLoggers
 {
+    public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
+
+    [Serializable]
     public abstract class LoggerFile
     {
         protected DateTime loggerDate;
         protected Datum loggerDatum;
-        protected string logFileExtension;
-        protected SignatureStatus signatureStatus;
-        protected string loggerModel = "";
-        protected string loggerSerialNumber = "";
-        protected int pilotId = 0;
 
-        public string LogFileExtension { get { return logFileExtension; } }
-        public SignatureStatus SignatureStatus { get { return signatureStatus; } }
-        public string LoggerModel { get { return loggerModel; } }
-        public string LoggerSerialNumber { get { return loggerSerialNumber; } }
-        public int PilotId { get { return pilotId; } }
+        public bool IsAltitudeBarometric { get; protected set; }
+        public string LogFileExtension { get; protected set; }
+        public SignatureStatus SignatureStatus { get; protected set; }
+        public string LoggerModel { get; protected set; }
+        public string LoggerSerialNumber { get; protected set; }
+        public int PilotId { get; protected set; }
 
         public string[] TrackLogLines { get; protected set; }
 
@@ -28,13 +27,18 @@ namespace AXToolbox.Common.IO
 
         public LoggerFile(string filePath)
         {
+            IsAltitudeBarometric = false;
+            LoggerModel = "";
+            LoggerSerialNumber = "";
+            PilotId = 0;
             Notes = new ObservableCollection<string>();
             TrackLogLines = File.ReadAllLines(filePath, Encoding.ASCII);
+
             Notes.Add("File " + filePath);
         }
 
-        public abstract List<Trackpoint> GetTrackLog();
-        public abstract ObservableCollection<Waypoint> GetMarkers();
+        public abstract List<GeoPoint> GetTrackLog();
+        public abstract ObservableCollection<GeoWaypoint> GetMarkers();
         public abstract ObservableCollection<GoalDeclaration> GetGoalDeclarations();
 
         public static LoggerFile Load(string fileName)
@@ -55,7 +59,7 @@ namespace AXToolbox.Common.IO
         }
         public void Save(string fileName)
         {
-            File.WriteAllLines(Path.ChangeExtension(fileName, logFileExtension), TrackLogLines);
+            File.WriteAllLines(Path.ChangeExtension(fileName, LogFileExtension), TrackLogLines);
         }
     }
 }

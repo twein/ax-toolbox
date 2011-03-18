@@ -39,8 +39,8 @@ namespace AXToolbox.Scripting
         }
         public FlightSettings Settings { get; private set; }
         public ObservableCollection<string> Log { get; private set; }
-        private List<Trackpoint> validTrackPoints;
-        public List<Trackpoint> ValidTrackPoints
+        private List<AXTrackpoint> validTrackPoints;
+        public List<AXTrackpoint> ValidTrackPoints
         {
             get { return validTrackPoints; }
             internal set

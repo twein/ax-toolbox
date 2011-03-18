@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AXToolbox.Common
+namespace AXToolbox.GPSLoggers
 {
     // Almanac for Computers, 1990
     // published by Nautical Almanac Office
@@ -25,10 +25,10 @@ namespace AXToolbox.Common
             this.longitude = new Angle(longitude);
         }
 
-        public Sun(Point position)
+        public Sun(LatLonCoordinates position)
         {
-            latitude = new Angle(position.Latitude);
-            longitude = new Angle(position.Longitude);
+            latitude = position.Latitude;
+            longitude = position.Longitude;
         }
 
         public DateTime Sunrise(DateTime date, ZenithTypes zenithType)

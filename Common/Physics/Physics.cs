@@ -4,36 +4,36 @@ namespace AXToolbox.Common
 {
     public static class Physics
     {
-        public static TimeSpan TimeDiff(Point point1, Point point2)
+        public static TimeSpan TimeDiff(AXPoint point1, AXPoint point2)
         {
             return point2.Time - point1.Time;
         }
 
-        public static double Distance2D(Point point1, Point point2)
+        public static double Distance2D(AXPoint point1, AXPoint point2)
         {
             return Math.Sqrt(Math.Pow(point1.Easting - point2.Easting, 2) + Math.Pow(point1.Northing - point2.Northing, 2));
         }
-        public static double Distance3D(Point point1, Point point2)
+        public static double Distance3D(AXPoint point1, AXPoint point2)
         {
             return Math.Sqrt(Math.Pow(point1.Easting - point2.Easting, 2) 
                 + Math.Pow(point1.Northing - point2.Northing, 2)
                 + Math.Pow(point1.Altitude - point2.Altitude, 2));
         }
 
-        public static double Velocity2D(Point point1, Point point2)
+        public static double Velocity2D(AXPoint point1, AXPoint point2)
         {
             return Distance2D(point1, point2) / TimeDiff(point1, point2).TotalSeconds;
         }
-        public static double Velocity3D(Point point1, Point point2)
+        public static double Velocity3D(AXPoint point1, AXPoint point2)
         {
             return Distance3D(point1, point2) / TimeDiff(point1, point2).TotalSeconds;
         }
 
-        static public double Acceleration2D(Point point1, Point point2, Point point3)
+        static public double Acceleration2D(AXPoint point1, AXPoint point2, AXPoint point3)
         {
             return (Velocity2D(point2, point3) - Velocity2D(point1, point2)) / TimeDiff(point1, point3).TotalSeconds;
         }
-        static public double Acceleration3D(Point point1, Point point2, Point point3)
+        static public double Acceleration3D(AXPoint point1, AXPoint point2, AXPoint point3)
         {
             return (Velocity2D(point2, point3) - Velocity3D(point1, point2)) / TimeDiff(point1, point3).TotalSeconds;
         }
@@ -43,7 +43,7 @@ namespace AXToolbox.Common
         /// <param Name="point1">First point</param>
         /// <param Name="point2">Second point</param>
         /// <returns>Direction in degrees</returns>
-        static public double Direction2D(Point point1, Point point2)
+        static public double Direction2D(AXPoint point1, AXPoint point2)
         {
             if (Distance2D(point1, point2) == 0)
                 throw new ArgumentException("DuplicatedPoint: " + point1.ToString() + "/" + point2.ToString());
