@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic\Angle.cs" />
-    <Compile Include="Geodesy\CoordAdapter.cs" />
     <Compile Include="Basic\Coordinates.cs" />
     <Compile Include="Geodesy\Datum.cs" />
     <Compile Include="Geodesy\GeodeticCurve.cs" />
