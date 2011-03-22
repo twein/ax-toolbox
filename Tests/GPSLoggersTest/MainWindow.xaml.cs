@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Documents;
 using AXToolbox.GPSLoggers;
 
-namespace AXToolbox.Tests
+namespace GPSLoggersTest
 {
     public partial class MainWindow : Window
     {
