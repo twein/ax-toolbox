@@ -64,25 +64,31 @@ namespace MapViewerTest
 
         private void btnLoadTrack_Click(object sender, RoutedEventArgs e)
         {
-            var datum = Datum.GetInstance("European 1950");
-            var utmZone = "31T";
-
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "Track Files (*.igc, *.trk)|*.igc;*.trk|All Files (*.*)|*.*";
-            dlg.InitialDirectory = Environment.CurrentDirectory;
-            //dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog(this) == true)
+            if (!map.IsMapLoaded)
+                MessageBox.Show("You must load a map before loading a track");
+            else
             {
-                var logFile = LoggerFile.Load(dlg.FileName);
-                var trackLog = logFile.GetTrackLog();
-                var track = new Point[trackLog.Count];
-                for (var i = 0; i < trackLog.Count; i++)
+
+                var datum = Datum.GetInstance("European 1950");
+                var utmZone = "31T";
+
+                var dlg = new OpenFileDialog();
+                dlg.Filter = "Track Files (*.igc, *.trk)|*.igc;*.trk|All Files (*.*)|*.*";
+                dlg.InitialDirectory = Environment.CurrentDirectory;
+                //dlg.RestoreDirectory = true;
+                if (dlg.ShowDialog(this) == true)
                 {
-                    var p = trackLog[i];
-                    var tmpPoint = p.Coordinates.ToUtm(datum, utmZone);
-                    track[i] = new Point(tmpPoint.Easting, tmpPoint.Northing);
+                    var logFile = LoggerFile.Load(dlg.FileName);
+                    var trackLog = logFile.GetTrackLog();
+                    var track = new Point[trackLog.Count];
+                    for (var i = 0; i < trackLog.Count; i++)
+                    {
+                        var p = trackLog[i];
+                        var tmpPoint = p.Coordinates.ToUtm(datum, utmZone);
+                        track[i] = new Point(tmpPoint.Easting, tmpPoint.Northing);
+                    }
+                    map.AddOverlay(new TrackOverlay(track, 2));
                 }
-                map.AddOverlay(new TrackOverlay(track, 2));
             }
         }
 

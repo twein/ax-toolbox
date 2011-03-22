@@ -7,19 +7,19 @@ map competitionMap = bitmap(demo.png) grid(1000)
 
 
 //blank map
-//point topleft=SUTM(31T,282000,4632000,0m)
-//point bottomright=SUTM(31T,343000,4594000,0m)
+//point topleft=SUTM(282000,4632000,0m)
+//point bottomright=SUTM(343000,4594000,0m)
 //map competitionMap=BLANK(topleft,bottomright) grid(500)
 
 //task 4
 TASK Task4 = XDD()
-	POINT PWaypoint=SUTM (31T,300000,4603000,180m) waypoint(orange)
-	POINT PMarker=SUTM (31T,300500,4603000,180m) Marker(green)
-	POINT PCrosshairs=SUTM (31T,300000,4603500,180m) crosshairs(red)
-	POINT PTarget=SUTM (31T,300500,4603500,180m) target(100m, yellow)
+	POINT PWaypoint=SUTM (300000,4603000,180m) waypoint(orange)
+	POINT PMarker=SUTM (300500,4603000,180m) Marker(green)
+	POINT PCrosshairs=SUTM (300000,4603500,180m) crosshairs(red)
+	POINT PTarget=SUTM (300500,4603500,180m) target(100m, yellow)
 
 
-	POINT T4AreaCenter = SUTM (31T,302000,4605000,180m) none()
+	POINT T4AreaCenter = SUTM (302000,4605000,180m) none()
 	AREA T4Area = circle(T4AreaCenter,1000m) Default(green)
 	//AREA T4AnotherArea = poly(task4area.trk) Default(green)
 
