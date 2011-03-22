@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using AXToolbox.MapViewer;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
 
-namespace AXToolbox.Tests
+namespace ScriptingTest
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class WindowScripting : Window
+    public partial class MainWindow : Window
     {
         private ScriptingEngine scriptingEngine = new ScriptingEngine();
 
-        public WindowScripting()
+        public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e) { }
+
+        private void btnLoadTrack_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -42,23 +43,6 @@ namespace AXToolbox.Tests
                 MessageBox.Show(ex.Message);
                 Close();
             }
-        }
-
-        private void Window_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            var pos = e.GetPosition(this);
-            var utmPos = map.FromLocalToMap(pos);
-            MessageBox.Show(
-                string.Format("Local: {0:0}; {1:0}\n", pos.X, pos.Y) +
-                string.Format("UTM: {0:0.0}; {1:0.0}\n", utmPos.X, utmPos.Y) +
-                string.Format("Zoom: {0: 0.0}%\n", 100 * map.ZoomLevel)
-                );
-        }
-
-        private void Window_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = scriptingEngine.ConvertToPointFromUTM(map.FromLocalToMap(e.GetPosition(map)));
-            textPosition.Text = pos.ToString(Common.PointInfo.UTMCoords | Common.PointInfo.CompetitionCoords);
         }
     }
 }

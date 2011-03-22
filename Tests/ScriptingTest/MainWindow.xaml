@@ -1,10 +1,9 @@
-﻿<Window x:Class="AXToolbox.Tests.WindowMapViewer"
+﻿<Window x:Class="ScriptingTest.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
-    Title="MapViewer test" Width="1024" Height="768" WindowState="Maximized"
-        Loaded="Window_Loaded"
-        Icon="/AXToolbox.Tests;component/balloon.ico">
+    Title="Scripting test" Width="1024" Height="768" WindowState="Maximized"
+        Loaded="Window_Loaded" Icon="/ScriptingTest;component/balloon.ico">
     <DockPanel LastChildFill="True">
         <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
             <StatusBarItem>
@@ -23,12 +22,10 @@
         </StatusBar>
 
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <Button Name="btnClearMap" Click="btnClearMap_Click">Clear map</Button>
-            <Button Name="btnBlankMap" Click="btnBlankMap_Click">Blank map</Button>
-            <Button Name="btnLoadMap" Click="btnLoadMap_Click">Load map</Button>
-            <Button Name="btnLoadTrack" Click="btnLoadTrack_Click">Load track</Button>
+            <Button Name="btnLoadScript" Click="btnLoadTrack_Click">Load script</Button>
         </StackPanel>
 
         <maps:MapViewerControl x:Name="map" />
     </DockPanel>
+
 </Window>
