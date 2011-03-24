@@ -1,34 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 
 namespace AXToolbox.Common
 {
-
-    //Syslog class. Use in singleton mode: invoke with:
-    //  Singleton<SysLog>.Instance.Add("Log this line");
-    public class SysLog
+    public class SysLogTraceListener : TextWriterTraceListener
     {
-        public List<string> Messages {get;protected set;}
+        private const string TimeStampFormat = "yyyy/MM/dd HH:mm:ss.fff";
+        private static object lockObject = new Object();
 
-        public SysLog()
+
+        public SysLogTraceListener(string file)
+            : base(file) { }
+
+        public SysLogTraceListener(string file, string name)
+            : base(file, name) { }
+
+        public override void WriteLine(string message)
         {
-            Messages = new List<string>();
+            lock (lockObject)
+            {
+                message = DateTime.Now.ToString(TimeStampFormat) + "," + message;
+                base.WriteLine(message);
+            }
         }
-
-        public void Add(string message)
+        public override void Write(string message)
         {
-            Messages.Add(string.Format("{0:HH:mm:ss.fff}: {1}", DateTime.Now, message));
+            WriteLine(message);
         }
-
-        public void Clear()
+        public override void WriteLine(string message, string category)
         {
-            Messages.Clear();
+            lock (lockObject)
+            {
+                message = DateTime.Now.ToString(TimeStampFormat) + " - " + category + " - " + message;
+                base.WriteLine(message);
+            }
         }
-
-        public void Save(string fileName)
+        public override void Write(string message, string category)
         {
-            File.WriteAllLines(fileName, Messages);
+            WriteLine(message, category);
         }
     }
 }

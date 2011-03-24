@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System;
 using System.Windows.Media;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace AXToolbox.Scripting
 {
@@ -88,7 +89,7 @@ namespace AXToolbox.Scripting
             CheckConstructorSyntax();
             CheckDisplayModeSyntax();
 
-            LogLine("constructor - " + ToString());
+            Trace.WriteLine(ToString(), type);
         }
 
         /// <summary>Check constructor syntax and parse static definitions or die</summary>
@@ -102,13 +103,13 @@ namespace AXToolbox.Scripting
         /// <summary>Clears the pilot dependent (non-static) values</summary>
         public virtual void Reset()
         {
-            LogLine("Resetting");
+            Trace.WriteLine("Resetting " + name, type);
         }
         /// <summary>Executes the script</summary>
         /// <param name="report"></param>
         public virtual void Run(FlightReport report)
         {
-            LogLine("Running");
+            Trace.WriteLine("Running " + name, type);
         }
 
         public string ToShortString()
@@ -207,10 +208,6 @@ namespace AXToolbox.Scripting
                 return colors[str];
             else
                 throw new ArgumentException("Unknown display mode '" + str + "'");
-        }
-        protected void LogLine(string str)
-        {
-            engine.Log.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - " + name + " - " + str);
         }
     }
 }

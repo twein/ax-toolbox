@@ -1,5 +1,4 @@
 BUGS
-Log file.
 
 TO DO
 Add notes for every user action.
