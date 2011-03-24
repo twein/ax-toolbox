@@ -45,10 +45,5 @@ namespace AXToolbox.Scripting
         {
             return null;
         }
-
-        public override string ToString()
-        {
-            return "TASK " + base.ToString();
-        }
     }
 }

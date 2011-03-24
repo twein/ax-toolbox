@@ -95,11 +95,6 @@ namespace AXToolbox.Scripting
                 map.AddOverlay(new CoordinateGridOverlay(gridWidth));
         }
 
-        public override string ToString()
-        {
-            return "MAP " + base.ToString();
-        }
-
         /// <summary>Checks if a point is inside the map boundaries
         /// </summary>
         /// <param name="p"></param>

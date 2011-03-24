@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
+using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
 
@@ -54,6 +55,7 @@ namespace AXToolbox.Scripting
                     throw new NotImplementedException();
                     //TODO:SLL
                     break;
+
                 case "SUTM": //UTM
                     //SUTM(<utmZone>, <easting>, <northing>, <alt>)
                     {
@@ -69,9 +71,20 @@ namespace AXToolbox.Scripting
                         }
                     }
                     break;
+
                 case "LNP": //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
-                    throw new NotImplementedException();
+                    if (Parameters.Length < 2)
+                        throw new ArgumentException("Syntax error in point list definition");
+                    foreach (var key in Parameters)
+                    {
+                        if (!engine.Heap.ContainsKey(key))
+                            throw new ArgumentException("Undefined point " + key);
+
+                        if (!(engine.Heap[key] is ScriptingPoint))
+                            throw new ArgumentException(key + " is not a point");
+                    }
+                    break;
 
                 case "TNL": //nearest to point list 
                 case "LFT": //first in time from list
@@ -81,10 +94,13 @@ namespace AXToolbox.Scripting
                     //XXXX(<listPoint1>, <listPoint2>, …)
                     if (Parameters.Length < 1)
                         throw new ArgumentException("Syntax error in point list definition");
-                    foreach (var n in Parameters)
+                    foreach (var key in Parameters)
                     {
-                        if (!engine.Heap.ContainsKey(n))
-                            throw new ArgumentException("Undefined point " + n);
+                        if (!engine.Heap.ContainsKey(key))
+                            throw new ArgumentException("Undefined point " + key);
+
+                        if (!(engine.Heap[key] is ScriptingPoint))
+                            throw new ArgumentException(key + " is not a point");
                     }
                     break;
 
@@ -109,6 +125,7 @@ namespace AXToolbox.Scripting
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
                     //XXXX()
+                    //TODO: check if they are really needed or should be automatic
                     if (Parameters.Length != 1 || Parameters[0] != "")
                         throw new ArgumentException("Syntax error in launch/landing definition");
                     break;
@@ -119,15 +136,21 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error in point definition");
                     else if (!engine.Heap.ContainsKey(Parameters[0]))
                         throw new ArgumentException("Undefined point " + Parameters[0]);
+                    else if (!(engine.Heap[Parameters[0]] is ScriptingPoint))
+                        throw new ArgumentException(Parameters[0] + " is not a point");
                     break;
 
                 case "TDT": //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
                     throw new NotImplementedException();
+                    //TODO: TDT
+                    break;
 
                 case "TDD":  //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
                     throw new NotImplementedException();
+                    //TODO: TDD
+                    break;
 
                 case "TAFI": //area first in
                 case "TAFO": //area first out
@@ -138,6 +161,8 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error in area definition");
                     else if (!engine.Heap.ContainsKey(Parameters[0]))
                         throw new ArgumentException("Undefined area " + Parameters[0]);
+                    else if (!(engine.Heap[Parameters[0]] is ScriptingArea))
+                        throw new ArgumentException(Parameters[0] + " is not an area");
                     break;
             }
         }
@@ -195,77 +220,137 @@ namespace AXToolbox.Scripting
                     //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
-                    throw new NotImplementedException();
+                    var desiredPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                    if (desiredPoint == null)
+                        Point = null;
+                    else
+                    {
+                        for (var i = 1; i < Parameters.Length; i++)
+                        {
+                            var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[i]]).Point;
+                            if (nextPoint == null)
+                                continue;
+                            if (Point == null || Physics.Distance2D(desiredPoint, nextPoint) < Physics.Distance2D(desiredPoint, Point))
+                                Point = nextPoint;
+                        }
+                    }
+                    break;
+
                 case "LFT":
                     //first in time from list
                     //LFT(<listPoint1>, <listPoint2>, …)
-                    throw new NotImplementedException();
+                    foreach (var key in Parameters)
+                    {
+                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        if (nextPoint == null)
+                            continue;
+                        else if (Point == null || nextPoint.Time < Point.Time)
+                            Point = nextPoint;
+                    }
+                    break;
+
                 case "LLT":
                     //last in time from list
                     //LLT(<listPoint1>, <listPoint2>)
-                    throw new NotImplementedException();
+                    foreach (var key in Parameters)
+                    {
+                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        if (nextPoint == null)
+                            continue;
+                        else if (Point == null || nextPoint.Time > Point.Time)
+                            Point = nextPoint;
+                    }
+                    break;
+
                 case "LFNN":
                     //LFNN: first not null from list
                     //LFNN(<listPoint1>, <listPoint2>, …)
-                    throw new NotImplementedException();
+                    foreach (var key in Parameters)
+                    {
+                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        if (nextPoint != null)
+                        {
+                            Point = nextPoint;
+                            break;
+                        }
+                    }
+                    break;
+
                 case "LLNN":
                     //last not null
                     //LLNN(<listPoint1>, <listPoint2>, …)
-                    throw new NotImplementedException();
+                    foreach (var key in Parameters.Reverse())
+                    {
+                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        if (nextPoint != null)
+                        {
+                            Point = nextPoint;
+                            break;
+                        }
+                    }
+                    break;
+
                 case "MVMD":
                     //MVMD: virtual marker drop
                     //MVMD(<number>)
                     throw new NotImplementedException();
+
                 case "MPDG":
                     //pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
                     throw new NotImplementedException();
+
                 case "TLCH":
                     //TLCH: launch
                     //TLCH()
-                    {
-                        if (report != null)
-                            Point = report.LaunchPoint;
-                    }
+                    if (report != null)
+                        Point = report.LaunchPoint;
                     break;
+
                 case "TLND":
                     //TLND: landing
                     //TLND()
-                    {
-                        if (report != null)
-                            Point = report.LandingPoint;
-                    }
+                    if (report != null)
+                        Point = report.LandingPoint;
                     break;
+
                 case "TNP":
                     //nearest to point
                     //TNP(<pointName>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     throw new NotImplementedException();
+
                 case "TNL":
                     //nearest to point list
                     //TNL(<listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     throw new NotImplementedException();
+
                 case "TDT":
                     //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
                     throw new NotImplementedException();
+
                 case "TDD":
                     //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
                     throw new NotImplementedException();
+
                 case "TAFI":
                     //area first in
                     //TAFI(<areaName>)
                     throw new NotImplementedException();
+
                 case "TAFO":
                     //area first out
                     //TAFO(<areaName>)
                     throw new NotImplementedException();
+
                 case "TALI":
                     //area last in
                     //TALI(<areaName>)
                     throw new NotImplementedException();
+
                 case "TALO":
                     //area last out
                     //TALO(<areaName>)
@@ -285,7 +370,7 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
+                            var position = new Point(Point.Easting, Point.Northing);
                             overlay = new WaypointOverlay(position, Name);
                             overlay.Color = color;
                         }
@@ -293,7 +378,7 @@ namespace AXToolbox.Scripting
 
                     case "TARGET":
                         {
-                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
+                            var position = new Point(Point.Easting, Point.Northing);
                             overlay = new TargetOverlay(position, radius, Name);
                             overlay.Color = color;
                         }
@@ -301,14 +386,14 @@ namespace AXToolbox.Scripting
 
                     case "MARKER":
                         {
-                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
+                            var position = new Point(Point.Easting, Point.Northing);
                             overlay = new MarkerOverlay(position, Name);
                             overlay.Color = color;
                         } break;
 
                     case "CROSSHAIRS":
                         {
-                            var position = new System.Windows.Point(Point.Easting, Point.Northing);
+                            var position = new Point(Point.Easting, Point.Northing);
                             overlay = new CrosshairsOverlay(position);
                             overlay.Color = color;
                         }
@@ -316,11 +401,6 @@ namespace AXToolbox.Scripting
                 }
             }
             return overlay;
-        }
-
-        public override string ToString()
-        {
-            return "POINT " + base.ToString();
         }
     }
 }

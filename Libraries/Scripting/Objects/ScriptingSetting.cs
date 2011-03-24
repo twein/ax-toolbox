@@ -131,17 +131,5 @@ namespace AXToolbox.Scripting
         {
             return null;
         }
-
-        public override string ToString()
-        {
-            var parms = "";
-            foreach (var par in Parameters)
-            {
-                parms += par + ",";
-            }
-            parms = parms.Trim(new char[] { ',' });
-
-            return "SET " + Name + " = " + parms;
-        }
     }
 }
