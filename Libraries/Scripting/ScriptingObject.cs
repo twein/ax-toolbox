@@ -123,7 +123,7 @@ namespace AXToolbox.Scripting
 
         public override string ToString()
         {
-            string str = Name + " = ";
+            string str = ObjectClass + " " + Name + " = ";
 
             var parms = "";
             foreach (var par in Parameters)

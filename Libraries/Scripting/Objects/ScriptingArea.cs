@@ -128,11 +128,6 @@ namespace AXToolbox.Scripting
             return overlay;
         }
 
-        public override string ToString()
-        {
-            return "AREA " + base.ToString();
-        }
-
         public bool Contains(AXTrackpoint p)
         {
             //TODO: polygonal scripting area Contains()

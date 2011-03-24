@@ -12,3 +12,18 @@ List of saved reports.
 IDEAS
 Make an error log to output all recoverable error causes.
 Steal ideas from http://boxy.fisch.lu
+
+
+
+
+Checklist:
+Pilot number
+Track log signature
+Max vertical speed
+Launch and landing
+Markers
+	Incorrect marker number
+Pilot declared goals
+	Incorrect declaration number
+	Incorrect allowed goal number
+	Road crossing distance

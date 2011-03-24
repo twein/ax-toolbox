@@ -133,10 +133,5 @@ namespace AXToolbox.Scripting
         {
             return null;
         }
-
-        public override string ToString()
-        {
-            return "FILTER " + base.ToString();
-        }
     }
 }
