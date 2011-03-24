@@ -19,21 +19,12 @@ namespace FlightAnalyzer
         {
             InitializeComponent();
 
-            //init logging
-            try
-            {
-                var textListener = new SysLogTraceListener("FlightAnalyzer.log");
-                Trace.Listeners.Add(textListener);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error creating TextWriterTraceListener for trace " +
-                    "file \"{0}\":\r\n{1}", "FlightAnalyzer.log", ex.Message);
-                return;
-            }
-
             Engine = new ScriptingEngine();
             DataContext = this;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
         }
 
         private void loadScriptButton_Click(object sender, RoutedEventArgs e)

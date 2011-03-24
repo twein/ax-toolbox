@@ -27,28 +27,28 @@ namespace AXToolbox.Scripting
 
         internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
-        {
-        }
+        { }
+
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(type))
-                throw new ArgumentException("Unknown point type '" + type + "'");
+            if (!types.Contains(Type))
+                throw new ArgumentException("Unknown point type '" + Type + "'");
 
             //check syntax and resolve static point types
-            switch (type)
+            switch (Type)
             {
                 case "SLL": //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
                     {
-                        if (parameters.Length != 3)
+                        if (Parameters.Length != 3)
                             throw new ArgumentException("Syntax error in point definition");
                         else
                         {
                             isStatic = true;
-                            var lat = ParseDouble(parameters[0]);
-                            var lng = ParseDouble(parameters[1]);
-                            var alt = ParseLength(parameters[2]);
+                            var lat = ParseDouble(Parameters[0]);
+                            var lng = ParseDouble(Parameters[1]);
+                            var alt = ParseLength(Parameters[2]);
                         }
                     }
                     throw new NotImplementedException();
@@ -57,14 +57,14 @@ namespace AXToolbox.Scripting
                 case "SUTM": //UTM
                     //SUTM(<utmZone>, <easting>, <northing>, <alt>)
                     {
-                        if (parameters.Length != 3)
+                        if (Parameters.Length != 3)
                             throw new ArgumentException("Syntax error in point definition");
                         else
                         {
                             isStatic = true;
-                            var easting = ParseDouble(parameters[0]);
-                            var northing = ParseDouble(parameters[1]);
-                            var alt = ParseLength(parameters[2]);
+                            var easting = ParseDouble(Parameters[0]);
+                            var northing = ParseDouble(Parameters[1]);
+                            var alt = ParseLength(Parameters[2]);
                             Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
                         }
                     }
@@ -79,9 +79,9 @@ namespace AXToolbox.Scripting
                 case "LFNN": //LFNN: first not null from list
                 case "LLNN": //last not null
                     //XXXX(<listPoint1>, <listPoint2>, …)
-                    if (parameters.Length < 1)
+                    if (Parameters.Length < 1)
                         throw new ArgumentException("Syntax error in point list definition");
-                    foreach (var n in parameters)
+                    foreach (var n in Parameters)
                     {
                         if (!engine.Heap.ContainsKey(n))
                             throw new ArgumentException("Undefined point " + n);
@@ -92,7 +92,7 @@ namespace AXToolbox.Scripting
                     //MVMD(<number>)
                     {
                         var number = 0;
-                        if (parameters.Length != 1 || !int.TryParse(parameters[0], out number))
+                        if (Parameters.Length != 1 || !int.TryParse(Parameters[0], out number))
                             throw new ArgumentException("Syntax error in marker definition");
                     }
                     break;
@@ -101,7 +101,7 @@ namespace AXToolbox.Scripting
                     //MPDG(<number>, <minTime>, <maxTime>)
                     {
                         var number = 0;
-                        if (parameters.Length != 1 || !int.TryParse(parameters[0], out number))
+                        if (Parameters.Length != 1 || !int.TryParse(Parameters[0], out number))
                             throw new ArgumentException("Syntax error in goal definition");
                         throw new NotImplementedException();
                     }
@@ -109,16 +109,16 @@ namespace AXToolbox.Scripting
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
                     //XXXX()
-                    if (parameters.Length != 1 || parameters[0] != "")
+                    if (Parameters.Length != 1 || Parameters[0] != "")
                         throw new ArgumentException("Syntax error in launch/landing definition");
                     break;
 
                 case "TNP": //nearest to point
                     //TNP(<pointName>)
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!engine.Heap.ContainsKey(parameters[0]))
-                        throw new ArgumentException("Undefined point " + parameters[0]);
+                    else if (!engine.Heap.ContainsKey(Parameters[0]))
+                        throw new ArgumentException("Undefined point " + Parameters[0]);
                     break;
 
                 case "TDT": //delayed in time
@@ -134,44 +134,44 @@ namespace AXToolbox.Scripting
                 case "TALI": //area last in
                 case "TALO": //area last out
                     //XXXX(<areaName>)
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in area definition");
-                    else if (!engine.Heap.ContainsKey(parameters[0]))
-                        throw new ArgumentException("Undefined area " + parameters[0]);
+                    else if (!engine.Heap.ContainsKey(Parameters[0]))
+                        throw new ArgumentException("Undefined area " + Parameters[0]);
                     break;
             }
         }
 
         public override void CheckDisplayModeSyntax()
         {
-            if (!displayModes.Contains(displayMode))
-                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
+            if (!displayModes.Contains(DisplayMode))
+                throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
 
-            switch (displayMode)
+            switch (DisplayMode)
             {
                 case "NONE":
-                    if (displayParameters.Length != 1 || displayParameters[0] != "")
+                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "WAYPOINT":
                 case "MARKER":
                 case "CROSSHAIRS":
-                    if (displayParameters.Length > 1)
+                    if (DisplayParameters.Length > 1)
                         throw new ArgumentException("Syntax error");
 
-                    if (displayParameters[0] != "")
-                        color = ParseColor(displayParameters[0]);
+                    if (DisplayParameters[0] != "")
+                        color = ParseColor(DisplayParameters[0]);
                     break;
 
                 case "TARGET":
-                    if (displayParameters.Length > 2)
+                    if (DisplayParameters.Length > 2)
                         throw new ArgumentException("Syntax error");
 
-                    radius = ParseLength(displayParameters[0]);
+                    radius = ParseLength(DisplayParameters[0]);
 
-                    if (displayParameters.Length == 2)
-                        color = ParseColor(displayParameters[1]);
+                    if (DisplayParameters.Length == 2)
+                        color = ParseColor(DisplayParameters[1]);
                     break;
             }
         }
@@ -189,7 +189,7 @@ namespace AXToolbox.Scripting
             base.Run(report);
 
             // parse pilot dependent types
-            switch (type)
+            switch (Type)
             {
                 case "LNP":
                     //nearest to point from list
@@ -277,7 +277,7 @@ namespace AXToolbox.Scripting
             MapOverlay overlay = null;
             if (Point != null)
             {
-                switch (displayMode)
+                switch (DisplayMode)
                 {
                     case "NONE":
                         break;

@@ -81,7 +81,7 @@
     <Compile Include="ComplexTypes\FlightSettings.cs" />
     <Compile Include="ComplexTypes\ObjectSerializer.cs" />
     <Compile Include="Extensions\Double.cs" />
-    <Compile Include="General\SysLog.cs" />
+    <Compile Include="General\TimeStampTraceListener.cs" />
     <Compile Include="General\Singleton.cs" />
     <Compile Include="BasicTypes\AXPoint.cs" />
     <Compile Include="BasicTypes\AXWaypoint.cs" />

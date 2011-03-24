@@ -3,23 +3,23 @@ using System.Diagnostics;
 
 namespace AXToolbox.Common
 {
-    public class SysLogTraceListener : TextWriterTraceListener
+    public class TimeStampTraceListener : TextWriterTraceListener
     {
         private const string TimeStampFormat = "yyyy/MM/dd HH:mm:ss.fff";
         private static object lockObject = new Object();
 
 
-        public SysLogTraceListener(string file)
+        public TimeStampTraceListener(string file)
             : base(file) { }
 
-        public SysLogTraceListener(string file, string name)
+        public TimeStampTraceListener(string file, string name)
             : base(file, name) { }
 
         public override void WriteLine(string message)
         {
             lock (lockObject)
             {
-                message = DateTime.Now.ToString(TimeStampFormat) + "," + message;
+                message = DateTime.Now.ToString(TimeStampFormat) + " - " + message;
                 base.WriteLine(message);
             }
         }
@@ -31,7 +31,7 @@ namespace AXToolbox.Common
         {
             lock (lockObject)
             {
-                message = DateTime.Now.ToString(TimeStampFormat) + " - " + category + " - " + message;
+                message = DateTime.Now.ToString(TimeStampFormat) + " " + category + " - " + message;
                 base.WriteLine(message);
             }
         }

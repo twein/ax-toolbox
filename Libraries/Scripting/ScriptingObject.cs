@@ -24,17 +24,21 @@ namespace AXToolbox.Scripting
             {"YELLOW", Brushes.Yellow}
         };
 
-        protected ScriptingEngine engine;
-
-        protected string name;
-        public string Name
+        protected ScriptingEngine engine { get; set; }
+        protected string ObjectClass
         {
-            get { return name; }
+            get
+            {
+                var hierarchy = this.GetType().ToString().Split(new char[] { '.' });
+                return hierarchy[hierarchy.Length - 1].Substring(9).ToUpper();
+            }
         }
-        protected string type;
-        protected string[] parameters;
-        protected string displayMode;
-        protected string[] displayParameters;
+
+        public string Name { get; protected set; }
+        protected string Type { get; set; }
+        protected string[] Parameters { get; set; }
+        protected string DisplayMode { get; set; }
+        protected string[] DisplayParameters { get; set; }
 
         protected Brush color = Brushes.Blue;
 
@@ -80,16 +84,16 @@ namespace AXToolbox.Scripting
         protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
             this.engine = engine;
-            this.name = name;
-            this.type = type;
-            this.parameters = parameters;
-            this.displayMode = displayMode;
-            this.displayParameters = displayParameters;
+            this.Name = name;
+            this.Type = type;
+            this.Parameters = parameters;
+            this.DisplayMode = displayMode;
+            this.DisplayParameters = displayParameters;
 
             CheckConstructorSyntax();
             CheckDisplayModeSyntax();
 
-            Trace.WriteLine(ToString(), type);
+            Trace.WriteLine(this.ToString(), ObjectClass);
         }
 
         /// <summary>Check constructor syntax and parse static definitions or die</summary>
@@ -103,43 +107,43 @@ namespace AXToolbox.Scripting
         /// <summary>Clears the pilot dependent (non-static) values</summary>
         public virtual void Reset()
         {
-            Trace.WriteLine("Resetting " + name, type);
+            Trace.WriteLine("Resetting " + Name, ObjectClass);
         }
         /// <summary>Executes the script</summary>
         /// <param name="report"></param>
         public virtual void Run(FlightReport report)
         {
-            Trace.WriteLine("Running " + name, type);
+            Trace.WriteLine("Running " + Name, ObjectClass);
         }
 
         public string ToShortString()
         {
-            return type;
+            return Type;
         }
 
         public override string ToString()
         {
-            string str = name + " = ";
+            string str = Name + " = ";
 
             var parms = "";
-            foreach (var par in parameters)
+            foreach (var par in Parameters)
             {
                 parms += par + ",";
             }
             parms = parms.Trim(new char[] { ',' });
 
-            str += type + "(" + parms + ")";
+            str += Type + "(" + parms + ")";
 
-            if (displayMode != "")
+            if (DisplayMode != "")
             {
                 parms = "";
-                foreach (var par in displayParameters)
+                foreach (var par in DisplayParameters)
                 {
                     parms += par + ",";
                 }
                 parms = parms.Trim(new char[] { ',' });
 
-                str += " " + displayMode + "(" + parms + ")";
+                str += " " + DisplayMode + "(" + parms + ")";
             }
 
             return str;

@@ -57,7 +57,6 @@ namespace AXToolbox.Scripting
         {
             Settings = new FlightSettings();
             Heap = new Dictionary<string, ScriptingObject>();
-            Trace.WriteLine("Started ".PadRight(95, '='), "ENGINE");
         }
 
         public void LoadScript(string scriptFileName)
