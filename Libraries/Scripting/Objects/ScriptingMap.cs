@@ -25,33 +25,34 @@ namespace AXToolbox.Scripting
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
+
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(type))
-                throw new ArgumentException("Unknown map type '" + type + "'");
+            if (!types.Contains(Type))
+                throw new ArgumentException("Unknown map type '" + Type + "'");
 
-            switch (type)
+            switch (Type)
             {
                 case "BITMAP":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in bitmap definition");
 
                     //load the georeferenced image to retrieve top-left and bottom-right corners
-                    var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
+                    var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), Parameters[0]));
                     topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
                     bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
 
                     break;
 
                 case "BLANK":
-                    if (parameters.Length != 2)
+                    if (Parameters.Length != 2)
                         throw new ArgumentException("Syntax error in blank map definition");
 
-                    if (!engine.Heap.ContainsKey(parameters[0]) || !engine.Heap.ContainsKey(parameters[1]))
-                        throw new ArgumentException("Undefined point '" + parameters[0] + "'");
+                    if (!engine.Heap.ContainsKey(Parameters[0]) || !engine.Heap.ContainsKey(Parameters[1]))
+                        throw new ArgumentException("Undefined point '" + Parameters[0] + "'");
 
-                    var tl = (ScriptingPoint)engine.Heap[parameters[0]];
-                    var br = (ScriptingPoint)engine.Heap[parameters[1]];
+                    var tl = (ScriptingPoint)engine.Heap[Parameters[0]];
+                    var br = (ScriptingPoint)engine.Heap[Parameters[1]];
                     topLeft = tl.Point;
                     bottomRight = br.Point;
 
@@ -64,16 +65,16 @@ namespace AXToolbox.Scripting
 
         public override void CheckDisplayModeSyntax()
         {
-            if (!displayModes.Contains(displayMode))
-                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
+            if (!displayModes.Contains(DisplayMode))
+                throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
 
-            switch (displayMode)
+            switch (DisplayMode)
             {
                 case "GRID":
-                    if (displayParameters.Length != 1)
+                    if (DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");
 
-                    gridWidth = ParseDouble(displayParameters[0]);
+                    gridWidth = ParseDouble(DisplayParameters[0]);
                     break;
             }
         }
@@ -85,8 +86,8 @@ namespace AXToolbox.Scripting
 
         public void InitializeMapViewer(MapViewerControl map)
         {
-            if (type == "BITMAP")
-                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), parameters[0]));
+            if (Type == "BITMAP")
+                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), Parameters[0]));
             else
                 map.LoadBlank(new System.Windows.Point(topLeft.Easting, topLeft.Northing), new System.Windows.Point(bottomRight.Easting, bottomRight.Northing));
 

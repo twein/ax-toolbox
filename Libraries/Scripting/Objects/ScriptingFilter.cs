@@ -24,47 +24,47 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(type))
-                throw new ArgumentException("Unknown filter type '" + type + "'");
+            if (!types.Contains(Type))
+                throw new ArgumentException("Unknown filter type '" + Type + "'");
 
             //parse static types
-            switch (type)
+            switch (Type)
             {
                 case "NONE":
-                    if (parameters.Length != 1 || parameters[0] != "")
+                    if (Parameters.Length != 1 || Parameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "INSIDE":
                 case "OUTSIDE":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in area definition");
                     else
-                        area = (ScriptingArea)engine.Heap[parameters[0]];
+                        area = (ScriptingArea)engine.Heap[Parameters[0]];
                     break;
 
                 case "BEFORETIME":
                 case "AFTERTIME":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in time definition");
                     else
-                        time = engine.Settings.Date + TimeSpan.Parse(parameters[0]); //TODO: check local-GMT conversion
+                        time = engine.Settings.Date + TimeSpan.Parse(Parameters[0]); //TODO: check local-GMT conversion
                     break;
 
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!engine.Heap.ContainsKey(parameters[0]))
-                        throw new ArgumentException("Undefined point " + parameters[0]);
+                    else if (!engine.Heap.ContainsKey(Parameters[0]))
+                        throw new ArgumentException("Undefined point " + Parameters[0]);
                     break;
 
                 case "ABOVE":
                 case "BELOW":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in altitude definition");
                     else
-                        altitude = ParseLength(parameters[0]);
+                        altitude = ParseLength(Parameters[0]);
                     break;
             }
         }
@@ -81,7 +81,7 @@ namespace AXToolbox.Scripting
         {
             base.Run(report);
 
-            switch (type)
+            switch (Type)
             {
                 case "NONE":
                     engine.ValidTrackPoints = report.FlightTrack;
@@ -105,7 +105,7 @@ namespace AXToolbox.Scripting
 
                 case "BEFOREPOINT":
                     {
-                        var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
+                        var spoint = (ScriptingPoint)engine.Heap[Parameters[0]];
                         var time = spoint.Point.Time;
                         engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
                     }
@@ -113,7 +113,7 @@ namespace AXToolbox.Scripting
 
                 case "AFTERPOINT":
                     {
-                        var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
+                        var spoint = (ScriptingPoint)engine.Heap[Parameters[0]];
                         var time = spoint.Point.Time;
                         engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
                     }

@@ -16,7 +16,7 @@ namespace AXToolbox.Scripting
 
         private string StandardErrorMessage
         {
-            get { return "Syntax error in " + name + " definition"; }
+            get { return "Syntax error in " + Name + " definition"; }
         }
 
         internal ScriptingSetting(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
@@ -25,47 +25,47 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            name = name.ToUpper();
+            Name = Name.ToUpper();
 
-            if (!names.Contains(name))
-                throw new ArgumentException("Unknown setting '" + name + "'");
+            if (!names.Contains(Name))
+                throw new ArgumentException("Unknown setting '" + Name + "'");
 
-            switch (name)
+            switch (Name)
             {
                 case "DATETIME":
                     {
-                        if (parameters.Length != 2)
+                        if (Parameters.Length != 2)
                             throw new ArgumentException(StandardErrorMessage);
 
-                        var time = parameters[1].ToUpper();
+                        var time = Parameters[1].ToUpper();
                         if (time != "AM" && time != "PM")
                             throw new ArgumentException(StandardErrorMessage);
 
-                        engine.Settings.Date = ParseLocalDatetime(parameters[0]);
+                        engine.Settings.Date = ParseLocalDatetime(Parameters[0]);
                         if (time == "PM")
                             engine.Settings.Date += new TimeSpan(12, 0, 0);
                     }
                     break;
 
                 case "DATUM":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException(StandardErrorMessage);
 
                     try
                     {
-                        engine.Settings.DatumName = parameters[0];
+                        engine.Settings.DatumName = Parameters[0];
                     }
                     catch (KeyNotFoundException)
                     {
-                        throw new ArgumentException("Unsupported datum '" + parameters[0] + "'");
+                        throw new ArgumentException("Unsupported datum '" + Parameters[0] + "'");
                     }
                     break;
 
                 case "UTMZONE":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException(StandardErrorMessage);
 
-                    engine.Settings.UtmZone = parameters[0];
+                    engine.Settings.UtmZone = Parameters[0];
                     break;
 
                 case "QNH":
@@ -81,16 +81,16 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "SMOOTHNESS":
-                    if (parameters.Length != 1)
+                    if (Parameters.Length != 1)
                         throw new ArgumentException(StandardErrorMessage);
 
                     try
                     {
-                        engine.Settings.Smoothness = int.Parse(parameters[0]);
+                        engine.Settings.Smoothness = int.Parse(Parameters[0]);
                     }
                     catch (Exception)
                     {
-                        throw new ArgumentException(StandardErrorMessage + " '" + parameters[0] + "'");
+                        throw new ArgumentException(StandardErrorMessage + " '" + Parameters[0] + "'");
                     }
                     break;
 
@@ -110,16 +110,16 @@ namespace AXToolbox.Scripting
         /// <returns></returns>
         private double ParseDoubleOrDie(Func<string, double> parseFunction)
         {
-            if (parameters.Length != 1)
+            if (Parameters.Length != 1)
                 throw new ArgumentException(StandardErrorMessage);
 
             try
             {
-                return parseFunction(parameters[0]);
+                return parseFunction(Parameters[0]);
             }
             catch (Exception)
             {
-                throw new ArgumentException(StandardErrorMessage + " '" + parameters[0] + "'");
+                throw new ArgumentException(StandardErrorMessage + " '" + Parameters[0] + "'");
             }
         }
 
@@ -135,7 +135,7 @@ namespace AXToolbox.Scripting
         public override string ToString()
         {
             var parms = "";
-            foreach (var par in parameters)
+            foreach (var par in Parameters)
             {
                 parms += par + ",";
             }

@@ -27,31 +27,32 @@ namespace AXToolbox.Scripting
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
+
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(type))
-                throw new ArgumentException("Unknown area type '" + type + "'");
+            if (!types.Contains(Type))
+                throw new ArgumentException("Unknown area type '" + Type + "'");
 
-            switch (type)
+            switch (Type)
             {
                 case "CIRCLE":
-                    if (parameters.Length < 2)
+                    if (Parameters.Length < 2)
                         throw new ArgumentException("Syntax error in circle definition");
 
-                    if (!engine.Heap.ContainsKey(parameters[0]))
-                        throw new ArgumentException("Undefined point '" + parameters[0] + "'");
+                    if (!engine.Heap.ContainsKey(Parameters[0]))
+                        throw new ArgumentException("Undefined point '" + Parameters[0] + "'");
 
-                    var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
+                    var spoint = (ScriptingPoint)engine.Heap[Parameters[0]];
                     centerPoint = spoint.Point;
-                    radius = ParseLength(parameters[1]);
+                    radius = ParseLength(Parameters[1]);
                     break;
 
                 case "POLY":
-                    if (parameters.Length < 1)
+                    if (Parameters.Length < 1)
                         throw new ArgumentException("Syntax error in poly definition");
 
-                    if (!File.Exists(parameters[0]))
-                        throw new ArgumentException("Track file not found '" + parameters[0] + "'");
+                    if (!File.Exists(Parameters[0]))
+                        throw new ArgumentException("Track file not found '" + Parameters[0] + "'");
 
                     //outline = FlightReport.LoadFromFile(parameters[0]).OriginalTrack;
                     throw new NotImplementedException();
@@ -62,22 +63,22 @@ namespace AXToolbox.Scripting
 
         public override void CheckDisplayModeSyntax()
         {
-            if (!displayModes.Contains(displayMode))
-                throw new ArgumentException("Unknown display mode '" + displayMode + "'");
+            if (!displayModes.Contains(DisplayMode))
+                throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
 
-            switch (displayMode)
+            switch (DisplayMode)
             {
                 case "NONE":
-                    if (displayParameters.Length != 1 || displayParameters[0] != "")
+                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "DEFAULT":
-                    if (displayParameters.Length != 1)
+                    if (DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");
 
-                    if (displayParameters[0] != "")
-                        color = ParseColor(displayParameters[0]);
+                    if (DisplayParameters[0] != "")
+                        color = ParseColor(DisplayParameters[0]);
                     break;
             }
         }
@@ -91,13 +92,13 @@ namespace AXToolbox.Scripting
         {
             base.Run(report);
 
-            switch (type)
+            switch (Type)
             {
                 case "CIRCLE":
-                    var spoint = (ScriptingPoint)engine.Heap[parameters[0]];
+                    var spoint = (ScriptingPoint)engine.Heap[Parameters[0]];
                     if (spoint != null)
                         centerPoint = spoint.Point;
-                    radius = ParseLength(parameters[1]);
+                    radius = ParseLength(Parameters[1]);
                     break;
                 case "POLY":
                     //TODO: polygonal scripting area Run()
@@ -108,13 +109,13 @@ namespace AXToolbox.Scripting
         public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;
-            switch (type)
+            switch (Type)
             {
                 case "CIRCLE":
                     if (centerPoint != null)
                     {
                         var center = new System.Windows.Point(centerPoint.Easting, centerPoint.Northing);
-                        overlay = new CircularAreaOverlay(center, radius, name);
+                        overlay = new CircularAreaOverlay(center, radius, Name);
                     }
                     break;
 

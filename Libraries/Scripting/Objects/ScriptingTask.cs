@@ -19,9 +19,9 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(type))
-                throw new ArgumentException("Unknown task type '" + type + "'");
-            if (parameters.Length != 1 || parameters[0] != "")
+            if (!types.Contains(Type))
+                throw new ArgumentException("Unknown task type '" + Type + "'");
+            if (Parameters.Length != 1 || Parameters[0] != "")
                 throw new ArgumentException("Syntax error in task definition");
         }
 
