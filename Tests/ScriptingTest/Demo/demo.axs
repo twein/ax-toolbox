@@ -30,3 +30,8 @@ TASK Task4 = XDD()
 	POINT T4B = tafo(T4Area) marker(red)
 
 	//RESULT t4result = D2D(T4A,T4B)
+
+TASK Task5 = PDG()
+TASK Task6 = LRN()
+TASK Task7 = ANG()
+TASK Task8 = JDG()

@@ -21,14 +21,14 @@
         </StatusBar>
         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
             <StackPanel Orientation="Vertical">
-                <Expander ExpandDirection="Down" MaxWidth="300" Background="LightGray" >
+                <Expander ExpandDirection="Down" Background="LightGray" >
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock VerticalAlignment="Top" FontWeight="Bold">Script</TextBlock>
                                 <TextBlock VerticalAlignment="Top" Text="{Binding Path=Engine.ShortDescription}"></TextBlock>
                             </StackPanel>
-                            <Button Height="22" ToolTip="Load script file" Click="Button_Click">Load</Button>
+                            <Button Height="22" ToolTip="Load script file" Click="loadScriptButton_Click">Load</Button>
                         </StackPanel>
                     </Expander.Header>
                     <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Engine.Detail}"/>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using System.Diagnostics;
 
 namespace AXToolbox.Scripting
 {
@@ -15,16 +16,15 @@ namespace AXToolbox.Scripting
         static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
         static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
 
-
         public string ShortDescription
         {
             get
             {
                 var l = "";
                 foreach (var item in Heap.Values.Where(h => h is ScriptingTask))
-                    l += ((ScriptingTask)item).ToShortString() + ",";
-                l = l.Trim(new char[] { ',' });
-                return string.Format("{0} {1}", Settings.ToString(), l);
+                    l += ((ScriptingTask)item).ToShortString() + ", ";
+                l = l.Trim(new char[] { ',', ' ' });
+                return string.Format("{0}\n{1}", Settings.ToString(), l);
             }
         }
         public string Detail
@@ -38,7 +38,6 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
-        public ObservableCollection<string> Log { get; private set; }
         private List<AXTrackpoint> validTrackPoints;
         public List<AXTrackpoint> ValidTrackPoints
         {
@@ -47,7 +46,8 @@ namespace AXToolbox.Scripting
             {
                 validTrackPoints = value;
                 if (validTrackPoints != null)
-                    LogLine(string.Format("{0} valid track points", validTrackPoints.Count));
+                    Trace.WriteLine(string.Format("{0} valid track points", validTrackPoints.Count), "ENGINE");
+                RaisePropertyChanged("ValidTrackPoints");
             }
         }
 
@@ -56,20 +56,13 @@ namespace AXToolbox.Scripting
         public ScriptingEngine()
         {
             Settings = new FlightSettings();
-            Log = new ObservableCollection<string>();
             Heap = new Dictionary<string, ScriptingObject>();
-            LogLine("Started ".PadRight(95, '='));
-        }
-
-        ~ScriptingEngine()
-        {
-            LogLine("Stopped ".PadRight(95, '='));
-            File.AppendAllLines("scripting.log", Log);
+            Trace.WriteLine("Started ".PadRight(95, '='), "ENGINE");
         }
 
         public void LoadScript(string scriptFileName)
         {
-            LogLine("Loading script '" + scriptFileName + "'");
+            Trace.WriteLine("Loading script '" + scriptFileName + "'", "ENGINE");
 
             Settings = new FlightSettings();
             Heap.Clear();
@@ -126,14 +119,14 @@ namespace AXToolbox.Scripting
             catch (ArgumentException ex)
             {
                 var message = "line " + (lineNumber + 1).ToString() + ": " + ex.Message;
-                LogLine("Exception parsing " + message);
+                Trace.WriteLine("Exception parsing " + message, "ENGINE");
                 throw new ArgumentException(message);
             }
 
             if (!Settings.AreWellInitialized())
             {
                 var message = "The settings are not fully initialized";
-                LogLine("Exception: " + message);
+                Trace.WriteLine("Exception: " + message, "ENGINE");
                 throw new ArgumentException(message);
             }
 
@@ -158,7 +151,7 @@ namespace AXToolbox.Scripting
 
         public void Run(FlightReport report)
         {
-            LogLine("Running " + report.ToString());
+            Trace.WriteLine("Running " + report.ToString(), "ENGINE");
 
             foreach (var kvp in Heap)
             {
@@ -180,11 +173,6 @@ namespace AXToolbox.Scripting
             }
 
             return split;
-        }
-
-        public void LogLine(string str)
-        {
-            Log.Add(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " - ENGINE - " + str);
         }
     }
 }
