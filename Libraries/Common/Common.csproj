@@ -78,15 +78,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicTypes\AXTrackpoint.cs" />
-    <Compile Include="ComplexTypes\FlightSettings.cs" />
-    <Compile Include="ComplexTypes\ObjectSerializer.cs" />
+    <Compile Include="General\ObjectSerializer.cs" />
     <Compile Include="Extensions\Double.cs" />
     <Compile Include="General\TimeStampTraceListener.cs" />
     <Compile Include="General\Singleton.cs" />
     <Compile Include="BasicTypes\AXPoint.cs" />
     <Compile Include="BasicTypes\AXWaypoint.cs" />
     <Compile Include="General\BindableObject.cs" />
-    <Compile Include="ComplexTypes\FlightReport.cs" />
     <Compile Include="Extensions\DateTime.cs" />
     <Compile Include="Extensions\String.cs" />
     <Compile Include="Physics\Physics.cs" />

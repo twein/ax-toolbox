@@ -14,6 +14,7 @@ namespace FlightAnalyzer
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public ScriptingEngine Engine { get; private set; }
+        public FlightReport Report { get; private set; }
 
         public MainWindow()
         {
@@ -49,6 +50,27 @@ namespace FlightAnalyzer
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void loadReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg = new OpenFileDialog();
+                dlg.Filter = "Report files (*.axr; *.igc; *.trk)|*.axr; *.igc; *.trk";
+                dlg.InitialDirectory = Environment.CurrentDirectory;
+                dlg.RestoreDirectory = true;
+                if (dlg.ShowDialog(this) == true)
+                {
+                    Report = Engine.GetFlightReport(dlg.FileName);
+                    RaisePropertyChanged("Report");
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
 
         #region "INotifyPropertyCahnged implementation"
         private void RaisePropertyChanged(String propertyName)

@@ -147,6 +147,7 @@ namespace AXToolbox.Scripting
         /// <param name="report"></param>
         public virtual void Run(FlightReport report)
         {
+            Reset();
             Trace.WriteLine("Running " + Name, ObjectClass);
         }
 
