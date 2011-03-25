@@ -40,7 +40,7 @@ namespace AXToolbox.Scripting
                     if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in area definition");
                     else
-                        area = (ScriptingArea)engine.Heap[Parameters[0]];
+                        area = (ScriptingArea)Engine.Heap[Parameters[0]];
                     break;
 
                 case "BEFORETIME":
@@ -48,14 +48,14 @@ namespace AXToolbox.Scripting
                     if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in time definition");
                     else
-                        time = engine.Settings.Date + TimeSpan.Parse(Parameters[0]); //TODO: check local-GMT conversion
+                        time = Engine.Settings.Date + TimeSpan.Parse(Parameters[0]); //TODO: check local-GMT conversion
                     break;
 
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
                     if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!engine.Heap.ContainsKey(Parameters[0]))
+                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
                         throw new ArgumentException("Undefined point " + Parameters[0]);
                     break;
 
@@ -84,47 +84,47 @@ namespace AXToolbox.Scripting
             switch (Type)
             {
                 case "NONE":
-                    engine.ValidTrackPoints = report.FlightTrack;
+                    Engine.ValidTrackPoints = report.FlightTrack;
                     break;
 
                 case "INSIDE":
-                    engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => area.Contains(p)).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => area.Contains(p)).ToList();
                     break;
 
                 case "OUTSIDE":
-                    engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => !area.Contains(p)).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => !area.Contains(p)).ToList();
                     break;
 
                 case "BEFORETIME":
-                    engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
                     break;
 
                 case "AFTERTIME":
-                    engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
                     break;
 
                 case "BEFOREPOINT":
                     {
-                        var spoint = (ScriptingPoint)engine.Heap[Parameters[0]];
+                        var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
                         var time = spoint.Point.Time;
-                        engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
+                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
                     }
                     break;
 
                 case "AFTERPOINT":
                     {
-                        var spoint = (ScriptingPoint)engine.Heap[Parameters[0]];
+                        var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
                         var time = spoint.Point.Time;
-                        engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
+                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
                     }
                     break;
 
                 case "ABOVE":
-                    engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Altitude >= altitude).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude >= altitude).ToList();
                     break;
 
                 case "BELOW":
-                    engine.ValidTrackPoints = engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToList();
                     break;
             }
         }

@@ -48,19 +48,19 @@ namespace AXToolbox.Scripting
                     if (Parameters.Length != 2)
                         throw new ArgumentException("Syntax error in blank map definition");
 
-                    if (!engine.Heap.ContainsKey(Parameters[0]) || !engine.Heap.ContainsKey(Parameters[1]))
+                    if (!Engine.Heap.ContainsKey(Parameters[0]) || !Engine.Heap.ContainsKey(Parameters[1]))
                         throw new ArgumentException("Undefined point '" + Parameters[0] + "'");
 
-                    var tl = (ScriptingPoint)engine.Heap[Parameters[0]];
-                    var br = (ScriptingPoint)engine.Heap[Parameters[1]];
+                    var tl = (ScriptingPoint)Engine.Heap[Parameters[0]];
+                    var br = (ScriptingPoint)Engine.Heap[Parameters[1]];
                     topLeft = tl.Point;
                     bottomRight = br.Point;
 
                     break;
             }
 
-            engine.Settings.TopLeft = topLeft;
-            engine.Settings.BottomRight = bottomRight;
+            Engine.Settings.TopLeft = topLeft;
+            Engine.Settings.BottomRight = bottomRight;
         }
 
         public override void CheckDisplayModeSyntax()

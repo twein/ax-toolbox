@@ -5,7 +5,9 @@ namespace AXToolbox.Common
     /*
      * http://www.sanity-free.com/132/generic_singleton_pattern_in_csharp.html
      * 
-     * Invocation: Singleton<ClassName>.Instance.SomeClassNameMethod();
+     * Invocation: 
+     *   ClassName x = Singleton<ClassName>.Instance;
+     *   Singleton<ClassName>.Instance.SomeClassNameMethod();
     */
     public static class Singleton<T> where T : new()
     {

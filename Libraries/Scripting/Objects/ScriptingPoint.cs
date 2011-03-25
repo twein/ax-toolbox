@@ -50,14 +50,13 @@ namespace AXToolbox.Scripting
                             var lat = ParseDouble(Parameters[0]);
                             var lng = ParseDouble(Parameters[1]);
                             var alt = ParseLength(Parameters[2]);
+                            Point = Engine.Settings.FromLatLonToAXPoint(lat, lng, alt);
                         }
                     }
-                    throw new NotImplementedException();
-                    //TODO:SLL
                     break;
 
                 case "SUTM": //UTM
-                    //SUTM(<utmZone>, <easting>, <northing>, <alt>)
+                    //SUTM(<easting>, <northing>, <alt>). The datum and zone are defined in settings
                     {
                         if (Parameters.Length != 3)
                             throw new ArgumentException("Syntax error in point definition");
@@ -78,10 +77,10 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error in point list definition");
                     foreach (var key in Parameters)
                     {
-                        if (!engine.Heap.ContainsKey(key))
+                        if (!Engine.Heap.ContainsKey(key))
                             throw new ArgumentException("Undefined point " + key);
 
-                        if (!(engine.Heap[key] is ScriptingPoint))
+                        if (!(Engine.Heap[key] is ScriptingPoint))
                             throw new ArgumentException(key + " is not a point");
                     }
                     break;
@@ -96,10 +95,10 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error in point list definition");
                     foreach (var key in Parameters)
                     {
-                        if (!engine.Heap.ContainsKey(key))
+                        if (!Engine.Heap.ContainsKey(key))
                             throw new ArgumentException("Undefined point " + key);
 
-                        if (!(engine.Heap[key] is ScriptingPoint))
+                        if (!(Engine.Heap[key] is ScriptingPoint))
                             throw new ArgumentException(key + " is not a point");
                     }
                     break;
@@ -134,9 +133,9 @@ namespace AXToolbox.Scripting
                     //TNP(<pointName>)
                     if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!engine.Heap.ContainsKey(Parameters[0]))
+                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
                         throw new ArgumentException("Undefined point " + Parameters[0]);
-                    else if (!(engine.Heap[Parameters[0]] is ScriptingPoint))
+                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
                         throw new ArgumentException(Parameters[0] + " is not a point");
                     break;
 
@@ -159,9 +158,9 @@ namespace AXToolbox.Scripting
                     //XXXX(<areaName>)
                     if (Parameters.Length != 1)
                         throw new ArgumentException("Syntax error in area definition");
-                    else if (!engine.Heap.ContainsKey(Parameters[0]))
+                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
                         throw new ArgumentException("Undefined area " + Parameters[0]);
-                    else if (!(engine.Heap[Parameters[0]] is ScriptingArea))
+                    else if (!(Engine.Heap[Parameters[0]] is ScriptingArea))
                         throw new ArgumentException(Parameters[0] + " is not an area");
                     break;
             }
@@ -220,14 +219,14 @@ namespace AXToolbox.Scripting
                     //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
-                    var desiredPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                    var desiredPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
                     if (desiredPoint == null)
                         Point = null;
                     else
                     {
                         for (var i = 1; i < Parameters.Length; i++)
                         {
-                            var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[i]]).Point;
+                            var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[i]]).Point;
                             if (nextPoint == null)
                                 continue;
                             if (Point == null || Physics.Distance2D(desiredPoint, nextPoint) < Physics.Distance2D(desiredPoint, Point))
@@ -241,7 +240,7 @@ namespace AXToolbox.Scripting
                     //LFT(<listPoint1>, <listPoint2>, …)
                     foreach (var key in Parameters)
                     {
-                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
                         if (nextPoint == null)
                             continue;
                         else if (Point == null || nextPoint.Time < Point.Time)
@@ -254,7 +253,7 @@ namespace AXToolbox.Scripting
                     //LLT(<listPoint1>, <listPoint2>)
                     foreach (var key in Parameters)
                     {
-                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
                         if (nextPoint == null)
                             continue;
                         else if (Point == null || nextPoint.Time > Point.Time)
@@ -267,7 +266,7 @@ namespace AXToolbox.Scripting
                     //LFNN(<listPoint1>, <listPoint2>, …)
                     foreach (var key in Parameters)
                     {
-                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
                         if (nextPoint != null)
                         {
                             Point = nextPoint;
@@ -281,7 +280,7 @@ namespace AXToolbox.Scripting
                     //LLNN(<listPoint1>, <listPoint2>, …)
                     foreach (var key in Parameters.Reverse())
                     {
-                        var nextPoint = ((ScriptingPoint)engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
                         if (nextPoint != null)
                         {
                             Point = nextPoint;

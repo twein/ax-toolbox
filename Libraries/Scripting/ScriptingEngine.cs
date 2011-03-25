@@ -115,7 +115,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
                 }
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 var message = "line " + (lineNumber + 1).ToString() + ": " + ex.Message;
                 Trace.WriteLine("Exception parsing " + message, "ENGINE");
