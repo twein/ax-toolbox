@@ -42,6 +42,35 @@ namespace AXToolbox.Scripting
 
         protected Brush color = Brushes.Blue;
 
+        public string ToShortString()
+        {
+            return Type;
+        }
+        public override string ToString()
+        {
+            string str = ObjectClass + " " + Name + " = ";
+
+            var parms = "";
+            foreach (var par in Parameters)
+                parms += par + ",";
+            parms = parms.Trim(new char[] { ',' });
+
+            str += Type + "(" + parms + ")";
+
+            if (DisplayMode != "")
+            {
+                parms = "";
+                foreach (var par in DisplayParameters)
+                    parms += par + ",";
+                parms = parms.Trim(new char[] { ',' });
+
+                str += " " + DisplayMode + "(" + parms + ")";
+            }
+
+            return str;
+        }
+
+
         /// <summary>Scripting object factory
         /// </summary>
         /// <param name="objectClass"></param>
@@ -121,38 +150,6 @@ namespace AXToolbox.Scripting
             Trace.WriteLine("Running " + Name, ObjectClass);
         }
 
-        public string ToShortString()
-        {
-            return Type;
-        }
-        public override string ToString()
-        {
-            string str = ObjectClass + " " + Name + " = ";
-
-            var parms = "";
-            foreach (var par in Parameters)
-            {
-                parms += par + ",";
-            }
-            parms = parms.Trim(new char[] { ',' });
-
-            str += Type + "(" + parms + ")";
-
-            if (DisplayMode != "")
-            {
-                parms = "";
-                foreach (var par in DisplayParameters)
-                {
-                    parms += par + ",";
-                }
-                parms = parms.Trim(new char[] { ',' });
-
-                str += " " + DisplayMode + "(" + parms + ")";
-            }
-
-            return str;
-        }
-
         //helpers
         protected static double ParseDouble(string str)
         {
@@ -161,6 +158,10 @@ namespace AXToolbox.Scripting
         protected static DateTime ParseLocalDatetime(string str)
         {
             return DateTime.Parse(str, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
+        }
+        protected static TimeSpan ParseTimeSpan(string str)
+        {
+            return TimeSpan.Parse(str, DateTimeFormatInfo.InvariantInfo);
         }
         protected static double ParseLength(string str)
         {
