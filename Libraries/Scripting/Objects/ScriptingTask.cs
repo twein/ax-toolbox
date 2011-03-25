@@ -38,7 +38,7 @@ namespace AXToolbox.Scripting
             base.Run(report);
 
             //removes filter if any
-            Engine.ValidTrackPoints = report.FlightTrack;
+            Engine.ValidTrackPoints = report.FlightTrack.ToArray();
         }
 
         public override MapOverlay GetOverlay()

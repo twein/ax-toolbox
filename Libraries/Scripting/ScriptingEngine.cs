@@ -38,15 +38,15 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
-        private List<AXTrackpoint> validTrackPoints;
-        public List<AXTrackpoint> ValidTrackPoints
+        private AXTrackpoint[] validTrackPoints;
+        public AXTrackpoint[] ValidTrackPoints
         {
             get { return validTrackPoints; }
             internal set
             {
                 validTrackPoints = value;
                 if (validTrackPoints != null)
-                    Trace.WriteLine(string.Format("{0} valid track points", validTrackPoints.Count), "ENGINE");
+                    Trace.WriteLine(string.Format("{0} valid track points", validTrackPoints.Length), "ENGINE");
                 RaisePropertyChanged("ValidTrackPoints");
             }
         }

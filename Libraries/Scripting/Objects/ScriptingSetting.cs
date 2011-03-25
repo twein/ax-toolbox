@@ -11,7 +11,7 @@ namespace AXToolbox.Scripting
     {
         private static readonly List<string> names = new List<string>
         {
-            "DATETIME","DATUM","UTMZONE","QNH","DEFAULTALTITUDE","MAXDISTTOCROSSING","SMOOTHNESS","MINSPEED","MAXACCELERATION"
+            "DATETIME","DATUM","UTMZONE","QNH","DRATHRESHOLD","DEFAULTALTITUDE","MAXDISTTOCROSSING","SMOOTHNESS","MINSPEED","MAXACCELERATION"
         };
 
         private string StandardErrorMessage
@@ -70,6 +70,10 @@ namespace AXToolbox.Scripting
 
                 case "QNH":
                     Engine.Settings.Qnh = ParseDoubleOrDie(ParseDouble);
+                    break;
+
+                case "DRATHRESHOLD":
+                    Engine.Settings.RadThreshold = ParseDoubleOrDie(ParseLength);
                     break;
 
                 case "DEFAULTALTITUDE":

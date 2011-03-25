@@ -182,7 +182,6 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
-
         public override void CheckDisplayModeSyntax()
         {
             if (!displayModes.Contains(DisplayMode))
@@ -224,7 +223,6 @@ namespace AXToolbox.Scripting
             if (!isStatic)
                 Point = null;
         }
-
         public override void Run(FlightReport report)
         {
             base.Run(report);
@@ -238,18 +236,21 @@ namespace AXToolbox.Scripting
                     //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
-                    var desiredPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
-                    if (desiredPoint == null)
-                        Point = null;
-                    else
                     {
-                        for (var i = 1; i < Parameters.Length; i++)
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        if (referencePoint == null)
+                            Point = null;
+                        else
                         {
-                            var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[i]]).Point;
-                            if (nextPoint == null)
-                                continue;
-                            if (Point == null || Physics.Distance2D(desiredPoint, nextPoint) < Physics.Distance2D(desiredPoint, Point))
-                                Point = nextPoint;
+                            for (var i = 1; i < Parameters.Length; i++)
+                            {
+                                var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[i]]).Point;
+                                if (nextPoint == null)
+                                    continue;
+                                if (Point == null
+                                    || Physics.DistanceRad(referencePoint, nextPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                    Point = nextPoint;
+                            }
                         }
                     }
                     break;
@@ -336,13 +337,37 @@ namespace AXToolbox.Scripting
                     //nearest to point
                     //TNP(<pointName>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
-                    throw new NotImplementedException();
+                    {
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        if (referencePoint == null)
+                            Point = null;
+                        else
+                        {
+                            foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                                if (Point == null
+                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                    Point = nextTrackPoint;
+                        }
+                    }
+                    break;
 
                 case "TNL":
                     //nearest to point list
                     //TNL(<listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
-                    throw new NotImplementedException();
+                    {
+                        foreach (var key in Parameters)
+                        {
+                            var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                            if (referencePoint == null)
+                                continue;
+                            foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                                if (Point == null
+                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                    Point = nextTrackPoint;
+                        }
+                    }
+                    break;
 
                 case "TDT":
                     //delayed in time
@@ -357,24 +382,69 @@ namespace AXToolbox.Scripting
                 case "TAFI":
                     //area first in
                     //TAFI(<areaName>)
-                    throw new NotImplementedException();
+                    {
+                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                            if (area.Contains(nextTrackPoint))
+                            {
+                                Point = nextTrackPoint;
+                                break;
+                            }
+                    }
+                    break;
 
                 case "TAFO":
                     //area first out
                     //TAFO(<areaName>)
-                    throw new NotImplementedException();
+                    {
+                        AXPoint lastInside = null;
+                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                        {
+                            if (area.Contains(nextTrackPoint))
+                                lastInside = nextTrackPoint;
+                            else if (lastInside != null)
+                                break;
+                        }
+                        Point = lastInside;
+                    }
+                    break;
 
                 case "TALI":
                     //area last in
                     //TALI(<areaName>)
-                    throw new NotImplementedException();
+                    // is the same as TALO with reversed track
+                    {
+                        AXPoint lastInside = null;
+                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        foreach (var nextTrackPoint in Engine.ValidTrackPoints.Reverse())
+                        {
+                            if (area.Contains(nextTrackPoint))
+                                lastInside = nextTrackPoint;
+                            else if (lastInside != null)
+                                break;
+                        }
+                        Point = lastInside;
+                    }
+                    break;
 
                 case "TALO":
                     //area last out
                     //TALO(<areaName>)
-                    throw new NotImplementedException();
+                    // is the same as TAFI with reversed track
+                    {
+                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        foreach (var nextTrackPoint in Engine.ValidTrackPoints.Reverse())
+                            if (area.Contains(nextTrackPoint))
+                            {
+                                Point = nextTrackPoint;
+                                break;
+                            }
+                    }
+                    break;
             }
         }
+
         public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;

@@ -15,10 +15,18 @@ namespace AXToolbox.Common
         }
         public static double Distance3D(AXPoint point1, AXPoint point2)
         {
-            return Math.Sqrt(Math.Pow(point1.Easting - point2.Easting, 2) 
+            return Math.Sqrt(Math.Pow(point1.Easting - point2.Easting, 2)
                 + Math.Pow(point1.Northing - point2.Northing, 2)
                 + Math.Pow(point1.Altitude - point2.Altitude, 2));
         }
+        public static double DistanceRad(AXPoint point1, AXPoint point2, double radTreshold)
+        {
+            if (Math.Abs(point1.Altitude - point2.Altitude) <= radTreshold)
+                return Distance2D(point1, point2);
+            else
+                return Distance3D(point1, point2);
+        }
+
 
         public static double Velocity2D(AXPoint point1, AXPoint point2)
         {
