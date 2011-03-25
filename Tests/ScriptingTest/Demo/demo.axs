@@ -21,7 +21,7 @@ TASK Task4 = XDD()
 
 	POINT T4AreaCenter = SUTM (302000,4605000,180m) none()
 	AREA T4Area = circle(T4AreaCenter,1000m) Default(green)
-	//AREA T4AnotherArea = poly(task4area.trk) Default(green)
+	AREA T4AnotherArea = poly(demo.trk) Default(orange)
 
 	filter T4scoringPeriod = BEFORETIME(19:00:00)
 	filter T4scoringArea = Inside(T4Area);

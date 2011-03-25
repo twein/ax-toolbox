@@ -24,7 +24,7 @@ namespace AXToolbox.Scripting
             {"YELLOW", Brushes.Yellow}
         };
 
-        protected ScriptingEngine engine { get; set; }
+        protected ScriptingEngine Engine { get; private set; }
         protected string ObjectClass
         {
             get
@@ -42,7 +42,8 @@ namespace AXToolbox.Scripting
 
         protected Brush color = Brushes.Blue;
 
-        /// <summary>Scripting object factory</summary>
+        /// <summary>Scripting object factory
+        /// </summary>
         /// <param name="objectClass"></param>
         /// <param name="name"></param>
         /// <param name="type"></param>
@@ -83,7 +84,7 @@ namespace AXToolbox.Scripting
 
         protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
-            this.engine = engine;
+            this.Engine = engine;
             this.Name = name;
             this.Type = type;
             this.Parameters = parameters;
@@ -96,20 +97,24 @@ namespace AXToolbox.Scripting
             Trace.WriteLine(this.ToString(), ObjectClass);
         }
 
-        /// <summary>Check constructor syntax and parse static definitions or die</summary>
+        /// <summary>Check constructor syntax and parse static definitions or die
+        /// </summary>
         public abstract void CheckConstructorSyntax();
-        /// <summary>Check display mode syntax and parse static definitions or die</summary>
+        /// <summary>Check display mode syntax or die
+        /// </summary>
         public abstract void CheckDisplayModeSyntax();
-        /// <summary>Gets the MapOverlay for the current object (or null if no overlay is defined)</summary>
-        /// <returns></returns>
+        /// <summary>Gets the MapOverlay for the current object (or null if no overlay is defined)
+        /// </summary>
         public abstract MapOverlay GetOverlay();
 
-        /// <summary>Clears the pilot dependent (non-static) values</summary>
+        /// <summary>Clears the pilot dependent (non-static) values
+        /// </summary>
         public virtual void Reset()
         {
             Trace.WriteLine("Resetting " + Name, ObjectClass);
         }
-        /// <summary>Executes the script</summary>
+        /// <summary>Executes the script
+        /// </summary>
         /// <param name="report"></param>
         public virtual void Run(FlightReport report)
         {
@@ -120,7 +125,6 @@ namespace AXToolbox.Scripting
         {
             return Type;
         }
-
         public override string ToString()
         {
             string str = ObjectClass + " " + Name + " = ";
@@ -211,7 +215,7 @@ namespace AXToolbox.Scripting
             if (colors.ContainsKey(str))
                 return colors[str];
             else
-                throw new ArgumentException("Unknown display mode '" + str + "'");
+                throw new ArgumentException("Unknown color '" + str + "'");
         }
     }
 }

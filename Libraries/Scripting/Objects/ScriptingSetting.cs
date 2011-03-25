@@ -41,9 +41,9 @@ namespace AXToolbox.Scripting
                         if (time != "AM" && time != "PM")
                             throw new ArgumentException(StandardErrorMessage);
 
-                        engine.Settings.Date = ParseLocalDatetime(Parameters[0]);
+                        Engine.Settings.Date = ParseLocalDatetime(Parameters[0]);
                         if (time == "PM")
-                            engine.Settings.Date += new TimeSpan(12, 0, 0);
+                            Engine.Settings.Date += new TimeSpan(12, 0, 0);
                     }
                     break;
 
@@ -53,7 +53,7 @@ namespace AXToolbox.Scripting
 
                     try
                     {
-                        engine.Settings.DatumName = Parameters[0];
+                        Engine.Settings.DatumName = Parameters[0];
                     }
                     catch (KeyNotFoundException)
                     {
@@ -65,19 +65,19 @@ namespace AXToolbox.Scripting
                     if (Parameters.Length != 1)
                         throw new ArgumentException(StandardErrorMessage);
 
-                    engine.Settings.UtmZone = Parameters[0];
+                    Engine.Settings.UtmZone = Parameters[0];
                     break;
 
                 case "QNH":
-                    engine.Settings.Qnh = ParseDoubleOrDie(ParseDouble);
+                    Engine.Settings.Qnh = ParseDoubleOrDie(ParseDouble);
                     break;
 
                 case "DEFAULTALTITUDE":
-                    engine.Settings.DefaultAltitude = ParseDoubleOrDie(ParseLength);
+                    Engine.Settings.DefaultAltitude = ParseDoubleOrDie(ParseLength);
                     break;
 
                 case "MAXDISTTOCROSSING":
-                    engine.Settings.MaxDistToCrossing = ParseDoubleOrDie(ParseLength);
+                    Engine.Settings.MaxDistToCrossing = ParseDoubleOrDie(ParseLength);
                     break;
 
                 case "SMOOTHNESS":
@@ -86,7 +86,7 @@ namespace AXToolbox.Scripting
 
                     try
                     {
-                        engine.Settings.Smoothness = int.Parse(Parameters[0]);
+                        Engine.Settings.Smoothness = int.Parse(Parameters[0]);
                     }
                     catch (Exception)
                     {
@@ -95,11 +95,11 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "MINSPEED":
-                    engine.Settings.MinSpeed = ParseDoubleOrDie(ParseDouble);
+                    Engine.Settings.MinSpeed = ParseDoubleOrDie(ParseDouble);
                     break;
 
                 case "MAXACCELERATION":
-                    engine.Settings.MaxAcceleration = ParseDoubleOrDie(ParseLength);
+                    Engine.Settings.MaxAcceleration = ParseDoubleOrDie(ParseLength);
                     break;
             }
         }
