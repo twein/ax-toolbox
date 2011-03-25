@@ -84,30 +84,30 @@ namespace AXToolbox.Scripting
             switch (Type)
             {
                 case "NONE":
-                    Engine.ValidTrackPoints = report.FlightTrack;
+                    Engine.ValidTrackPoints = report.FlightTrack.ToArray();
                     break;
 
                 case "INSIDE":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => area.Contains(p)).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => area.Contains(p)).ToArray();
                     break;
 
                 case "OUTSIDE":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => !area.Contains(p)).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => !area.Contains(p)).ToArray();
                     break;
 
                 case "BEFORETIME":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToArray();
                     break;
 
                 case "AFTERTIME":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToArray();
                     break;
 
                 case "BEFOREPOINT":
                     {
                         var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
                         var time = spoint.Point.Time;
-                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToList();
+                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToArray();
                     }
                     break;
 
@@ -115,16 +115,16 @@ namespace AXToolbox.Scripting
                     {
                         var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
                         var time = spoint.Point.Time;
-                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToList();
+                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToArray();
                     }
                     break;
 
                 case "ABOVE":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude >= altitude).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude >= altitude).ToArray();
                     break;
 
                 case "BELOW":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToList();
+                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToArray();
                     break;
             }
         }
