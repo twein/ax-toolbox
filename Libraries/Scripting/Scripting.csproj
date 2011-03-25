@@ -61,6 +61,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FlightReport.cs" />
+    <Compile Include="FlightSettings.cs" />
     <Compile Include="Objects\ScriptingArea.cs" />
     <Compile Include="Objects\ScriptingMap.cs">
       <SubType>Code</SubType>

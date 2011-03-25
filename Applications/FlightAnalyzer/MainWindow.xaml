@@ -34,6 +34,20 @@
                     </Expander.Header>
                     <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Engine.Detail}"/>
                 </Expander>
+
+                <Expander ExpandDirection="Down" Background="LightGray" >
+                    <Expander.Header>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock VerticalAlignment="Top" FontWeight="Bold">Report</TextBlock>
+                                <TextBlock VerticalAlignment="Top" Text="{Binding Path=Report.ShortDescription}"></TextBlock>
+                            </StackPanel>
+                            <Button Height="22" ToolTip="Load gps log file or a flight report" Click="loadReportButton_Click">Load</Button>
+                        </StackPanel>
+                    </Expander.Header>
+                    <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.ShortDescription}"/>
+                </Expander>
+
             </StackPanel>
         </ScrollViewer>
         <Border BorderBrush="Black" BorderThickness="1">

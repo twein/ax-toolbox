@@ -1,5 +1,9 @@
 BUGS
 
+PENDING
+TDT TDD MVMD MPDG
+
+
 TO DO
 Add notes for every user action.
 Keep track of debriefer identity. Assign pilot ranges to each debriefer?

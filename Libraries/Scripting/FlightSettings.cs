@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AXToolbox.Common;
 using AXToolbox.GPSLoggers;
 
-namespace AXToolbox.Common
+namespace AXToolbox.Scripting
 {
     public class FlightSettings : BindableObject
     {

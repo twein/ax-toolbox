@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using AXToolbox.GPSLoggers;
 
-namespace AXToolbox.Common
+namespace AXToolbox.Scripting
 {
 
     [Serializable]
@@ -20,7 +21,7 @@ namespace AXToolbox.Common
         protected LoggerFile LogFile { get; set; }
 
         public SignatureStatus SignatureStatus { get; protected set; }
-        public DateTime Date { get; protected set; }
+        public DateTime Date { get { return Settings.Date; } }
         public string Time { get { return Date.GetAmPm(); } }
         protected int pilotId;
         public int PilotId
@@ -80,8 +81,7 @@ namespace AXToolbox.Common
         public ObservableCollection<GoalDeclaration> DeclaredGoals { get; protected set; }
         public ObservableCollection<string> Notes { get; protected set; }
 
-        public string Description { get { return this.ToString(); } }
-
+        public string ShortDescription { get { return this.ToString(); } }
         public override string ToString()
         {
             return string.Format("{0:yyyy/MM/dd}{1} Pilot {2:000}", Date, Date.GetAmPm(), pilotId);
@@ -89,21 +89,6 @@ namespace AXToolbox.Common
         public string toShortString()
         {
             return string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Date.GetAmPm(), pilotId);
-        }
-
-        //constructor
-        protected FlightReport(FlightSettings settings)
-        {
-            Settings = settings;
-            SignatureStatus = SignatureStatus.NotSigned;
-            Date = settings.Date;
-            pilotId = 0;
-            LoggerModel = "";
-            LoggerSerialNumber = "";
-            OriginalTrack = new List<AXTrackpoint>();
-            Markers = new ObservableCollection<AXWaypoint>();
-            DeclaredGoals = new ObservableCollection<GoalDeclaration>();
-            Notes = new ObservableCollection<string>();
         }
 
         //factory
@@ -150,9 +135,6 @@ namespace AXToolbox.Common
                     DeclaredGoals = logFile.GetGoalDeclarations(),
                     Notes = logFile.Notes
                 };
-
-                report.RemoveInvalidPoints();
-                report.DetectLaunchAndLanding();
             }
             return report;
         }
@@ -198,7 +180,51 @@ namespace AXToolbox.Common
             */
         }
 
-        public void RemoveInvalidPoints()
+        public void AddMarker(AXWaypoint marker)
+        {
+            InsertIntoCollection(Markers, marker);
+            Notes.Add(string.Format("New marker added: {0}", marker));
+        }
+        public bool RemoveMarker(AXWaypoint marker)
+        {
+            var ok = Markers.Remove(marker);
+            if (ok)
+                Notes.Add(string.Format("Marker removed: {0}", marker));
+            return ok;
+        }
+        public void AddDeclaredGoal(AXWaypoint declaration)
+        {
+            throw new NotImplementedException();
+            //InsertIntoCollection(DeclaredGoals, declaration);
+            //Notes.Add(string.Format("New goal declaration added: {0}", declaration));
+        }
+        public bool RemoveDeclaredGoal(AXWaypoint declaration)
+        {
+            throw new NotImplementedException();
+            //var ok = DeclaredGoals.Remove(declaration);
+            //if (ok)
+            //    Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
+            //return ok;
+        }
+
+        //constructor
+        protected FlightReport(FlightSettings settings)
+        {
+            Settings = settings;
+            SignatureStatus = SignatureStatus.NotSigned;
+            pilotId = 0;
+            LoggerModel = "";
+            LoggerSerialNumber = "";
+            OriginalTrack = new List<AXTrackpoint>();
+            Markers = new ObservableCollection<AXWaypoint>();
+            DeclaredGoals = new ObservableCollection<GoalDeclaration>();
+            Notes = new ObservableCollection<string>();
+
+            RemoveInvalidPoints();
+            DetectLaunchAndLanding();
+        }
+
+        protected void RemoveInvalidPoints()
         {
             int nTime = 0, nDupe = 0, nSpike = 0;
 
@@ -254,7 +280,7 @@ namespace AXToolbox.Common
             if (nSpike > 0)
                 Notes.Add(string.Format("{0} spike points removed", nSpike));
         }
-        public void DetectLaunchAndLanding()
+        protected void DetectLaunchAndLanding()
         {
             // find the highest point in flight
             AXTrackpoint highest = null;
@@ -264,7 +290,11 @@ namespace AXToolbox.Common
                     highest = point;
             }
 
-            if (highest != null) //highest == null is caused by empty track. Probably wrong log file date or UTM zone in settings.
+            if (highest == null) //highest == null is caused by empty track. Probably wrong log file date or UTM zone in settings.
+            {
+                Notes.Add("Empty track file! Check the flight date and time.");
+            }
+            else
             {
                 // find launch point
                 launchPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time <= highest.Time), true);
@@ -324,33 +354,6 @@ namespace AXToolbox.Common
             }
 
             return groundContact;
-        }
-
-        public void AddMarker(AXWaypoint marker)
-        {
-            InsertIntoCollection(Markers, marker);
-            Notes.Add(string.Format("New marker added: {0}", marker));
-        }
-        public bool RemoveMarker(AXWaypoint marker)
-        {
-            var ok = Markers.Remove(marker);
-            if (ok)
-                Notes.Add(string.Format("Marker removed: {0}", marker));
-            return ok;
-        }
-        public void AddDeclaredGoal(AXWaypoint declaration)
-        {
-            throw new NotImplementedException();
-            //InsertIntoCollection(DeclaredGoals, declaration);
-            //Notes.Add(string.Format("New goal declaration added: {0}", declaration));
-        }
-        public bool RemoveDeclaredGoal(AXWaypoint declaration)
-        {
-            throw new NotImplementedException();
-            //var ok = DeclaredGoals.Remove(declaration);
-            //if (ok)
-            //    Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
-            //return ok;
         }
         protected void InsertIntoCollection(Collection<AXWaypoint> collection, AXWaypoint point)
         {

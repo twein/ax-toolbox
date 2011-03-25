@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AXToolbox.Common;
+using AXToolbox.GPSLoggers;
 using AXToolbox.MapViewer;
-using System.Diagnostics;
 
 namespace AXToolbox.Scripting
 {
@@ -133,7 +133,6 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("ShortDescription");
             RaisePropertyChanged("Detail");
         }
-
         public void RefreshMapViewer(MapViewerControl map)
         {
             var sMap = (ScriptingMap)Heap.Values.First(i => i is ScriptingMap);
@@ -147,17 +146,17 @@ namespace AXToolbox.Scripting
                     map.AddOverlay(ov);
             }
         }
-
+        public FlightReport GetFlightReport(string loggerFile)
+        {
+            Trace.WriteLine("Loading " + loggerFile, "ENGINE");
+            var report = FlightReport.FromFile(loggerFile, Settings);
+            return report;
+        }
         public void Run(FlightReport report)
         {
             Trace.WriteLine("Running " + report.ToString(), "ENGINE");
-
-            foreach (var kvp in Heap)
-            {
-                var obj = kvp.Value;
-                obj.Reset();
+            foreach (var obj in Heap.Values)
                 obj.Run(report);
-            }
         }
 
         /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
