@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
         Title="MainWindow" Width="1024" Height="576" WindowState="Maximized"
-        Closed="Window_Closed">
+        Closed="Window_Closed" Icon="/FlightAnalyzer;component/balloon.ico">
     <DockPanel LastChildFill="True">
         <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
             <StatusBarItem>

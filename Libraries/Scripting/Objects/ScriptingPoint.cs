@@ -14,6 +14,11 @@ namespace AXToolbox.Scripting
         //type fields
         public AXPoint Point { get; protected set; }
 
+        protected int number;
+        protected DateTime? minTime, maxTime;
+        protected TimeSpan timeDelay;
+        protected double distanceDelay;
+
         //display fields
         protected double radius = 0;
 
@@ -36,38 +41,34 @@ namespace AXToolbox.Scripting
             if (!types.Contains(Type))
                 throw new ArgumentException("Unknown point type '" + Type + "'");
 
-            //check syntax and resolve static point types
+            //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
             switch (Type)
             {
                 case "SLL": //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
+                    if (Parameters.Length != 3)
+                        throw new ArgumentException("Syntax error in point definition");
+                    else
                     {
-                        if (Parameters.Length != 3)
-                            throw new ArgumentException("Syntax error in point definition");
-                        else
-                        {
-                            isStatic = true;
-                            var lat = ParseDouble(Parameters[0]);
-                            var lng = ParseDouble(Parameters[1]);
-                            var alt = ParseLength(Parameters[2]);
-                            Point = Engine.Settings.FromLatLonToAXPoint(lat, lng, alt);
-                        }
+                        isStatic = true;
+                        var lat = ParseDouble(Parameters[0]);
+                        var lng = ParseDouble(Parameters[1]);
+                        var alt = ParseLength(Parameters[2]);
+                        Point = Engine.Settings.FromLatLonToAXPoint(lat, lng, alt);
                     }
                     break;
 
                 case "SUTM": //UTM
                     //SUTM(<easting>, <northing>, <alt>). The datum and zone are defined in settings
+                    if (Parameters.Length != 3)
+                        throw new ArgumentException("Syntax error in point definition");
+                    else
                     {
-                        if (Parameters.Length != 3)
-                            throw new ArgumentException("Syntax error in point definition");
-                        else
-                        {
-                            isStatic = true;
-                            var easting = ParseDouble(Parameters[0]);
-                            var northing = ParseDouble(Parameters[1]);
-                            var alt = ParseLength(Parameters[2]);
-                            Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
-                        }
+                        isStatic = true;
+                        var easting = ParseDouble(Parameters[0]);
+                        var northing = ParseDouble(Parameters[1]);
+                        var alt = ParseLength(Parameters[2]);
+                        Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
                     }
                     break;
 
@@ -105,21 +106,21 @@ namespace AXToolbox.Scripting
 
                 case "MVMD": //MVMD: virtual marker drop
                     //MVMD(<number>)
-                    {
-                        var number = 0;
-                        if (Parameters.Length != 1 || !int.TryParse(Parameters[0], out number))
-                            throw new ArgumentException("Syntax error in marker definition");
-                    }
+                    if (Parameters.Length != 1)
+                        throw new ArgumentException("Syntax error in marker drop definition");
+                    else
+                        number = int.Parse(Parameters[0]);
                     break;
 
                 case "MPDG": //pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
-                    {
-                        var number = 0;
-                        if (Parameters.Length != 1 || !int.TryParse(Parameters[0], out number))
-                            throw new ArgumentException("Syntax error in goal definition");
-                        throw new NotImplementedException();
-                    }
+                    if (Parameters.Length != 3)
+                        throw new ArgumentException("Syntax error in pilot declared goal definition");
+
+                    number = int.Parse(Parameters[0]);
+                    minTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[1]);
+                    maxTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[2]);
+                    break;
 
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
@@ -141,14 +142,30 @@ namespace AXToolbox.Scripting
 
                 case "TDT": //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
-                    throw new NotImplementedException();
-                    //TODO: TDT
+                    if (Parameters.Length < 2 || Parameters.Length > 3)
+                        throw new ArgumentException("Syntax error in point definition");
+                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
+                        throw new ArgumentException("Undefined point " + Parameters[0]);
+                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
+                        throw new ArgumentException(Parameters[0] + " is not a point");
+
+                    timeDelay = ParseTimeSpan(Parameters[1]);
+                    if (Parameters.Length == 3)
+                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[2]);
                     break;
 
                 case "TDD":  //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
-                    throw new NotImplementedException();
-                    //TODO: TDD
+                    if (Parameters.Length < 2 || Parameters.Length > 3)
+                        throw new ArgumentException("Syntax error in point definition");
+                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
+                        throw new ArgumentException("Undefined point " + Parameters[0]);
+                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
+                        throw new ArgumentException(Parameters[0] + " is not a point");
+
+                    distanceDelay = ParseLength(Parameters[1]);
+                    if (Parameters.Length == 3)
+                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[2]);
                     break;
 
                 case "TAFI": //area first in
@@ -212,7 +229,9 @@ namespace AXToolbox.Scripting
         {
             base.Run(report);
 
-            // parse pilot dependent types
+            // parse and resolve pilot dependent values
+            // the static values are already defined
+            // syntax is already checked
             switch (Type)
             {
                 case "LNP":
@@ -262,7 +281,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "LFNN":
-                    //LFNN: first not null from list
+                    //first not null from list
                     //LFNN(<listPoint1>, <listPoint2>, …)
                     foreach (var key in Parameters)
                     {
@@ -276,7 +295,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "LLNN":
-                    //last not null
+                    //last not null from list
                     //LLNN(<listPoint1>, <listPoint2>, …)
                     foreach (var key in Parameters.Reverse())
                     {
@@ -370,31 +389,27 @@ namespace AXToolbox.Scripting
                     case "WAYPOINT":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new WaypointOverlay(position, Name);
-                            overlay.Color = color;
+                            overlay = new WaypointOverlay(position, Name) { Color = color };
                         }
                         break;
 
                     case "TARGET":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new TargetOverlay(position, radius, Name);
-                            overlay.Color = color;
+                            overlay = new TargetOverlay(position, radius, Name) { Color = color };
                         }
                         break;
 
                     case "MARKER":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new MarkerOverlay(position, Name);
-                            overlay.Color = color;
+                            overlay = new MarkerOverlay(position, Name) { Color = color };
                         } break;
 
                     case "CROSSHAIRS":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new CrosshairsOverlay(position);
-                            overlay.Color = color;
+                            overlay = new CrosshairsOverlay(position) { Color = color };
                         }
                         break;
                 }

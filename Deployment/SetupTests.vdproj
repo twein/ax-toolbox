@@ -15,7 +15,7 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_04F4F018D470B6312191570EE079E875"
+        "MsmKey" = "8:_1FC24516E58DA62FF92820B210CDA3B8"
         "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,56 +27,68 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3766DB5ACACD15CCE27A3A850879F8F7"
+        "MsmKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
+        "OwnerKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
         "OwnerKey" = "8:_CDC0E0F280CC424AAFF2DE292E27394C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_41D112BBE8D6B68EAFE31E591C09E327"
-        "OwnerKey" = "8:_C56897226B3F4F8BB234D5454DD8DD1B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_41D112BBE8D6B68EAFE31E591C09E327"
-        "OwnerKey" = "8:_04F4F018D470B6312191570EE079E875"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_41D112BBE8D6B68EAFE31E591C09E327"
+        "MsmKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
         "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_8E67FCE09A35892313AB870557436D51"
-        "OwnerKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8E67FCE09A35892313AB870557436D51"
-        "OwnerKey" = "8:_CDC0E0F280CC424AAFF2DE292E27394C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8E67FCE09A35892313AB870557436D51"
-        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8E67FCE09A35892313AB870557436D51"
+        "MsmKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
         "OwnerKey" = "8:_C56897226B3F4F8BB234D5454DD8DD1B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_8E67FCE09A35892313AB870557436D51"
+        "MsmKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
         "OwnerKey" = "8:_BBD40605FD144106BF9DC2A54029E100"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_571DC73C99D00F9334DB14096DE18FAB"
+        "OwnerKey" = "8:_C56897226B3F4F8BB234D5454DD8DD1B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_571DC73C99D00F9334DB14096DE18FAB"
+        "OwnerKey" = "8:_1FC24516E58DA62FF92820B210CDA3B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_571DC73C99D00F9334DB14096DE18FAB"
+        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8B7995632777B06F6D668EA897911E87"
+        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8B7995632777B06F6D668EA897911E87"
+        "OwnerKey" = "8:_1FC24516E58DA62FF92820B210CDA3B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8BC35BE18D1595DF85DC6157C4E78D70"
+        "OwnerKey" = "8:_CDC0E0F280CC424AAFF2DE292E27394C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -99,38 +111,44 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
+        "MsmKey" = "8:_B951AB6419324D578C83F7BD669D80E4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
         "OwnerKey" = "8:_BBD40605FD144106BF9DC2A54029E100"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
+        "MsmKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
         "OwnerKey" = "8:_CDC0E0F280CC424AAFF2DE292E27394C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
+        "MsmKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
+        "OwnerKey" = "8:_1FC24516E58DA62FF92820B210CDA3B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
         "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
-        "OwnerKey" = "8:_F6D3A4C62ADC314AF673EEA3508E3DD9"
+        "MsmKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
+        "OwnerKey" = "8:_8B7995632777B06F6D668EA897911E87"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
+        "MsmKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
         "OwnerKey" = "8:_C56897226B3F4F8BB234D5454DD8DD1B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B951AB6419324D578C83F7BD669D80E4"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -171,50 +189,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F6D3A4C62ADC314AF673EEA3508E3DD9"
-        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F6D3A4C62ADC314AF673EEA3508E3DD9"
-        "OwnerKey" = "8:_04F4F018D470B6312191570EE079E875"
+        "MsmKey" = "8:_F67EC7F378954C5A93896185AA677E3F"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_04F4F018D470B6312191570EE079E875"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F6D3A4C62ADC314AF673EEA3508E3DD9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_41D112BBE8D6B68EAFE31E591C09E327"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B5CD1CDB4D1B42B3461E4259F2B162F4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8E67FCE09A35892313AB870557436D51"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
+        "OwnerKey" = "8:_BBD40605FD144106BF9DC2A54029E100"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -226,7 +208,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3766DB5ACACD15CCE27A3A850879F8F7"
+        "OwnerKey" = "8:_8BC35BE18D1595DF85DC6157C4E78D70"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_1FC24516E58DA62FF92820B210CDA3B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_8B7995632777B06F6D668EA897911E87"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -238,7 +238,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BBD40605FD144106BF9DC2A54029E100"
+        "OwnerKey" = "8:_571DC73C99D00F9334DB14096DE18FAB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -346,14 +358,14 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_04F4F018D470B6312191570EE079E875"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1FC24516E58DA62FF92820B210CDA3B8"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4098.35275, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4101.23732, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_04F4F018D470B6312191570EE079E875"
+                    "_1FC24516E58DA62FF92820B210CDA3B8"
                     {
                     "Name" = "8:AXToolbox.Scripting.dll"
                     "Attributes" = "3:512"
@@ -397,20 +409,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3766DB5ACACD15CCE27A3A850879F8F7"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_40D3B9BDBC5184DB9B336C48D6883980"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:BalloonLoggerSignature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_3766DB5ACACD15CCE27A3A850879F8F7"
+                    "_40D3B9BDBC5184DB9B336C48D6883980"
                     {
-                    "Name" = "8:itextsharp.dll"
+                    "Name" = "8:BalloonLoggerSignature.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:itextsharp.dll"
+            "SourcePath" = "8:BalloonLoggerSignature.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
@@ -428,14 +440,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_41D112BBE8D6B68EAFE31E591C09E327"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_571DC73C99D00F9334DB14096DE18FAB"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4098.35274, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4101.23732, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_41D112BBE8D6B68EAFE31E591C09E327"
+                    "_571DC73C99D00F9334DB14096DE18FAB"
                     {
                     "Name" = "8:AXToolbox.MapViewer.dll"
                     "Attributes" = "3:512"
@@ -459,20 +471,51 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8E67FCE09A35892313AB870557436D51"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8B7995632777B06F6D668EA897911E87"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:BalloonLoggerSignature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4101.23732, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8E67FCE09A35892313AB870557436D51"
+                    "_8B7995632777B06F6D668EA897911E87"
                     {
-                    "Name" = "8:BalloonLoggerSignature.dll"
+                    "Name" = "8:AXToolbox.Common.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:BalloonLoggerSignature.dll"
+            "SourcePath" = "8:AXToolbox.Common.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8BC35BE18D1595DF85DC6157C4E78D70"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_8BC35BE18D1595DF85DC6157C4E78D70"
+                    {
+                    "Name" = "8:itextsharp.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:itextsharp.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
@@ -550,14 +593,34 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B5CD1CDB4D1B42B3461E4259F2B162F4"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B951AB6419324D578C83F7BD669D80E4"
+            {
+            "SourcePath" = "8:..\\Tests\\ScriptingTest\\Demo\\demo.pgw"
+            "TargetName" = "8:demo.pgw"
+            "Tag" = "8:"
+            "Folder" = "8:_A9B97517BAAD404595D18C260BC8ADCF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BB83AC97FCE5407E6BB3CFF7FB5546F1"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.GPSLoggers, Version=1.0.4098.35273, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.GPSLoggers, Version=1.0.4101.23731, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B5CD1CDB4D1B42B3461E4259F2B162F4"
+                    "_BB83AC97FCE5407E6BB3CFF7FB5546F1"
                     {
                     "Name" = "8:AXToolbox.GPSLoggers.dll"
                     "Attributes" = "3:512"
@@ -579,26 +642,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B951AB6419324D578C83F7BD669D80E4"
-            {
-            "SourcePath" = "8:..\\Tests\\ScriptingTest\\Demo\\demo.pgw"
-            "TargetName" = "8:demo.pgw"
-            "Tag" = "8:"
-            "Folder" = "8:_A9B97517BAAD404595D18C260BC8ADCF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EB54B7BE911144CF8C20490111F3ED8C"
@@ -641,23 +684,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F6D3A4C62ADC314AF673EEA3508E3DD9"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F67EC7F378954C5A93896185AA677E3F"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4098.35274, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F6D3A4C62ADC314AF673EEA3508E3DD9"
-                    {
-                    "Name" = "8:AXToolbox.Common.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:AXToolbox.Common.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\Tests\\ScriptingTest\\Demo\\demo.trk"
+            "TargetName" = "8:demo.trk"
             "Tag" = "8:"
-            "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
+            "Folder" = "8:_A9B97517BAAD404595D18C260BC8ADCF"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -669,7 +701,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
         }
@@ -761,15 +793,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox Tests"
-        "ProductCode" = "8:{F0D51733-7E0C-494A-9F9F-183582E0DE3A}"
-        "PackageCode" = "8:{A0C23AB7-7294-44D3-BEC8-A188BB5747BB}"
+        "ProductCode" = "8:{1EDF5E7F-DE83-4774-A5B5-BCC0444A24AF}"
+        "PackageCode" = "8:{F86BA20A-E7FF-479F-ACDF-5394479337C0}"
         "UpgradeCode" = "8:{0B97C931-6212-40F3-88F4-B8DE3520C514}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.1"
+        "ProductVersion" = "8:0.1.2"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
