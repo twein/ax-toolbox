@@ -20,7 +20,7 @@ namespace FlightAnalyzer
         {
             InitializeComponent();
 
-            Engine = new ScriptingEngine();
+            //Engine = new ScriptingEngine();
             DataContext = this;
         }
 
@@ -69,6 +69,11 @@ namespace FlightAnalyzer
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void processReportButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
 

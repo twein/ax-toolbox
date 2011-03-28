@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Windows;
 using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Common
@@ -66,75 +64,22 @@ namespace AXToolbox.Common
             return str.ToString();
         }
 
-        //Tries to parse a string containing a point definition in full UTM coordinates (Ex: European 1950 31T 532212 4623452 1000)
-        public static bool TryParse(string strValue, out AXPoint resultPoint)
+        /// <summary>Parses an AXPoint. Example: 355030 4612000 [1000]
+        /// </summary>
+        /// <param name="strValue"></param>
+        /// <returns></returns>
+        public static AXPoint Parse(string strValue)
         {
-            throw new NotImplementedException();
-            /*
-            bool retVal = false;
-            resultPoint = null;
+            var fields = strValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            try
-            {
-                var fields = strValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var easting = double.Parse(fields[0], NumberFormatInfo.InvariantInfo);
+            var northing = double.Parse(fields[1], NumberFormatInfo.InvariantInfo);
 
+            var altitude = 0.0;
+            if (fields.Length == 3)
+                altitude = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
 
-                //find the zone
-                string zone = null;
-                int iZone = -1;
-                for (var i = 0; i < fields.Length; i++)
-                {
-                    if (fields[i].Length == 3 && int.Parse(fields[i].Substring(0, 2)) > 0)
-                    {
-                        iZone = i;
-                        zone = fields[i];
-                        break;
-                    }
-                }
-                if (iZone >= 0)
-                {
-                    //ok. find the remaining values
-                    string strDatum = "";
-                    for (var i = 0; i < iZone; i++)
-                    {
-                        strDatum += fields[i] + " ";
-                    }
-                    var datum = Datum.GetInstance(strDatum.TrimEnd());
-
-                    var easting = double.Parse(fields[iZone + 1], NumberFormatInfo.InvariantInfo);
-                    var northing = double.Parse(fields[iZone + 2], NumberFormatInfo.InvariantInfo);
-
-                    //altitude is optional
-                    var altitude = 0.0;
-                    if (fields.Length - iZone == 4)
-                        altitude = double.Parse(fields[iZone + 3], NumberFormatInfo.InvariantInfo);
-
-                    resultPoint = new Point(DateTime.MinValue.ToUniversalTime(), datum, zone, easting, northing, altitude, datum);
-                    retVal = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                if (ex is ArgumentNullException || ex is IndexOutOfRangeException || ex is FormatException || ex is KeyNotFoundException)
-                {
-                    retVal = false;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return retVal;
-            */
-        }
-
-        protected int GetZoneNumber(string zone)
-        {
-            if (zone == "")
-                return 0;
-            else
-                return int.Parse(zone.Substring(0, 2));
+            return new AXPoint(DateTime.Now, easting, northing, altitude);
         }
     }
 }

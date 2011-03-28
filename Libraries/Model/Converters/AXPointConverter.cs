@@ -17,11 +17,11 @@ namespace AXToolbox.Model.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string strValue = value as string;
-            AXPoint resultPoint;
-            if (AXPoint.TryParse(strValue, out resultPoint))
-                return resultPoint;
-            else
+            try
+            {
+                return AXPoint.Parse((string)value);
+            }
+            catch
             {
                 return value;
             }

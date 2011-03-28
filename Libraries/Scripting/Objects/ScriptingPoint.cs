@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Scripting
 {
@@ -223,9 +224,9 @@ namespace AXToolbox.Scripting
             if (!isStatic)
                 Point = null;
         }
-        public override void Run(FlightReport report)
+        public override void Process(FlightReport report)
         {
-            base.Run(report);
+            base.Process(report);
 
             // parse and resolve pilot dependent values
             // the static values are already defined
@@ -312,12 +313,34 @@ namespace AXToolbox.Scripting
                 case "MVMD":
                     //MVMD: virtual marker drop
                     //MVMD(<number>)
-                    throw new NotImplementedException();
+                    try
+                    {
+                        var marker = report.Markers.First(m => int.Parse(m.Name) == number);
+                        Point = Engine.ValidTrackPoints.First(p => p.Time == marker.Time);
+                    }
+                    catch (InvalidOperationException) { } //none found
+                    break;
 
                 case "MPDG":
                     //pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
-                    throw new NotImplementedException();
+                    try
+                    {
+                        var goal = report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
+
+                        if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
+                        {
+                            Point = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
+                            if (Point != null && goal.Altitude > 0)
+                                Point.Altitude = goal.Altitude;
+                        }
+                        else // competition coordinates
+                        {
+                            Point = Engine.Settings.ResolveDeclaredGoal(goal);
+                        }
+                    }
+                    catch (InvalidOperationException) { } //none found
+                    break;
 
                 case "TLCH":
                     //TLCH: launch
@@ -355,29 +378,48 @@ namespace AXToolbox.Scripting
                     //nearest to point list
                     //TNL(<listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
+                    foreach (var key in Parameters)
                     {
-                        foreach (var key in Parameters)
-                        {
-                            var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
-                            if (referencePoint == null)
-                                continue;
-                            foreach (var nextTrackPoint in Engine.ValidTrackPoints)
-                                if (Point == null
-                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
-                                    Point = nextTrackPoint;
-                        }
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        if (referencePoint == null)
+                            continue;
+                        foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                            if (Point == null
+                                || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                Point = nextTrackPoint;
                     }
                     break;
 
                 case "TDT":
                     //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
-                    throw new NotImplementedException();
+                    try
+                    {
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        if (referencePoint != null)
+                            if (maxTime.HasValue)
+                                Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
+                            else
+                                Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay);
+                    }
+                    catch (InvalidOperationException) { } //none found
+                    break;
 
                 case "TDD":
                     //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
-                    throw new NotImplementedException();
+                    try
+                    {
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        if (referencePoint != null)
+
+                            if (maxTime.HasValue)
+                                Point = Engine.ValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime);
+                            else
+                                Point = Engine.ValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay);
+                    }
+                    catch (InvalidOperationException) { } //none found
+                    break;
 
                 case "TAFI":
                     //area first in
@@ -443,6 +485,11 @@ namespace AXToolbox.Scripting
                     }
                     break;
             }
+
+            if (Point == null)
+                report.Notes.Add(Name + ": could not resolve!");
+            else
+                report.Notes.Add(Name + ": resolved to " + Point.ToString());
         }
 
         public override MapOverlay GetOverlay()

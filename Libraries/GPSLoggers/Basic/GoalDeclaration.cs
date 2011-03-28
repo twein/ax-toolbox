@@ -10,7 +10,7 @@ namespace AXToolbox.GPSLoggers
         public DeclarationType Type { get; protected set; }
         public int Number { get; protected set; }
         public DateTime Time { get; protected set; }
-        public string GoalName { get; protected set; }
+        public string Name { get; protected set; }
         public double Easting4Digits { get; protected set; }
         public double Northing4Digits { get; protected set; }
         public double Altitude { get; protected set; }
@@ -21,7 +21,7 @@ namespace AXToolbox.GPSLoggers
             Type = DeclarationType.GoalName;
             Number = number;
             Time = time;
-            GoalName = goalName;
+            Name = goalName;
             Altitude = altitude;
         }
 
