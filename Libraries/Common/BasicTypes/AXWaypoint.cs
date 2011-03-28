@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace AXToolbox.Common
 {
@@ -49,6 +50,21 @@ namespace AXToolbox.Common
             }
 
             return str.ToString();
+        }
+
+        public new AXWaypoint Parse(string strValue)
+        {
+            var fields = strValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var name = fields[0];
+            var easting = double.Parse(fields[1], NumberFormatInfo.InvariantInfo);
+            var northing = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
+
+            var altitude = 0.0;
+            if (fields.Length == 4)
+                altitude = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
+
+            return new AXWaypoint(name, DateTime.Now, easting, northing, altitude);
         }
     }
 

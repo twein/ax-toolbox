@@ -100,30 +100,26 @@ namespace AXToolbox.Scripting
             return new AXWaypoint(geoWaypoint.Name, geoWaypoint.Time, utmCoords.Easting, utmCoords.Northing, altitude);
         }
 
-        /// <summary>Resolves a point in competition coordinates (4 digit easting, 4 digit northing)
+        /// <summary>Resolves a point declared in competition coordinates (4 digit easting, 4 digit northing)
         /// </summary>
-        /// <param name="time"></param>
-        /// <param name="easting4Digits"></param>
-        /// <param name="northing4Digits"></param>
-        /// <param name="altitude"></param>
+        /// <param name="goal"></param>
         /// <returns></returns>
-        public AXPoint ResolveCompetitionCoordinates(DateTime time, double easting4Digits, double northing4Digits, double altitude)
+        public AXPoint ResolveDeclaredGoal(GoalDeclaration goal)
         {
             //1e5 = 100km
 
-            var easting = TopLeft.Easting - TopLeft.Easting % 1e5 + easting4Digits * 10;
+            var easting = TopLeft.Easting - TopLeft.Easting % 1e5 + goal.Easting4Digits * 10;
             //check for major tick change (hundreds of km)
             if (!easting.IsBetween(TopLeft.Easting, BottomRight.Easting))
                 easting += 1e5;
 
-            var northing = BottomRight.Northing + BottomRight.Northing % 1e5 + northing4Digits * 10;
+            var northing = BottomRight.Northing + BottomRight.Northing % 1e5 + goal.Northing4Digits * 10;
             //check for major tick change (hundreds of km)
             if (!northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
                 northing += 1e5;
 
-            return new AXPoint(time, easting, northing, altitude);
+            return new AXPoint(goal.Time, easting, northing, goal.Altitude);
         }
-
         public List<AXTrackpoint> GetTrack(LoggerFile trackLog)
         {
             var track = new List<AXTrackpoint>();

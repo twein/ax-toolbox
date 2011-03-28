@@ -2,8 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
+        xmlns:converters="clr-namespace:AXToolbox.Model.Converters;assembly=AXToolbox.Model"    
         Title="MainWindow" Width="1024" Height="576" WindowState="Maximized"
         Closed="Window_Closed" Icon="/FlightAnalyzer;component/balloon.ico">
+    <Window.Resources>
+        <converters:IsNullVisibilityConverter x:Key="isNullVisibilityConverter" />
+    </Window.Resources>
     <DockPanel LastChildFill="True">
         <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
             <StatusBarItem>
@@ -42,7 +46,10 @@
                                 <TextBlock VerticalAlignment="Top" FontWeight="Bold">Report</TextBlock>
                                 <TextBlock VerticalAlignment="Top" Text="{Binding Path=Report.ShortDescription}"></TextBlock>
                             </StackPanel>
-                            <Button Height="22" ToolTip="Load gps log file or a flight report" Click="loadReportButton_Click">Load</Button>
+                            <Button Height="22" ToolTip="Load gps log file or a flight report" Click="loadReportButton_Click"
+                                    Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}">Load</Button>
+                            <Button Height="22" ToolTip="Process the current report" Click="processReportButton_Click"
+                                    Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
                         </StackPanel>
                     </Expander.Header>
                     <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.ShortDescription}"/>

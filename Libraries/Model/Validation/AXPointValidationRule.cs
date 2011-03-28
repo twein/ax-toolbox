@@ -10,12 +10,12 @@ namespace AXToolbox.Model.Validation
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            AXPoint point;
-            if (AXPoint.TryParse((string)value, out point))
+            try
             {
+                var point = AXPoint.Parse((string)value);
                 return new ValidationResult(true, null);
             }
-            else
+            catch
             {
                 return new ValidationResult(false, "Value is not a valid point");
             }

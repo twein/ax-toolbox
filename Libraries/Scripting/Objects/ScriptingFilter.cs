@@ -77,9 +77,9 @@ namespace AXToolbox.Scripting
             base.Reset();
         }
 
-        public override void Run(FlightReport report)
+        public override void Process(FlightReport report)
         {
-            base.Run(report);
+            base.Process(report);
 
             switch (Type)
             {

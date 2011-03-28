@@ -152,11 +152,11 @@ namespace AXToolbox.Scripting
             var report = FlightReport.FromFile(loggerFile, Settings);
             return report;
         }
-        public void Run(FlightReport report)
+        public void Process(FlightReport report)
         {
             Trace.WriteLine("Running " + report.ToString(), "ENGINE");
             foreach (var obj in Heap.Values)
-                obj.Run(report);
+                obj.Process(report);
         }
 
         /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
