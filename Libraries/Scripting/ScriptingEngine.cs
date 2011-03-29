@@ -107,7 +107,7 @@ namespace AXToolbox.Scripting
                         var obj = ScriptingObject.Create(this, objectClass, name, type, parms, displayMode, displayParms);
 
                         //place on heap
-                        Heap.Add(obj.Name, obj);
+                        Heap.Add(obj.ObjectName, obj);
                     }
 
                     else
