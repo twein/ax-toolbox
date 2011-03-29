@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Globalization;
-using AXToolbox.Common;
-using AXToolbox.MapViewer;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AXToolbox.Scripting
@@ -15,6 +13,7 @@ namespace AXToolbox.Scripting
         };
 
         private ScriptingArea area;
+        private ScriptingPoint point;
         private DateTime time;
         private double altitude;
 
@@ -37,10 +36,7 @@ namespace AXToolbox.Scripting
 
                 case "INSIDE":
                 case "OUTSIDE":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException("Syntax error in area definition");
-                    else
-                        area = (ScriptingArea)Engine.Heap[ObjectParameters[0]];
+                    area = ResolveOrDie<ScriptingArea>(0);
                     break;
 
                 case "BEFORETIME":
@@ -53,29 +49,17 @@ namespace AXToolbox.Scripting
 
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException("Syntax error in point definition");
-                    else if (!Engine.Heap.ContainsKey(ObjectParameters[0]))
-                        throw new ArgumentException("Undefined point " + ObjectParameters[0]);
+                    point = ResolveOrDie<ScriptingPoint>(0);
                     break;
 
                 case "ABOVE":
                 case "BELOW":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException("Syntax error in altitude definition");
-                    else
-                        altitude = ParseLength(ObjectParameters[0]);
+                    altitude = ParseDoubleOrDie(0, ParseLength);
                     break;
             }
         }
-
         public override void CheckDisplayModeSyntax()
         { }
-
-        public override void Reset()
-        {
-            base.Reset();
-        }
 
         public override void Process(FlightReport report)
         {
@@ -104,19 +88,17 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "BEFOREPOINT":
-                    {
-                        var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
-                        var time = spoint.Point.Time;
-                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToArray();
-                    }
+                    if (point.Point == null)
+                        report.Notes.Add(ObjectName + ": reference point is null");
+                    else
+                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= point.Point.Time).ToArray();
                     break;
 
                 case "AFTERPOINT":
-                    {
-                        var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
-                        var time = spoint.Point.Time;
-                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToArray();
-                    }
+                    if (point.Point == null)
+                        report.Notes.Add(ObjectName + ": reference point is null");
+                    else
+                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= point.Point.Time).ToArray();
                     break;
 
                 case "ABOVE":
@@ -127,11 +109,6 @@ namespace AXToolbox.Scripting
                     Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToArray();
                     break;
             }
-        }
-
-        public override MapOverlay GetOverlay()
-        {
-            return null;
         }
     }
 }

@@ -42,6 +42,11 @@ namespace AXToolbox.Scripting
 
         protected Brush color = Brushes.Blue;
 
+        protected string StandardErrorMessage
+        {
+            get { return "Syntax error in " + ObjectName + " definition"; }
+        }
+
         public string ToShortString()
         {
             return ObjectType;
@@ -134,7 +139,10 @@ namespace AXToolbox.Scripting
         public abstract void CheckDisplayModeSyntax();
         /// <summary>Gets the MapOverlay for the current object (or null if no overlay is defined)
         /// </summary>
-        public abstract MapOverlay GetOverlay();
+        public virtual MapOverlay GetOverlay()
+        {
+            return null;
+        }
 
         /// <summary>Clears the pilot dependent (non-static) values
         /// </summary>
@@ -148,41 +156,93 @@ namespace AXToolbox.Scripting
         public virtual void Process(FlightReport report)
         {
             Reset();
-            Trace.WriteLine("Running " + ObjectName, ObjectClass);
+            Trace.WriteLine("Processing " + ObjectName, ObjectClass);
         }
 
         //helpers
+
+        /// <summary>Generic parse or die function for double values
+        /// </summary>
+        /// <param name="atParameterIndex">position of the double in the parameter array</param>
+        /// /// <param name="parseFunction">double returning function used to parse the string</param>
+        /// <returns></returns>
+        protected double ParseDoubleOrDie(int atParameterIndex, Func<string, double> parseFunction)
+        {
+            if (atParameterIndex >= ObjectParameters.Length)
+                throw new ArgumentException(StandardErrorMessage);
+
+            try
+            {
+                return parseFunction(ObjectParameters[atParameterIndex]);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException(StandardErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
+            }
+        }
+
+        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// No checkings
+        /// </summary>
+        /// <param name="atParameterIndex"></param>
+        protected T Resolve<T>(int atParameterIndex) where T : ScriptingObject
+        {
+            var key = ObjectParameters[atParameterIndex];
+            return ((T)Engine.Heap[key]);
+        }
         /// <summary>Looks for n point definitions starting at a given parameter array index
+        /// No checkings
         /// </summary>
         /// <param name="startingAtParameterIndex"></param>
         /// <param name="n"></param>
-        protected void AssertNPointsOrDie(int startingAtParameterIndex, int n)
+        protected T[] ResolveN<T>(int startingAtParameterIndex, int n) where T : ScriptingObject
         {
-            if (n + startingAtParameterIndex > ObjectParameters.Length)
-                throw new ArgumentException("Syntax error in " + ObjectType + " definition");
+            var list = new T[n];
 
             for (int i = 0; i < n; i++)
-            {
-                var key = ObjectParameters[startingAtParameterIndex + i];
-                if (!Engine.Heap.ContainsKey(key))
-                    throw new ArgumentException("Undefined point " + key);
+                list[i] = Resolve<T>(startingAtParameterIndex + i);
 
-                if (!(Engine.Heap[key] is ScriptingPoint))
-                    throw new ArgumentException(key + " is not a point");
-            }
+            return list;
         }
+        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// With lots of checkings
+        /// </summary>
+        /// <param name="atParameterIndex"></param>
+        protected T ResolveOrDie<T>(int atParameterIndex) where T : ScriptingObject
+        {
+            if (atParameterIndex >= ObjectParameters.Length)
+                throw new ArgumentException(StandardErrorMessage);
+
+            var key = ObjectParameters[atParameterIndex];
+            if (!Engine.Heap.ContainsKey(key))
+                throw new ArgumentException(key + " is undefined");
+
+            if (!(Engine.Heap[key] is T))
+                throw new ArgumentException(key + " is the wrong type (" + Engine.Heap[key].ObjectClass + ")");
+
+            return ((T)Engine.Heap[key]);
+        }
+        /// <summary>Looks for n point definitions starting at a given parameter array index
+        /// Lots of checkings
+        /// </summary>
+        /// <param name="startingAtParameterIndex"></param>
+        /// <param name="n"></param>
+        protected T[] ResolveNOrDie<T>(int startingAtParameterIndex, int n) where T : ScriptingObject
+        {
+            var list = new T[n];
+
+            for (int i = 0; i < n; i++)
+                list[i] = ResolveOrDie<T>(startingAtParameterIndex + i);
+
+            return list;
+        }
+
+
+
 
         protected static double ParseDouble(string str)
         {
             return double.Parse(str, NumberFormatInfo.InvariantInfo);
-        }
-        protected static DateTime ParseLocalDatetime(string str)
-        {
-            return DateTime.Parse(str, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
-        }
-        protected static TimeSpan ParseTimeSpan(string str)
-        {
-            return TimeSpan.Parse(str, DateTimeFormatInfo.InvariantInfo);
         }
         protected static double ParseLength(string str)
         {
@@ -230,6 +290,14 @@ namespace AXToolbox.Scripting
             }
 
             return length;
+        }
+        protected static DateTime ParseLocalDatetime(string str)
+        {
+            return DateTime.Parse(str, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
+        }
+        protected static TimeSpan ParseTimeSpan(string str)
+        {
+            return TimeSpan.Parse(str, DateTimeFormatInfo.InvariantInfo);
         }
         protected static Brush ParseColor(string str)
         {
