@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
+using System.Windows;
 
 namespace AXToolbox.Scripting
 {
@@ -25,7 +26,6 @@ namespace AXToolbox.Scripting
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
 
-
         public override void CheckConstructorSyntax()
         {
             if (!types.Contains(ObjectType))
@@ -45,16 +45,8 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "BLANK":
-                    if (ObjectParameters.Length != 2)
-                        throw new ArgumentException("Syntax error in blank map definition");
-
-                    if (!Engine.Heap.ContainsKey(ObjectParameters[0]) || !Engine.Heap.ContainsKey(ObjectParameters[1]))
-                        throw new ArgumentException("Undefined point '" + ObjectParameters[0] + "'");
-
-                    var tl = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
-                    var br = (ScriptingPoint)Engine.Heap[ObjectParameters[1]];
-                    topLeft = tl.Point;
-                    bottomRight = br.Point;
+                    topLeft = ResolveOrDie<ScriptingPoint>(0).Point;
+                    bottomRight = ResolveOrDie<ScriptingPoint>(1).Point;
 
                     break;
             }
@@ -62,7 +54,6 @@ namespace AXToolbox.Scripting
             Engine.Settings.TopLeft = topLeft;
             Engine.Settings.BottomRight = bottomRight;
         }
-
         public override void CheckDisplayModeSyntax()
         {
             if (!displayModes.Contains(DisplayMode))
@@ -79,17 +70,12 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public override MapOverlay GetOverlay()
-        {
-            return null;
-        }
-
         public void InitializeMapViewer(MapViewerControl map)
         {
             if (ObjectType == "BITMAP")
                 map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
             else
-                map.LoadBlank(new System.Windows.Point(topLeft.Easting, topLeft.Northing), new System.Windows.Point(bottomRight.Easting, bottomRight.Northing));
+                map.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
 
             if (gridWidth > 0)
                 map.AddOverlay(new CoordinateGridOverlay(gridWidth));

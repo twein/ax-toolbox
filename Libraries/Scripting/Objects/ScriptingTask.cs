@@ -28,22 +28,12 @@ namespace AXToolbox.Scripting
         public override void CheckDisplayModeSyntax()
         { }
 
-        public override void Reset()
-        {
-            base.Reset();
-        }
-
         public override void Process(FlightReport report)
         {
             base.Process(report);
 
             //removes filter if any
             Engine.ValidTrackPoints = report.FlightTrack.ToArray();
-        }
-
-        public override MapOverlay GetOverlay()
-        {
-            return null;
         }
     }
 }

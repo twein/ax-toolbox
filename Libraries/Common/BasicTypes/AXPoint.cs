@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using AXToolbox.GPSLoggers;
+using System.Windows;
 
 namespace AXToolbox.Common
 {
@@ -80,6 +81,11 @@ namespace AXToolbox.Common
                 altitude = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
 
             return new AXPoint(DateTime.Now, easting, northing, altitude);
+        }
+
+        public Point ToWindowsPoint()
+        {
+            return new Point(Easting, Northing);
         }
     }
 }

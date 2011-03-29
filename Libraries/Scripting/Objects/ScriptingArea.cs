@@ -21,7 +21,7 @@ namespace AXToolbox.Scripting
         };
 
 
-        protected AXPoint centerPoint = null;
+        protected ScriptingPoint center = null;
         protected double radius = 0;
         protected List<AXTrackpoint> outline;
 
@@ -39,17 +39,8 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "CIRCLE":
-                    if (ObjectParameters.Length < 2)
-                        throw new ArgumentException("Syntax error in circle definition");
-
-                    if (!Engine.Heap.ContainsKey(ObjectParameters[0]))
-                        throw new ArgumentException("Undefined point '" + ObjectParameters[0] + "'");
-                    else if (!(Engine.Heap[ObjectParameters[0]] is ScriptingPoint))
-                        throw new ArgumentException(ObjectParameters[0] + " is not a point");
-
-                    var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
-                    centerPoint = spoint.Point;
-                    radius = ParseLength(ObjectParameters[1]);
+                    center = ResolveOrDie<ScriptingPoint>(0); // will be null if not static
+                    radius = ParseDoubleOrDie(1, ParseLength);
                     break;
 
                 case "POLY":
@@ -60,7 +51,6 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
-
         public override void CheckDisplayModeSyntax()
         {
             if (!displayModes.Contains(DisplayMode))
@@ -83,11 +73,6 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public override void Reset()
-        {
-            base.Reset();
-        }
-
         public override void Process(FlightReport report)
         {
             base.Process(report);
@@ -95,11 +80,9 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "CIRCLE":
-                    var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
-                    centerPoint = spoint.Point;
                     //radius is static
-                    if (centerPoint == null)
-                        Trace.WriteLine("Area " + ObjectName + ": center point is null", ObjectClass);
+                    if (center.Point == null)
+                        report.Notes.Add(ObjectName + ": center point is null");
                     break;
                 case "POLY":
                     //do nothing
@@ -113,17 +96,14 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "CIRCLE":
-                    if (centerPoint != null)
-                    {
-                        var center = new Point(centerPoint.Easting, centerPoint.Northing);
-                        overlay = new CircularAreaOverlay(center, radius, ObjectName) { Color = color };
-                    }
+                    if (center.Point != null)
+                        overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Color = color };
                     break;
 
                 case "POLY":
                     var list = new Point[outline.Count];
                     for (var i = 0; i < list.Length; i++)
-                        list[i] = new Point(outline[i].Easting, outline[i].Northing);
+                        list[i] = outline[i].ToWindowsPoint();
                     overlay = new PolygonalAreaOverlay(list, ObjectName) { Color = color };
                     break;
             }
@@ -134,6 +114,7 @@ namespace AXToolbox.Scripting
         public bool Contains(AXPoint point)
         {
             var isInside = false;
+
             if (point == null)
                 Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
             else
@@ -141,9 +122,9 @@ namespace AXToolbox.Scripting
                 switch (ObjectType)
                 {
                     case "CIRCLE":
-                        if (centerPoint != null)
+                        if (center.Point != null)
                         {
-                            isInside = Physics.Distance2D(centerPoint, point) < radius;
+                            isInside = Physics.Distance2D(center.Point, point) < radius;
                         }
                         break;
 
@@ -152,6 +133,7 @@ namespace AXToolbox.Scripting
                         break;
                 }
             }
+
             return isInside;
         }
 
