@@ -24,47 +24,47 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(Type))
-                throw new ArgumentException("Unknown filter type '" + Type + "'");
+            if (!types.Contains(ObjectType))
+                throw new ArgumentException("Unknown filter type '" + ObjectType + "'");
 
             //parse static types
-            switch (Type)
+            switch (ObjectType)
             {
                 case "NONE":
-                    if (Parameters.Length != 1 || Parameters[0] != "")
+                    if (ObjectParameters.Length != 1 || ObjectParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "INSIDE":
                 case "OUTSIDE":
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in area definition");
                     else
-                        area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        area = (ScriptingArea)Engine.Heap[ObjectParameters[0]];
                     break;
 
                 case "BEFORETIME":
                 case "AFTERTIME":
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in time definition");
                     else
-                        time = Engine.Settings.Date + TimeSpan.Parse(Parameters[0]); //TODO: check local-GMT conversion
+                        time = Engine.Settings.Date + TimeSpan.Parse(ObjectParameters[0]); //TODO: check local-GMT conversion
                     break;
 
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
-                        throw new ArgumentException("Undefined point " + Parameters[0]);
+                    else if (!Engine.Heap.ContainsKey(ObjectParameters[0]))
+                        throw new ArgumentException("Undefined point " + ObjectParameters[0]);
                     break;
 
                 case "ABOVE":
                 case "BELOW":
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in altitude definition");
                     else
-                        altitude = ParseLength(Parameters[0]);
+                        altitude = ParseLength(ObjectParameters[0]);
                     break;
             }
         }
@@ -81,7 +81,7 @@ namespace AXToolbox.Scripting
         {
             base.Process(report);
 
-            switch (Type)
+            switch (ObjectType)
             {
                 case "NONE":
                     Engine.ValidTrackPoints = report.FlightTrack.ToArray();
@@ -105,7 +105,7 @@ namespace AXToolbox.Scripting
 
                 case "BEFOREPOINT":
                     {
-                        var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
+                        var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
                         var time = spoint.Point.Time;
                         Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToArray();
                     }
@@ -113,7 +113,7 @@ namespace AXToolbox.Scripting
 
                 case "AFTERPOINT":
                     {
-                        var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
+                        var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
                         var time = spoint.Point.Time;
                         Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToArray();
                     }

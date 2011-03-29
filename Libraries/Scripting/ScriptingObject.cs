@@ -34,9 +34,9 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public string Name { get; protected set; }
-        protected string Type { get; set; }
-        protected string[] Parameters { get; set; }
+        public string ObjectName { get; protected set; }
+        protected string ObjectType { get; set; }
+        protected string[] ObjectParameters { get; set; }
         protected string DisplayMode { get; set; }
         protected string[] DisplayParameters { get; set; }
 
@@ -44,18 +44,18 @@ namespace AXToolbox.Scripting
 
         public string ToShortString()
         {
-            return Type;
+            return ObjectType;
         }
         public override string ToString()
         {
-            string str = ObjectClass + " " + Name + " = ";
+            string str = ObjectClass + " " + ObjectName + " = ";
 
             var parms = "";
-            foreach (var par in Parameters)
+            foreach (var par in ObjectParameters)
                 parms += par + ",";
             parms = parms.Trim(new char[] { ',' });
 
-            str += Type + "(" + parms + ")";
+            str += ObjectType + "(" + parms + ")";
 
             if (DisplayMode != "")
             {
@@ -114,9 +114,9 @@ namespace AXToolbox.Scripting
         protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
             this.Engine = engine;
-            this.Name = name;
-            this.Type = type;
-            this.Parameters = parameters;
+            this.ObjectName = name;
+            this.ObjectType = type;
+            this.ObjectParameters = parameters;
             this.DisplayMode = displayMode;
             this.DisplayParameters = displayParameters;
 
@@ -140,7 +140,7 @@ namespace AXToolbox.Scripting
         /// </summary>
         public virtual void Reset()
         {
-            Trace.WriteLine("Resetting " + Name, ObjectClass);
+            Trace.WriteLine("Resetting " + ObjectName, ObjectClass);
         }
         /// <summary>Executes the script
         /// </summary>
@@ -148,10 +148,30 @@ namespace AXToolbox.Scripting
         public virtual void Process(FlightReport report)
         {
             Reset();
-            Trace.WriteLine("Running " + Name, ObjectClass);
+            Trace.WriteLine("Running " + ObjectName, ObjectClass);
         }
 
         //helpers
+        /// <summary>Looks for n point definitions starting at a given parameter array index
+        /// </summary>
+        /// <param name="startingAtParameterIndex"></param>
+        /// <param name="n"></param>
+        protected void AssertNPointsOrDie(int startingAtParameterIndex, int n)
+        {
+            if (n + startingAtParameterIndex > ObjectParameters.Length)
+                throw new ArgumentException("Syntax error in " + ObjectType + " definition");
+
+            for (int i = 0; i < n; i++)
+            {
+                var key = ObjectParameters[startingAtParameterIndex + i];
+                if (!Engine.Heap.ContainsKey(key))
+                    throw new ArgumentException("Undefined point " + key);
+
+                if (!(Engine.Heap[key] is ScriptingPoint))
+                    throw new ArgumentException(key + " is not a point");
+            }
+        }
+
         protected static double ParseDouble(string str)
         {
             return double.Parse(str, NumberFormatInfo.InvariantInfo);

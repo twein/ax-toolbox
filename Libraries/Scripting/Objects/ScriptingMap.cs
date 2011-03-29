@@ -28,31 +28,31 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(Type))
-                throw new ArgumentException("Unknown map type '" + Type + "'");
+            if (!types.Contains(ObjectType))
+                throw new ArgumentException("Unknown map type '" + ObjectType + "'");
 
-            switch (Type)
+            switch (ObjectType)
             {
                 case "BITMAP":
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in bitmap definition");
 
                     //load the georeferenced image to retrieve top-left and bottom-right corners
-                    var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), Parameters[0]));
+                    var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
                     topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
                     bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
 
                     break;
 
                 case "BLANK":
-                    if (Parameters.Length != 2)
+                    if (ObjectParameters.Length != 2)
                         throw new ArgumentException("Syntax error in blank map definition");
 
-                    if (!Engine.Heap.ContainsKey(Parameters[0]) || !Engine.Heap.ContainsKey(Parameters[1]))
-                        throw new ArgumentException("Undefined point '" + Parameters[0] + "'");
+                    if (!Engine.Heap.ContainsKey(ObjectParameters[0]) || !Engine.Heap.ContainsKey(ObjectParameters[1]))
+                        throw new ArgumentException("Undefined point '" + ObjectParameters[0] + "'");
 
-                    var tl = (ScriptingPoint)Engine.Heap[Parameters[0]];
-                    var br = (ScriptingPoint)Engine.Heap[Parameters[1]];
+                    var tl = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
+                    var br = (ScriptingPoint)Engine.Heap[ObjectParameters[1]];
                     topLeft = tl.Point;
                     bottomRight = br.Point;
 
@@ -86,8 +86,8 @@ namespace AXToolbox.Scripting
 
         public void InitializeMapViewer(MapViewerControl map)
         {
-            if (Type == "BITMAP")
-                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), Parameters[0]));
+            if (ObjectType == "BITMAP")
+                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
             else
                 map.LoadBlank(new System.Windows.Point(topLeft.Easting, topLeft.Northing), new System.Windows.Point(bottomRight.Easting, bottomRight.Northing));
 

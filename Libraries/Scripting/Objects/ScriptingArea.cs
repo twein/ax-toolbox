@@ -33,29 +33,29 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(Type))
-                throw new ArgumentException("Unknown area type '" + Type + "'");
+            if (!types.Contains(ObjectType))
+                throw new ArgumentException("Unknown area type '" + ObjectType + "'");
 
-            switch (Type)
+            switch (ObjectType)
             {
                 case "CIRCLE":
-                    if (Parameters.Length < 2)
+                    if (ObjectParameters.Length < 2)
                         throw new ArgumentException("Syntax error in circle definition");
 
-                    if (!Engine.Heap.ContainsKey(Parameters[0]))
-                        throw new ArgumentException("Undefined point '" + Parameters[0] + "'");
-                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
-                        throw new ArgumentException(Parameters[0] + " is not a point");
+                    if (!Engine.Heap.ContainsKey(ObjectParameters[0]))
+                        throw new ArgumentException("Undefined point '" + ObjectParameters[0] + "'");
+                    else if (!(Engine.Heap[ObjectParameters[0]] is ScriptingPoint))
+                        throw new ArgumentException(ObjectParameters[0] + " is not a point");
 
-                    var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
+                    var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
                     centerPoint = spoint.Point;
-                    radius = ParseLength(Parameters[1]);
+                    radius = ParseLength(ObjectParameters[1]);
                     break;
 
                 case "POLY":
-                    if (Parameters.Length < 1)
+                    if (ObjectParameters.Length < 1)
                         throw new ArgumentException("Syntax error in poly definition");
-                    var trackLog = LoggerFile.Load(Parameters[0]);
+                    var trackLog = LoggerFile.Load(ObjectParameters[0]);
                     outline = Engine.Settings.GetTrack(trackLog);
                     break;
             }
@@ -92,14 +92,14 @@ namespace AXToolbox.Scripting
         {
             base.Process(report);
 
-            switch (Type)
+            switch (ObjectType)
             {
                 case "CIRCLE":
-                    var spoint = (ScriptingPoint)Engine.Heap[Parameters[0]];
+                    var spoint = (ScriptingPoint)Engine.Heap[ObjectParameters[0]];
                     centerPoint = spoint.Point;
                     //radius is static
                     if (centerPoint == null)
-                        Trace.WriteLine("Area " + Name + ": center point is null", ObjectClass);
+                        Trace.WriteLine("Area " + ObjectName + ": center point is null", ObjectClass);
                     break;
                 case "POLY":
                     //do nothing
@@ -110,13 +110,13 @@ namespace AXToolbox.Scripting
         public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;
-            switch (Type)
+            switch (ObjectType)
             {
                 case "CIRCLE":
                     if (centerPoint != null)
                     {
                         var center = new Point(centerPoint.Easting, centerPoint.Northing);
-                        overlay = new CircularAreaOverlay(center, radius, Name) { Color = color };
+                        overlay = new CircularAreaOverlay(center, radius, ObjectName) { Color = color };
                     }
                     break;
 
@@ -124,7 +124,7 @@ namespace AXToolbox.Scripting
                     var list = new Point[outline.Count];
                     for (var i = 0; i < list.Length; i++)
                         list[i] = new Point(outline[i].Easting, outline[i].Northing);
-                    overlay = new PolygonalAreaOverlay(list, Name) { Color = color };
+                    overlay = new PolygonalAreaOverlay(list, ObjectName) { Color = color };
                     break;
             }
 
@@ -135,10 +135,10 @@ namespace AXToolbox.Scripting
         {
             var isInside = false;
             if (point == null)
-                Trace.WriteLine("Area " + Name + ": the testing point is null", ObjectClass);
+                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
             else
             {
-                switch (Type)
+                switch (ObjectType)
                 {
                     case "CIRCLE":
                         if (centerPoint != null)

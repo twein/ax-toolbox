@@ -39,52 +39,45 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(Type))
-                throw new ArgumentException("Unknown point type '" + Type + "'");
+            if (!types.Contains(ObjectType))
+                throw new ArgumentException("Unknown point type '" + ObjectType + "'");
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
-            switch (Type)
+            switch (ObjectType)
             {
                 case "SLL": //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
-                    if (Parameters.Length != 3)
+                    if (ObjectParameters.Length != 3)
                         throw new ArgumentException("Syntax error in point definition");
                     else
                     {
                         isStatic = true;
-                        var lat = ParseDouble(Parameters[0]);
-                        var lng = ParseDouble(Parameters[1]);
-                        var alt = ParseLength(Parameters[2]);
+                        var lat = ParseDouble(ObjectParameters[0]);
+                        var lng = ParseDouble(ObjectParameters[1]);
+                        var alt = ParseLength(ObjectParameters[2]);
                         Point = Engine.Settings.FromLatLonToAXPoint(lat, lng, alt);
                     }
                     break;
 
                 case "SUTM": //UTM
                     //SUTM(<easting>, <northing>, <alt>). The datum and zone are defined in settings
-                    if (Parameters.Length != 3)
+                    if (ObjectParameters.Length != 3)
                         throw new ArgumentException("Syntax error in point definition");
                     else
                     {
                         isStatic = true;
-                        var easting = ParseDouble(Parameters[0]);
-                        var northing = ParseDouble(Parameters[1]);
-                        var alt = ParseLength(Parameters[2]);
+                        var easting = ParseDouble(ObjectParameters[0]);
+                        var northing = ParseDouble(ObjectParameters[1]);
+                        var alt = ParseLength(ObjectParameters[2]);
                         Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
                     }
                     break;
 
                 case "LNP": //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
-                    if (Parameters.Length < 2)
+                    if (ObjectParameters.Length < 2)
                         throw new ArgumentException("Syntax error in point list definition");
-                    foreach (var key in Parameters)
-                    {
-                        if (!Engine.Heap.ContainsKey(key))
-                            throw new ArgumentException("Undefined point " + key);
-
-                        if (!(Engine.Heap[key] is ScriptingPoint))
-                            throw new ArgumentException(key + " is not a point");
-                    }
+                    AssertNPointsOrDie(0, ObjectParameters.Length);
                     break;
 
                 case "TNL": //nearest to point list 
@@ -93,80 +86,64 @@ namespace AXToolbox.Scripting
                 case "LFNN": //LFNN: first not null from list
                 case "LLNN": //last not null
                     //XXXX(<listPoint1>, <listPoint2>, …)
-                    if (Parameters.Length < 1)
+                    if (ObjectParameters.Length < 1)
                         throw new ArgumentException("Syntax error in point list definition");
-                    foreach (var key in Parameters)
-                    {
-                        if (!Engine.Heap.ContainsKey(key))
-                            throw new ArgumentException("Undefined point " + key);
-
-                        if (!(Engine.Heap[key] is ScriptingPoint))
-                            throw new ArgumentException(key + " is not a point");
-                    }
+                    AssertNPointsOrDie(0, ObjectParameters.Length);
                     break;
 
                 case "MVMD": //MVMD: virtual marker drop
                     //MVMD(<number>)
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in marker drop definition");
                     else
-                        number = int.Parse(Parameters[0]);
+                        number = int.Parse(ObjectParameters[0]);
                     break;
 
                 case "MPDG": //pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
-                    if (Parameters.Length != 3)
+                    if (ObjectParameters.Length != 3)
                         throw new ArgumentException("Syntax error in pilot declared goal definition");
 
-                    number = int.Parse(Parameters[0]);
-                    minTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[1]);
-                    maxTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[2]);
+                    number = int.Parse(ObjectParameters[0]);
+                    minTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[1]);
+                    maxTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[2]);
                     break;
 
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
                     //XXXX()
                     //TODO: check if they are really needed or should be automatic
-                    if (Parameters.Length != 1 || Parameters[0] != "")
+                    if (ObjectParameters.Length != 1 || ObjectParameters[0] != "")
                         throw new ArgumentException("Syntax error in launch/landing definition");
                     break;
 
                 case "TNP": //nearest to point
                     //TNP(<pointName>)
-                    if (Parameters.Length != 1)
-                        throw new ArgumentException("Syntax error in point definition");
-                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
-                        throw new ArgumentException("Undefined point " + Parameters[0]);
-                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
-                        throw new ArgumentException(Parameters[0] + " is not a point");
+                    AssertNPointsOrDie(0, 1);
                     break;
 
                 case "TDT": //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
-                    if (Parameters.Length < 2 || Parameters.Length > 3)
+                    if (ObjectParameters.Length < 2 || ObjectParameters.Length > 3)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
-                        throw new ArgumentException("Undefined point " + Parameters[0]);
-                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
-                        throw new ArgumentException(Parameters[0] + " is not a point");
 
-                    timeDelay = ParseTimeSpan(Parameters[1]);
-                    if (Parameters.Length == 3)
-                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[2]);
+                    AssertNPointsOrDie(0, 1);
+
+                    timeDelay = ParseTimeSpan(ObjectParameters[1]);
+                    if (ObjectParameters.Length == 3)
+                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[2]);
                     break;
 
                 case "TDD":  //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
-                    if (Parameters.Length < 2 || Parameters.Length > 3)
+                    if (ObjectParameters.Length < 2 || ObjectParameters.Length > 3)
                         throw new ArgumentException("Syntax error in point definition");
-                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
-                        throw new ArgumentException("Undefined point " + Parameters[0]);
-                    else if (!(Engine.Heap[Parameters[0]] is ScriptingPoint))
-                        throw new ArgumentException(Parameters[0] + " is not a point");
 
-                    distanceDelay = ParseLength(Parameters[1]);
-                    if (Parameters.Length == 3)
-                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(Parameters[2]);
+                    AssertNPointsOrDie(0, 1);
+
+                    distanceDelay = ParseLength(ObjectParameters[1]);
+                    if (ObjectParameters.Length == 3)
+                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[2]);
                     break;
 
                 case "TAFI": //area first in
@@ -174,12 +151,12 @@ namespace AXToolbox.Scripting
                 case "TALI": //area last in
                 case "TALO": //area last out
                     //XXXX(<areaName>)
-                    if (Parameters.Length != 1)
+                    if (ObjectParameters.Length != 1)
                         throw new ArgumentException("Syntax error in area definition");
-                    else if (!Engine.Heap.ContainsKey(Parameters[0]))
-                        throw new ArgumentException("Undefined area " + Parameters[0]);
-                    else if (!(Engine.Heap[Parameters[0]] is ScriptingArea))
-                        throw new ArgumentException(Parameters[0] + " is not an area");
+                    else if (!Engine.Heap.ContainsKey(ObjectParameters[0]))
+                        throw new ArgumentException("Undefined area " + ObjectParameters[0]);
+                    else if (!(Engine.Heap[ObjectParameters[0]] is ScriptingArea))
+                        throw new ArgumentException(ObjectParameters[0] + " is not an area");
                     break;
             }
         }
@@ -190,6 +167,7 @@ namespace AXToolbox.Scripting
 
             switch (DisplayMode)
             {
+                //TODO: revise all cases (including "")
                 case "NONE":
                     if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
@@ -231,21 +209,21 @@ namespace AXToolbox.Scripting
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
-            switch (Type)
+            switch (ObjectType)
             {
                 case "LNP":
                     //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (referencePoint == null)
                             Point = null;
                         else
                         {
-                            for (var i = 1; i < Parameters.Length; i++)
+                            for (var i = 1; i < ObjectParameters.Length; i++)
                             {
-                                var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[i]]).Point;
+                                var nextPoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[i]]).Point;
                                 if (nextPoint == null)
                                     continue;
                                 if (Point == null
@@ -259,9 +237,9 @@ namespace AXToolbox.Scripting
                 case "LFT":
                     //first in time from list
                     //LFT(<listPoint1>, <listPoint2>, …)
-                    foreach (var key in Parameters)
+                    foreach (var key in ObjectParameters)
                     {
-                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (nextPoint == null)
                             continue;
                         else if (Point == null || nextPoint.Time < Point.Time)
@@ -272,9 +250,9 @@ namespace AXToolbox.Scripting
                 case "LLT":
                     //last in time from list
                     //LLT(<listPoint1>, <listPoint2>)
-                    foreach (var key in Parameters)
+                    foreach (var key in ObjectParameters)
                     {
-                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (nextPoint == null)
                             continue;
                         else if (Point == null || nextPoint.Time > Point.Time)
@@ -285,9 +263,9 @@ namespace AXToolbox.Scripting
                 case "LFNN":
                     //first not null from list
                     //LFNN(<listPoint1>, <listPoint2>, …)
-                    foreach (var key in Parameters)
+                    foreach (var key in ObjectParameters)
                     {
-                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (nextPoint != null)
                         {
                             Point = nextPoint;
@@ -299,9 +277,9 @@ namespace AXToolbox.Scripting
                 case "LLNN":
                     //last not null from list
                     //LLNN(<listPoint1>, <listPoint2>, …)
-                    foreach (var key in Parameters.Reverse())
+                    foreach (var key in ObjectParameters.Reverse())
                     {
-                        var nextPoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var nextPoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (nextPoint != null)
                         {
                             Point = nextPoint;
@@ -361,7 +339,7 @@ namespace AXToolbox.Scripting
                     //TNP(<pointName>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (referencePoint == null)
                             Point = null;
                         else
@@ -378,9 +356,9 @@ namespace AXToolbox.Scripting
                     //nearest to point list
                     //TNL(<listPoint1>, <listPoint2>, ...)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
-                    foreach (var key in Parameters)
+                    foreach (var key in ObjectParameters)
                     {
-                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (referencePoint == null)
                             continue;
                         foreach (var nextTrackPoint in Engine.ValidTrackPoints)
@@ -395,7 +373,7 @@ namespace AXToolbox.Scripting
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
                     try
                     {
-                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (referencePoint != null)
                             if (maxTime.HasValue)
                                 Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
@@ -410,7 +388,7 @@ namespace AXToolbox.Scripting
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
                     try
                     {
-                        var referencePoint = ((ScriptingPoint)Engine.Heap[Parameters[0]]).Point;
+                        var referencePoint = ((ScriptingPoint)Engine.Heap[ObjectParameters[0]]).Point;
                         if (referencePoint != null)
 
                             if (maxTime.HasValue)
@@ -425,7 +403,7 @@ namespace AXToolbox.Scripting
                     //area first in
                     //TAFI(<areaName>)
                     {
-                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        var area = (ScriptingArea)Engine.Heap[ObjectParameters[0]];
                         foreach (var nextTrackPoint in Engine.ValidTrackPoints)
                             if (area.Contains(nextTrackPoint))
                             {
@@ -440,7 +418,7 @@ namespace AXToolbox.Scripting
                     //TAFO(<areaName>)
                     {
                         AXPoint lastInside = null;
-                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        var area = (ScriptingArea)Engine.Heap[ObjectParameters[0]];
                         foreach (var nextTrackPoint in Engine.ValidTrackPoints)
                         {
                             if (area.Contains(nextTrackPoint))
@@ -458,7 +436,7 @@ namespace AXToolbox.Scripting
                     // is the same as TALO with reversed track
                     {
                         AXPoint lastInside = null;
-                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        var area = (ScriptingArea)Engine.Heap[ObjectParameters[0]];
                         foreach (var nextTrackPoint in Engine.ValidTrackPoints.Reverse())
                         {
                             if (area.Contains(nextTrackPoint))
@@ -475,7 +453,7 @@ namespace AXToolbox.Scripting
                     //TALO(<areaName>)
                     // is the same as TAFI with reversed track
                     {
-                        var area = (ScriptingArea)Engine.Heap[Parameters[0]];
+                        var area = (ScriptingArea)Engine.Heap[ObjectParameters[0]];
                         foreach (var nextTrackPoint in Engine.ValidTrackPoints.Reverse())
                             if (area.Contains(nextTrackPoint))
                             {
@@ -487,9 +465,9 @@ namespace AXToolbox.Scripting
             }
 
             if (Point == null)
-                report.Notes.Add(Name + ": could not resolve!");
+                report.Notes.Add(ObjectName + ": could not resolve!");
             else
-                report.Notes.Add(Name + ": resolved to " + Point.ToString());
+                report.Notes.Add(ObjectName + ": resolved to " + Point.ToString());
         }
 
         public override MapOverlay GetOverlay()
@@ -506,21 +484,21 @@ namespace AXToolbox.Scripting
                     case "WAYPOINT":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new WaypointOverlay(position, Name) { Color = color };
+                            overlay = new WaypointOverlay(position, ObjectName) { Color = color };
                         }
                         break;
 
                     case "TARGET":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new TargetOverlay(position, radius, Name) { Color = color };
+                            overlay = new TargetOverlay(position, radius, ObjectName) { Color = color };
                         }
                         break;
 
                     case "MARKER":
                         {
                             var position = new Point(Point.Easting, Point.Northing);
-                            overlay = new MarkerOverlay(position, Name) { Color = color };
+                            overlay = new MarkerOverlay(position, ObjectName) { Color = color };
                         } break;
 
                     case "CROSSHAIRS":
