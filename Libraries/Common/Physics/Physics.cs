@@ -4,6 +4,9 @@ namespace AXToolbox.Common
 {
     public static class Physics
     {
+        public const double RAD2DEG = 180 / Math.PI;
+        public const double DEG2RAD = Math.PI / 180;
+
         public static TimeSpan TimeDiff(AXPoint point1, AXPoint point2)
         {
             return point2.Time - point1.Time;
@@ -54,28 +57,21 @@ namespace AXToolbox.Common
         /// <returns>Direction in degrees</returns>
         public static double Direction2D(AXPoint point1, AXPoint point2)
         {
-            if (Distance2D(point1, point2) == 0)
-                throw new ArgumentException("DuplicatedPoint: " + point1.ToString() + "/" + point2.ToString());
+            var angle = Math.PI / 2 - Math.Atan2(point2.Northing - point1.Northing, point2.Easting - point1.Easting);
 
-            var angle = Math.Acos((point1.Easting - point2.Northing) / Distance2D(point1, point2));
-            if (point2.Northing < point1.Northing)
-                angle = -angle;
-
-            return (360 + 180 * (Math.PI / 2 + angle) / Math.PI) % 360;
+            return (360 + RAD2DEG * angle) % 360;
         }
-        /// <summary>
-        /// Computes the angle between two given directions.
+        /// <summary>Returns a direction between 0 and 180 degrees. 
+        /// Would be the equivalent of Math.Abs() for angles
         /// </summary>
-        /// <param Name="direction1">Direction 1</param>
-        /// <param Name="direction2">Direction 2</param>
-        /// <returns>Angle=Direction1-Direction2</returns>
-        public static double DirectionSubstract(double direction1, double direction2)
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        public static double NormalizeDirection(double direction)
         {
-            var angle = Math.Abs(direction1 - direction2);
-            if (angle > 180)
-                angle = 360 - angle;
+            if (direction > 180)
+                direction = 360 - direction;
 
-            return angle;
+            return direction;
         }
 
         /// <summary>Area of a triangle given the three vertices 
