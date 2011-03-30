@@ -40,7 +40,7 @@ namespace AXToolbox.Scripting
             {
                 case "CIRCLE":
                     center = ResolveOrDie<ScriptingPoint>(0); // will be null if not static
-                    radius = ParseDoubleOrDie(1, ParseLength);
+                    radius = ParseOrDie<double>(1, ParseLength);
                     break;
 
                 case "POLY":

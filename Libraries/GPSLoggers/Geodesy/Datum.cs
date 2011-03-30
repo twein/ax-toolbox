@@ -37,7 +37,14 @@ namespace AXToolbox.GPSLoggers
 
         public static Datum GetInstance(string name)
         {
-            return datums[name.ToUpper()];
+            try
+            {
+                return datums[name.ToUpper()];
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new ArgumentException("Unsupported datum '" + name + "'");
+            }
         }
 
         private Datum(string name, double a, double e2, double dx, double dy, double dz, double ds, double rx, double ry, double rz)

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using AXToolbox.Common;
-using AXToolbox.MapViewer;
+using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Scripting
 {
@@ -29,76 +26,52 @@ namespace AXToolbox.Scripting
             {
                 case "DATETIME":
                     {
-                        if (ObjectParameters.Length != 2)
-                            throw new ArgumentException(StandardErrorMessage);
+                        Engine.Settings.Date = ParseOrDie<DateTime>(0, ParseLocalDatetime);
 
-                        var time = ObjectParameters[1].ToUpper();
+                        var time = ParseOrDie<string>(1, s => s);
                         if (time != "AM" && time != "PM")
                             throw new ArgumentException(StandardErrorMessage);
 
-                        Engine.Settings.Date = ParseLocalDatetime(ObjectParameters[0]);
                         if (time == "PM")
                             Engine.Settings.Date += new TimeSpan(12, 0, 0);
                     }
                     break;
 
                 case "DATUM":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException(StandardErrorMessage);
-
-                    try
-                    {
-                        Engine.Settings.DatumName = ObjectParameters[0];
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        throw new ArgumentException("Unsupported datum '" + ObjectParameters[0] + "'");
-                    }
+                    Engine.Settings.DatumName = ParseOrDie<string>(0, s => s);
+                    Datum.GetInstance(Engine.Settings.DatumName);//check datum validity
                     break;
 
                 case "UTMZONE":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException(StandardErrorMessage);
-
-                    Engine.Settings.UtmZone = ObjectParameters[0];
+                    Engine.Settings.UtmZone = ParseOrDie<string>(0, s => s);
                     break;
 
                 case "QNH":
-                    Engine.Settings.Qnh = ParseDoubleOrDie(0, ParseDouble);
+                    Engine.Settings.Qnh = ParseOrDie<double>(0, ParseDouble);
                     break;
 
                 case "DRATHRESHOLD":
-                    Engine.Settings.RadThreshold = ParseDoubleOrDie(0, ParseLength);
+                    Engine.Settings.RadThreshold = ParseOrDie<double>(0, ParseLength);
                     break;
 
                 case "DEFAULTALTITUDE":
-                    Engine.Settings.DefaultAltitude = ParseDoubleOrDie(0, ParseLength);
+                    Engine.Settings.DefaultAltitude = ParseOrDie<double>(0, ParseLength);
                     break;
 
                 case "MAXDISTTOCROSSING":
-                    Engine.Settings.MaxDistToCrossing = ParseDoubleOrDie(0, ParseLength);
+                    Engine.Settings.MaxDistToCrossing = ParseOrDie<double>(0, ParseLength);
                     break;
 
                 case "SMOOTHNESS":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException(StandardErrorMessage);
-
-                    try
-                    {
-                        Engine.Settings.Smoothness = int.Parse(ObjectParameters[0]);
-                    }
-                    catch (Exception)
-                    {
-                        throw new ArgumentException(StandardErrorMessage + " '" + ObjectParameters[0] + "'");
-                    }
+                    Engine.Settings.Smoothness = ParseOrDie<int>(0, int.Parse);
                     break;
 
                 case "MINSPEED":
-                    Engine.Settings.MinSpeed = ParseDoubleOrDie(0, ParseDouble);
+                    Engine.Settings.MinSpeed = ParseOrDie<double>(0, ParseDouble);
                     break;
 
                 case "MAXACCELERATION":
-                    Engine.Settings.MaxAcceleration = ParseDoubleOrDie(0, ParseLength);
+                    Engine.Settings.MaxAcceleration = ParseOrDie<double>(0, ParseLength);
                     break;
             }
         }

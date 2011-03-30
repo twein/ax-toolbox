@@ -161,27 +161,7 @@ namespace AXToolbox.Scripting
 
         //helpers
 
-        /// <summary>Generic parse or die function for double values
-        /// </summary>
-        /// <param name="atParameterIndex">position of the double in the parameter array</param>
-        /// /// <param name="parseFunction">double returning function used to parse the string</param>
-        /// <returns></returns>
-        protected double ParseDoubleOrDie(int atParameterIndex, Func<string, double> parseFunction)
-        {
-            if (atParameterIndex >= ObjectParameters.Length)
-                throw new ArgumentException(StandardErrorMessage);
-
-            try
-            {
-                return parseFunction(ObjectParameters[atParameterIndex]);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException(StandardErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
-            }
-        }
-
-        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// <summary>Looks for a definition of a scripting object T at a given parameter array index
         /// No checkings
         /// </summary>
         /// <param name="atParameterIndex"></param>
@@ -190,21 +170,7 @@ namespace AXToolbox.Scripting
             var key = ObjectParameters[atParameterIndex];
             return ((T)Engine.Heap[key]);
         }
-        /// <summary>Looks for n point definitions starting at a given parameter array index
-        /// No checkings
-        /// </summary>
-        /// <param name="startingAtParameterIndex"></param>
-        /// <param name="n"></param>
-        protected T[] ResolveN<T>(int startingAtParameterIndex, int n) where T : ScriptingObject
-        {
-            var list = new T[n];
-
-            for (int i = 0; i < n; i++)
-                list[i] = Resolve<T>(startingAtParameterIndex + i);
-
-            return list;
-        }
-        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// <summary>Looks for a definition of scripting object T at a given parameter array index
         /// With lots of checkings
         /// </summary>
         /// <param name="atParameterIndex"></param>
@@ -222,7 +188,22 @@ namespace AXToolbox.Scripting
 
             return ((T)Engine.Heap[key]);
         }
-        /// <summary>Looks for n point definitions starting at a given parameter array index
+
+        /// <summary>Looks for n scripting point definitions starting at a given parameter array index
+        /// No checkings
+        /// </summary>
+        /// <param name="startingAtParameterIndex"></param>
+        /// <param name="n"></param>
+        protected T[] ResolveN<T>(int startingAtParameterIndex, int n) where T : ScriptingObject
+        {
+            var list = new T[n];
+
+            for (int i = 0; i < n; i++)
+                list[i] = Resolve<T>(startingAtParameterIndex + i);
+
+            return list;
+        }
+        /// <summary>Looks for n scripting point definitions starting at a given parameter array index
         /// Lots of checkings
         /// </summary>
         /// <param name="startingAtParameterIndex"></param>
@@ -237,9 +218,41 @@ namespace AXToolbox.Scripting
             return list;
         }
 
+        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// No checkings
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="atParameterIndex">position of the value in the parameter array</param>
+        /// <param name="parseFunction">function used to parse the string</param>
+        /// <returns></returns>
+        protected T Parse<T>(int atParameterIndex, Func<string, T> parseFunction)
+        {
+            return parseFunction(ObjectParameters[atParameterIndex]);
+        }
+        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// Lots of checkings
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="atParameterIndex">position of the value in the parameter array</param>
+        /// <param name="parseFunction">function used to parse the string</param>
+        /// <returns></returns>
+        protected T ParseOrDie<T>(int atParameterIndex, Func<string, T> parseFunction)
+        {
+            if (atParameterIndex >= ObjectParameters.Length)
+                throw new ArgumentException(StandardErrorMessage);
+
+            try
+            {
+                return parseFunction(ObjectParameters[atParameterIndex]);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException(StandardErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
+            }
+        }
 
 
-
+        //parser functions for ParseOrDie<T>
         protected static double ParseDouble(string str)
         {
             return double.Parse(str, NumberFormatInfo.InvariantInfo);
