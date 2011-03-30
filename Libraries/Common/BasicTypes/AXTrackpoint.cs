@@ -7,11 +7,13 @@ namespace AXToolbox.Common
     public class AXTrackpoint : AXPoint
     {
         public bool IsValid { get; set; }
+        public bool StartSubtrack { get; set; }
 
         public AXTrackpoint(DateTime time, double easting, double northing, double altitude) :
             base(time, easting, northing, altitude)
         {
             IsValid = true;
+            StartSubtrack = false;
         }
         public AXTrackpoint(AXPoint point)
             : this(point.Time, point.Easting, point.Northing, point.Altitude) { }

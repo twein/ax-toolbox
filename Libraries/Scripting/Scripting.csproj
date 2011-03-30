@@ -68,6 +68,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Objects\ScriptingResult.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="ScriptingEngine.cs" />
     <Compile Include="Objects\ScriptingFilter.cs" />
     <Compile Include="ScriptingObject.cs" />

@@ -10,14 +10,11 @@ namespace AXToolbox.Scripting
 {
     class ScriptingResult : ScriptingObject
     {
-        public enum ResultType { No_Flight, No_Result, Result }
-
+        protected string unit;
         protected ScriptingPoint A, B, C;
         protected double setDirection = 0;
 
-        public ResultType Type { get; protected set; }
-        public double Value { get; protected set; }
-        public string Unit { get; protected set; }
+        public Result Result;
 
         private static readonly List<string> types = new List<string>
         {
@@ -55,7 +52,7 @@ namespace AXToolbox.Scripting
                     //DACC(<pointNameA>, <pointNameB>)
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    Unit = "m";
+                    unit = "m";
                     break;
 
                 case "TSEC":
@@ -63,7 +60,7 @@ namespace AXToolbox.Scripting
                     //TSEC(<pointNameA>, <pointNameB>)
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    Unit = "s";
+                    unit = "s";
                     break;
 
                 case "TMIN":
@@ -71,7 +68,7 @@ namespace AXToolbox.Scripting
                     //TMIN(<pointNameA>, <pointNameB>)
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    Unit = "min";
+                    unit = "min";
                     break;
 
                 case "ATRI":
@@ -80,7 +77,7 @@ namespace AXToolbox.Scripting
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     C = ResolveOrDie<ScriptingPoint>(2);
-                    Unit = "km^2";
+                    unit = "km^2";
                     break;
 
                 case "ANG3P":
@@ -89,7 +86,7 @@ namespace AXToolbox.Scripting
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     C = ResolveOrDie<ScriptingPoint>(2);
-                    Unit = "°";
+                    unit = "°";
                     break;
 
                 case "ANGN":
@@ -97,7 +94,7 @@ namespace AXToolbox.Scripting
                     //ANGN(<pointNameA>, <pointNameB>)
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    Unit = "°";
+                    unit = "°";
                     break;
 
                 case "ANGSD":
@@ -106,7 +103,7 @@ namespace AXToolbox.Scripting
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     setDirection = ParseDoubleOrDie(2, ParseDouble);
-                    Unit = "°";
+                    unit = "°";
                     break;
             }
         }
@@ -130,8 +127,7 @@ namespace AXToolbox.Scripting
         {
             base.Reset();
 
-            Type = ResultType.No_Result;
-            Value = double.NaN;
+            Result = new Result(unit);
         }
         public override void Process(FlightReport report)
         {
@@ -151,86 +147,91 @@ namespace AXToolbox.Scripting
                     case "D2D":
                         //D2D: distance in 2D
                         //D2D(<pointNameA>, <pointNameB>)
-                        Type = ResultType.Result;
-                        Value = Physics.Distance2D(A.Point, B.Point);
+                        Result.Value = Physics.Distance2D(A.Point, B.Point);
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "D3D":
                         //D3D: distance in 3D
                         //D3D(<pointNameA>, <pointNameB>)
-                        Type = ResultType.Result;
-                        Value = Physics.Distance3D(A.Point, B.Point);
+                        Result.Value = Physics.Distance3D(A.Point, B.Point);
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
                         //DRAD(<pointNameA>, <pointNameB>)
-                        Type = ResultType.Result;
-                        Value = Physics.DistanceRad(A.Point, B.Point, Engine.Settings.RadThreshold);
+                        Result.Value = Physics.DistanceRad(A.Point, B.Point, Engine.Settings.RadThreshold);
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "DACC":
                         //DACC: accumulated distance
                         //DACC(<pointNameA>, <pointNameB>)
+                        //TODO: think about how to save used points. Use clone() to avoid possible resets in the startsubtrack flag
+                        double distance = 0;
+                        AXPoint last = null;
+                        foreach (var p in Engine.ValidTrackPoints)
+                        {
+                            if (!p.StartSubtrack && last != null)
+                                distance += Physics.Distance2D(p, last);
+                            last = p;
+                        }
+                        Result.Value = distance;
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "TSEC":
                         //TSEC: time in seconds
                         //TSEC(<pointNameA>, <pointNameB>)
-                        Type = ResultType.Result;
-                        Value = (B.Point.Time - A.Point.Time).TotalSeconds;
+                        Result.Value = (B.Point.Time - A.Point.Time).TotalSeconds;
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "TMIN":
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
-                        Type = ResultType.Result;
-                        Value = (B.Point.Time - A.Point.Time).TotalMinutes;
+                        Result.Value = (B.Point.Time - A.Point.Time).TotalMinutes;
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "ATRI":
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                        {
                             report.Notes.Add(ObjectName + ": reference point is null");
-                        }
                         else
-                        {
-                            Type = ResultType.Result;
-                            Value = Physics.Area(A.Point, B.Point, C.Point);
-                        }
+                            Result.Value = Physics.Area(A.Point, B.Point, C.Point);
+                        Result.LastUsedPoint = C.Point;
                         break;
 
                     case "ANG3P":
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                        {
                             report.Notes.Add(ObjectName + ": reference point is null");
-                        }
                         else
                         {
                             var nab = Physics.Direction2D(A.Point, B.Point); //north-A-B
                             var nbc = Physics.Direction2D(B.Point, C.Point); //north-B-C
 
-                            Type = ResultType.Result;
-                            Value = Physics.NormalizeDirection(nab - nbc); //=180-ABC
+                            Result.Value = Physics.NormalizeDirection(nab - nbc); //=180-ABC
+                            Result.LastUsedPoint = C.Point;
                         }
                         break;
 
                     case "ANGN":
                         //ANGN: angle to the north
                         //ANGN(<pointNameA>, <pointNameB>)
-                        Type = ResultType.Result;
-                        Value = Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point));
+                        Result.Value = Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point));
+                        Result.LastUsedPoint = B.Point;
                         break;
 
                     case "ANGSD":
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
-                        Type = ResultType.Result;
-                        Value = Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point) - setDirection);
+                        Result.Value = Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point) - setDirection);
+                        Result.LastUsedPoint = B.Point;
                         break;
                 }
             }
@@ -239,7 +240,7 @@ namespace AXToolbox.Scripting
         public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE" && Type == ResultType.Result)
+            if (DisplayMode != "NONE" && Result.Type == ResultType.Result)
             {
                 switch (ObjectType)
                 {
@@ -261,13 +262,15 @@ namespace AXToolbox.Scripting
                     case "TMIN":
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
-                        overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), string.Format("{0} = {1:0}{2}", ObjectType, Value, Unit));
+                        overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
+                            string.Format("{0} = {1}", ObjectType, Result));
                         break;
 
                     case "ATRI":
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
-                        overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() }, string.Format("{0} = {1:0}{2}", ObjectType, Value, Unit));
+                        overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() },
+                            string.Format("{0} = {1}", ObjectType, Result));
                         break;
 
                     case "ANG3P":
@@ -279,7 +282,8 @@ namespace AXToolbox.Scripting
                     case "ANGSD":
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
-                        overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(), string.Format("{0} = {1:0}{2}", ObjectType, Value, Unit));
+                        overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(),
+                            string.Format("{0} = {1}", ObjectType, Result));
                         break;
                 }
             }
