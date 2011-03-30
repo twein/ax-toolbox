@@ -31,3 +31,9 @@ Pilot declared goals
 	Incorrect declaration number
 	Incorrect allowed goal number
 	Road crossing distance
+
+
+
+How to set different tasks:
+
+3DS: apply a filter for each area. the result is a DACC

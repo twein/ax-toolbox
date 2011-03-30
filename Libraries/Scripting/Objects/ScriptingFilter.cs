@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using AXToolbox.Common;
 
 namespace AXToolbox.Scripting
 {
@@ -68,47 +67,72 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "NONE":
-                    Engine.ValidTrackPoints = report.FlightTrack.ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(report.FlightTrack, p => true); //erases subtrack flags
                     break;
 
                 case "INSIDE":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => area.Contains(p)).ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => area.Contains(p));
                     break;
 
                 case "OUTSIDE":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => !area.Contains(p)).ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => !area.Contains(p));
                     break;
 
                 case "BEFORETIME":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= time).ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time <= time);
                     break;
 
                 case "AFTERTIME":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= time).ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time >= time);
                     break;
 
                 case "BEFOREPOINT":
                     if (point.Point == null)
                         report.Notes.Add(ObjectName + ": reference point is null");
                     else
-                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time <= point.Point.Time).ToArray();
+                        Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time <= point.Point.Time);
                     break;
 
                 case "AFTERPOINT":
                     if (point.Point == null)
                         report.Notes.Add(ObjectName + ": reference point is null");
                     else
-                        Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Time >= point.Point.Time).ToArray();
+                        Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time >= point.Point.Time);
                     break;
 
                 case "ABOVE":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude >= altitude).ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Altitude >= altitude);
                     break;
 
                 case "BELOW":
-                    Engine.ValidTrackPoints = Engine.ValidTrackPoints.Where(p => p.Altitude <= altitude).ToArray();
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Altitude <= altitude);
                     break;
             }
+        }
+
+        /// <summary>Return a filtered array of trackpoints with subtrack control
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="predicate">Membership function. Points with false results will be filtered out</param>
+        /// <returns></returns>
+        protected AXTrackpoint[] ApplyFilter(IEnumerable<AXTrackpoint> list, Func<AXTrackpoint, bool> predicate)
+        {
+            var newList = new List<AXTrackpoint>();
+
+            var wasValid = false;
+            foreach (var p in list)
+            {
+                if (predicate(p))
+                {
+                    p.StartSubtrack = !wasValid;
+                    newList.Add(p);
+                    wasValid = true;
+                }
+                else
+                    wasValid = false;
+            }
+
+            return newList.ToArray();
         }
     }
 }
