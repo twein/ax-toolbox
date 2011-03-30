@@ -102,7 +102,7 @@ namespace AXToolbox.Scripting
                     //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    setDirection = ParseDoubleOrDie(2, ParseDouble);
+                    setDirection = ParseOrDie<double>(2, ParseDouble);
                     unit = "°";
                     break;
             }

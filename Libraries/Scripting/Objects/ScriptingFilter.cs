@@ -53,7 +53,7 @@ namespace AXToolbox.Scripting
 
                 case "ABOVE":
                 case "BELOW":
-                    altitude = ParseDoubleOrDie(0, ParseLength);
+                    altitude = ParseOrDie<double>(0, ParseLength);
                     break;
             }
         }
