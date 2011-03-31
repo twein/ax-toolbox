@@ -39,14 +39,15 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "CIRCLE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // will be null if not static
                     radius = ParseOrDie<double>(1, ParseLength);
                     break;
 
                 case "POLY":
-                    if (ObjectParameters.Length < 1)
-                        throw new ArgumentException("Syntax error in poly definition");
-                    var trackLog = LoggerFile.Load(ObjectParameters[0]);
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    var fileName = ParseOrDie<string>(0, s => s);
+                    var trackLog = LoggerFile.Load(fileName);
                     outline = Engine.Settings.GetTrack(trackLog);
                     break;
             }

@@ -21,8 +21,8 @@ namespace AXToolbox.Scripting
         {
             if (!types.Contains(ObjectType))
                 throw new ArgumentException("Unknown task type '" + ObjectType + "'");
-            if (ObjectParameters.Length != 1 || ObjectParameters[0] != "")
-                throw new ArgumentException("Syntax error in task definition");
+
+            AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
         }
 
         public override void CheckDisplayModeSyntax()

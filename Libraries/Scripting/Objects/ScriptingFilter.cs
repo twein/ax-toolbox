@@ -29,30 +29,30 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "NONE":
-                    if (ObjectParameters.Length != 1 || ObjectParameters[0] != "")
-                        throw new ArgumentException("Syntax error");
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
                     break;
 
                 case "INSIDE":
                 case "OUTSIDE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     area = ResolveOrDie<ScriptingArea>(0);
                     break;
 
                 case "BEFORETIME":
                 case "AFTERTIME":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException("Syntax error in time definition");
-                    else
-                        time = Engine.Settings.Date + TimeSpan.Parse(ObjectParameters[0]); //TODO: check local-GMT conversion
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    time = Engine.Settings.Date + ParseOrDie<TimeSpan>(0, ParseTimeSpan); //TODO: check local-GMT conversion
                     break;
 
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     point = ResolveOrDie<ScriptingPoint>(0);
                     break;
 
                 case "ABOVE":
                 case "BELOW":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     altitude = ParseOrDie<double>(0, ParseLength);
                     break;
             }

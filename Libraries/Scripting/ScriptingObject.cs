@@ -42,9 +42,13 @@ namespace AXToolbox.Scripting
 
         protected Brush color = Brushes.Blue;
 
-        protected string StandardErrorMessage
+        protected string SyntaxErrorMessage
         {
             get { return "Syntax error in " + ObjectName + " definition"; }
+        }
+        protected string IncorrectNumberOfArgumentsErrorMessage
+        {
+            get { return "Incorrect number of arguments in " + ObjectName + " definition"; }
         }
 
         public string ToShortString()
@@ -159,7 +163,18 @@ namespace AXToolbox.Scripting
             Trace.WriteLine("Processing " + ObjectName, ObjectClass);
         }
 
-        //helpers
+
+        //error checking and parsing
+
+        /// <summary>Die if the condition is false
+        /// </summary>
+        /// <param name="ok"></param>
+        //TODO: improve this function
+        protected void AssertNumberOfParametersOrDie(bool ok)
+        {
+            if (!ok)
+                throw new ArgumentException(IncorrectNumberOfArgumentsErrorMessage);
+        }
 
         /// <summary>Looks for a definition of a scripting object T at a given parameter array index
         /// No checkings
@@ -177,7 +192,7 @@ namespace AXToolbox.Scripting
         protected T ResolveOrDie<T>(int atParameterIndex) where T : ScriptingObject
         {
             if (atParameterIndex >= ObjectParameters.Length)
-                throw new ArgumentException(StandardErrorMessage);
+                throw new ArgumentException(IncorrectNumberOfArgumentsErrorMessage);
 
             var key = ObjectParameters[atParameterIndex];
             if (!Engine.Heap.ContainsKey(key))
@@ -239,7 +254,7 @@ namespace AXToolbox.Scripting
         protected T ParseOrDie<T>(int atParameterIndex, Func<string, T> parseFunction)
         {
             if (atParameterIndex >= ObjectParameters.Length)
-                throw new ArgumentException(StandardErrorMessage);
+                throw new ArgumentException(SyntaxErrorMessage);
 
             try
             {
@@ -247,7 +262,7 @@ namespace AXToolbox.Scripting
             }
             catch (Exception)
             {
-                throw new ArgumentException(StandardErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
+                throw new ArgumentException(SyntaxErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
             }
         }
 

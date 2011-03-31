@@ -47,37 +47,33 @@ namespace AXToolbox.Scripting
             {
                 case "SLL": //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
-                    if (ObjectParameters.Length != 3)
-                        throw new ArgumentException("Syntax error in point definition");
-                    else
                     {
                         isStatic = true;
-                        var lat = ParseDouble(ObjectParameters[0]);
-                        var lng = ParseDouble(ObjectParameters[1]);
-                        var alt = ParseLength(ObjectParameters[2]);
+
+                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        var lat = ParseOrDie<double>(0, ParseDouble);
+                        var lng = ParseOrDie<double>(1, ParseDouble);
+                        var alt = ParseOrDie<double>(2, ParseLength);
                         Point = Engine.Settings.FromLatLonToAXPoint(lat, lng, alt);
                     }
                     break;
 
                 case "SUTM": //UTM
                     //SUTM(<easting>, <northing>, <alt>). The datum and zone are defined in settings
-                    if (ObjectParameters.Length != 3)
-                        throw new ArgumentException("Syntax error in point definition");
-                    else
                     {
                         isStatic = true;
-                        var easting = ParseDouble(ObjectParameters[0]);
-                        var northing = ParseDouble(ObjectParameters[1]);
-                        var alt = ParseLength(ObjectParameters[2]);
+
+                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        var easting = ParseOrDie<double>(0, ParseDouble);
+                        var northing = ParseOrDie<double>(1, ParseDouble);
+                        var alt = ParseOrDie<double>(2, ParseLength);
                         Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
                     }
                     break;
 
                 case "LNP": //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
-                    if (ObjectParameters.Length < 2)
-                        throw new ArgumentException("Syntax error in point list definition");
-
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
                     ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length);
                     break;
 
@@ -87,64 +83,53 @@ namespace AXToolbox.Scripting
                 case "LFNN": //LFNN: first not null from list
                 case "LLNN": //last not null
                     //XXXX(<listPoint1>, <listPoint2>, …)
-                    if (ObjectParameters.Length < 1)
-                        throw new ArgumentException("Syntax error in point list definition");
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 1);
                     ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length);
                     break;
 
                 case "MVMD": //MVMD: virtual marker drop
                     //MVMD(<number>)
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException("Syntax error in marker drop definition");
-                    else
-                        number = int.Parse(ObjectParameters[0]);
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    number = ParseOrDie<int>(0, int.Parse);
                     break;
 
                 case "MPDG": //pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
-                    if (ObjectParameters.Length != 3)
-                        throw new ArgumentException("Syntax error in pilot declared goal definition");
-
-                    number = int.Parse(ObjectParameters[0]);
-                    minTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[1]);
-                    maxTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[2]);
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                    number = ParseOrDie<int>(0, int.Parse);
+                    minTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, ParseTimeSpan);
+                    maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
                     break;
 
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
                     //XXXX()
                     //TODO: check if they are really needed or should be automatic
-                    if (ObjectParameters.Length != 1 || ObjectParameters[0] != "")
-                        throw new ArgumentException("Syntax error in launch/landing definition");
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
                     break;
 
                 case "TNP": //nearest to point
                     //TNP(<pointName>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     ResolveOrDie<ScriptingPoint>(0);
                     break;
 
                 case "TDT": //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
-                    if (ObjectParameters.Length < 2 || ObjectParameters.Length > 3)
-                        throw new ArgumentException("Syntax error in point definition");
-
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     ResolveOrDie<ScriptingPoint>(0);
-
-                    timeDelay = ParseTimeSpan(ObjectParameters[1]);
+                    timeDelay = ParseOrDie<TimeSpan>(1, ParseTimeSpan);
                     if (ObjectParameters.Length == 3)
-                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[2]);
+                        maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
                     break;
 
                 case "TDD":  //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
-                    if (ObjectParameters.Length < 2 || ObjectParameters.Length > 3)
-                        throw new ArgumentException("Syntax error in point definition");
-
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     ResolveOrDie<ScriptingPoint>(0);
-
-                    distanceDelay = ParseLength(ObjectParameters[1]);
+                    distanceDelay = ParseOrDie<double>(1, ParseLength);
                     if (ObjectParameters.Length == 3)
-                        maxTime = Engine.Settings.Date.Date + ParseTimeSpan(ObjectParameters[2]);
+                        maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
                     break;
 
                 case "TAFI": //area first in
@@ -152,6 +137,7 @@ namespace AXToolbox.Scripting
                 case "TALI": //area last in
                 case "TALO": //area last out
                     //XXXX(<areaName>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     ResolveOrDie<ScriptingArea>(0);
                     break;
             }
