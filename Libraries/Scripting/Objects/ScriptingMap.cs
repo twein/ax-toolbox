@@ -34,8 +34,7 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "BITMAP":
-                    if (ObjectParameters.Length != 1)
-                        throw new ArgumentException("Syntax error in bitmap definition");
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
 
                     //load the georeferenced image to retrieve top-left and bottom-right corners
                     var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
@@ -45,6 +44,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "BLANK":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     topLeft = ResolveOrDie<ScriptingPoint>(0).Point;
                     bottomRight = ResolveOrDie<ScriptingPoint>(1).Point;
 

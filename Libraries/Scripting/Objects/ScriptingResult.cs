@@ -50,6 +50,7 @@ namespace AXToolbox.Scripting
                 case "DACC":
                     //DACC: accumulated distance
                     //DACC(<pointNameA>, <pointNameB>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "m";
@@ -58,6 +59,7 @@ namespace AXToolbox.Scripting
                 case "TSEC":
                     //TSEC: time in seconds
                     //TSEC(<pointNameA>, <pointNameB>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "s";
@@ -66,6 +68,7 @@ namespace AXToolbox.Scripting
                 case "TMIN":
                     //TMIN: time in minutes
                     //TMIN(<pointNameA>, <pointNameB>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "min";
@@ -74,6 +77,7 @@ namespace AXToolbox.Scripting
                 case "ATRI":
                     //ATRI: area of triangle
                     //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     C = ResolveOrDie<ScriptingPoint>(2);
@@ -83,6 +87,7 @@ namespace AXToolbox.Scripting
                 case "ANG3P":
                     //ANG3P: angle between 3 points
                     //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     C = ResolveOrDie<ScriptingPoint>(2);
@@ -92,6 +97,7 @@ namespace AXToolbox.Scripting
                 case "ANGN":
                     //ANGN: angle to the north
                     //ANGN(<pointNameA>, <pointNameB>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "°";
@@ -100,6 +106,7 @@ namespace AXToolbox.Scripting
                 case "ANGSD":
                     //ANGSD: angle to a set direction
                     //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     setDirection = ParseOrDie<double>(2, ParseDouble);
