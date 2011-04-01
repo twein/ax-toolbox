@@ -190,9 +190,6 @@ namespace AXToolbox.Scripting
         /// <param name="atParameterIndex"></param>
         protected T ResolveOrDie<T>(int atParameterIndex) where T : ScriptingObject
         {
-            if (atParameterIndex >= ObjectParameters.Length)
-                throw new ArgumentException(IncorrectNumberOfArgumentsErrorMessage);
-
             var key = ObjectParameters[atParameterIndex];
             if (!Engine.Heap.ContainsKey(key))
                 throw new ArgumentException(key + " is undefined");

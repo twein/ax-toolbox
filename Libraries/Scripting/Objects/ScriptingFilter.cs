@@ -6,11 +6,6 @@ namespace AXToolbox.Scripting
 {
     public class ScriptingFilter : ScriptingObject
     {
-        private static readonly List<string> types = new List<string>
-        {
-            "NONE","INSIDE","OUTSIDE","BEFORETIME","AFTERTIME","BEFOREPOINT","AFTERPOINT","ABOVE","BELOW"
-        };
-
         private ScriptingArea area;
         private ScriptingPoint point;
         private DateTime time;
@@ -22,12 +17,12 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(ObjectType))
-                throw new ArgumentException("Unknown filter type '" + ObjectType + "'");
-
             //parse static types
             switch (ObjectType)
             {
+                default:
+                    throw new ArgumentException("Unknown filter type '" + ObjectType + "'");
+                
                 case "NONE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
                     break;

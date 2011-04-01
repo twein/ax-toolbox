@@ -23,15 +23,6 @@ namespace AXToolbox.Scripting
         //display fields
         protected double radius = 0;
 
-        private static readonly List<string> types = new List<string>
-        {
-            "SLL","SUTM","LNP","LFT","LFNN","LLNN","MVMD","MPDG","TLCH","TLND","TMP","TNL","TDT","TDD","TAFI","TAFO","TALI","TALO"
-        };
-        private static readonly List<string> displayModes = new List<string>
-        {
-            "","NONE","WAYPOINT","TARGET","MARKER","CROSSHAIRS"
-        };
-
         internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
@@ -39,12 +30,12 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(ObjectType))
-                throw new ArgumentException("Unknown point type '" + ObjectType + "'");
-
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
             switch (ObjectType)
             {
+                default:
+                    throw new ArgumentException("Unknown point type '" + ObjectType + "'");
+
                 case "SLL": //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
                     {
@@ -144,11 +135,11 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            if (!displayModes.Contains(DisplayMode))
-                throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
-
             switch (DisplayMode)
             {
+                default:
+                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+
                 //TODO: revise all cases (including "")
                 case "NONE":
                     if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")

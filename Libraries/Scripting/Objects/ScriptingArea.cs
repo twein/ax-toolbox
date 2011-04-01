@@ -11,16 +11,6 @@ namespace AXToolbox.Scripting
 {
     public class ScriptingArea : ScriptingObject
     {
-        private static readonly List<string> types = new List<string>
-        {
-            "CIRCLE","POLY"
-        };
-        private static readonly List<string> displayModes = new List<string>
-        {
-            "NONE","DEFAULT"
-        };
-
-
         protected ScriptingPoint center = null;
         protected double radius = 0;
         protected List<AXTrackpoint> outline;
@@ -33,11 +23,11 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(ObjectType))
-                throw new ArgumentException("Unknown area type '" + ObjectType + "'");
-
             switch (ObjectType)
             {
+                default:
+                    throw new ArgumentException("Unknown area type '" + ObjectType + "'");
+
                 case "CIRCLE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // will be null if not static
@@ -54,11 +44,11 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            if (!displayModes.Contains(DisplayMode))
-                throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
-
             switch (DisplayMode)
             {
+                default:
+                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+
                 case "NONE":
                     if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
