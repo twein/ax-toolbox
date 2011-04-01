@@ -157,6 +157,11 @@ namespace AXToolbox.Scripting
             Trace.WriteLine("Running " + report.ToString(), "ENGINE");
             foreach (var obj in Heap.Values)
                 obj.Process(report);
+
+            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
+            {
+                report.Results.Add(t.Result);
+            }
         }
 
         /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>

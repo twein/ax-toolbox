@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using AXToolbox.Common;
-using AXToolbox.MapViewer;
-using System.Text.RegularExpressions;
-using System;
-using System.Windows.Media;
-using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Windows.Media;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {

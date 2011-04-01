@@ -79,6 +79,8 @@ namespace AXToolbox.Scripting
         }
         public ObservableCollection<AXWaypoint> Markers { get; protected set; }
         public ObservableCollection<GoalDeclaration> DeclaredGoals { get; protected set; }
+        public ObservableCollection<Result> Results { get; protected set; }
+
         public ObservableCollection<string> Notes { get; protected set; }
 
         public string ShortDescription { get { return this.ToString(); } }
@@ -218,6 +220,7 @@ namespace AXToolbox.Scripting
             OriginalTrack = new List<AXTrackpoint>();
             Markers = new ObservableCollection<AXWaypoint>();
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
+            Results = new ObservableCollection<Result>();
             Notes = new ObservableCollection<string>();
 
             RemoveInvalidPoints();
