@@ -6,11 +6,6 @@ namespace AXToolbox.Scripting
 {
     public class ScriptingSetting : ScriptingObject
     {
-        private static readonly List<string> names = new List<string>
-        {
-            "DATETIME","DATUM","UTMZONE","QNH","DRATHRESHOLD","DEFAULTALTITUDE","MAXDISTTOCROSSING","SMOOTHNESS","MINSPEED","MAXACCELERATION"
-        };
-
         internal ScriptingSetting(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
@@ -19,11 +14,11 @@ namespace AXToolbox.Scripting
         {
             ObjectName = ObjectName.ToUpper();
 
-            if (!names.Contains(ObjectName))
-                throw new ArgumentException("Unknown setting '" + ObjectName + "'");
-
             switch (ObjectName)
             {
+                default:
+                    throw new ArgumentException("Unknown setting '" + ObjectName + "'");
+                
                 case "DATETIME":
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);

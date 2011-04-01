@@ -9,15 +9,6 @@ namespace AXToolbox.Scripting
 {
     public class ScriptingMap : ScriptingObject
     {
-        private static readonly List<string> types = new List<string>
-        {
-            "BITMAP","BLANK"
-        };
-        private static readonly List<string> displayModes = new List<string>
-        {
-            "", "GRID"
-        };
-
         protected AXPoint topLeft;
         protected AXPoint bottomRight;
         protected double gridWidth = 0;
@@ -28,11 +19,11 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            if (!types.Contains(ObjectType))
-                throw new ArgumentException("Unknown map type '" + ObjectType + "'");
-
             switch (ObjectType)
             {
+                default:
+                    throw new ArgumentException("Unknown map type '" + ObjectType + "'");
+
                 case "BITMAP":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
 
@@ -56,11 +47,11 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            if (!displayModes.Contains(DisplayMode))
-                throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
-
             switch (DisplayMode)
             {
+                default:
+                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+
                 case "GRID":
                     if (DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");

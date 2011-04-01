@@ -16,6 +16,13 @@ namespace AXToolbox.Scripting
         public double Value { get; protected set; }
 
         public List<AXPoint> UsedPoints { get; protected set; }
+        public AXPoint LastUsedPoint
+        {
+            get
+            {
+                return UsedPoints[UsedPoints.Count];
+            }
+        }
 
         //TODO: rethink the result workflow
         internal static Result NewNoFlight(string taskName, string taskType)
