@@ -10,11 +10,12 @@ namespace AXToolbox.Scripting
 {
     class ScriptingResult : ScriptingObject
     {
+        protected ScriptingTask task;
         protected string unit;
         protected ScriptingPoint A, B, C;
         protected double setDirection = 0;
 
-        public Result Result;
+        public Result Result { get; protected set; }
 
         private static readonly List<string> types = new List<string>
         {
@@ -32,6 +33,15 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
+            try
+            {
+                task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
+            }
+            catch
+            {
+                throw new ArgumentException(ObjectName + ": no previous task defined");
+            }
+
             if (!types.Contains(ObjectType))
                 throw new ArgumentException("Unknown result type '" + ObjectType + "'");
 
@@ -133,8 +143,7 @@ namespace AXToolbox.Scripting
         public override void Reset()
         {
             base.Reset();
-
-            Result = new Result(unit);
+            Result = null;
         }
         public override void Process(FlightReport report)
         {
@@ -154,22 +163,25 @@ namespace AXToolbox.Scripting
                     case "D2D":
                         //D2D: distance in 2D
                         //D2D(<pointNameA>, <pointNameB>)
-                        Result.Value = Physics.Distance2D(A.Point, B.Point);
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult(Physics.Distance2D(A.Point, B.Point));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "D3D":
                         //D3D: distance in 3D
                         //D3D(<pointNameA>, <pointNameB>)
-                        Result.Value = Physics.Distance3D(A.Point, B.Point);
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult(Physics.Distance3D(A.Point, B.Point));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
                         //DRAD(<pointNameA>, <pointNameB>)
-                        Result.Value = Physics.DistanceRad(A.Point, B.Point, Engine.Settings.RadThreshold);
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult(Physics.DistanceRad(A.Point, B.Point, Engine.Settings.RadThreshold));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "DACC":
@@ -184,22 +196,23 @@ namespace AXToolbox.Scripting
                                 distance += Physics.Distance2D(p, last);
                             last = p;
                         }
-                        Result.Value = distance;
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult(distance);
+                        Result.UsedPoints.AddRange(Engine.ValidTrackPoints.ToArray());
                         break;
 
                     case "TSEC":
                         //TSEC: time in seconds
                         //TSEC(<pointNameA>, <pointNameB>)
-                        Result.Value = (B.Point.Time - A.Point.Time).TotalSeconds;
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult((B.Point.Time - A.Point.Time).TotalSeconds);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "TMIN":
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
-                        Result.Value = (B.Point.Time - A.Point.Time).TotalMinutes;
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult((B.Point.Time - A.Point.Time).TotalMinutes);
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "ATRI":
@@ -208,8 +221,10 @@ namespace AXToolbox.Scripting
                         if (C.Point == null)
                             report.Notes.Add(ObjectName + ": reference point is null");
                         else
-                            Result.Value = Physics.Area(A.Point, B.Point, C.Point);
-                        Result.LastUsedPoint = C.Point;
+                            Result = task.NewResult(Physics.Area(A.Point, B.Point, C.Point));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
+                        Result.UsedPoints.Add(C.Point);
                         break;
 
                     case "ANG3P":
@@ -222,25 +237,32 @@ namespace AXToolbox.Scripting
                             var nab = Physics.Direction2D(A.Point, B.Point); //north-A-B
                             var nbc = Physics.Direction2D(B.Point, C.Point); //north-B-C
 
-                            Result.Value = Physics.NormalizeDirection(nab - nbc); //=180-ABC
-                            Result.LastUsedPoint = C.Point;
+                            Result = task.NewResult(Physics.NormalizeDirection(nab - nbc)); //=180-ABC
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                            Result.UsedPoints.Add(C.Point);
                         }
                         break;
 
                     case "ANGN":
                         //ANGN: angle to the north
                         //ANGN(<pointNameA>, <pointNameB>)
-                        Result.Value = Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point));
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult(Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point)));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "ANGSD":
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
-                        Result.Value = Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point) - setDirection);
-                        Result.LastUsedPoint = B.Point;
+                        Result = task.NewResult(Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point) - setDirection));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
                 }
+
+                if (Result == null)
+                    Result = task.NewNoResult();
             }
         }
 
