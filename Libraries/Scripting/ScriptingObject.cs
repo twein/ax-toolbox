@@ -150,18 +150,11 @@ namespace AXToolbox.Scripting
             return null;
         }
 
-        /// <summary>Clears the pilot dependent (non-static) values
-        /// </summary>
-        public virtual void Reset()
-        {
-            Trace.WriteLine("Resetting " + ObjectName, ObjectClass);
-        }
         /// <summary>Executes the script
         /// </summary>
         /// <param name="report"></param>
         public virtual void Process()
         {
-            Reset();
             Trace.WriteLine("Processing " + ObjectName, ObjectClass);
         }
 

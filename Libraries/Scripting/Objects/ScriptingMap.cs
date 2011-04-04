@@ -63,10 +63,15 @@ namespace AXToolbox.Scripting
 
         public void InitializeMapViewer(MapViewerControl map)
         {
-            if (ObjectType == "BITMAP")
-                map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
+            if (!map.IsMapLoaded)
+            {
+                if (ObjectType == "BITMAP")
+                    map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
+                else
+                    map.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
+            }
             else
-                map.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
+                map.ClearOverlays();
 
             if (gridWidth > 0)
                 map.AddOverlay(new CoordinateGridOverlay(gridWidth));

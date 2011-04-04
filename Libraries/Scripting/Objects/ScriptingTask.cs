@@ -109,7 +109,7 @@ namespace AXToolbox.Scripting
         }
         public Result NewResult(double value)
         {
-            Trace.WriteLine(string.Format("{0}: {1:0.00}{2}", ObjectName, value, resultUnit));
+            Trace.WriteLine(string.Format("Result of {0}: {1:0.00}{2}", ObjectName, value, resultUnit), ObjectClass);
             return Result = Result.NewResult(ObjectName, ObjectType, value, resultUnit);
         }
     }

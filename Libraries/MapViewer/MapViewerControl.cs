@@ -122,7 +122,7 @@ namespace AXToolbox.MapViewer
                 ComputeMapConstants();
                 IsMapLoaded = true;
 
-                Reset();
+                ResetZoom();
             }
             catch (Exception ex)
             {
@@ -142,7 +142,7 @@ namespace AXToolbox.MapViewer
             ComputeMapConstants();
             IsMapLoaded = true;
 
-            Reset();
+            ResetZoom();
         }
         /// <summary>Save the actual view to a graphics file.
         /// The extension determines the file type. Supported types are: .bmp, .gif, .jpg, .png and .tif
@@ -231,7 +231,7 @@ namespace AXToolbox.MapViewer
         //pan and zoom
 
         ///<summary>Reset to default zoom level and centered content</summary>
-        public void Reset()
+        public void ResetZoom()
         {
             ZoomTo(MinZoom, geoImage.Center);
         }
@@ -380,7 +380,7 @@ namespace AXToolbox.MapViewer
                 switch (e.Key)
                 {
                     case Key.Escape:
-                        Reset();
+                        ResetZoom();
                         break;
                     case Key.OemPlus:
                     case Key.Add:
