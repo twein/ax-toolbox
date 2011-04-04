@@ -1,7 +1,8 @@
-﻿set DateTime = 2010/10/28,PM
+﻿set DateTime = 2009/09/17,AM
 set Datum=European 1950
 set UTMZone=31T
-set QNH = 1012
+set QNH = 1010
+set minspeed=0.1
 
 map competitionMap = bitmap(demo.png) grid(1000)
 
@@ -11,27 +12,10 @@ map competitionMap = bitmap(demo.png) grid(1000)
 //point bottomright=SUTM(343000,4594000,0m)
 //map competitionMap=BLANK(topleft,bottomright) grid(500)
 
-//task 4
-TASK Task4 = XDD()
-	POINT PWaypoint=SUTM (300000,4603000,180m) waypoint(orange)
-	POINT PMarker=SUTM (300500,4603000,180m) Marker(green)
-	POINT PCrosshairs=SUTM (300000,4603500,180m) crosshairs(red)
-	POINT PTarget=SUTM (300500,4603500,180m) target(100m, yellow)
-
-
-	POINT T4AreaCenter = SUTM (302000,4605000,180m) none()
-	AREA T4Area = circle(T4AreaCenter,1000m) Default(green)
-	AREA T4AnotherArea = poly(demo.trk) Default(orange)
-
-	filter T4scoringPeriod = BEFORETIME(19:00:00)
-	filter T4scoringArea = Inside(T4Area);
-
-	POINT T4A = tafi(T4Area) marker(green)
-	POINT T4B = tafo(T4Area) marker(red)
-
-	//RESULT t4result = D2D(T4A,T4B)
-
-TASK Task5 = PDG()
-TASK Task6 = LRN()
-TASK Task7 = ANG()
-TASK Task8 = JDG()
+//task 1
+TASK Task1 = HWZ()
+	POINT Task1_goal1=SUTM (305510,4598570,249m) waypoint(orange)
+	POINT Task1_goal2=SUTM (306255,4601283,237m) waypoint(orange)
+	POINT Task1_marker=MVMD (1) Marker(orange)
+	Point Task1_Target=LNP(Task1_marker,Task1_goal1,Task1_goal2)
+	result task1_result=drad(task1_marker,task1_target)

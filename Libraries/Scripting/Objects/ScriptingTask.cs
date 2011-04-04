@@ -89,12 +89,12 @@ namespace AXToolbox.Scripting
         public override void CheckDisplayModeSyntax()
         { }
 
-        public override void Process(FlightReport report)
+        public override void Process()
         {
-            base.Process(report);
+            base.Process();
 
             //removes filter if any
-            Engine.ValidTrackPoints = report.FlightTrack.ToArray();
+            Engine.ValidTrackPoints = Engine.Report.FlightTrack.ToArray();
         }
 
         public Result NewNoFlight()

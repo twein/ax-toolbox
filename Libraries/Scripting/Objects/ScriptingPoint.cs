@@ -145,7 +145,7 @@ namespace AXToolbox.Scripting
                     if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
-
+                case "":
                 case "WAYPOINT":
                 case "MARKER":
                 case "CROSSHAIRS":
@@ -175,9 +175,9 @@ namespace AXToolbox.Scripting
             if (!isStatic)
                 Point = null;
         }
-        public override void Process(FlightReport report)
+        public override void Process()
         {
-            base.Process(report);
+            base.Process();
 
             // parse and resolve pilot dependent values
             // the static values are already defined
@@ -286,7 +286,7 @@ namespace AXToolbox.Scripting
                     //MVMD(<number>)
                     try
                     {
-                        var marker = report.Markers.First(m => int.Parse(m.Name) == number);
+                        var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
                         Point = Engine.ValidTrackPoints.First(p => p.Time == marker.Time);
                     }
                     catch (InvalidOperationException) { } //none found
@@ -297,7 +297,7 @@ namespace AXToolbox.Scripting
                     //MPDG(<number>, <minTime>, <maxTime>)
                     try
                     {
-                        var goal = report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
+                        var goal = Engine.Report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
 
                         if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
                         {
@@ -316,15 +316,15 @@ namespace AXToolbox.Scripting
                 case "TLCH":
                     //TLCH: launch
                     //TLCH()
-                    if (report != null)
-                        Point = report.LaunchPoint;
+                    if (Engine.Report != null)
+                        Point = Engine.Report.LaunchPoint;
                     break;
 
                 case "TLND":
                     //TLND: landing
                     //TLND()
-                    if (report != null)
-                        Point = report.LandingPoint;
+                    if (Engine.Report != null)
+                        Point = Engine.Report.LandingPoint;
                     break;
 
                 case "TNP":
@@ -462,9 +462,9 @@ namespace AXToolbox.Scripting
             }
 
             if (Point == null)
-                report.Notes.Add(ObjectName + ": could not be resolved");
+                Engine.Report.Notes.Add(ObjectName + ": could not be resolved");
             else
-                report.Notes.Add(ObjectName + ": resolved to " + Point.ToString());
+                Engine.Report.Notes.Add(ObjectName + ": resolved to " + Point.ToString());
         }
 
         public override MapOverlay GetOverlay()

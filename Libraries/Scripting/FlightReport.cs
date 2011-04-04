@@ -137,6 +137,9 @@ namespace AXToolbox.Scripting
                     DeclaredGoals = logFile.GetGoalDeclarations(),
                     Notes = logFile.Notes
                 };
+
+                report.RemoveInvalidPoints();
+                report.DetectLaunchAndLanding();
             }
             return report;
         }
@@ -222,9 +225,6 @@ namespace AXToolbox.Scripting
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
             Results = new ObservableCollection<Result>();
             Notes = new ObservableCollection<string>();
-
-            RemoveInvalidPoints();
-            DetectLaunchAndLanding();
         }
 
         protected void RemoveInvalidPoints()

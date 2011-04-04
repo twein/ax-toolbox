@@ -25,7 +25,7 @@ namespace AXToolbox.Scripting
 
                         Engine.Settings.Date = ParseOrDie<DateTime>(0, ParseLocalDatetime);
 
-                        var time = ParseOrDie<string>(1, s => s);
+                        var time = ParseOrDie<string>(1, s => s).ToUpper(); ;
                         if (time != "AM" && time != "PM")
                             throw new ArgumentException(SyntaxErrorMessage);
 

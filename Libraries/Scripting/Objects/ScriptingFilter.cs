@@ -55,14 +55,14 @@ namespace AXToolbox.Scripting
         public override void CheckDisplayModeSyntax()
         { }
 
-        public override void Process(FlightReport report)
+        public override void Process()
         {
-            base.Process(report);
+            base.Process();
 
             switch (ObjectType)
             {
                 case "NONE":
-                    Engine.ValidTrackPoints = ApplyFilter(report.FlightTrack, p => true); //erases subtrack flags
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.Report.FlightTrack, p => true); //erases subtrack flags
                     break;
 
                 case "INSIDE":
@@ -83,14 +83,14 @@ namespace AXToolbox.Scripting
 
                 case "BEFOREPOINT":
                     if (point.Point == null)
-                        report.Notes.Add(ObjectName + ": reference point is null");
+                        Engine.Report.Notes.Add(ObjectName + ": reference point is null");
                     else
                         Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time <= point.Point.Time);
                     break;
 
                 case "AFTERPOINT":
                     if (point.Point == null)
-                        report.Notes.Add(ObjectName + ": reference point is null");
+                        Engine.Report.Notes.Add(ObjectName + ": reference point is null");
                     else
                         Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time >= point.Point.Time);
                     break;

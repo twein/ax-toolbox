@@ -136,16 +136,16 @@ namespace AXToolbox.Scripting
             base.Reset();
             Result = null;
         }
-        public override void Process(FlightReport report)
+        public override void Process()
         {
-            base.Process(report);
+            base.Process();
 
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
             if (A.Point == null || B.Point == null)
             {
-                report.Notes.Add(ObjectName + ": reference point is null");
+                Engine.Report.Notes.Add(ObjectName + ": reference point is null");
             }
             else
             {
@@ -209,7 +209,7 @@ namespace AXToolbox.Scripting
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                            report.Notes.Add(ObjectName + ": reference point is null");
+                            Engine.Report.Notes.Add(ObjectName + ": reference point is null");
                         else
                             Result = task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point), 2));
                         Result.UsedPoints.Add(A.Point);
@@ -221,7 +221,7 @@ namespace AXToolbox.Scripting
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                            report.Notes.Add(ObjectName + ": reference point is null");
+                            Engine.Report.Notes.Add(ObjectName + ": reference point is null");
                         else
                         {
                             var nab = Physics.Direction2D(A.Point, B.Point); //north-A-B
@@ -259,7 +259,7 @@ namespace AXToolbox.Scripting
         public override MapOverlay GetOverlay()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE" && Result.Type == ResultType.Result)
+            if (DisplayMode != "NONE" && Result != null && Result.Type == ResultType.Result)
             {
                 switch (ObjectType)
                 {
