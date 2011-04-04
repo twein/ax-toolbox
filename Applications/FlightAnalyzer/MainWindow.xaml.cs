@@ -42,6 +42,7 @@ namespace FlightAnalyzer
                     newEngine.LoadScript(dlg.FileName);
                     Engine = newEngine;
                     RaisePropertyChanged("Engine");
+                    map.Clear();
                     Engine.RefreshMapViewer(map);
                 }
             }

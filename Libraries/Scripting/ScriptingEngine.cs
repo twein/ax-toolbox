@@ -154,10 +154,17 @@ namespace AXToolbox.Scripting
                 var track = new Point[Report.OriginalTrack.Count];
                 for (var i = 0; i < Report.OriginalTrack.Count; i++)
                 {
-                    var p = Report.OriginalTrack[i];
-                    track[i] = new Point(p.Easting, p.Northing);
+                    track[i] = Report.OriginalTrack[i].ToWindowsPoint();
                 }
                 map.AddOverlay(new TrackOverlay(track, 2));
+
+                map.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch"));
+                map.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing"));
+
+                foreach (var m in Report.Markers)
+                {
+                    map.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name));
+                }
             }
         }
         public void LoadFlightReport(string loggerFile)
