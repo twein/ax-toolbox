@@ -112,6 +112,9 @@ namespace AXToolbox.Scripting
                 case "TASK":
                     obj = new ScriptingTask(engine, name, type, parameters, displayMode, displayParameters);
                     break;
+                case "RESULT":
+                    obj = new ScriptingResult(engine, name, type, parameters, displayMode, displayParameters);
+                    break;
                 default:
                     throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
             }
@@ -156,7 +159,7 @@ namespace AXToolbox.Scripting
         /// <summary>Executes the script
         /// </summary>
         /// <param name="report"></param>
-        public virtual void Process(FlightReport report)
+        public virtual void Process()
         {
             Reset();
             Trace.WriteLine("Processing " + ObjectName, ObjectClass);

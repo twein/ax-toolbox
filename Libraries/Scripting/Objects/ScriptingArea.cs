@@ -64,16 +64,16 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public override void Process(FlightReport report)
+        public override void Process()
         {
-            base.Process(report);
+            base.Process();
 
             switch (ObjectType)
             {
                 case "CIRCLE":
                     //radius is static
                     if (center.Point == null)
-                        report.Notes.Add(ObjectName + ": center point is null");
+                        Engine.Report.Notes.Add(ObjectName + ": center point is null");
                     break;
                 case "POLY":
                     //do nothing

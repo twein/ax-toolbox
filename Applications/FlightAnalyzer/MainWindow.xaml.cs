@@ -61,8 +61,10 @@ namespace FlightAnalyzer
                 dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog(this) == true)
                 {
-                    Report = Engine.GetFlightReport(dlg.FileName);
+                    Engine.LoadFlightReport(dlg.FileName);
+                    Report = Engine.Report;
                     RaisePropertyChanged("Report");
+                    Engine.RefreshMapViewer(map);
                 }
             }
             catch (ArgumentException ex)
@@ -73,7 +75,8 @@ namespace FlightAnalyzer
 
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
-
+            Engine.Process();
+            Engine.RefreshMapViewer(map);
         }
 
 

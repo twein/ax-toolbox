@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using AXToolbox.Common;
 using AXToolbox.GPSLoggers;
 using AXToolbox.MapViewer;
+using System.Windows;
 
 namespace AXToolbox.Scripting
 {
@@ -38,6 +39,9 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
+        internal Dictionary<string, ScriptingObject> Heap { get; private set; }
+
+        public FlightReport Report { get; private set; }
         private AXTrackpoint[] validTrackPoints;
         public AXTrackpoint[] ValidTrackPoints
         {
@@ -51,7 +55,6 @@ namespace AXToolbox.Scripting
             }
         }
 
-        internal Dictionary<string, ScriptingObject> Heap { get; private set; }
 
         public ScriptingEngine()
         {
@@ -98,9 +101,9 @@ namespace AXToolbox.Scripting
                         var groups = matches[0].Groups;
 
                         var objectClass = groups["object"].Value.ToUpper();
-                        var name = groups["name"].Value;
+                        var name = groups["name"].Value.ToLower();
                         var type = groups["type"].Value.ToUpper(); ;
-                        var parms = SplitParameters(groups["parms"].Value);
+                        var parms = SplitParameters(groups["parms"].Value.ToLower());
                         var displayMode = groups["display"].Value.ToUpper(); ;
                         var displayParms = SplitParameters(groups["displayparms"].Value);
 
@@ -145,22 +148,32 @@ namespace AXToolbox.Scripting
                 if (ov != null)
                     map.AddOverlay(ov);
             }
+
+            if (Report != null)
+            {
+                var track = new Point[Report.OriginalTrack.Count];
+                for (var i = 0; i < Report.OriginalTrack.Count; i++)
+                {
+                    var p = Report.OriginalTrack[i];
+                    track[i] = new Point(p.Easting, p.Northing);
+                }
+                map.AddOverlay(new TrackOverlay(track, 2));
+            }
         }
-        public FlightReport GetFlightReport(string loggerFile)
+        public void LoadFlightReport(string loggerFile)
         {
             Trace.WriteLine("Loading " + loggerFile, "ENGINE");
-            var report = FlightReport.FromFile(loggerFile, Settings);
-            return report;
+            Report = FlightReport.FromFile(loggerFile, Settings);
         }
-        public void Process(FlightReport report)
+        public void Process()
         {
-            Trace.WriteLine("Running " + report.ToString(), "ENGINE");
+            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
             foreach (var obj in Heap.Values)
-                obj.Process(report);
+                obj.Process();
 
             foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
             {
-                report.Results.Add(t.Result);
+                Report.Results.Add(t.Result);
             }
         }
 
