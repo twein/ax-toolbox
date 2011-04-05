@@ -250,10 +250,10 @@ namespace AXToolbox.Scripting
                         Result.UsedPoints.Add(B.Point);
                         break;
                 }
-
-                if (Result == null)
-                    Result = task.NewNoResult();
             }
+
+            if (Result == null)
+                Result = task.NewNoResult();
         }
 
         public override void Display()

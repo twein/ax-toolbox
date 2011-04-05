@@ -101,12 +101,12 @@ namespace AXToolbox.Scripting
 
         public Result NewNoFlight()
         {
-            Trace.WriteLine(ObjectName + ": No flight");
+            Trace.WriteLine(string.Format("Result of {0}: No flight (group C)", ObjectName), ObjectClass);
             return Result = Result.NewNoFlight(ObjectName, ObjectType);
         }
         public Result NewNoResult()
         {
-            Trace.WriteLine(ObjectName + ": No result");
+            Trace.WriteLine(string.Format("Result of {0}: No result (group B)", ObjectName), ObjectClass);
             return Result = Result.NewNoResult(ObjectName, ObjectType);
         }
         public Result NewResult(double value)
