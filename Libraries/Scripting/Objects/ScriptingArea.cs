@@ -30,7 +30,7 @@ namespace AXToolbox.Scripting
 
                 case "CIRCLE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
-                    center = ResolveOrDie<ScriptingPoint>(0); // will be null if not static
+                    center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, ParseLength);
                     break;
 
