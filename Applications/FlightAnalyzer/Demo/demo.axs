@@ -22,7 +22,7 @@ TASK Task1 = HWZ()
 
 //task 2
 task Task2 = FIN()
-	point Task2_goal=sutm(304360,4602600,215m) waypoint(blue)
-	//point Task2_goal=sutm(304360,4602600,215m) target(100,blue)
+	//point Task2_goal=sutm(304360,4602600,215m) waypoint(blue)
+	point Task2_goal=sutm(304360,4602600,215m) target(100m,blue)
 	POINT Task2_marker=MVMD(2) Marker(blue)
 	result task2_result=drad(task2_marker,task2_goal)

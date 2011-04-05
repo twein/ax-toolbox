@@ -11,7 +11,7 @@ namespace ScriptingTest
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ScriptingEngine scriptingEngine = new ScriptingEngine();
+        private ScriptingEngine Engine;
 
         public MainWindow()
         {
@@ -30,8 +30,9 @@ namespace ScriptingTest
                 dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog(this) == true)
                 {
-                    scriptingEngine.LoadScript(dlg.FileName);
-                    scriptingEngine.RefreshMapViewer(map);
+                    if (Engine == null)
+                        Engine = new ScriptingEngine(map);
+                    Engine.LoadScript(dlg.FileName);
                 }
                 else
                 {

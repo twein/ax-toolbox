@@ -148,6 +148,42 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Report");
 
             //display track, markers and goal declarations on mapviewer
+
+            DisplayReport();
+            foreach (var obj in Heap.Values)
+            {
+                obj.Display();
+            }
+        }
+
+        public void Reset()
+        {
+            foreach (var obj in Heap.Values)
+                obj.Reset();
+            Report = null;
+            MapViewer.ClearOverlays();
+            RaisePropertyChanged("Report");
+        }
+        public void Process()
+        {
+            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
+
+            MapViewer.ClearOverlays();
+
+            DisplayReport();
+            foreach (var obj in Heap.Values)
+            {
+                obj.Process();
+                obj.Display();
+            }
+
+            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
+            {
+                Report.Results.Add(t.Result);
+            }
+        }
+        private void DisplayReport()
+        {
             if (Report != null)
             {
                 var track = new Point[Report.OriginalTrack.Count];
@@ -164,33 +200,6 @@ namespace AXToolbox.Scripting
                 {
                     MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name));
                 }
-            }
-
-            foreach (var obj in Heap.Values)
-            {
-                obj.Display();
-            }
-        }
-        public void Reset()
-        {
-            foreach (var obj in Heap.Values)
-                obj.Reset();
-            Report = null;
-            MapViewer.ClearOverlays();
-            RaisePropertyChanged("Report");
-        }
-        public void Process()
-        {
-            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
-            foreach (var obj in Heap.Values)
-            {
-                obj.Process();
-                obj.Display();
-            }
-
-            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
-            {
-                Report.Results.Add(t.Result);
             }
         }
 

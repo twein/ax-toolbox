@@ -40,15 +40,18 @@ namespace AXToolbox.MapViewer
 
         public override void RefreshShape()
         {
-            //compute local dimensions
-            var center = Map.FromMapToLocal(Position);
-            var east = Map.FromMapToLocal(new Point(Position.X + radius, Position.Y));
-            var areaRadius = east.X - center.X;
+            if (Map != null)
+            {
+                //compute local dimensions
+                var center = Map.FromMapToLocal(Position);
+                var east = Map.FromMapToLocal(new Point(Position.X + radius, Position.Y));
+                var areaRadius = east.X - center.X;
 
-            //adjust the shape
-            area.Height = 2 * areaRadius;
-            area.Width = 2 * areaRadius;
-            area.Margin = new Thickness(-areaRadius);
+                //adjust the shape
+                area.Height = 2 * areaRadius;
+                area.Width = 2 * areaRadius;
+                area.Margin = new Thickness(-areaRadius);
+            }
         }
     }
 }

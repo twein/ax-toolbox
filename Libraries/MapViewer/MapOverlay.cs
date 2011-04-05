@@ -33,18 +33,21 @@ namespace AXToolbox.MapViewer
             }
         }
 
+        public int Layer { get; set; }
         public virtual new double Opacity
         {
             set { base.Opacity = value; }
         }
-
         public virtual Brush Color
         {
             set { base.Background = value; }
         }
 
 
-        public MapOverlay() { }
+        protected MapOverlay()
+        {
+            Layer = int.MaxValue;
+        }
 
         public MapOverlay(Point position)
             : this()
