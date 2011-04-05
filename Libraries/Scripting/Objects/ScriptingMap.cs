@@ -32,12 +32,16 @@ namespace AXToolbox.Scripting
                     topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
                     bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
 
+                    Engine.MapViewer.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
+
                     break;
 
                 case "BLANK":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     topLeft = ResolveOrDie<ScriptingPoint>(0).Point;
                     bottomRight = ResolveOrDie<ScriptingPoint>(1).Point;
+
+                    Engine.MapViewer.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
 
                     break;
             }
@@ -57,24 +61,16 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     gridWidth = ParseDouble(DisplayParameters[0]);
+                    if (gridWidth < 0)
+                        throw new ArgumentException("Incorrect grid width.");
+
                     break;
             }
         }
-
-        public void InitializeMapViewer(MapViewerControl map)
+        public override void Display()
         {
-            if (!map.IsMapLoaded)
-            {
-                if (ObjectType == "BITMAP")
-                    map.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
-                else
-                    map.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
-            }
-            else
-                map.ClearOverlays();
-
             if (gridWidth > 0)
-                map.AddOverlay(new CoordinateGridOverlay(gridWidth));
+                Engine.MapViewer.AddOverlay(new CoordinateGridOverlay(gridWidth));
         }
 
         /// <summary>Checks if a point is inside the map boundaries

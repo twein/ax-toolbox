@@ -22,7 +22,7 @@ namespace AXToolbox.Scripting
             {
                 default:
                     throw new ArgumentException("Unknown filter type '" + ObjectType + "'");
-                
+
                 case "NONE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
                     break;
@@ -53,6 +53,8 @@ namespace AXToolbox.Scripting
             }
         }
         public override void CheckDisplayModeSyntax()
+        { }
+        public override void Display()
         { }
 
         public override void Process()

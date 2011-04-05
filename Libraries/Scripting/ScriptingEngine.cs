@@ -39,6 +39,7 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
+        public MapViewerControl MapViewer { get; private set; }
 
         internal Dictionary<string, ScriptingObject> Heap { get; private set; }
 
@@ -58,8 +59,9 @@ namespace AXToolbox.Scripting
         }
 
 
-        public ScriptingEngine()
+        public ScriptingEngine(MapViewerControl map)
         {
+            MapViewer = map;
             Settings = new FlightSettings();
             Heap = new Dictionary<string, ScriptingObject>();
         }
@@ -144,32 +146,8 @@ namespace AXToolbox.Scripting
             Reset();
             Report = FlightReport.FromFile(loggerFile, Settings);
             RaisePropertyChanged("Report");
-        }
-        public void Reset()
-        {
-            foreach (var obj in Heap.Values)
-                obj.Reset();
-            Report = null;
-            RaisePropertyChanged("Report");
-        }
-        public void Process()
-        {
-            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
-            foreach (var obj in Heap.Values)
-                obj.Process();
 
-            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
-            {
-                Report.Results.Add(t.Result);
-            }
-        }
-        public void RefreshMapViewer(MapViewerControl map)
-        {
-            var sMap = (ScriptingMap)Heap.Values.First(i => i is ScriptingMap);
-            sMap.InitializeMapViewer(map);
-
-
-            //track, markers and goal declarations
+            //display track, markers and goal declarations on mapviewer
             if (Report != null)
             {
                 var track = new Point[Report.OriginalTrack.Count];
@@ -177,24 +155,42 @@ namespace AXToolbox.Scripting
                 {
                     track[i] = Report.OriginalTrack[i].ToWindowsPoint();
                 }
-                map.AddOverlay(new TrackOverlay(track, 2));
+                MapViewer.AddOverlay(new TrackOverlay(track, 2));
 
-                map.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch"));
-                map.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing"));
+                MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch"));
+                MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing"));
 
                 foreach (var m in Report.Markers)
                 {
-                    map.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name));
+                    MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name));
                 }
             }
 
-            // script overlays
-            MapOverlay ov;
-            foreach (var o in Heap)
+            foreach (var obj in Heap.Values)
             {
-                ov = o.Value.GetOverlay();
-                if (ov != null)
-                    map.AddOverlay(ov);
+                obj.Display();
+            }
+        }
+        public void Reset()
+        {
+            foreach (var obj in Heap.Values)
+                obj.Reset();
+            Report = null;
+            MapViewer.ClearOverlays();
+            RaisePropertyChanged("Report");
+        }
+        public void Process()
+        {
+            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
+            foreach (var obj in Heap.Values)
+            {
+                obj.Process();
+                obj.Display();
+            }
+
+            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
+            {
+                Report.Results.Add(t.Result);
             }
         }
 

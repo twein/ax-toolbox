@@ -467,7 +467,7 @@ namespace AXToolbox.Scripting
                 Engine.Report.Notes.Add(ObjectName + ": resolved to " + Point.ToString());
         }
 
-        public override MapOverlay GetOverlay()
+        public override void Display()
         {
             MapOverlay overlay = null;
             if (Point != null)
@@ -502,7 +502,9 @@ namespace AXToolbox.Scripting
                         break;
                 }
             }
-            return overlay;
+
+            if (overlay != null)
+                Engine.MapViewer.AddOverlay(overlay);
         }
     }
 }
