@@ -44,8 +44,8 @@ namespace AXToolbox.MapViewer
                 var startX = GridWidth * Math.Floor(tl.X / GridWidth) + (incX > 0 ? incX : 0);
                 var startY = GridWidth * Math.Floor(tl.Y / GridWidth) + (incY > 0 ? incY : 0);
 
-                var endX = GridWidth * Math.Floor(br.X / GridWidth);
-                var endY = GridWidth * Math.Floor(br.Y / GridWidth);
+                var endX = GridWidth * Math.Floor(br.X / GridWidth) - (incX < 0 ? incX : 0);
+                var endY = GridWidth * Math.Floor(br.Y / GridWidth) - (incY < 0 ? incY : 0);
 
 
 

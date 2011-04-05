@@ -383,7 +383,7 @@ namespace AXToolbox.MapViewer
 
         protected void ComputeMapConstants()
         {
-            MaxZoom = Math.Max(geoImage.PixelWidth, geoImage.PixelHeight);
+            MaxZoom = Math.Max(geoImage.PixelWidth * 10, geoImage.PixelHeight * 10);
             MinZoom = Math.Min(ActualWidth / geoImage.BitmapWidth, ActualHeight / geoImage.BitmapHeight); // fit to viewer
         }
         #endregion
@@ -426,6 +426,7 @@ namespace AXToolbox.MapViewer
                         break;
                 }
             }
+            e.Handled = true;
         }
         protected void control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
