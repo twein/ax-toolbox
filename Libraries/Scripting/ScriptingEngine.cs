@@ -39,9 +39,11 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
+
         internal Dictionary<string, ScriptingObject> Heap { get; private set; }
 
         public FlightReport Report { get; private set; }
+
         private AXTrackpoint[] validTrackPoints;
         public AXTrackpoint[] ValidTrackPoints
         {
@@ -136,19 +138,38 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("ShortDescription");
             RaisePropertyChanged("Detail");
         }
+        public void LoadFlightReport(string loggerFile)
+        {
+            Trace.WriteLine("Loading " + loggerFile, "ENGINE");
+            Reset();
+            Report = FlightReport.FromFile(loggerFile, Settings);
+            RaisePropertyChanged("Report");
+        }
+        public void Reset()
+        {
+            foreach (var obj in Heap.Values)
+                obj.Reset();
+            Report = null;
+            RaisePropertyChanged("Report");
+        }
+        public void Process()
+        {
+            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
+            foreach (var obj in Heap.Values)
+                obj.Process();
+
+            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
+            {
+                Report.Results.Add(t.Result);
+            }
+        }
         public void RefreshMapViewer(MapViewerControl map)
         {
             var sMap = (ScriptingMap)Heap.Values.First(i => i is ScriptingMap);
             sMap.InitializeMapViewer(map);
 
-            MapOverlay ov;
-            foreach (var o in Heap)
-            {
-                ov = o.Value.GetOverlay();
-                if (ov != null)
-                    map.AddOverlay(ov);
-            }
 
+            //track, markers and goal declarations
             if (Report != null)
             {
                 var track = new Point[Report.OriginalTrack.Count];
@@ -166,21 +187,14 @@ namespace AXToolbox.Scripting
                     map.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name));
                 }
             }
-        }
-        public void LoadFlightReport(string loggerFile)
-        {
-            Trace.WriteLine("Loading " + loggerFile, "ENGINE");
-            Report = FlightReport.FromFile(loggerFile, Settings);
-        }
-        public void Process()
-        {
-            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
-            foreach (var obj in Heap.Values)
-                obj.Process();
 
-            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
+            // script overlays
+            MapOverlay ov;
+            foreach (var o in Heap)
             {
-                Report.Results.Add(t.Result);
+                ov = o.Value.GetOverlay();
+                if (ov != null)
+                    map.AddOverlay(ov);
             }
         }
 

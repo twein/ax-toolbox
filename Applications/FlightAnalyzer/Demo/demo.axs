@@ -14,8 +14,14 @@ map competitionMap = bitmap(demo.png) grid(1000)
 
 //task 1
 TASK Task1 = HWZ()
-	POINT Task1_goal1=SUTM (305510,4598570,249m) waypoint(orange)
-	POINT Task1_goal2=SUTM (306255,4601283,237m) waypoint(orange)
-	POINT Task1_marker=MVMD (1) Marker(orange)
+	POINT Task1_goal1=SUTM(305510,4598570,249m) waypoint(orange)
+	POINT Task1_goal2=SUTM(306255,4601283,237m) waypoint(orange)
+	POINT Task1_marker=MVMD(1) Marker(orange)
 	Point Task1_Target=LNP(Task1_marker,Task1_goal1,Task1_goal2)
 	result task1_result=drad(task1_marker,task1_target)
+
+//task 2
+task Task2 = FIN()
+	point Task2_goal=sutm(304360,4602600,215m) target(100m,blue)
+	POINT Task2_marker=MVMD(2) Marker(blue)
+	result task2_result=drad(task2_marker,task2_goal)

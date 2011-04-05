@@ -131,9 +131,13 @@ namespace AXToolbox.Scripting
             }
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            Result = null;
+        }
         public override void Process()
         {
-            Result = null;
             base.Process();
 
             // parse and resolve pilot dependent values

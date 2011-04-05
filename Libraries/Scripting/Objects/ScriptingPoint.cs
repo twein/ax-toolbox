@@ -168,11 +168,15 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public override void Process()
+        public override void Reset()
         {
+            base.Reset();
+
             if (!isStatic)
                 Point = null;
-
+        }
+        public override void Process()
+        {
             base.Process();
 
             // parse and resolve pilot dependent values
