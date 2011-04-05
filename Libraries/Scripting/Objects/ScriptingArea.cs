@@ -54,6 +54,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
                     break;
 
+                case "":
                 case "DEFAULT":
                     if (DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");
@@ -81,26 +82,29 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public override void  Display()
+        public override void Display()
         {
             MapOverlay overlay = null;
-            switch (ObjectType)
+            if (DisplayMode != "NONE")
             {
-                case "CIRCLE":
-                    if (center.Point != null)
-                        overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Color = color };
-                    break;
+                switch (ObjectType)
+                {
+                    case "CIRCLE":
+                        if (center.Point != null)
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Color = color };
+                        break;
 
-                case "POLY":
-                    var list = new Point[outline.Count];
-                    for (var i = 0; i < list.Length; i++)
-                        list[i] = outline[i].ToWindowsPoint();
-                    overlay = new PolygonalAreaOverlay(list, ObjectName) { Color = color };
-                    break;
+                    case "POLY":
+                        var list = new Point[outline.Count];
+                        for (var i = 0; i < list.Length; i++)
+                            list[i] = outline[i].ToWindowsPoint();
+                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Color = color };
+                        break;
+                }
+
+                if (overlay != null)
+                    Engine.MapViewer.AddOverlay(overlay);
             }
-
-            if (overlay != null)
-                Engine.MapViewer.AddOverlay(overlay);
         }
 
         public bool Contains(AXPoint point)
