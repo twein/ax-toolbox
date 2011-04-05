@@ -20,7 +20,6 @@ namespace FlightAnalyzer
         {
             InitializeComponent();
 
-            //Engine = new ScriptingEngine();
             DataContext = this;
         }
 
@@ -38,12 +37,11 @@ namespace FlightAnalyzer
                 dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog(this) == true)
                 {
-                    var newEngine = new ScriptingEngine();
-                    newEngine.LoadScript(dlg.FileName);
-                    Engine = newEngine;
+                    if (Engine == null)
+                        Engine = new ScriptingEngine(map);
+
+                    Engine.LoadScript(dlg.FileName);
                     RaisePropertyChanged("Engine");
-                    map.Clear();
-                    Engine.RefreshMapViewer(map);
                 }
             }
             catch (ArgumentException ex)
@@ -65,7 +63,6 @@ namespace FlightAnalyzer
                     Engine.LoadFlightReport(dlg.FileName);
                     Report = Engine.Report;
                     RaisePropertyChanged("Report");
-                    Engine.RefreshMapViewer(map);
                 }
             }
             catch (ArgumentException ex)
@@ -77,7 +74,6 @@ namespace FlightAnalyzer
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
             Engine.Process();
-            Engine.RefreshMapViewer(map);
         }
 
 

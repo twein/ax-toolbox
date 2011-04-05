@@ -133,6 +133,7 @@ namespace AXToolbox.Scripting
 
             CheckConstructorSyntax();
             CheckDisplayModeSyntax();
+            Display();
 
             Trace.WriteLine(this.ToString(), ObjectClass);
         }
@@ -143,12 +144,9 @@ namespace AXToolbox.Scripting
         /// <summary>Check display mode syntax or die
         /// </summary>
         public abstract void CheckDisplayModeSyntax();
-        /// <summary>Gets the MapOverlay for the current object (or null if no overlay is defined)
+        /// <summary>Displays te object on the map
         /// </summary>
-        public virtual MapOverlay GetOverlay()
-        {
-            return null;
-        }
+        public abstract void Display();
 
         /// <summary>Clears the pilot dependent (non-static) values
         /// </summary>

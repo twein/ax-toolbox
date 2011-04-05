@@ -81,7 +81,7 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public override MapOverlay GetOverlay()
+        public override void  Display()
         {
             MapOverlay overlay = null;
             switch (ObjectType)
@@ -99,7 +99,8 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            return overlay;
+            if (overlay != null)
+                Engine.MapViewer.AddOverlay(overlay);
         }
 
         public bool Contains(AXPoint point)

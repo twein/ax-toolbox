@@ -18,7 +18,7 @@ namespace AXToolbox.Scripting
             {
                 default:
                     throw new ArgumentException("Unknown setting '" + ObjectName + "'");
-                
+
                 case "DATETIME":
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
@@ -82,6 +82,8 @@ namespace AXToolbox.Scripting
             }
         }
         public override void CheckDisplayModeSyntax()
+        { }
+        public override void Display()
         { }
     }
 }

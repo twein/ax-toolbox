@@ -88,6 +88,8 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         { }
+        public override void Display()
+        { }
 
         public override void Process()
         {
