@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
+using AXToolbox.Common;
 using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Scripting
@@ -78,6 +79,13 @@ namespace AXToolbox.Scripting
                 case "MAXACCELERATION":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     Engine.Settings.MaxAcceleration = ParseOrDie<double>(0, ParseLength);
+                    break;
+
+                case "LOGFILE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    var listener = new TimeStampTraceListener(ObjectParameters[0]);
+                    Trace.Listeners.Add(listener);
+                    Trace.AutoFlush = true;
                     break;
             }
         }

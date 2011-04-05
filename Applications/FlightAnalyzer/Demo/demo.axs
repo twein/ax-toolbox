@@ -1,4 +1,5 @@
-﻿set DateTime = 2009/09/17,AM
+﻿set logfile = FlightAnalyzer.log
+set DateTime = 2009/09/17,AM
 set Datum=European 1950
 set UTMZone=31T
 set QNH = 1010
