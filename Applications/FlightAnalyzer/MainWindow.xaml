@@ -25,7 +25,7 @@
             </StatusBarItem>
         </StatusBar>
         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Width="250">
                 <Expander ExpandDirection="Down" Background="LightGray" >
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">

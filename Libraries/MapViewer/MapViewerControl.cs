@@ -205,8 +205,24 @@ namespace AXToolbox.MapViewer
                 throw new InvalidOperationException("Must load a map before placing overlays");
 
             overlay.Map = this;
-            overlaysCanvas.Children.Add(overlay);
-            overlays.Add(overlay);
+
+            //insert in the correct layer
+            //at top by default
+            var layer = -1;
+            //find the layer if not default
+            if (overlay.Layer < int.MaxValue)
+                layer = overlays.FindIndex(o => o.Layer > overlay.Layer);
+
+            if (layer >= 0)
+            {
+                overlaysCanvas.Children.Insert(layer, overlay);
+                overlays.Insert(layer, overlay);
+            }
+            else
+            {
+                overlaysCanvas.Children.Add(overlay);
+                overlays.Add(overlay);
+            }
         }
         /// <summary>Remove an overlay from MapViewer</summary>
         /// <param name="overlay"></param>
