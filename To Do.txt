@@ -14,6 +14,7 @@ Mark manually added markers and declarations. Don't allow to delete non-manual o
 Perform all measurements and penalizations in FlightAnalyzer.
 Force analyzing of all assigned pilots?
 List of saved reports.
+Add distance measure tool (shift-click) to MapViewer.
 
 
 IDEAS
