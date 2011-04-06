@@ -23,18 +23,13 @@ namespace AXToolbox.GPSLoggers
 
         public string[] TrackLogLines { get; protected set; }
 
-        public ObservableCollection<string> Notes { get; protected set; }
-
         public LoggerFile(string filePath)
         {
             IsAltitudeBarometric = false;
             LoggerModel = "";
             LoggerSerialNumber = "";
             PilotId = 0;
-            Notes = new ObservableCollection<string>();
             TrackLogLines = File.ReadAllLines(filePath, Encoding.ASCII);
-
-            Notes.Add("File " + filePath);
         }
 
         public abstract List<GeoPoint> GetTrackLog();

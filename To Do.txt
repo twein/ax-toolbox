@@ -3,6 +3,7 @@ BUGS
 
 PENDING
 Display correctly AXTrackpoint.StartSubtrack
+Check the workflow of BindableObject.IsDirty
 
 
 TO DO

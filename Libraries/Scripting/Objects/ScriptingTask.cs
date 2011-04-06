@@ -97,22 +97,20 @@ namespace AXToolbox.Scripting
 
             //removes filter if any
             Engine.ValidTrackPoints = Engine.Report.FlightTrack.ToArray();
+            Engine.Report.Notes.Add(string.Format("{0}: track contains {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
         }
 
-        public Result NewNoFlight()
+        public Result NewResult(double value)
         {
-            Trace.WriteLine(string.Format("Result of {0}: No flight (group C)", ObjectName), ObjectClass);
-            return Result = Result.NewNoFlight(ObjectName, ObjectType);
+            return Result = Result.NewResult(ObjectName, ObjectType, value, resultUnit);
         }
         public Result NewNoResult()
         {
-            Trace.WriteLine(string.Format("Result of {0}: No result (group B)", ObjectName), ObjectClass);
             return Result = Result.NewNoResult(ObjectName, ObjectType);
         }
-        public Result NewResult(double value)
+        public Result NewNoFlight()
         {
-            Trace.WriteLine(string.Format("Result of {0}: {1:0.00}{2}", ObjectName, value, resultUnit), ObjectClass);
-            return Result = Result.NewResult(ObjectName, ObjectType, value, resultUnit);
+            return Result = Result.NewNoFlight(ObjectName, ObjectType);
         }
     }
 }

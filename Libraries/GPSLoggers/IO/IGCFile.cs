@@ -17,15 +17,9 @@ namespace AXToolbox.GPSLoggers
             //get signature info
             var v = new Verifier();
             if (v.Verify(filePath))
-            {
                 SignatureStatus = SignatureStatus.Genuine;
-                Notes.Add("The log file is signed and OK.");
-            }
             else
-            {
                 SignatureStatus = SignatureStatus.Counterfeit;
-                Notes.Add("THE LOG FILE HAS BEEN TAMPERED WITH!");
-            }
 
             //get logger info
             try
@@ -166,7 +160,7 @@ namespace AXToolbox.GPSLoggers
             else
             {
                 // invalid declaration
-                Notes.Add(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
+                throw new InvalidOperationException(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
             }
 
             return declaration;

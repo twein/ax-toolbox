@@ -51,10 +51,10 @@ namespace AXToolbox.Scripting
             switch (Type)
             {
                 case ResultType.No_Flight:
-                    str = "No flight";
+                    str = "No flight (group C)";
                     break;
                 case ResultType.No_Result:
-                    str = "No result";
+                    str = "No result (group B)";
                     break;
                 case ResultType.Result:
                     str = string.Format("{0:0}{1}", Value, Unit);

@@ -45,19 +45,7 @@ namespace AXToolbox.Scripting
 
         public FlightReport Report { get; private set; }
 
-        private AXTrackpoint[] validTrackPoints;
-        public AXTrackpoint[] ValidTrackPoints
-        {
-            get { return validTrackPoints; }
-            internal set
-            {
-                validTrackPoints = value;
-                if (validTrackPoints != null)
-                    Trace.WriteLine(string.Format("{0} valid track points", validTrackPoints.Length), "ENGINE");
-                RaisePropertyChanged("ValidTrackPoints");
-            }
-        }
-
+        public AXTrackpoint[] ValidTrackPoints { get; internal set; }
 
         public ScriptingEngine(MapViewerControl map)
         {
@@ -72,7 +60,7 @@ namespace AXToolbox.Scripting
 
             Settings = new FlightSettings();
             Heap.Clear();
-            validTrackPoints = null;
+
             //TODO: initialize all variables
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(scriptFileName));
@@ -144,7 +132,7 @@ namespace AXToolbox.Scripting
         {
             Trace.WriteLine("Loading " + loggerFile, "ENGINE");
             Reset();
-            Report = FlightReport.FromFile(loggerFile, Settings);
+            Report = FlightReport.Load(loggerFile, Settings);
             RaisePropertyChanged("Report");
 
             //display track, markers and goal declarations on mapviewer

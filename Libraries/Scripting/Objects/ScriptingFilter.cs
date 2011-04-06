@@ -61,6 +61,7 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
+            var initialCount = Engine.ValidTrackPoints.Length;
             switch (ObjectType)
             {
                 case "NONE":
@@ -105,6 +106,9 @@ namespace AXToolbox.Scripting
                     Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Altitude <= altitude);
                     break;
             }
+
+            if (Engine.ValidTrackPoints.Length != initialCount)
+                Engine.Report.Notes.Add(string.Format("{0}: track filtered to {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
         }
 
         /// <summary>Return a filtered array of trackpoints with subtrack control
