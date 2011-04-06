@@ -39,7 +39,7 @@
                     <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Engine.Detail}"/>
                 </Expander>
 
-                <Expander ExpandDirection="Down" Background="LightGray" >
+                <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True" >
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                             <StackPanel Orientation="Vertical">
@@ -52,7 +52,8 @@
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
                         </StackPanel>
                     </Expander.Header>
-                    <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.ShortDescription}"/>
+                    <ListBox ItemsSource="{Binding Path=Report.Notes}"/>
+                    <!--<TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.Notes}"/>-->
                 </Expander>
 
             </StackPanel>

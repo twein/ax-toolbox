@@ -40,15 +40,6 @@ namespace AXToolbox.Scripting
         }
         public string LoggerModel { get; protected set; }
         public string LoggerSerialNumber { get; protected set; }
-        /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
-        /// </summary>
-        public List<AXTrackpoint> OriginalTrack { get; protected set; }
-        /// <summary>Track without spikes and dupes. May contain points before launch and after landing
-        /// </summary>
-        public List<AXTrackpoint> CleanTrack { get { return OriginalTrack.Where(p => p.IsValid).ToList(); } }
-        /// <summary>Clean track from launch to landing
-        /// </summary>
-        public List<AXTrackpoint> FlightTrack { get { return OriginalTrack.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); } }
         protected AXPoint launchPoint;
         public AXPoint LaunchPoint
         {
@@ -59,7 +50,7 @@ namespace AXToolbox.Scripting
                 {
                     Notes.Add(string.Format("The launch point has been changed from {0} to {1}", launchPoint, value));
                     launchPoint = value;
-                    base.RaisePropertyChanged("LaunchPoint");
+                    RaisePropertyChanged("LaunchPoint");
                 }
             }
         }
@@ -73,15 +64,26 @@ namespace AXToolbox.Scripting
                 {
                     Notes.Add(string.Format("The landing point has been changed from {0} to {1}", landingPoint, value));
                     landingPoint = value;
-                    base.RaisePropertyChanged("LandingPoint");
+                    RaisePropertyChanged("LandingPoint");
                 }
             }
         }
+
         public ObservableCollection<AXWaypoint> Markers { get; protected set; }
         public ObservableCollection<GoalDeclaration> DeclaredGoals { get; protected set; }
         public ObservableCollection<Result> Results { get; protected set; }
-
         public ObservableCollection<string> Notes { get; protected set; }
+
+        /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
+        /// </summary>
+        public List<AXTrackpoint> OriginalTrack { get; protected set; }
+        /// <summary>Track without spikes and dupes. May contain points before launch and after landing
+        /// </summary>
+        public List<AXTrackpoint> CleanTrack { get { return OriginalTrack.Where(p => p.IsValid).ToList(); } }
+        /// <summary>Clean track from launch to landing
+        /// </summary>
+        public List<AXTrackpoint> FlightTrack { get { return OriginalTrack.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); } }
+
 
         public string ShortDescription { get { return this.ToString(); } }
         public override string ToString()
@@ -94,26 +96,20 @@ namespace AXToolbox.Scripting
         }
 
         //factory
-        public static FlightReport FromFile(string filePath, FlightSettings settings)
+        public static FlightReport Load(string filePath, FlightSettings settings)
         {
-            var ext = Path.GetExtension(filePath).ToLower();
             FlightReport report = null;
-            LoggerFile logFile = null;
-            switch (ext)
-            {
-                case ".igc":
-                case ".trk":
-                    logFile = LoggerFile.Load(filePath);
-                    break;
-                case SerializedFileExtension:
-                    report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
-                    break;
-                default:
-                    throw new InvalidOperationException("Logger file type not supported");
-            }
 
-            if (ext != SerializedFileExtension)
+            var ext = Path.GetExtension(filePath).ToLower();
+            if (ext == SerializedFileExtension)
             {
+                //deserialize report
+                report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+            }
+            else
+            {
+                var logFile = LoggerFile.Load(filePath);
+
                 //Convert geographical coordinates to AX coordinates
                 var track = new List<AXTrackpoint>();
                 foreach (var p in logFile.GetTrackLog())
@@ -123,7 +119,7 @@ namespace AXToolbox.Scripting
                 foreach (var p in logFile.GetMarkers())
                     markers.Add(settings.FromGeoToAXWaypoint(p, logFile.IsAltitudeBarometric));
 
-
+                //Make new report
                 report = new FlightReport(settings)
                 {
                     IsDirty = true,
@@ -135,13 +131,40 @@ namespace AXToolbox.Scripting
                     OriginalTrack = track,
                     Markers = markers,
                     DeclaredGoals = logFile.GetGoalDeclarations(),
-                    Notes = logFile.Notes
+                    Notes = new ObservableCollection<string>()
                 };
+
+                switch (logFile.SignatureStatus)
+                {
+                    case SignatureStatus.NotSigned:
+                        report.Notes.Add("The log file is not signed");
+                        break;
+                    case SignatureStatus.Genuine:
+                        report.Notes.Add("The log file has a valid signature");
+                        break;
+                    case SignatureStatus.Counterfeit:
+                        report.Notes.Add("*** THE LOG FILE HAS AN INVALID SIGNATURE! ***");
+                        break;
+                }
 
                 report.RemoveInvalidPoints();
                 report.DetectLaunchAndLanding();
             }
             return report;
+        }
+        //constructor
+        protected FlightReport(FlightSettings settings)
+        {
+            Settings = settings;
+            SignatureStatus = SignatureStatus.NotSigned;
+            pilotId = 0;
+            LoggerModel = "";
+            LoggerSerialNumber = "";
+            OriginalTrack = new List<AXTrackpoint>();
+            Markers = new ObservableCollection<AXWaypoint>();
+            DeclaredGoals = new ObservableCollection<GoalDeclaration>();
+            Results = new ObservableCollection<Result>();
+            Notes = new ObservableCollection<string>();
         }
 
         public void Save(string folder)
@@ -212,21 +235,6 @@ namespace AXToolbox.Scripting
             //return ok;
         }
 
-        //constructor
-        protected FlightReport(FlightSettings settings)
-        {
-            Settings = settings;
-            SignatureStatus = SignatureStatus.NotSigned;
-            pilotId = 0;
-            LoggerModel = "";
-            LoggerSerialNumber = "";
-            OriginalTrack = new List<AXTrackpoint>();
-            Markers = new ObservableCollection<AXWaypoint>();
-            DeclaredGoals = new ObservableCollection<GoalDeclaration>();
-            Results = new ObservableCollection<Result>();
-            Notes = new ObservableCollection<string>();
-        }
-
         protected void RemoveInvalidPoints()
         {
             int nTime = 0, nDupe = 0, nSpike = 0;
@@ -276,12 +284,14 @@ namespace AXToolbox.Scripting
                 point_m1 = point;
             }
 
+            Notes.Add(string.Format("Original track has {0} points", OriginalTrack.Count));
+
             if (nTime > 0)
-                Notes.Add(string.Format("{0} out-of-time points removed", nTime));
+                Notes.Add(string.Format("Removed {0} out-of-time points", nTime));
             if (nDupe > 0)
-                Notes.Add(string.Format("{0} duplicated points removed", nDupe));
+                Notes.Add(string.Format("Removed {0} duplicated points", nDupe));
             if (nSpike > 0)
-                Notes.Add(string.Format("{0} spike points removed", nSpike));
+                Notes.Add(string.Format("Removed {0} spike points", nSpike));
         }
         protected void DetectLaunchAndLanding()
         {
@@ -312,28 +322,28 @@ namespace AXToolbox.Scripting
                 if (landingPoint == null)
                 {
                     landingPoint = CleanTrack.Last();
-                    Notes.Add("Landing point not found.Using last valid track point.");
+                    Notes.Add("Landing point not found. Using last valid track point.");
                 }
             }
         }
         protected AXTrackpoint FindGroundContact(IEnumerable<AXTrackpoint> track, bool backwards)
         {
             AXPoint reference = null;
-            AXTrackpoint groundContact = null;
-            AXTrackpoint point_m1 = null;
-            double smoothedSpeed = double.NaN;
-
             if (backwards)
             {
                 track = track.Reverse();
                 if (Markers.Count > 0)
-                    reference = Markers.First();
+                    reference = Markers.First();//TODO: use the goal declarations times too
             }
             else
             {
                 if (Markers.Count > 0)
                     reference = Markers.Last();
             }
+
+            AXTrackpoint groundContact = null;
+            AXTrackpoint point_m1 = null;
+            double smoothedSpeed = double.NaN;
 
             foreach (var point in track)
             {

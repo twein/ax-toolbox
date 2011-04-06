@@ -13,7 +13,6 @@ namespace AXToolbox.GPSLoggers
         {
             LogFileExtension = ".trk";
             SignatureStatus = SignatureStatus.NotSigned;
-            Notes.Add("The log file is not signed");
 
             //get logger info
             try

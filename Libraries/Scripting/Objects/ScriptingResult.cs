@@ -254,6 +254,8 @@ namespace AXToolbox.Scripting
 
             if (Result == null)
                 Result = task.NewNoResult();
+
+            Engine.Report.Notes.Add(string.Format("{0}: result is {1}", ObjectName, Result));
         }
 
         public override void Display()
