@@ -57,7 +57,7 @@ namespace AXToolbox.Scripting
                     str = "No result (group B)";
                     break;
                 case ResultType.Result:
-                    str = string.Format("{0:0}{1}", Value, Unit);
+                    str = string.Format("{0:0.00}{1}", Value, Unit);
                     break;
             }
 

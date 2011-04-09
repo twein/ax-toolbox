@@ -70,7 +70,7 @@ namespace AXToolbox.Scripting
         public override void Display()
         {
             if (gridWidth > 0)
-                Engine.MapViewer.AddOverlay(new CoordinateGridOverlay(gridWidth) { Layer = 0 });
+                Engine.MapViewer.AddOverlay(new CoordinateGridOverlay(gridWidth) { Layer = (uint)OverlayLayers.Grid });
         }
 
         /// <summary>Checks if a point is inside the map boundaries

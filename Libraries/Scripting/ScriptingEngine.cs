@@ -11,11 +11,25 @@ using System.Windows;
 
 namespace AXToolbox.Scripting
 {
+    [Flags]
+    public enum OverlayLayers : uint
+    {
+        None = 0x0,
+        All = 0xFFFFFFFF,
+
+        Grid = 0x1,
+        Areas = 0x2,
+        Static_Points = 0x4,
+        Track = 0x8,
+        Pointer = 0x10,
+        Pilot_Points = 0x20,
+        Extreme_Points = 0x40,
+        Reference_Points = 0x80,
+        Results = 0x100
+    }
+
     public sealed class ScriptingEngine : BindableObject
     {
-        //Regular Expressions to parse commands. Use in this same order.
-        static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
-        static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
 
         public string ShortDescription
         {
@@ -71,43 +85,17 @@ namespace AXToolbox.Scripting
             int lineNumber = 0;
             try
             {
-
                 for (lineNumber = 0; lineNumber < lines.Length; lineNumber++)
                 {
-                    line = lines[lineNumber].Trim();
+                    line = lines[lineNumber];
 
-                    //comments
-                    if (line == "" || line.StartsWith("//"))
-                        continue;
+                    var obj = ScriptingObject.Create(this, line);
 
-                    //find token or die
-                    MatchCollection matches = null;
-                    if (objectRE.IsMatch(line))
-                        matches = objectRE.Matches(line);
-                    else if (setRE.IsMatch(line))
-                        matches = setRE.Matches(line);
-
-                    if (matches != null)
+                    if (obj != null)
                     {
-                        //parse the constructor and create the object or die
-                        var groups = matches[0].Groups;
-
-                        var objectClass = groups["object"].Value.ToUpper();
-                        var name = groups["name"].Value.ToLower();
-                        var type = groups["type"].Value.ToUpper(); ;
-                        var parms = SplitParameters(groups["parms"].Value.ToLower());
-                        var displayMode = groups["display"].Value.ToUpper(); ;
-                        var displayParms = SplitParameters(groups["displayparms"].Value);
-
-                        var obj = ScriptingObject.Create(this, objectClass, name, type, parms, displayMode, displayParms);
-
                         //place on heap
                         Heap.Add(obj.ObjectName, obj);
                     }
-
-                    else
-                        //no token match
-                        throw new ArgumentException("Syntax error");
                 }
             }
             catch (Exception ex)
@@ -137,7 +125,7 @@ namespace AXToolbox.Scripting
 
             //display track, markers and goal declarations on mapviewer
 
-            DisplayReport();
+            Display();
             foreach (var obj in Heap.Values)
             {
                 obj.Display();
@@ -156,53 +144,52 @@ namespace AXToolbox.Scripting
         {
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
 
+
+            //process all objects
+            foreach (var obj in Heap.Values)
+                obj.Process();
+
+            //collect results
+            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
+                Report.Results.Add(t.Result);
+
+            //redisplay
+            Display();
+
+        }
+        private void Display()
+        {
             MapViewer.ClearOverlays();
 
-            DisplayReport();
-            foreach (var obj in Heap.Values)
-            {
-                obj.Process();
-                obj.Display();
-            }
-
-            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
-            {
-                Report.Results.Add(t.Result);
-            }
-        }
-        private void DisplayReport()
-        {
             if (Report != null)
             {
-                var track = new Point[Report.OriginalTrack.Count];
-                for (var i = 0; i < Report.OriginalTrack.Count; i++)
+                var track = new Point[Report.FlightTrack.Count];
+                for (var i = 0; i < Report.FlightTrack.Count; i++)
                 {
-                    track[i] = Report.OriginalTrack[i].ToWindowsPoint();
+                    track[i] = Report.FlightTrack[i].ToWindowsPoint();
                 }
-                MapViewer.AddOverlay(new TrackOverlay(track, 2));
+                MapViewer.AddOverlay(new TrackOverlay(track, 2) { Layer = (uint)OverlayLayers.Track });
 
-                MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch"));
-                MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing"));
+                MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
+                MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Extreme_Points });
 
                 foreach (var m in Report.Markers)
                 {
-                    MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name));
+                    MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Pilot_Points });
                 }
             }
+
+            foreach (var obj in Heap.Values)
+                obj.Display();
         }
 
-        /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
-        /// <param name="parms">string containing comma separated parameters</param>
-        /// <returns>array of string parameters</returns>
-        private string[] SplitParameters(string parms)
+        private MapOverlay MakeTrackOverlay(List<AXTrackpoint> track)
         {
-            var split = parms.Split(new char[] { ',' });
-            for (int i = 0; i < split.Length; i++)
-            {
-                split[i] = split[i].Trim();
-            }
+            var path = new Point[track.Count];
+            for (var i = 0; i < track.Count; i++)
+                path[i] = track[i].ToWindowsPoint();
 
-            return split;
+            return new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track };
         }
     }
 }

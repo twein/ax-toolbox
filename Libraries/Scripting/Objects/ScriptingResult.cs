@@ -129,11 +129,14 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
                     break;
             }
+
+            Layer = (uint)OverlayLayers.Results;
         }
 
         public override void Reset()
         {
             base.Reset();
+            Layer = (uint)OverlayLayers.Results;
             Result = null;
         }
         public override void Process()
@@ -149,6 +152,8 @@ namespace AXToolbox.Scripting
             }
             else
             {
+                A.Layer |= (uint)OverlayLayers.Reference_Points;
+                B.Layer |= (uint)OverlayLayers.Reference_Points;
                 switch (ObjectType)
                 {
                     case "D2D":
@@ -211,10 +216,13 @@ namespace AXToolbox.Scripting
                         if (C.Point == null)
                             Engine.Report.Notes.Add(ObjectName + ": reference point is null");
                         else
+                        {
                             Result = task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point), 2));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
-                        Result.UsedPoints.Add(C.Point);
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                            Result.UsedPoints.Add(C.Point);
+                            C.Layer |= (uint)OverlayLayers.Reference_Points;
+                        }
                         break;
 
                     case "ANG3P":
@@ -231,6 +239,7 @@ namespace AXToolbox.Scripting
                             Result.UsedPoints.Add(A.Point);
                             Result.UsedPoints.Add(B.Point);
                             Result.UsedPoints.Add(C.Point);
+                            C.Layer |= (uint)OverlayLayers.Reference_Points;
                         }
                         break;
 
@@ -310,7 +319,10 @@ namespace AXToolbox.Scripting
             }
 
             if (overlay != null)
+            {
+                overlay.Layer = Layer;
                 Engine.MapViewer.AddOverlay(overlay);
+            }
         }
     }
 }

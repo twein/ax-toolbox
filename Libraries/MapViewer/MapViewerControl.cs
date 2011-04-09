@@ -19,23 +19,22 @@ namespace AXToolbox.MapViewer
         public Point MapTopLeft { get { return geoImage.TopLeft; } }
         public Point MapBottomRight { get { return geoImage.BottomRight; } }
 
-        protected Point pointerPosition;
-        protected double zoomLevel;
-
-        protected void SetPointerPosition(Point newPosition)
+        //begin INotifyPropertyChanged properties
+        protected Point mousePointerPosition;
+        public Point MousePointerPosition
         {
-            if (pointerPosition != newPosition)
+            get { return mousePointerPosition; }
+            protected set
             {
-                pointerPosition = newPosition;
-                NotifyPropertyChanged("PointerPosition");
+                if (mousePointerPosition != value)
+                {
+                    mousePointerPosition = value;
+                    NotifyPropertyChanged("PointerPosition");
+                }
+
             }
         }
-
-        //begin INotifyPropertyChanged properties
-        public Point PointerPosition
-        {
-            get { return pointerPosition; }
-        }
+        protected double zoomLevel;
         public double ZoomLevel
         {
             get { return zoomLevel; }
@@ -49,6 +48,18 @@ namespace AXToolbox.MapViewer
         public double MaxZoom { get; set; }
         public double MinZoom { get; set; }
         public double DefaultZoomFactor { get; set; }
+
+        private uint layerVisibilityMask;
+        public uint LayerVisibilityMask
+        {
+            get { return layerVisibilityMask; }
+            set
+            {
+                if (layerVisibilityMask != value)
+                    layerVisibilityMask = value;
+                UpdateVisibility();
+            }
+        }
 
         protected Grid mainGrid;
         protected Canvas mapCanvas;
@@ -67,6 +78,7 @@ namespace AXToolbox.MapViewer
 
         public MapViewerControl()
         {
+            layerVisibilityMask = uint.MaxValue;
             UseLayoutRounding = true;
             ClipToBounds = true;
             Focusable = true;
@@ -206,6 +218,7 @@ namespace AXToolbox.MapViewer
 
             overlay.Map = this;
 
+
             //insert in the correct layer
             //at top by default
             var layer = -1;
@@ -323,7 +336,7 @@ namespace AXToolbox.MapViewer
         {
             translateTransform.X = localDisplacement.X;
             translateTransform.Y = localDisplacement.Y;
-            RefreshOverlays(false);
+            UpdateOverlays(false);
         }
         /// <summary>Pan the content (relative)</summary>
         /// <param name="localDisplacement">Displacement in local coords</param>
@@ -331,7 +344,7 @@ namespace AXToolbox.MapViewer
         {
             translateTransform.X += localDisplacement.X;
             translateTransform.Y += localDisplacement.Y;
-            RefreshOverlays(false);
+            UpdateOverlays(false);
         }
 
         /// <summary>Absolute zoom into or out of the content relative to a point</summary>
@@ -358,7 +371,7 @@ namespace AXToolbox.MapViewer
             zoomTransform.ScaleX = zoomLevel;
             zoomTransform.ScaleY = zoomLevel;
 
-            RefreshOverlays(currentZoom != zoomLevel);
+            UpdateOverlays(currentZoom != zoomLevel);
 
             if (zoomLevel != currentZoom)
             {
@@ -369,7 +382,7 @@ namespace AXToolbox.MapViewer
 
         /// <summary>Refresh the overlays position and size after a pan or zoom</summary>
         /// <param name="regenerateTrackShapes">For optimal performance must be true if zoom level changed, false otherwise</param>
-        protected void RefreshOverlays(bool regenerateTrackShapes)
+        protected void UpdateOverlays(bool regenerateTrackShapes)
         {
             foreach (var o in overlays)
             {
@@ -381,11 +394,19 @@ namespace AXToolbox.MapViewer
             }
         }
 
+        private void UpdateVisibility()
+        {
+            foreach (var o in overlays)
+                o.UpdateVisibility();
+        }
+
+
         protected void ComputeMapConstants()
         {
             MaxZoom = Math.Max(geoImage.PixelWidth * 10, geoImage.PixelHeight * 10);
             MinZoom = Math.Min(ActualWidth / geoImage.BitmapWidth, ActualHeight / geoImage.BitmapHeight); // fit to viewer
         }
+
         #endregion
 
         #region "Event handlers"
@@ -465,11 +486,12 @@ namespace AXToolbox.MapViewer
                     LocalPanTo(displacement);
                 }
                 else
-                    SetPointerPosition(FromLocalToMap(position));
+                    MousePointerPosition = FromLocalToMap(position);
             }
             else
-                SetPointerPosition(ORIGIN);
+                MousePointerPosition = ORIGIN;
         }
+
         protected void control_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (IsMapLoaded && !IsMouseCaptured)
