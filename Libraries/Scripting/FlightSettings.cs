@@ -45,7 +45,7 @@ namespace AXToolbox.Scripting
             MaxDistToCrossing = 200;
             Smoothness = 3;
             MinSpeed = 0.5;
-            MaxAcceleration = 0.3;
+            MaxAcceleration = 2;
         }
 
         public bool AreWellInitialized()

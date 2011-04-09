@@ -90,6 +90,8 @@ namespace AXToolbox.Scripting
                     number = ParseOrDie<int>(0, int.Parse);
                     minTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, ParseTimeSpan);
                     maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
+                    Point = TryResolveGoalDeclaration();
+
                     break;
 
                 case "TLCH": //TLCH: launch
@@ -153,7 +155,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     if (DisplayParameters[0] != "")
-                        color = ParseColor(DisplayParameters[0]);
+                        Color = ParseColor(DisplayParameters[0]);
                     break;
 
                 case "TARGET":
@@ -163,14 +165,28 @@ namespace AXToolbox.Scripting
                     radius = ParseLength(DisplayParameters[0]);
 
                     if (DisplayParameters.Length == 2)
-                        color = ParseColor(DisplayParameters[1]);
+                        Color = ParseColor(DisplayParameters[1]);
                     break;
             }
+
+            SetLayer();
+        }
+
+        private void SetLayer()
+        {
+            if (isStatic)
+                Layer = (uint)OverlayLayers.Static_Points;
+            else if (ObjectType == "PDG" || ObjectType == "VMD")
+                Layer = (uint)OverlayLayers.Pilot_Points;
+            else
+                Layer = (uint)OverlayLayers.Reference_Points;
         }
 
         public override void Reset()
         {
             base.Reset();
+
+            SetLayer();
 
             if (!isStatic)
                 Point = null;
@@ -289,7 +305,10 @@ namespace AXToolbox.Scripting
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
                         Point = Engine.ValidTrackPoints.First(p => p.Time == marker.Time);
                     }
-                    catch (InvalidOperationException) { } //none found
+                    catch (InvalidOperationException)
+                    {
+                        Engine.Report.Notes.Add(ObjectName + ": No trackpoint corresponds to marker drop");
+                    } //none found
                     break;
 
                 case "MPDG":
@@ -297,18 +316,7 @@ namespace AXToolbox.Scripting
                     //MPDG(<number>, <minTime>, <maxTime>)
                     try
                     {
-                        var goal = Engine.Report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
-
-                        if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
-                        {
-                            Point = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
-                            if (Point != null && goal.Altitude > 0)
-                                Point.Altitude = goal.Altitude;
-                        }
-                        else // competition coordinates
-                        {
-                            Point = Engine.Settings.ResolveDeclaredGoal(goal);
-                        }
+                        Point = TryResolveGoalDeclaration();
                     }
                     catch (InvalidOperationException) { } //none found
                     break;
@@ -467,6 +475,26 @@ namespace AXToolbox.Scripting
                 Engine.Report.Notes.Add(ObjectName + ": resolved to " + Point.ToString());
         }
 
+        private AXPoint TryResolveGoalDeclaration()
+        {
+            AXPoint point;
+
+            var goal = Engine.Report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
+
+            if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
+            {
+                point = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
+                if (point != null && goal.Altitude > 0)
+                    point.Altitude = goal.Altitude;
+            }
+            else // competition coordinates
+            {
+                point = Engine.Settings.ResolveDeclaredGoal(goal);
+            }
+
+            return point;
+        }
+
         public override void Display()
         {
             MapOverlay overlay = null;
@@ -480,31 +508,35 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Color = color };
+                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName);
                         }
                         break;
 
                     case "TARGET":
                         {
-                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Color = color };
+                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName);
                         }
                         break;
 
                     case "MARKER":
                         {
-                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Color = color };
+                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName);
                         } break;
 
                     case "CROSSHAIRS":
                         {
-                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint()) { Color = color };
+                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint());
                         }
                         break;
                 }
             }
 
             if (overlay != null)
+            {
+                overlay.Color = Color;
+                overlay.Layer = Layer;
                 Engine.MapViewer.AddOverlay(overlay);
+            }
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿<Window x:Class="FlightAnalyzer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
+        xmlns:scripting="clr-namespace:AXToolbox.Scripting;assembly=AXToolbox.Scripting"
         xmlns:converters="clr-namespace:AXToolbox.Model.Converters;assembly=AXToolbox.Model"    
         Title="MainWindow" Width="1024" Height="576" WindowState="Maximized"
+        Loaded="Window_Loaded"
         Closed="Window_Closed" Icon="/FlightAnalyzer;component/balloon.ico">
     <Window.Resources>
         <converters:IsNullVisibilityConverter x:Key="isNullVisibilityConverter" />
@@ -25,7 +28,7 @@
             </StatusBarItem>
         </StatusBar>
         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
-            <StackPanel Orientation="Vertical" Width="250">
+            <StackPanel Orientation="Vertical" Width="400">
                 <Expander ExpandDirection="Down" Background="LightGray" >
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -50,16 +53,23 @@
                                     Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}">Load</Button>
                             <Button Height="22" ToolTip="Process the current report" Click="processReportButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
+                            <Button Height="22" ToolTip="Show the report tools window" Click="toolsButton_Click"
+                                    Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Tools</Button>
                         </StackPanel>
                     </Expander.Header>
-                    <ListBox ItemsSource="{Binding Path=Report.Notes}"/>
+                    <StackPanel Orientation="Vertical" >
+                        <ListBox ItemsSource="{Binding Path=Report.Markers}"/>
+                        <ListBox ItemsSource="{Binding Path=Report.DeclaredGoals}"/>
+                        <ListBox ItemsSource="{Binding Path=Report.Notes}"/>
+                    </StackPanel>
                     <!--<TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.Notes}"/>-->
                 </Expander>
-
             </StackPanel>
         </ScrollViewer>
         <Border BorderBrush="Black" BorderThickness="1">
-            <maps:MapViewerControl x:Name="map" />
+            <Border BorderBrush="Black" BorderThickness="1">
+                <maps:MapViewerControl Name="map" />
+            </Border>
         </Border>
     </DockPanel>
 </Window>

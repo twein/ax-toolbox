@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -29,11 +30,12 @@ namespace AXToolbox.MapViewer
                 if (value != map)
                 {
                     SetMap(value);
+                    UpdateVisibility();
                 }
             }
         }
 
-        public int Layer { get; set; }
+        public uint Layer { get; set; }
         public virtual new double Opacity
         {
             set { base.Opacity = value; }
@@ -46,7 +48,7 @@ namespace AXToolbox.MapViewer
 
         protected MapOverlay()
         {
-            Layer = int.MaxValue;
+            Layer = uint.MaxValue;
         }
 
         public MapOverlay(Point position)
@@ -69,6 +71,16 @@ namespace AXToolbox.MapViewer
                 var localPos = map.FromMapToLocal(position);
                 Canvas.SetLeft(this, localPos.X);
                 Canvas.SetTop(this, localPos.Y);
+            }
+        }
+        public void UpdateVisibility()
+        {
+            if (map != null)
+            {
+                if ((Layer & map.LayerVisibilityMask) == 0)
+                    Visibility = Visibility.Hidden;
+                else
+                    Visibility = Visibility.Visible;
             }
         }
 

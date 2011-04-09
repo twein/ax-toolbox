@@ -22,6 +22,10 @@ namespace AXToolbox.Scripting
             {"WHITE",  Brushes.White},
             {"YELLOW", Brushes.Yellow}
         };
+        //Regular Expressions to parse commands. Use in this same order.
+        private static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
+        private static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
+
 
         protected ScriptingEngine Engine { get; private set; }
         protected string ObjectClass
@@ -39,7 +43,13 @@ namespace AXToolbox.Scripting
         protected string DisplayMode { get; set; }
         protected string[] DisplayParameters { get; set; }
 
-        protected Brush color = Brushes.Blue;
+        protected Brush Color { get; set; }
+        protected uint layer;
+        internal uint Layer
+        {
+            get { return layer; }
+            set { layer = value; }
+        }
 
         protected string SyntaxErrorMessage
         {
@@ -78,6 +88,10 @@ namespace AXToolbox.Scripting
             return str;
         }
 
+        private ScriptingObject()
+        {
+            Color = Brushes.Blue;
+        }
 
         /// <summary>Scripting object factory
         /// </summary>
@@ -88,40 +102,82 @@ namespace AXToolbox.Scripting
         /// <param name="displayMode"></param>
         /// <param name="displayParameters"></param>
         /// <returns></returns>
-        public static ScriptingObject Create(ScriptingEngine engine, string objectClass, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        public static ScriptingObject Create(ScriptingEngine engine, string line)
         {
             ScriptingObject obj = null;
 
-            switch (objectClass)
+            line = line.Trim();
+
+            //ignore blank lines and comments
+            if (line != "" && !line.StartsWith("//"))
             {
-                case "AREA":
-                    obj = new ScriptingArea(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "FILTER":
-                    obj = new ScriptingFilter(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "MAP":
-                    obj = new ScriptingMap(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "POINT":
-                    obj = new ScriptingPoint(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "SET":
-                    obj = new ScriptingSetting(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "TASK":
-                    obj = new ScriptingTask(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                case "RESULT":
-                    obj = new ScriptingResult(engine, name, type, parameters, displayMode, displayParameters);
-                    break;
-                default:
-                    throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
+                //find token or die
+                MatchCollection matches = null;
+                if (objectRE.IsMatch(line))
+                    matches = objectRE.Matches(line);
+                else if (setRE.IsMatch(line))
+                    matches = setRE.Matches(line);
+
+                if (matches != null)
+                {
+                    //parse the constructor and create the object or die
+                    var groups = matches[0].Groups;
+
+                    var objectClass = groups["object"].Value.ToUpper();
+                    var name = groups["name"].Value.ToLower();
+                    var type = groups["type"].Value.ToUpper(); ;
+                    var parameters = SplitParameters(groups["parms"].Value.ToLower());
+                    var displayMode = groups["display"].Value.ToUpper(); ;
+                    var displayParameters = SplitParameters(groups["displayparms"].Value);
+
+                    switch (objectClass)
+                    {
+                        case "AREA":
+                            obj = new ScriptingArea(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "FILTER":
+                            obj = new ScriptingFilter(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "MAP":
+                            obj = new ScriptingMap(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "POINT":
+                            obj = new ScriptingPoint(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "SET":
+                            obj = new ScriptingSetting(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "TASK":
+                            obj = new ScriptingTask(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "RESULT":
+                            obj = new ScriptingResult(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        default:
+                            throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
+                    }
+                    obj.Layer = (uint)OverlayLayers.All;
+                }
+                else
+                    //no token match
+                    throw new ArgumentException("Syntax error");
             }
 
             return obj;
         }
+        /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
+        /// <param name="parms">string containing comma separated parameters</param>
+        /// <returns>array of string parameters</returns>
+        private static string[] SplitParameters(string parms)
+        {
+            var split = parms.Split(new char[] { ',' });
+            for (int i = 0; i < split.Length; i++)
+            {
+                split[i] = split[i].Trim();
+            }
 
+            return split;
+        }
         protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
         {
             this.Engine = engine;

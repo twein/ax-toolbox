@@ -60,9 +60,11 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     if (DisplayParameters[0] != "")
-                        color = ParseColor(DisplayParameters[0]);
+                        Color = ParseColor(DisplayParameters[0]);
                     break;
             }
+
+            Layer = (uint)OverlayLayers.Areas;
         }
 
         public override void Process()
@@ -91,19 +93,23 @@ namespace AXToolbox.Scripting
                 {
                     case "CIRCLE":
                         if (center.Point != null)
-                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Color = color };
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName);
                         break;
 
                     case "POLY":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
-                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Color = color };
+                        overlay = new PolygonalAreaOverlay(list, ObjectName);
                         break;
                 }
 
                 if (overlay != null)
+                {
+                    overlay.Color = Color;
+                    overlay.Layer = Layer;
                     Engine.MapViewer.AddOverlay(overlay);
+                }
             }
         }
 
