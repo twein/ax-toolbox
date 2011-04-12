@@ -48,8 +48,9 @@ namespace AXToolbox.Scripting
             {
                 if (value != launchPoint)
                 {
-                    Notes.Add(string.Format("The launch point has been changed from {0} to {1}", launchPoint, value));
+                    Notes.Add(string.Format("Launch point set to {0}", value));
                     launchPoint = value;
+                    Notes.Add(string.Format("Ignoring {0} points before launch", OriginalTrack.Where(p => p.IsValid && p.Time < launchPoint.Time).Count()));
                     RaisePropertyChanged("LaunchPoint");
                 }
             }
@@ -62,8 +63,9 @@ namespace AXToolbox.Scripting
             {
                 if (value != landingPoint)
                 {
-                    Notes.Add(string.Format("The landing point has been changed from {0} to {1}", landingPoint, value));
+                    Notes.Add(string.Format("Landing point set to {0}", value));
                     landingPoint = value;
+                    Notes.Add(string.Format("Ignoring {0} points after landing", OriginalTrack.Where(p => p.IsValid && p.Time > LandingPoint.Time).Count()));
                     RaisePropertyChanged("LandingPoint");
                 }
             }
@@ -116,8 +118,12 @@ namespace AXToolbox.Scripting
                     track.Add(settings.FromGeoToAXTrackpoint(p, logFile.IsAltitudeBarometric));
 
                 var markers = new ObservableCollection<AXWaypoint>();
-                foreach (var p in logFile.GetMarkers())
-                    markers.Add(settings.FromGeoToAXWaypoint(p, logFile.IsAltitudeBarometric));
+                foreach (var m in logFile.GetMarkers())
+                    markers.Add(settings.FromGeoToAXWaypoint(m, logFile.IsAltitudeBarometric));
+
+                var declarations = new ObservableCollection<GoalDeclaration>();
+                foreach (var d in logFile.GetGoalDeclarations())
+                    declarations.Add(d);
 
                 //Make new report
                 report = new FlightReport(settings)
@@ -130,7 +136,7 @@ namespace AXToolbox.Scripting
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
                     OriginalTrack = track,
                     Markers = markers,
-                    DeclaredGoals = logFile.GetGoalDeclarations(),
+                    DeclaredGoals = declarations,
                     Notes = new ObservableCollection<string>()
                 };
 
@@ -310,18 +316,18 @@ namespace AXToolbox.Scripting
             else
             {
                 // find launch point
-                launchPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time <= highest.Time), true);
-                if (launchPoint == null)
+                LaunchPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time <= highest.Time), true);
+                if (LaunchPoint == null)
                 {
-                    launchPoint = CleanTrack.First();
+                    LaunchPoint = CleanTrack.First();
                     Notes.Add("Launch point not found. Using first valid track point.");
                 }
 
                 // find landing point
-                landingPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time >= highest.Time), false);
-                if (landingPoint == null)
+                LandingPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time >= highest.Time), false);
+                if (LandingPoint == null)
                 {
-                    landingPoint = CleanTrack.Last();
+                    LandingPoint = CleanTrack.Last();
                     Notes.Add("Landing point not found. Using last valid track point.");
                 }
             }
