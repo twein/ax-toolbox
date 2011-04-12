@@ -113,15 +113,15 @@ namespace AXToolbox.GPSLoggers
         public LatLonCoordinates(Datum datum, double latitude, double longitude, double altitude)
         {
             Datum = datum;
-            Latitude = new Angle(latitude).Normalize180();
-            Longitude = new Angle(longitude).Normalize180();
+            Latitude = Angle.Normalize180(new Angle(latitude));
+            Longitude = Angle.Normalize180(new Angle(longitude));
             Altitude = altitude;
         }
         public LatLonCoordinates(Datum datum, Angle latitude, Angle longitude, double altitude)
         {
             Datum = datum;
-            Latitude = latitude.Normalize180();
-            Longitude = longitude.Normalize180();
+            Latitude = Angle.Normalize180(latitude);
+            Longitude = Angle.Normalize180(longitude);
             Altitude = altitude;
         }
 

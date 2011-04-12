@@ -5,6 +5,7 @@ using System.Text;
 using AXToolbox.MapViewer;
 using AXToolbox.Common;
 using System.Windows;
+using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Scripting
 {
@@ -234,8 +235,9 @@ namespace AXToolbox.Scripting
                         {
                             var nab = Physics.Direction2D(A.Point, B.Point); //north-A-B
                             var nbc = Physics.Direction2D(B.Point, C.Point); //north-B-C
+                            var ang = Physics.Substract(nab, nbc);
 
-                            Result = task.NewResult(Math.Round(Physics.NormalizeDirection(nab - nbc), 2)); //=180-ABC
+                            Result = task.NewResult(Math.Round(Math.Abs(ang), 2));
                             Result.UsedPoints.Add(A.Point);
                             Result.UsedPoints.Add(B.Point);
                             Result.UsedPoints.Add(C.Point);
@@ -246,17 +248,25 @@ namespace AXToolbox.Scripting
                     case "ANGN":
                         //ANGN: angle to the north
                         //ANGN(<pointNameA>, <pointNameB>)
-                        Result = task.NewResult(Math.Round(Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point)), 2));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
+                        {
+                            var ang = Physics.Substract(Physics.Direction2D(A.Point, B.Point), 0);
+
+                            Result = task.NewResult(Math.Round(Math.Abs(ang), 2));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                        }
                         break;
 
                     case "ANGSD":
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
-                        Result = task.NewResult(Math.Round(Physics.NormalizeDirection(Physics.Direction2D(A.Point, B.Point) - setDirection), 2));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
+                        {
+                            var ang = Physics.Substract(Physics.Direction2D(A.Point, B.Point), setDirection);
+
+                            Result = task.NewResult(Math.Round(Math.Abs(ang), 2));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                        }
                         break;
                 }
             }

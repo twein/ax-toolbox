@@ -54,26 +54,31 @@ namespace AXToolbox.GPSLoggers
             get { return Math.Tan(radians); }
         }
 
-        /// <summary>
-        /// Normalize an angle to [0, 360)
-        /// </summary>
-        public Angle Normalize360()
-        {
-            return new Angle((radians * RAD2DEG + 360.0) % 360);
-        }
-        /// <summary>
-        /// Normalize an angle to [-180, 180)
-        /// </summary>
-        public Angle Normalize180()
-        {
-            return new Angle((radians * RAD2DEG + 180.0) % 360 - 180);
-        }
-
         public override string ToString()
         {
             return (radians * RAD2DEG).ToString();
         }
 
+
+        /// <summary>
+        /// Normalize an angle to [0, 360)
+        /// </summary>
+        public static Angle Normalize360(Angle angle)
+        {
+            return new Angle((angle.Degrees + 360.0) % 360);
+        }
+        /// <summary>
+        /// Normalize an angle to [-180, 180)
+        /// </summary>
+        public static Angle Normalize180(Angle angle)
+        {
+            var normalized = Normalize360(angle);
+            if (normalized.Degrees > 180)
+                normalized = Angle360 - normalized;
+            return normalized;
+        }
+
+        
         public static Angle Asin(double radians)
         {
             return new Angle() { Radians = Math.Asin(radians) };

@@ -47,10 +47,10 @@ namespace AXToolbox.GPSLoggers
             var M = new Angle(0.9856 * t - 3.289);
 
             //4: calculate the Sun's true longitude
-            var L = (M + 1.916 * M.Sin + 0.020 * (2.0 * M).Sin + 282.634).Normalize360();
+            var L = Angle.Normalize360(M + 1.916 * M.Sin + 0.020 * (2.0 * M).Sin + 282.634);
 
             //5: calculate the Sun's right ascension
-            var RA = Angle.Atan(0.91764 * L.Tan).Normalize360();
+            var RA = Angle.Normalize360(Angle.Atan(0.91764 * L.Tan));
             //right ascension value needs to be in the same quadrant as L
             var Lquadrant = Math.Floor(L.Degrees / 90.0) * 90.0;
             var RAquadrant = Math.Floor(RA.Degrees / 90.0) * 90.0;
@@ -100,10 +100,10 @@ namespace AXToolbox.GPSLoggers
             var M = new Angle(0.9856 * t - 3.289);
 
             //4: calculate the Sun's true longitude
-            var L = (M + 1.916 * M.Sin + 0.020 * (2.0 * M).Sin + 282.634).Normalize360();
+            var L = Angle.Normalize360(M + 1.916 * M.Sin + 0.020 * (2.0 * M).Sin + 282.634);
 
             //5: calculate the Sun's right ascension
-            var RA = Angle.Atan(0.91764 * L.Tan).Normalize360();
+            var RA = Angle.Normalize360(Angle.Atan(0.91764 * L.Tan));
             //right ascension value needs to be in the same quadrant as L
             var Lquadrant = Math.Floor(L.Degrees / 90.0) * 90.0;
             var RAquadrant = Math.Floor(RA.Degrees / 90.0) * 90.0;

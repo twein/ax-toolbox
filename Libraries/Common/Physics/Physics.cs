@@ -1,12 +1,10 @@
 ﻿using System;
+using AXToolbox.GPSLoggers;
 
 namespace AXToolbox.Common
 {
     public static class Physics
     {
-        public const double RAD2DEG = 180 / Math.PI;
-        public const double DEG2RAD = Math.PI / 180;
-
         public static TimeSpan TimeDiff(AXPoint point1, AXPoint point2)
         {
             return point2.Time - point1.Time;
@@ -57,21 +55,16 @@ namespace AXToolbox.Common
         /// <returns>Direction in degrees</returns>
         public static double Direction2D(AXPoint point1, AXPoint point2)
         {
-            var angle = Math.PI / 2 - Math.Atan2(point2.Northing - point1.Northing, point2.Easting - point1.Easting);
-
-            return (360 + RAD2DEG * angle) % 360;
+            return 90 - 180 * Math.Atan2(point2.Northing - point1.Northing, point2.Easting - point1.Easting) / Math.PI;
         }
-        /// <summary>Returns a direction between 0 and 180 degrees. 
-        /// Would be the equivalent of Math.Abs() for angles
-        /// </summary>
-        /// <param name="direction"></param>
-        /// <returns></returns>
-        public static double NormalizeDirection(double direction)
-        {
-            if (direction > 180)
-                direction = 360 - direction;
 
-            return direction;
+
+        public static double Substract(double direction1, double direction2)
+        {
+            var ang = (360 + direction1 - direction2) % 360;
+            if (ang > 180)
+                ang = 360 - ang;
+            return ang;
         }
 
         /// <summary>Area of a triangle given the three vertices 
