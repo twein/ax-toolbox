@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Netline.BalloonLogger.SignatureLib;
+using System.Threading.Tasks;
 
 namespace AXToolbox.GPSLoggers
 {
@@ -68,16 +69,14 @@ namespace AXToolbox.GPSLoggers
 
         public override List<GeoPoint> GetTrackLog()
         {
-            var track = new List<GeoPoint>();
-
-            foreach (var line in TrackLogLines.Where(l => l.StartsWith("B")))
+            var lines = TrackLogLines.Where(l => l.StartsWith("B")).ToArray();
+            var points = new GeoPoint[lines.Length];
+            Parallel.For(0, lines.Length, i =>
             {
-                var p = ParseTrackPoint(line);
-                if (p != null)
-                    track.Add(p);
-            }
+                points[i] = ParseTrackPoint(lines[i]);
+            });
 
-            return track;
+            return points.Where(p => p != null).ToList();
         }
         public override ObservableCollection<GeoWaypoint> GetMarkers()
         {

@@ -189,7 +189,6 @@ namespace AXToolbox.Scripting
 
             CheckConstructorSyntax();
             CheckDisplayModeSyntax();
-            Display();
 
             Trace.WriteLine(this.ToString(), ObjectClass);
         }

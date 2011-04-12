@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using AXToolbox.Common;
-using AXToolbox.GPSLoggers;
-using AXToolbox.MapViewer;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using AXToolbox.Common;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -115,6 +115,8 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Settings");
             RaisePropertyChanged("ShortDescription");
             RaisePropertyChanged("Detail");
+
+            Display();
         }
         public void LoadFlightReport(string loggerFile)
         {
@@ -123,13 +125,7 @@ namespace AXToolbox.Scripting
             Report = FlightReport.Load(loggerFile, Settings);
             RaisePropertyChanged("Report");
 
-            //display track, markers and goal declarations on mapviewer
-
             Display();
-            foreach (var obj in Heap.Values)
-            {
-                obj.Display();
-            }
         }
 
         public void Reset()
@@ -137,7 +133,6 @@ namespace AXToolbox.Scripting
             foreach (var obj in Heap.Values)
                 obj.Reset();
             Report = null;
-            MapViewer.ClearOverlays();
             RaisePropertyChanged("Report");
         }
         public void Process()
@@ -163,12 +158,12 @@ namespace AXToolbox.Scripting
 
             if (Report != null)
             {
-                var track = new Point[Report.FlightTrack.Count];
-                for (var i = 0; i < Report.FlightTrack.Count; i++)
+                var path = new Point[Report.FlightTrack.Count];
+                Parallel.For(0, Report.FlightTrack.Count, i =>
                 {
-                    track[i] = Report.FlightTrack[i].ToWindowsPoint();
-                }
-                MapViewer.AddOverlay(new TrackOverlay(track, 2) { Layer = (uint)OverlayLayers.Track });
+                    path[i] = Report.FlightTrack[i].ToWindowsPoint();
+                });
+                MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
 
                 MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
                 MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Extreme_Points });
@@ -181,15 +176,6 @@ namespace AXToolbox.Scripting
 
             foreach (var obj in Heap.Values)
                 obj.Display();
-        }
-
-        private MapOverlay MakeTrackOverlay(List<AXTrackpoint> track)
-        {
-            var path = new Point[track.Count];
-            for (var i = 0; i < track.Count; i++)
-                path[i] = track[i].ToWindowsPoint();
-
-            return new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track };
         }
     }
 }
