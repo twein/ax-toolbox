@@ -32,9 +32,9 @@ namespace AXToolbox.GPSLoggers
             TrackLogLines = File.ReadAllLines(filePath, Encoding.ASCII);
         }
 
-        public abstract List<GeoPoint> GetTrackLog();
-        public abstract ObservableCollection<GeoWaypoint> GetMarkers();
-        public abstract ObservableCollection<GoalDeclaration> GetGoalDeclarations();
+        public abstract GeoPoint[] GetTrackLog();
+        public abstract List<GeoWaypoint> GetMarkers();
+        public abstract List<GoalDeclaration> GetGoalDeclarations();
 
         public static LoggerFile Load(string fileName)
         {

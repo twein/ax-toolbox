@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 
@@ -22,7 +21,7 @@ namespace AXToolbox.GPSLoggers
             catch (InvalidOperationException) { }
         }
 
-        public override List<GeoPoint> GetTrackLog()
+        public override GeoPoint[] GetTrackLog()
         {
 
             var utm = false;
@@ -99,15 +98,15 @@ namespace AXToolbox.GPSLoggers
                 }
             }
 
-            return track;
+            return track.ToArray();
         }
-        public override ObservableCollection<GeoWaypoint> GetMarkers()
+        public override List<GeoWaypoint> GetMarkers()
         {
-            return new ObservableCollection<GeoWaypoint>();
+            return new List<GeoWaypoint>();
         }
-        public override ObservableCollection<GoalDeclaration> GetGoalDeclarations()
+        public override List<GoalDeclaration> GetGoalDeclarations()
         {
-            return new ObservableCollection<GoalDeclaration>();
+            return new List<GoalDeclaration>();
         }
     }
 }

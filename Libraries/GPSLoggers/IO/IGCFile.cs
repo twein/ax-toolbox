@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Netline.BalloonLogger.SignatureLib;
 using System.Threading.Tasks;
+using Netline.BalloonLogger.SignatureLib;
 
 namespace AXToolbox.GPSLoggers
 {
@@ -67,7 +66,7 @@ namespace AXToolbox.GPSLoggers
 
         }
 
-        public override List<GeoPoint> GetTrackLog()
+        public override GeoPoint[] GetTrackLog()
         {
             var lines = TrackLogLines.Where(l => l.StartsWith("B")).ToArray();
             var points = new GeoPoint[lines.Length];
@@ -76,11 +75,11 @@ namespace AXToolbox.GPSLoggers
                 points[i] = ParseTrackPoint(lines[i]);
             });
 
-            return points.Where(p => p != null).ToList();
+            return points.Where(p => p != null).ToArray();
         }
-        public override ObservableCollection<GeoWaypoint> GetMarkers()
+        public override List<GeoWaypoint> GetMarkers()
         {
-            var markers = new ObservableCollection<GeoWaypoint>();
+            var markers = new List<GeoWaypoint>();
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX0"))
             {
                 var wp = ParseMarker(line);
@@ -89,9 +88,9 @@ namespace AXToolbox.GPSLoggers
             }
             return markers;
         }
-        public override ObservableCollection<GoalDeclaration> GetGoalDeclarations()
+        public override List<GoalDeclaration> GetGoalDeclarations()
         {
-            var declarations = new ObservableCollection<GoalDeclaration>();
+            var declarations = new List<GoalDeclaration>();
             foreach (var line in TrackLogLines.Where(l => l.StartsWith("E") && l.Substring(7, 3) == "XX1"))
             {
                 var wp = ParseDeclaration(line);

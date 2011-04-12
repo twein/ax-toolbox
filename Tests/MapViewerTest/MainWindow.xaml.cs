@@ -80,8 +80,8 @@ namespace MapViewerTest
                 {
                     var logFile = LoggerFile.Load(dlg.FileName);
                     var trackLog = logFile.GetTrackLog();
-                    var track = new Point[trackLog.Count];
-                    for (var i = 0; i < trackLog.Count; i++)
+                    var track = new Point[trackLog.Length];
+                    for (var i = 0; i < trackLog.Length; i++)
                     {
                         var p = trackLog[i];
                         var tmpPoint = p.Coordinates.ToUtm(datum, utmZone);
