@@ -32,16 +32,12 @@ namespace AXToolbox.Scripting
                     topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
                     bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
 
-                    Engine.MapViewer.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
-
                     break;
 
                 case "BLANK":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     topLeft = ResolveOrDie<ScriptingPoint>(0).Point;
                     bottomRight = ResolveOrDie<ScriptingPoint>(1).Point;
-
-                    Engine.MapViewer.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
 
                     break;
             }
@@ -69,6 +65,19 @@ namespace AXToolbox.Scripting
         }
         public override void Display()
         {
+            if (!Engine.MapViewer.IsMapLoaded)
+            {
+                switch (ObjectType)
+                {
+                    case "BITMAP":
+                        Engine.MapViewer.LoadBitmap(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
+                        break;
+
+                    case "BLANK":
+                        Engine.MapViewer.LoadBlank(topLeft.ToWindowsPoint(), bottomRight.ToWindowsPoint());
+                        break;
+                }
+            }
             if (gridWidth > 0)
                 Engine.MapViewer.AddOverlay(new CoordinateGridOverlay(gridWidth) { Layer = (uint)OverlayLayers.Grid });
         }
