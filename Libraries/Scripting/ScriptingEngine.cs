@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
 
@@ -116,6 +116,8 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Settings");
             RaisePropertyChanged("ShortDescription");
             RaisePropertyChanged("Detail");
+
+            Display(true);
         }
         public void LoadFlightReport(string loggerFile)
         {
@@ -123,6 +125,7 @@ namespace AXToolbox.Scripting
             Reset();
             Report = FlightReport.Load(loggerFile, Settings);
             RaisePropertyChanged("Report");
+            Display();
         }
 
         public void Reset()
@@ -143,35 +146,40 @@ namespace AXToolbox.Scripting
             //collect results
             foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
                 Report.Results.Add(t.Result);
+
+            Display();
         }
 
-        public void Display(bool factoryReset = false)
+        private void Display(bool factoryReset = false)
         {
-            if (factoryReset)
-                MapViewer.Clear();
-            else
-                MapViewer.ClearOverlays();
-
-            foreach (var obj in Heap.Values)
-                obj.Display();
-
-            if (Report != null)
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
-                var path = new Point[Report.FlightTrack.Count];
-                Parallel.For(0, Report.FlightTrack.Count, i =>
-                {
-                    path[i] = Report.FlightTrack[i].ToWindowsPoint();
-                });
-                MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
+                if (factoryReset)
+                    MapViewer.Clear();
+                else
+                    MapViewer.ClearOverlays();
 
-                MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
-                MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Extreme_Points });
+                foreach (var obj in Heap.Values)
+                    obj.Display();
 
-                foreach (var m in Report.Markers)
+                if (Report != null)
                 {
-                    MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Pilot_Points });
+                    var path = new Point[Report.FlightTrack.Length];
+                    Parallel.For(0, Report.FlightTrack.Length, i =>
+                    {
+                        path[i] = Report.FlightTrack[i].ToWindowsPoint();
+                    });
+                    MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
+
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Extreme_Points });
+
+                    foreach (var m in Report.Markers)
+                    {
+                        MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Pilot_Points });
+                    }
                 }
-            }
+            }));
         }
     }
 }

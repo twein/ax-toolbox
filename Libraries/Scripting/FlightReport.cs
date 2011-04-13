@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
@@ -52,8 +53,11 @@ namespace AXToolbox.Scripting
                 {
                     Notes.Add(string.Format("Launch point set to {0}", value));
                     launchPoint = value;
-                    Notes.Add(string.Format("Ignoring {0} points before launch", OriginalTrack.Where(p => p.IsValid && p.Time < launchPoint.Time).Count()));
+                    Notes.Add(string.Format("Ignoring {0} points before launch", CleanTrack.Where(p => p.IsValid && p.Time < launchPoint.Time).Count()));
                     RaisePropertyChanged("LaunchPoint");
+
+                    if (LaunchPoint != null && LandingPoint != null)
+                        flightTrack = CleanTrack.Where(p => p.Time >= LaunchPoint.Time && p.Time <= LandingPoint.Time).ToArray();
                 }
             }
         }
@@ -67,8 +71,11 @@ namespace AXToolbox.Scripting
                 {
                     Notes.Add(string.Format("Landing point set to {0}", value));
                     landingPoint = value;
-                    Notes.Add(string.Format("Ignoring {0} points after landing", OriginalTrack.Where(p => p.IsValid && p.Time > LandingPoint.Time).Count()));
+                    Notes.Add(string.Format("Ignoring {0} points after landing", CleanTrack.Where(p => p.IsValid && p.Time > LandingPoint.Time).Count()));
                     RaisePropertyChanged("LandingPoint");
+
+                    if (LaunchPoint != null && LandingPoint != null)
+                        flightTrack = CleanTrack.Where(p => p.Time >= LaunchPoint.Time && p.Time <= LandingPoint.Time).ToArray();
                 }
             }
         }
@@ -80,13 +87,18 @@ namespace AXToolbox.Scripting
 
         /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
         /// </summary>
-        public List<AXTrackpoint> OriginalTrack { get; protected set; }
+        public AXTrackpoint[] OriginalTrack { get; protected set; }
+        protected AXTrackpoint[] originalTrack;
         /// <summary>Track without spikes and dupes. May contain points before launch and after landing
         /// </summary>
-        public List<AXTrackpoint> CleanTrack { get { return OriginalTrack.Where(p => p.IsValid).ToList(); } }
+        public AXTrackpoint[] CleanTrack { get { return cleanTrack; } }
+        [NonSerialized]
+        protected AXTrackpoint[] cleanTrack;
         /// <summary>Clean track from launch to landing
         /// </summary>
-        public List<AXTrackpoint> FlightTrack { get { return OriginalTrack.Where(p => p.IsValid && p.Time >= launchPoint.Time && p.Time <= landingPoint.Time).ToList(); } }
+        public AXTrackpoint[] FlightTrack { get { return flightTrack; } }
+        [NonSerialized]
+        protected AXTrackpoint[] flightTrack;
 
 
         public string ShortDescription { get { return this.ToString(); } }
@@ -109,6 +121,8 @@ namespace AXToolbox.Scripting
             {
                 //deserialize report
                 report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+                report.cleanTrack = report.OriginalTrack.Where(p => p.IsValid).ToArray();
+                report.flightTrack = report.CleanTrack.Where(p => p.Time >= report.LaunchPoint.Time && p.Time <= report.LandingPoint.Time).ToArray();
             }
             else
             {
@@ -136,7 +150,7 @@ namespace AXToolbox.Scripting
                     pilotId = logFile.PilotId,
                     LoggerModel = logFile.LoggerModel,
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
-                    OriginalTrack = track,
+                    OriginalTrack = track.ToArray(),
                     Markers = markers,
                     DeclaredGoals = declarations,
                     Notes = new ObservableCollection<string>()
@@ -158,6 +172,7 @@ namespace AXToolbox.Scripting
                 report.RemoveInvalidPoints();
                 report.DetectLaunchAndLanding();
             }
+
             return report;
         }
         //constructor
@@ -168,7 +183,7 @@ namespace AXToolbox.Scripting
             pilotId = 0;
             LoggerModel = "";
             LoggerSerialNumber = "";
-            OriginalTrack = new List<AXTrackpoint>();
+            OriginalTrack = new AXTrackpoint[0];
             Markers = new ObservableCollection<AXWaypoint>();
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
             Results = new ObservableCollection<Result>();
@@ -300,7 +315,7 @@ namespace AXToolbox.Scripting
                 point_m1 = point;
             }
 
-            Notes.Add(string.Format("Original track has {0} points", OriginalTrack.Count));
+            Notes.Add(string.Format("Original track has {0} points", OriginalTrack.Length));
 
             if (nTime > 0)
                 Notes.Add(string.Format("Removed {0} out-of-time points", nTime));
@@ -308,6 +323,8 @@ namespace AXToolbox.Scripting
                 Notes.Add(string.Format("Removed {0} duplicated points", nDupe));
             if (nSpike > 0)
                 Notes.Add(string.Format("Removed {0} spike points", nSpike));
+
+            cleanTrack = OriginalTrack.Where(p => p.IsValid).ToArray();
         }
         protected void DetectLaunchAndLanding()
         {

@@ -113,15 +113,12 @@ namespace FlightAnalyzer
                 {
                     case "script":
                         RaisePropertyChanged("Engine");
-                        Engine.Display(true);
                         break;
                     case "report":
                         Report = Engine.Report;
                         RaisePropertyChanged("Report");
-                        Engine.Display();
                         break;
                     case "process":
-                        Engine.Display();
                         break;
                 }
             }
