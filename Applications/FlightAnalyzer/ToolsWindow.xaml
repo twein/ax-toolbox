@@ -22,9 +22,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <RadioButton Name="radioOriginalTrack" GroupName="radioTrackType" ToolTip="Show the original track log" IsChecked="True">Original</RadioButton>
-            <RadioButton Name="radioCleanTrack" GroupName="radioTrackType" ToolTip="Show the clean track log (no spikes)">Clean</RadioButton>
-            <RadioButton Name="radioFlightTrack" GroupName="radioTrackType" ToolTip="Show the flight track log (from launch to landing)">Flight track</RadioButton>
+            <RadioButton Name="radioOriginalTrack" GroupName="radioTrackType" ToolTip="Show the original track log" Checked="radioTrack_Checked">Original</RadioButton>
+            <RadioButton Name="radioCleanTrack" GroupName="radioTrackType" ToolTip="Show the clean track log (no spikes)" Checked="radioTrack_Checked" IsChecked="True">Clean</RadioButton>
+            <RadioButton Name="radioFlightTrack" GroupName="radioTrackType" ToolTip="Show the flight track log (from launch to landing)" Checked="radioTrack_Checked">Flight track</RadioButton>
         </StackPanel>
         <Slider Grid.Row="1" Name="sliderTrackPointer" ToolTip="Track pointer" Width="Auto" SmallChange="1" LargeChange="60"/>
         <CheckBox Grid.Row="2" Name="checkCenterPointer" ToolTip="Center the track pointer">Center pointer</CheckBox>

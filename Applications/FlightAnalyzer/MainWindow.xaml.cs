@@ -14,7 +14,7 @@ namespace FlightAnalyzer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public Window Tools { get; private set; }
+        public ToolsWindow Tools { get; private set; }
 
         public ScriptingEngine Engine { get; private set; }
         public FlightReport Report { get; private set; }
@@ -49,7 +49,7 @@ namespace FlightAnalyzer
                 if (dlg.ShowDialog(this) == true)
                 {
                     if (Engine == null)
-                        Engine = new ScriptingEngine(map);
+                        Engine = new ScriptingEngine(map) { VisibleTrack = Tools.TrackType };
 
                     Cursor = Cursors.Wait;
                     worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
