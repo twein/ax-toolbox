@@ -97,7 +97,7 @@ namespace AXToolbox.Scripting
 
             //removes filter if any
             Engine.ValidTrackPoints = Engine.Report.FlightTrack.ToArray();
-            Engine.Report.Notes.Add(string.Format("{0}: track contains {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
+            Engine.Report.AddNote(string.Format("{0}: track contains {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
         }
 
         public Result NewResult(double value)

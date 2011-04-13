@@ -195,6 +195,8 @@ namespace AXToolbox.MapViewer
             }
         }
 
+        /// <summary>Factory reset
+        /// </summary>
         public void Clear()
         {
             IsMapLoaded = false;

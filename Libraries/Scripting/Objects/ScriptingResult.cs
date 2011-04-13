@@ -149,7 +149,7 @@ namespace AXToolbox.Scripting
             // syntax is already checked
             if (A.Point == null || B.Point == null)
             {
-                Engine.Report.Notes.Add(ObjectName + ": reference point is null");
+                Engine.Report.AddNote(ObjectName + ": reference point is null");
             }
             else
             {
@@ -215,7 +215,7 @@ namespace AXToolbox.Scripting
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                            Engine.Report.Notes.Add(ObjectName + ": reference point is null");
+                            Engine.Report.AddNote(ObjectName + ": reference point is null");
                         else
                         {
                             Result = task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point), 2));
@@ -230,7 +230,7 @@ namespace AXToolbox.Scripting
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                            Engine.Report.Notes.Add(ObjectName + ": reference point is null");
+                            Engine.Report.AddNote(ObjectName + ": reference point is null");
                         else
                         {
                             var nab = Physics.Direction2D(A.Point, B.Point); //north-A-B
@@ -274,7 +274,7 @@ namespace AXToolbox.Scripting
             if (Result == null)
                 Result = task.NewNoResult();
 
-            Engine.Report.Notes.Add(string.Format("{0}: result is {1}", ObjectName, Result));
+            Engine.Report.AddNote(string.Format("{0}: result is {1}", ObjectName, Result));
         }
 
         public override void Display()

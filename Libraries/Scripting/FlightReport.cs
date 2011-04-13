@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using AXToolbox.GPSLoggers;
@@ -239,6 +241,14 @@ namespace AXToolbox.Scripting
             //if (ok)
             //    Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
             //return ok;
+        }
+
+        public void AddNote(string note)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                Notes.Add(note);
+            }));
         }
 
         protected void RemoveInvalidPoints()
