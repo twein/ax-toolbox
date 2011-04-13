@@ -307,7 +307,7 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Engine.Report.Notes.Add(ObjectName + ": No trackpoint corresponds to marker drop");
+                        Engine.Report.AddNote(ObjectName + ": No trackpoint corresponds to marker drop");
                     } //none found
                     break;
 
@@ -470,9 +470,9 @@ namespace AXToolbox.Scripting
             }
 
             if (Point == null)
-                Engine.Report.Notes.Add(ObjectName + ": could not be resolved");
+                Engine.Report.AddNote(ObjectName + ": could not be resolved");
             else
-                Engine.Report.Notes.Add(ObjectName + ": resolved to " + Point.ToString());
+                Engine.Report.AddNote(ObjectName + ": resolved to " + Point.ToString());
         }
 
         private AXPoint TryResolveGoalDeclaration()

@@ -1,12 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
-using System.ComponentModel;
-using AXToolbox.Common;
-using System.Diagnostics;
-using System.Windows.Input;
-using System.IO;
 
 
 namespace FlightAnalyzer
@@ -34,7 +32,7 @@ namespace FlightAnalyzer
         {
             Tools = new ToolsWindow() { Owner = this };
             worker.DoWork += Work;
-            worker.RunWorkerCompleted += WorkFinished;
+            worker.RunWorkerCompleted += WorkCompleted;
 
             //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Extreme_Points);
         }
@@ -54,7 +52,7 @@ namespace FlightAnalyzer
                         Engine = new ScriptingEngine(map);
 
                     Cursor = Cursors.Wait;
-                    worker.RunWorkerAsync(dlg.FileName);
+                    worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
                 }
         }
         private void loadReportButton_Click(object sender, RoutedEventArgs e)
@@ -66,20 +64,20 @@ namespace FlightAnalyzer
                 if (dlg.ShowDialog(this) == true)
                 {
                     Cursor = Cursors.Wait;
-                    worker.RunWorkerAsync(dlg.FileName);
+                    worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
                 }
         }
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            worker.RunWorkerAsync("");
+            worker.RunWorkerAsync(""); // look Work() and WorkCompleted()
         }
         private void toolsButton_Click(object sender, RoutedEventArgs e)
         {
             Tools.Show();
         }
 
-
+        // Run lengthy processes asyncronously to improve UI responsiveness
         protected void Work(object s, DoWorkEventArgs args)
         {
             var fileName = (string)args.Argument;
@@ -102,8 +100,7 @@ namespace FlightAnalyzer
                     break;
             }
         }
-
-        protected void WorkFinished(object s, RunWorkerCompletedEventArgs args)
+        protected void WorkCompleted(object s, RunWorkerCompletedEventArgs args)
         {
             if (args.Error != null)
             {
@@ -111,18 +108,20 @@ namespace FlightAnalyzer
             }
             else
             {
-
                 var result = (string)args.Result;
                 switch (result)
                 {
                     case "script":
                         RaisePropertyChanged("Engine");
+                        Engine.Display(true);
                         break;
                     case "report":
                         Report = Engine.Report;
                         RaisePropertyChanged("Report");
+                        Engine.Display();
                         break;
                     case "process":
+                        Engine.Display();
                         break;
                 }
             }

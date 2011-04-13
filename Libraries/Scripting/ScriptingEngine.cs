@@ -74,6 +74,7 @@ namespace AXToolbox.Scripting
 
             Settings = new FlightSettings();
             Heap.Clear();
+            Report = null;
 
             //TODO: initialize all variables
 
@@ -115,8 +116,6 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Settings");
             RaisePropertyChanged("ShortDescription");
             RaisePropertyChanged("Detail");
-
-            Display();
         }
         public void LoadFlightReport(string loggerFile)
         {
@@ -124,8 +123,6 @@ namespace AXToolbox.Scripting
             Reset();
             Report = FlightReport.Load(loggerFile, Settings);
             RaisePropertyChanged("Report");
-
-            Display();
         }
 
         public void Reset()
@@ -139,7 +136,6 @@ namespace AXToolbox.Scripting
         {
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
 
-
             //process all objects
             foreach (var obj in Heap.Values)
                 obj.Process();
@@ -147,14 +143,17 @@ namespace AXToolbox.Scripting
             //collect results
             foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
                 Report.Results.Add(t.Result);
-
-            //redisplay
-            Display();
-
         }
-        private void Display()
+
+        public void Display(bool factoryReset = false)
         {
-            MapViewer.ClearOverlays();
+            if (factoryReset)
+                MapViewer.Clear();
+            else
+                MapViewer.ClearOverlays();
+
+            foreach (var obj in Heap.Values)
+                obj.Display();
 
             if (Report != null)
             {
@@ -173,9 +172,6 @@ namespace AXToolbox.Scripting
                     MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Pilot_Points });
                 }
             }
-
-            foreach (var obj in Heap.Values)
-                obj.Display();
         }
     }
 }

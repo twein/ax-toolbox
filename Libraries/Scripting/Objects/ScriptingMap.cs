@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
-using System.Windows;
 
 namespace AXToolbox.Scripting
 {
@@ -28,9 +27,15 @@ namespace AXToolbox.Scripting
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
 
                     //load the georeferenced image to retrieve top-left and bottom-right corners
-                    var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
-                    topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
-                    bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
+                    var t = new Thread(() =>
+                    {
+                        var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
+                        topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
+                        bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
+                    });
+                    t.SetApartmentState(ApartmentState.STA);
+                    t.Start();
+                    t.Join();
 
                     break;
 
