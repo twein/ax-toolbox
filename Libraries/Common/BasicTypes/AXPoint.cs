@@ -25,10 +25,11 @@ namespace AXToolbox.Common
 
     public class AXPoint
     {
-        public DateTime Time { get; set; }
-        public Double Easting { get; set; }
-        public double Northing { get; set; }
+        public DateTime Time { get; protected set; }
+        public Double Easting { get; protected set; }
+        public double Northing { get; protected set; }
         public double Altitude { get; set; }
+
 
         public AXPoint(DateTime time, double easting, double northing, double altitude)
         {
