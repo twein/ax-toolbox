@@ -27,6 +27,7 @@ namespace AXToolbox.Scripting
         Reference_Points = 0x80,
         Results = 0x100
     }
+    public enum TrackTypes { OriginalTrack, CleanTrack, FligthTrack }
 
     public sealed class ScriptingEngine : BindableObject
     {
@@ -60,6 +61,7 @@ namespace AXToolbox.Scripting
         public FlightReport Report { get; private set; }
 
         public AXTrackpoint[] ValidTrackPoints { get; internal set; }
+        public TrackTypes VisibleTrack { get; set; }
 
         public ScriptingEngine(MapViewerControl map)
         {
@@ -150,7 +152,7 @@ namespace AXToolbox.Scripting
             Display();
         }
 
-        private void Display(bool factoryReset = false)
+        public void Display(bool factoryReset = false)
         {
             Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
@@ -164,10 +166,23 @@ namespace AXToolbox.Scripting
 
                 if (Report != null)
                 {
-                    var path = new Point[Report.FlightTrack.Length];
-                    Parallel.For(0, Report.FlightTrack.Length, i =>
+                    AXTrackpoint[] track = null;
+                    switch (VisibleTrack)
                     {
-                        path[i] = Report.FlightTrack[i].ToWindowsPoint();
+                        case TrackTypes.OriginalTrack:
+                            track = Report.OriginalTrack;
+                            break;
+                        case TrackTypes.CleanTrack:
+                            track = Report.CleanTrack;
+                            break;
+                        case TrackTypes.FligthTrack:
+                            track = Report.FlightTrack;
+                            break;
+                    }
+                    var path = new Point[track.Length];
+                    Parallel.For(0, track.Length, i =>
+                    {
+                        path[i] = track[i].ToWindowsPoint();
                     });
                     MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
 

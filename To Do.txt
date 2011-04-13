@@ -2,6 +2,7 @@ BUGS
 
 
 PENDING
+Make layers the same way as track type selection (visibility property in engine)
 Display correctly AXTrackpoint.StartSubtrack
 Check the workflow of BindableObject.IsDirty
 
