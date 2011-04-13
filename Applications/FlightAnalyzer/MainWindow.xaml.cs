@@ -6,6 +6,7 @@ using System.ComponentModel;
 using AXToolbox.Common;
 using System.Diagnostics;
 using System.Windows.Input;
+using System.IO;
 
 
 namespace FlightAnalyzer
@@ -20,6 +21,8 @@ namespace FlightAnalyzer
         public ScriptingEngine Engine { get; private set; }
         public FlightReport Report { get; private set; }
 
+        protected BackgroundWorker worker = new BackgroundWorker();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +33,9 @@ namespace FlightAnalyzer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Tools = new ToolsWindow() { Owner = this };
+            worker.DoWork += Work;
+            worker.RunWorkerCompleted += WorkFinished;
+
             //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Extreme_Points);
         }
         private void Window_Closed(object sender, EventArgs e)
@@ -38,8 +44,6 @@ namespace FlightAnalyzer
 
         private void loadScriptButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
                 var dlg = new OpenFileDialog();
                 dlg.Filter = "AX-Script files (*.axs)|*.axs";
                 dlg.InitialDirectory = Environment.CurrentDirectory;
@@ -50,20 +54,11 @@ namespace FlightAnalyzer
                         Engine = new ScriptingEngine(map);
 
                     Cursor = Cursors.Wait;
-                    Engine.LoadScript(dlg.FileName);
-                    Cursor = Cursors.Arrow;
-                    RaisePropertyChanged("Engine");
+                    worker.RunWorkerAsync(dlg.FileName);
                 }
-            }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
         private void loadReportButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
                 var dlg = new OpenFileDialog();
                 dlg.Filter = "Report files (*.axr; *.igc; *.trk)|*.axr; *.igc; *.trk";
                 dlg.InitialDirectory = Environment.CurrentDirectory;
@@ -71,28 +66,69 @@ namespace FlightAnalyzer
                 if (dlg.ShowDialog(this) == true)
                 {
                     Cursor = Cursors.Wait;
-                    Engine.LoadFlightReport(dlg.FileName);
-                    Cursor = Cursors.Arrow;
-                    Report = Engine.Report;
-                    RaisePropertyChanged("Report");
+                    worker.RunWorkerAsync(dlg.FileName);
                 }
-            }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            Engine.Process();
-            Cursor = Cursors.Arrow;
+            worker.RunWorkerAsync("");
         }
         private void toolsButton_Click(object sender, RoutedEventArgs e)
         {
             Tools.Show();
         }
 
+
+        protected void Work(object s, DoWorkEventArgs args)
+        {
+            var fileName = (string)args.Argument;
+
+            switch (Path.GetExtension(fileName).ToLower())
+            {
+                case ".axs":
+                    Engine.LoadScript(fileName);
+                    args.Result = "script";
+                    break;
+                case ".axr":
+                case ".igc":
+                case ".trk":
+                    Engine.LoadFlightReport(fileName);
+                    args.Result = "report";
+                    break;
+                case "":
+                    Engine.Process();
+                    args.Result="process";
+                    break;
+            }
+        }
+
+        protected void WorkFinished(object s, RunWorkerCompletedEventArgs args)
+        {
+            if (args.Error != null)
+            {
+                MessageBox.Show(args.Error.Message);
+            }
+            else
+            {
+
+                var result = (string)args.Result;
+                switch (result)
+                {
+                    case "script":
+                        RaisePropertyChanged("Engine");
+                        break;
+                    case "report":
+                        Report = Engine.Report;
+                        RaisePropertyChanged("Report");
+                        break;
+                    case "process":
+                        break;
+                }
+            }
+
+            Cursor = Cursors.Arrow;
+        }
 
         #region "INotifyPropertyCahnged implementation"
         private void RaisePropertyChanged(String propertyName)
