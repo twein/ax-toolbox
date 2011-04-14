@@ -53,14 +53,37 @@ namespace AXToolbox.Scripting
             }
         }
         public FlightSettings Settings { get; private set; }
+        internal Dictionary<string, ScriptingObject> Heap { get; private set; }
+        public FlightReport Report { get; private set; }
         public MapViewerControl MapViewer { get; private set; }
 
-        internal Dictionary<string, ScriptingObject> Heap { get; private set; }
+        internal AXTrackpoint[] ValidTrackPoints { get; set; }
+        public TrackTypes VisibleTrackType { get; set; }
+        public AXTrackpoint[] VisibleTrack
+        {
+            get
+            {
+                AXTrackpoint[] track;
+                switch (VisibleTrackType)
+                {
+                    case TrackTypes.OriginalTrack:
+                        track = Report.OriginalTrack;
+                        break;
+                    case TrackTypes.CleanTrack:
+                        track = Report.CleanTrack;
+                        break;
+                    case TrackTypes.FligthTrack:
+                        track = Report.FlightTrack;
+                        break;
+                    default:
+                        track = null;
+                        break;
+                }
+                return track;
+            }
+        }
 
-        public FlightReport Report { get; private set; }
-
-        public AXTrackpoint[] ValidTrackPoints { get; internal set; }
-        public TrackTypes VisibleTrack { get; set; }
+        public MapOverlay TrackPointer { get; protected set; }
 
         public ScriptingEngine(MapViewerControl map)
         {
@@ -165,25 +188,15 @@ namespace AXToolbox.Scripting
 
                 if (Report != null)
                 {
-                    AXTrackpoint[] track = null;
-                    switch (VisibleTrack)
+                    var path = new Point[VisibleTrack.Length];
+                    Parallel.For(0, VisibleTrack.Length, i =>
                     {
-                        case TrackTypes.OriginalTrack:
-                            track = Report.OriginalTrack;
-                            break;
-                        case TrackTypes.CleanTrack:
-                            track = Report.CleanTrack;
-                            break;
-                        case TrackTypes.FligthTrack:
-                            track = Report.FlightTrack;
-                            break;
-                    }
-                    var path = new Point[track.Length];
-                    Parallel.For(0, track.Length, i =>
-                    {
-                        path[i] = track[i].ToWindowsPoint();
+                        path[i] = VisibleTrack[i].ToWindowsPoint();
                     });
                     MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
+
+                    TrackPointer = new CrosshairsOverlay(path[0]) { Layer = (uint)OverlayLayers.Pointer };
+                    MapViewer.AddOverlay(TrackPointer);
 
                     MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
                     MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Extreme_Points });

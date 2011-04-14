@@ -62,7 +62,9 @@ namespace FlightAnalyzer
                         break;
                 }
 
-                mainWindow.Engine.VisibleTrack = TrackType;
+                mainWindow.Engine.VisibleTrackType = TrackType;
+                //todo:save actual pointer position
+                sliderTrackPointer.Maximum = mainWindow.Engine.VisibleTrack.Length - 1;
                 mainWindow.Engine.Display();
             }
         }
@@ -76,6 +78,15 @@ namespace FlightAnalyzer
                     value |= (uint)l;
 
                 mainWindow.map.LayerVisibilityMask = value;
+            }
+        }
+
+        private void sliderTrackPointer_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (mainWindow.Engine != null && mainWindow.Engine.Report != null)
+            {
+                var slider = (Slider)sender;
+                mainWindow.Engine.TrackPointer.Position = mainWindow.Engine.VisibleTrack[(int)slider.Value].ToWindowsPoint();
             }
         }
     }
