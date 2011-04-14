@@ -50,7 +50,7 @@ namespace FlightAnalyzer
             if (dlg.ShowDialog(this) == true)
             {
                 if (Engine == null)
-                    Engine = new ScriptingEngine(map) { VisibleTrack = Tools.TrackType };
+                    Engine = new ScriptingEngine(map) { VisibleTrackType = Tools.TrackType };
 
                 Cursor = Cursors.Wait;
                 worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()

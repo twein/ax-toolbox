@@ -26,7 +26,7 @@
             <RadioButton Name="radioCleanTrack" GroupName="radioTrackType" ToolTip="Show the clean track log (no spikes)" Checked="radioTrack_Checked" IsChecked="True">Clean</RadioButton>
             <RadioButton Name="radioFlightTrack" GroupName="radioTrackType" ToolTip="Show the flight track log (from launch to landing)" Checked="radioTrack_Checked">Flight track</RadioButton>
         </StackPanel>
-        <Slider Grid.Row="1" Name="sliderTrackPointer" ToolTip="Track pointer" Width="Auto" SmallChange="1" LargeChange="60"/>
+        <Slider Grid.Row="1" Name="sliderTrackPointer" ToolTip="Track pointer" Width="Auto" SmallChange="1" LargeChange="60" ValueChanged="sliderTrackPointer_ValueChanged" IsSnapToTickEnabled="True" />
         <CheckBox Grid.Row="2" Name="checkCenterPointer" ToolTip="Center the track pointer">Center pointer</CheckBox>
 
         <StackPanel Grid.Row="3" Orientation="Horizontal">
