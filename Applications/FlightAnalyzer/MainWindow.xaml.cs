@@ -31,6 +31,7 @@ namespace FlightAnalyzer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Tools = new ToolsWindow() { Owner = this };
+            Tools.Show();
             worker.DoWork += Work;
             worker.RunWorkerCompleted += WorkCompleted;
 
@@ -42,30 +43,30 @@ namespace FlightAnalyzer
 
         private void loadScriptButton_Click(object sender, RoutedEventArgs e)
         {
-                var dlg = new OpenFileDialog();
-                dlg.Filter = "AX-Script files (*.axs)|*.axs";
-                dlg.InitialDirectory = Environment.CurrentDirectory;
-                dlg.RestoreDirectory = true;
-                if (dlg.ShowDialog(this) == true)
-                {
-                    if (Engine == null)
-                        Engine = new ScriptingEngine(map) { VisibleTrack = Tools.TrackType };
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "AX-Script files (*.axs)|*.axs";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog(this) == true)
+            {
+                if (Engine == null)
+                    Engine = new ScriptingEngine(map) { VisibleTrack = Tools.TrackType };
 
-                    Cursor = Cursors.Wait;
-                    worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
-                }
+                Cursor = Cursors.Wait;
+                worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
+            }
         }
         private void loadReportButton_Click(object sender, RoutedEventArgs e)
         {
-                var dlg = new OpenFileDialog();
-                dlg.Filter = "Report files (*.axr; *.igc; *.trk)|*.axr; *.igc; *.trk";
-                dlg.InitialDirectory = Environment.CurrentDirectory;
-                dlg.RestoreDirectory = true;
-                if (dlg.ShowDialog(this) == true)
-                {
-                    Cursor = Cursors.Wait;
-                    worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
-                }
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "Report files (*.axr; *.igc; *.trk)|*.axr; *.igc; *.trk";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog(this) == true)
+            {
+                Cursor = Cursors.Wait;
+                worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
+            }
         }
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -96,7 +97,7 @@ namespace FlightAnalyzer
                     break;
                 case "":
                     Engine.Process();
-                    args.Result="process";
+                    args.Result = "process";
                     break;
             }
         }
@@ -112,7 +113,9 @@ namespace FlightAnalyzer
                 switch (result)
                 {
                     case "script":
+                        Report = Engine.Report;
                         RaisePropertyChanged("Engine");
+                        RaisePropertyChanged("Report");
                         break;
                     case "report":
                         Report = Engine.Report;

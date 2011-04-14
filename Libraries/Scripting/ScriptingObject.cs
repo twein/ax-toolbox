@@ -156,7 +156,6 @@ namespace AXToolbox.Scripting
                         default:
                             throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
                     }
-                    obj.Layer = (uint)OverlayLayers.All;
                 }
                 else
                     //no token match

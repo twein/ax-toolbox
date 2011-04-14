@@ -14,7 +14,6 @@ namespace AXToolbox.Scripting
     [Flags]
     public enum OverlayLayers : uint
     {
-        None = 0x0,
         All = 0xFFFFFFFF,
 
         Grid = 0x1,

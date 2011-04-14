@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using AXToolbox.Scripting;
+using System.Windows.Interop;
 
 namespace FlightAnalyzer
 {
@@ -21,8 +23,22 @@ namespace FlightAnalyzer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             mainWindow = (MainWindow)Owner;
+
+            var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(mainWindow).Handle);
+            Left = screen.Bounds.Right - Width;
+            Top = mainWindow.Top + 30;
+
+            listLayers.SelectedItems.Add(OverlayLayers.Grid);
+            listLayers.SelectedItems.Add(OverlayLayers.Areas);
+            listLayers.SelectedItems.Add(OverlayLayers.Static_Points);
+            listLayers.SelectedItems.Add(OverlayLayers.Track);
+            listLayers.SelectedItems.Add(OverlayLayers.Pointer);
+            listLayers.SelectedItems.Add(OverlayLayers.Pilot_Points);
+            listLayers.SelectedItems.Add(OverlayLayers.Extreme_Points);
+            listLayers.SelectedItems.Add(OverlayLayers.Reference_Points);
+            listLayers.SelectedItems.Add(OverlayLayers.Results);
         }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = true;
             this.Hide();
@@ -51,14 +67,16 @@ namespace FlightAnalyzer
             }
         }
 
-        private void ListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            uint value = 0;
+            if (mainWindow != null)
+            {
+                uint value = 0;
+                foreach (var l in listLayers.SelectedItems)
+                    value |= (uint)l;
 
-            foreach (var l in listLayers.SelectedItems)
-                value |= (uint)l;
-
-            mainWindow.map.LayerVisibilityMask = value;
+                mainWindow.map.LayerVisibilityMask = value;
+            }
         }
     }
 }
