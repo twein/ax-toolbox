@@ -55,13 +55,13 @@ namespace AXToolbox.Common
                 str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
 
             if ((info & AXPointInfo.Coords) > 0)
-                str.Append(string.Format("{0:000000} {1:0000000} ", Easting, Northing));
+                str.Append(string.Format("{0:000000},{1:0000000} ", Easting, Northing));
 
             if ((info & AXPointInfo.CompetitionCoords) > 0)
                 str.Append(string.Format("{0:0000}/{1:0000} ", Easting % 1e5 / 10, Northing % 1e5 / 10));
 
             if ((info & AXPointInfo.Altitude) > 0)
-                str.Append(Altitude.ToString("0 "));
+                str.Append(Altitude.ToString("0m "));
 
             return str.ToString();
         }

@@ -20,7 +20,7 @@ namespace AXToolbox.Common
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude);
+            return ToString(AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude);
         }
         public override string ToString(AXPointInfo info)
         {
