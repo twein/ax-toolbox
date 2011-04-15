@@ -29,7 +29,7 @@ namespace AXToolbox.MapViewer
                 if (mousePointerPosition != value)
                 {
                     mousePointerPosition = value;
-                    NotifyPropertyChanged("PointerPosition");
+                    NotifyPropertyChanged("MousePointerPosition");
                 }
 
             }

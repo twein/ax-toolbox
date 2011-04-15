@@ -4,8 +4,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using AXToolbox.Common;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
+using System.Windows.Controls;
 
 
 namespace FlightAnalyzer
@@ -20,7 +22,9 @@ namespace FlightAnalyzer
         public ScriptingEngine Engine { get; private set; }
         public FlightReport Report { get; private set; }
 
-        protected BackgroundWorker worker = new BackgroundWorker();
+        public AXTrackpoint TrackPointer { get; private set; }
+
+        protected BackgroundWorker Worker = new BackgroundWorker();
 
         public MainWindow()
         {
@@ -35,8 +39,8 @@ namespace FlightAnalyzer
             Tools = new ToolsWindow() { Owner = this, Left = screen.Bounds.Right, Top = screen.Bounds.Top };
             Tools.PropertyChanged += new PropertyChangedEventHandler(Tools_PropertyChanged);
             Tools.Show();
-            worker.DoWork += Work;
-            worker.RunWorkerCompleted += WorkCompleted;
+            Worker.DoWork += Work;
+            Worker.RunWorkerCompleted += WorkCompleted;
 
             //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Extreme_Points);
         }
@@ -44,6 +48,7 @@ namespace FlightAnalyzer
         {
         }
 
+        //Buttons
         private void loadScriptButton_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();
@@ -56,8 +61,12 @@ namespace FlightAnalyzer
                     Engine = new ScriptingEngine(MapViewer) { VisibleTrackType = Tools.TrackType };
 
                 Cursor = Cursors.Wait;
-                worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
+                Worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
             }
+        }
+        private void toolsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tools.Show();
         }
         private void loadReportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -68,17 +77,28 @@ namespace FlightAnalyzer
             if (dlg.ShowDialog(this) == true)
             {
                 Cursor = Cursors.Wait;
-                worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
+                Worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
+            }
+        }
+        private void setLaunchLandingButton_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: save pointer position
+            if (TrackPointer != null)
+            {
+                var name = ((Button)sender).Name;
+                if (name == "setLaunchButton")
+                    Report.LaunchPoint = TrackPointer;
+                else
+                    Report.LandingPoint = TrackPointer;
+
+                Tools.TrackPointsCount = Engine.VisibleTrack.Length;
+                Engine.Display();
             }
         }
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            worker.RunWorkerAsync(""); // look Work() and WorkCompleted()
-        }
-        private void toolsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Tools.Show();
+            Worker.RunWorkerAsync(""); // look Work() and WorkCompleted()
         }
 
         //Handles all property changes from the Tools window
@@ -92,9 +112,11 @@ namespace FlightAnalyzer
                     Engine.Display();
                     break;
                 case "PointerIndex":
-                    Engine.TrackPointer.Position = Engine.VisibleTrack[Tools.PointerIndex].ToWindowsPoint();
+                    TrackPointer = Engine.VisibleTrack[Tools.PointerIndex];
+                    Engine.TrackPointer.Position = TrackPointer.ToWindowsPoint();
                     if (Tools.KeepPointerCentered)
                         MapViewer.PanTo(Engine.TrackPointer.Position);
+                    RaisePropertyChanged("TrackPointer");
                     break;
                 case "KeepPointerCentered":
                     Engine.KeepPointerCentered = Tools.KeepPointerCentered;
@@ -145,12 +167,14 @@ namespace FlightAnalyzer
                 {
                     case "script":
                         Report = Engine.Report;
+                        TrackPointer = null;
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Engine");
                         RaisePropertyChanged("Report");
                         break;
                     case "report":
                         Report = Engine.Report;
+                        TrackPointer = null;
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Report");
                         break;

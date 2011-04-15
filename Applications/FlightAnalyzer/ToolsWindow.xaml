@@ -19,7 +19,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <RadioButton Name="radioOriginalTrack" GroupName="radioTrackType" ToolTip="Show the original track log" Checked="radioTrack_Checked">Original</RadioButton>
@@ -28,12 +27,7 @@
         </StackPanel>
         <Slider Grid.Row="1" Name="sliderTrackPointer" ToolTip="Track pointer" Width="Auto" SmallChange="1" LargeChange="60" ValueChanged="sliderTrackPointer_ValueChanged" IsSnapToTickEnabled="True" />
         <CheckBox Grid.Row="2" Name="checkCenterPointer" ToolTip="Center the track pointer" Click="checkCenterPointer_Click">Center pointer</CheckBox>
-
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Name="buttonSetLaunch" ToolTip="Sets the launch point to the current pointer position">Set launch</Button>
-            <Button Name="buttonSetLanding" ToolTip="Sets the landing point to the current pointer position">Set landing</Button>
-        </StackPanel>
-        <Expander Grid.Row="4">
+        <Expander Grid.Row="3">
             <Expander.Header>Layers</Expander.Header>
             <ListBox Name="listLayers" SelectionMode="Multiple" ItemsSource="{Binding Source={StaticResource Layers}}" SelectionChanged="ListBox_SelectionChanged"/>
         </Expander>
