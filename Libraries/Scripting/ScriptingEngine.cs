@@ -64,30 +64,38 @@ namespace AXToolbox.Scripting
             get
             {
                 AXTrackpoint[] track;
-                switch (VisibleTrackType)
+                if (Report == null)
                 {
-                    case TrackTypes.OriginalTrack:
-                        track = Report.OriginalTrack;
-                        break;
-                    case TrackTypes.CleanTrack:
-                        track = Report.CleanTrack;
-                        break;
-                    case TrackTypes.FligthTrack:
-                        track = Report.FlightTrack;
-                        break;
-                    default:
-                        track = null;
-                        break;
+                    track = new AXTrackpoint[0];
+                }
+                else
+                {
+                    switch (VisibleTrackType)
+                    {
+                        case TrackTypes.OriginalTrack:
+                            track = Report.OriginalTrack;
+                            break;
+                        case TrackTypes.CleanTrack:
+                            track = Report.CleanTrack;
+                            break;
+                        case TrackTypes.FligthTrack:
+                            track = Report.FlightTrack;
+                            break;
+                        default:
+                            track = null;
+                            break;
+                    }
                 }
                 return track;
             }
         }
 
-        public MapOverlay TrackPointer { get; protected set; }
+        public MapOverlay TrackPointer { get; private set; }
+        public bool KeepPointerCentered { get; set; }
 
-        public ScriptingEngine(MapViewerControl map)
+        public ScriptingEngine(MapViewerControl mapViewer)
         {
-            MapViewer = map;
+            MapViewer = mapViewer;
             Settings = new FlightSettings();
             Heap = new Dictionary<string, ScriptingObject>();
         }
@@ -206,6 +214,8 @@ namespace AXToolbox.Scripting
                         MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Pilot_Points });
                     }
                 }
+                if (KeepPointerCentered)
+                    MapViewer.PanTo(TrackPointer.Position);
             }));
         }
     }

@@ -1,19 +1,27 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using AXToolbox.Scripting;
 using System.Windows.Interop;
+using AXToolbox.Common;
+using AXToolbox.Scripting;
 
 namespace FlightAnalyzer
 {
     /// <summary>
     /// Interaction logic for ToolsWindow.xaml
     /// </summary>
-    public partial class ToolsWindow : Window
+    public partial class ToolsWindow : Window, INotifyPropertyChanged
     {
-        protected MainWindow mainWindow;
+        public int TrackPointsCount
+        {
+            get { return (int)sliderTrackPointer.Maximum; }
+            set { sliderTrackPointer.Maximum = value - 1; }
+        }
 
-        public TrackTypes TrackType { get; set; }
+        public TrackTypes TrackType { get; private set; }
+        public int PointerIndex { get; private set; }
+        public bool KeepPointerCentered { get; private set; }
+        public uint LayerVisibilityMask { get; private set; }
 
         public ToolsWindow()
         {
@@ -22,11 +30,10 @@ namespace FlightAnalyzer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            mainWindow = (MainWindow)Owner;
+            Left -= Width;
+            Top += 25;
 
-            var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(mainWindow).Handle);
-            Left = screen.Bounds.Right - Width;
-            Top = mainWindow.Top + 30;
+            KeepPointerCentered = false;
 
             listLayers.SelectedItems.Add(OverlayLayers.Grid);
             listLayers.SelectedItems.Add(OverlayLayers.Areas);
@@ -46,47 +53,60 @@ namespace FlightAnalyzer
 
         private void radioTrack_Checked(object sender, RoutedEventArgs e)
         {
-            if (mainWindow != null)
+            var name = ((RadioButton)sender).Name;
+            switch (name)
             {
-                var name = ((RadioButton)sender).Name;
-                switch (name)
-                {
-                    case "radioOriginalTrack":
-                        TrackType = TrackTypes.OriginalTrack;
-                        break;
-                    case "radioCleanTrack":
-                        TrackType = TrackTypes.CleanTrack;
-                        break;
-                    case "radioFlightTrack":
-                        TrackType = TrackTypes.FligthTrack;
-                        break;
-                }
-
-                mainWindow.Engine.VisibleTrackType = TrackType;
-                //todo:save actual pointer position
-                sliderTrackPointer.Maximum = mainWindow.Engine.VisibleTrack.Length - 1;
-                mainWindow.Engine.Display();
+                case "radioOriginalTrack":
+                    TrackType = TrackTypes.OriginalTrack;
+                    break;
+                case "radioCleanTrack":
+                    TrackType = TrackTypes.CleanTrack;
+                    break;
+                case "radioFlightTrack":
+                    TrackType = TrackTypes.FligthTrack;
+                    break;
             }
+
+            RaisePropertyChanged("TrackType");
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (mainWindow != null)
-            {
-                uint value = 0;
-                foreach (var l in listLayers.SelectedItems)
-                    value |= (uint)l;
+            uint value = 0;
+            foreach (var l in listLayers.SelectedItems)
+                value |= (uint)l;
+            LayerVisibilityMask = value;
 
-                mainWindow.map.LayerVisibilityMask = value;
-            }
+            RaisePropertyChanged("LayerVisibilityMask");
         }
 
         private void sliderTrackPointer_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (mainWindow.Engine != null && mainWindow.Engine.Report != null)
+            var slider = (Slider)sender;
+            PointerIndex = (int)slider.Value;
+
+            RaisePropertyChanged("PointerIndex");
+        }
+
+        #region "INotifyPropertyCahnged implementation"
+        private void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
             {
-                var slider = (Slider)sender;
-                mainWindow.Engine.TrackPointer.Position = mainWindow.Engine.VisibleTrack[(int)slider.Value].ToWindowsPoint();
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion "INotifyPropertyCahnged implementation"
+
+        private void checkCenterPointer_Click(object sender, RoutedEventArgs e)
+        {
+            var value = checkCenterPointer.IsChecked.Value;
+            if (KeepPointerCentered != value)
+            {
+                KeepPointerCentered = value;
+                RaisePropertyChanged("KeepPointerCentered");
             }
         }
     }

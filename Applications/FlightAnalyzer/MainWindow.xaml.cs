@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
 
@@ -30,7 +31,9 @@ namespace FlightAnalyzer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Tools = new ToolsWindow() { Owner = this };
+            var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(this).Handle);
+            Tools = new ToolsWindow() { Owner = this, Left = screen.Bounds.Right, Top = screen.Bounds.Top };
+            Tools.PropertyChanged += new PropertyChangedEventHandler(Tools_PropertyChanged);
             Tools.Show();
             worker.DoWork += Work;
             worker.RunWorkerCompleted += WorkCompleted;
@@ -50,7 +53,7 @@ namespace FlightAnalyzer
             if (dlg.ShowDialog(this) == true)
             {
                 if (Engine == null)
-                    Engine = new ScriptingEngine(map) { VisibleTrackType = Tools.TrackType };
+                    Engine = new ScriptingEngine(MapViewer) { VisibleTrackType = Tools.TrackType };
 
                 Cursor = Cursors.Wait;
                 worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
@@ -76,6 +79,34 @@ namespace FlightAnalyzer
         private void toolsButton_Click(object sender, RoutedEventArgs e)
         {
             Tools.Show();
+        }
+
+        //Handles all property changes from the Tools window
+        private void Tools_PropertyChanged(Object sender, PropertyChangedEventArgs args)
+        {
+            switch (args.PropertyName)
+            {
+                case "TrackType":
+                    Engine.VisibleTrackType = Tools.TrackType;
+                    Tools.TrackPointsCount = Engine.VisibleTrack.Length;
+                    Engine.Display();
+                    break;
+                case "PointerIndex":
+                    Engine.TrackPointer.Position = Engine.VisibleTrack[Tools.PointerIndex].ToWindowsPoint();
+                    if (Tools.KeepPointerCentered)
+                        MapViewer.PanTo(Engine.TrackPointer.Position);
+                    break;
+                case "KeepPointerCentered":
+                    Engine.KeepPointerCentered = Tools.KeepPointerCentered;
+                    if (Tools.KeepPointerCentered)
+                        MapViewer.PanTo(Engine.TrackPointer.Position);
+                    break;
+                case "LayerVisibilityMask":
+                    MapViewer.LayerVisibilityMask = Tools.LayerVisibilityMask;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         // Run lengthy processes asyncronously to improve UI responsiveness
@@ -114,11 +145,13 @@ namespace FlightAnalyzer
                 {
                     case "script":
                         Report = Engine.Report;
+                        Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Engine");
                         RaisePropertyChanged("Report");
                         break;
                     case "report":
                         Report = Engine.Report;
+                        Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Report");
                         break;
                     case "process":
@@ -130,7 +163,7 @@ namespace FlightAnalyzer
         }
 
         #region "INotifyPropertyCahnged implementation"
-        private void RaisePropertyChanged(String propertyName)
+        private void RaisePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
             {
@@ -140,6 +173,5 @@ namespace FlightAnalyzer
 
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion "INotifyPropertyCahnged implementation"
-
     }
 }
