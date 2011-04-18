@@ -85,6 +85,7 @@ namespace AXToolbox.Scripting
         public ObservableCollection<Result> Results { get; protected set; }
         public ObservableCollection<string> Notes { get; protected set; }
 
+
         /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
         /// </summary>
         public AXTrackpoint[] OriginalTrack { get; protected set; }
@@ -247,23 +248,15 @@ namespace AXToolbox.Scripting
         {
             throw new NotImplementedException();
             //InsertIntoCollection(DeclaredGoals, declaration);
-            //Notes.Add(string.Format("New goal declaration added: {0}", declaration));
+            //Log.Add(string.Format("New goal declaration added: {0}", declaration));
         }
         public bool RemoveDeclaredGoal(AXWaypoint declaration)
         {
             throw new NotImplementedException();
             //var ok = DeclaredGoals.Remove(declaration);
             //if (ok)
-            //    Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
+            //    Log.Add(string.Format("Goal declaration removed: {0}", declaration));
             //return ok;
-        }
-
-        public void AddNote(string note)
-        {
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                Notes.Add(note);
-            }));
         }
 
         protected void RemoveInvalidPoints()

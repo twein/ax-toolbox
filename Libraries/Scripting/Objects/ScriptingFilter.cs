@@ -86,14 +86,14 @@ namespace AXToolbox.Scripting
 
                 case "BEFOREPOINT":
                     if (point.Point == null)
-                        Engine.Report.AddNote(ObjectName + ": reference point is null");
+                        Engine.LogLine(ObjectName + ": reference point is null");
                     else
                         Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time <= point.Point.Time);
                     break;
 
                 case "AFTERPOINT":
                     if (point.Point == null)
-                        Engine.Report.AddNote(ObjectName + ": reference point is null");
+                        Engine.LogLine(ObjectName + ": reference point is null");
                     else
                         Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time >= point.Point.Time);
                     break;
@@ -108,7 +108,7 @@ namespace AXToolbox.Scripting
             }
 
             if (Engine.ValidTrackPoints.Length != initialCount)
-                Engine.Report.AddNote(string.Format("{0}: track filtered to {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
+                Engine.LogLine(string.Format("{0}: track filtered to {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
         }
 
         /// <summary>Return a filtered array of trackpoints with subtrack control

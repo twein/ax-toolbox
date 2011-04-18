@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -93,11 +94,14 @@ namespace AXToolbox.Scripting
         public MapOverlay TrackPointer { get; private set; }
         public bool KeepPointerCentered { get; set; }
 
+        public ObservableCollection<string> Log { get; private set; }
+
         public ScriptingEngine(MapViewerControl mapViewer)
         {
             MapViewer = mapViewer;
             Settings = new FlightSettings();
             Heap = new Dictionary<string, ScriptingObject>();
+            Log = new ObservableCollection<string>();
         }
 
         public void LoadScript(string scriptFileName)
@@ -162,6 +166,7 @@ namespace AXToolbox.Scripting
 
         public void Reset()
         {
+            TrackPointer = null;
             foreach (var obj in Heap.Values)
                 obj.Reset();
             Report = null;
@@ -170,6 +175,10 @@ namespace AXToolbox.Scripting
         public void Process()
         {
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                Log.Clear();
+            }));
 
             //process all objects
             foreach (var obj in Heap.Values)
@@ -203,7 +212,10 @@ namespace AXToolbox.Scripting
                     });
                     MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
 
-                    TrackPointer = new CrosshairsOverlay(path[0]) { Layer = (uint)OverlayLayers.Pointer };
+                    var position = path[0];
+                    if (TrackPointer != null)
+                        position = TrackPointer.Position;
+                    TrackPointer = new CrosshairsOverlay(position) { Layer = (uint)OverlayLayers.Pointer };
                     MapViewer.AddOverlay(TrackPointer);
 
                     MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
@@ -216,6 +228,14 @@ namespace AXToolbox.Scripting
                 }
                 if (KeepPointerCentered)
                     MapViewer.PanTo(TrackPointer.Position);
+            }));
+        }
+
+        public void LogLine(string line)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                Log.Add(line);
             }));
         }
     }
