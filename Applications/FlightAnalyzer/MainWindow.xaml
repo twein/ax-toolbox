@@ -32,7 +32,7 @@
         </StatusBar>
         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
             <StackPanel Orientation="Vertical" Width="400">
-                <Expander ExpandDirection="Down" Background="LightGray" >
+                <Expander ExpandDirection="Down" Background="LightGray">
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                             <StackPanel Orientation="Vertical">
@@ -43,7 +43,7 @@
                             <Button Height="22" ToolTip="Show the tools window" Click="toolsButton_Click">Tools</Button>
                         </StackPanel>
                     </Expander.Header>
-                    <TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Engine.Detail}"/>
+                    <ListBox ItemsSource="{Binding Path=Engine.Log}" Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}"/>
                 </Expander>
 
                 <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True" >
@@ -64,9 +64,9 @@
                         </StackPanel>
                     </Expander.Header>
                     <StackPanel Orientation="Vertical" >
-                        <ListBox ItemsSource="{Binding Path=Report.Markers}"/>
-                        <ListBox ItemsSource="{Binding Path=Report.DeclaredGoals}"/>
-                        <ListBox ItemsSource="{Binding Path=Report.Notes}"/>
+                        <ListBox ItemsSource="{Binding Path=Report.Markers}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
+                        <ListBox ItemsSource="{Binding Path=Report.DeclaredGoals}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
+                        <ListBox ItemsSource="{Binding Path=Report.Notes}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
                     </StackPanel>
                     <!--<TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.Notes}"/>-->
                 </Expander>

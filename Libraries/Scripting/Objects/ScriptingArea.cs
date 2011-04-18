@@ -76,7 +76,7 @@ namespace AXToolbox.Scripting
                 case "CIRCLE":
                     //radius is static
                     if (center.Point == null)
-                        Engine.Report.AddNote(ObjectName + ": center point is null");
+                        Engine.LogLine(ObjectName + ": center point is null");
                     break;
                 case "POLY":
                     //do nothing

@@ -82,7 +82,6 @@ namespace FlightAnalyzer
         }
         private void setLaunchLandingButton_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: save pointer position
             if (TrackPointer != null)
             {
                 var name = ((Button)sender).Name;
