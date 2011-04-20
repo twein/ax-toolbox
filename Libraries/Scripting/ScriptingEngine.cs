@@ -36,11 +36,11 @@ namespace AXToolbox.Scripting
         {
             get
             {
-                var l = "";
+                var tasks = "";
                 foreach (var item in Heap.Values.Where(h => h is ScriptingTask))
-                    l += ((ScriptingTask)item).ToShortString() + ", ";
-                l = l.Trim(new char[] { ',', ' ' });
-                return string.Format("{0}\n{1}", Settings.ToString(), l);
+                    tasks += ((ScriptingTask)item).ToShortString() + ", ";
+                tasks = tasks.Trim(new char[] { ',', ' ' });
+                return string.Format("{0}: {1}", Settings.ToString(), tasks);
             }
         }
         public string Detail
