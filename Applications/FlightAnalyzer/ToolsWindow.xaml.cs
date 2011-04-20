@@ -32,6 +32,7 @@ namespace FlightAnalyzer
         {
             Left -= Width;
             Top += 25;
+            //MouseDown += delegate { DragMove(); };
 
             KeepPointerCentered = false;
 
