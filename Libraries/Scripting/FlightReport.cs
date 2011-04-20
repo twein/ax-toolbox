@@ -105,7 +105,7 @@ namespace AXToolbox.Scripting
         public string ShortDescription { get { return this.ToString(); } }
         public override string ToString()
         {
-            return string.Format("{0:yyyy/MM/dd}{1} Pilot {2:000}", Date, Date.GetAmPm(), pilotId);
+            return string.Format("{0:yyyy/MM/dd} {1} Pilot {2:000}", Date, Date.GetAmPm(), pilotId);
         }
         public string toShortString()
         {
