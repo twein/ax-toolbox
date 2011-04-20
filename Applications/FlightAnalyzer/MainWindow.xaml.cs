@@ -103,30 +103,33 @@ namespace FlightAnalyzer
         //Handles all property changes from the Tools window
         private void Tools_PropertyChanged(Object sender, PropertyChangedEventArgs args)
         {
-            switch (args.PropertyName)
+            if (Engine != null)
             {
-                case "TrackType":
-                    Engine.VisibleTrackType = Tools.TrackType;
-                    Tools.TrackPointsCount = Engine.VisibleTrack.Length;
-                    Engine.Display();
-                    break;
-                case "PointerIndex":
-                    TrackPointer = Engine.VisibleTrack[Tools.PointerIndex];
-                    Engine.TrackPointer.Position = TrackPointer.ToWindowsPoint();
-                    if (Tools.KeepPointerCentered)
-                        MapViewer.PanTo(Engine.TrackPointer.Position);
-                    RaisePropertyChanged("TrackPointer");
-                    break;
-                case "KeepPointerCentered":
-                    Engine.KeepPointerCentered = Tools.KeepPointerCentered;
-                    if (Tools.KeepPointerCentered)
-                        MapViewer.PanTo(Engine.TrackPointer.Position);
-                    break;
-                case "LayerVisibilityMask":
-                    MapViewer.LayerVisibilityMask = Tools.LayerVisibilityMask;
-                    break;
-                default:
-                    throw new NotImplementedException();
+                switch (args.PropertyName)
+                {
+                    case "TrackType":
+                        Engine.VisibleTrackType = Tools.TrackType;
+                        Tools.TrackPointsCount = Engine.VisibleTrack.Length;
+                        Engine.Display();
+                        break;
+                    case "PointerIndex":
+                        TrackPointer = Engine.VisibleTrack[Tools.PointerIndex];
+                        Engine.TrackPointer.Position = TrackPointer.ToWindowsPoint();
+                        if (Tools.KeepPointerCentered)
+                            MapViewer.PanTo(Engine.TrackPointer.Position);
+                        RaisePropertyChanged("TrackPointer");
+                        break;
+                    case "KeepPointerCentered":
+                        Engine.KeepPointerCentered = Tools.KeepPointerCentered;
+                        if (Tools.KeepPointerCentered)
+                            MapViewer.PanTo(Engine.TrackPointer.Position);
+                        break;
+                    case "LayerVisibilityMask":
+                        MapViewer.LayerVisibilityMask = Tools.LayerVisibilityMask;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
 

@@ -30,50 +30,71 @@
                 <TextBlock Text="{Binding Path=TrackPointer, StringFormat=Track pointer: {0}}"/>
             </StatusBarItem>
         </StatusBar>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
-            <StackPanel Orientation="Vertical" Width="400">
-                <Expander ExpandDirection="Down" Background="LightGray">
-                    <Expander.Header>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock VerticalAlignment="Top" FontWeight="Bold">Script</TextBlock>
-                                <TextBlock VerticalAlignment="Top" Text="{Binding Path=Engine.ShortDescription}"></TextBlock>
-                            </StackPanel>
-                            <Button Height="22" ToolTip="Load script file" Click="loadScriptButton_Click">Load</Button>
-                            <Button Height="22" ToolTip="Show the tools window" Click="toolsButton_Click">Tools</Button>
-                        </StackPanel>
-                    </Expander.Header>
-                    <ListBox ItemsSource="{Binding Path=Engine.Log}" Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}"/>
-                </Expander>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
+                <StackPanel Orientation="Vertical">
+                    <Expander ExpandDirection="Down" Background="LightGray">
+                        <Expander.Header>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Vertical" Grid.Column="0">
+                                    <TextBlock VerticalAlignment="Top" FontWeight="Bold">Script</TextBlock>
+                                    <TextBlock VerticalAlignment="Top" Text="{Binding Path=Engine.ShortDescription}"></TextBlock>
+                                </StackPanel>
+                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1">
+                                    <Button ToolTip="Load script file" Click="loadScriptButton_Click">Load</Button>
+                                    <Button ToolTip="Show the tools window" Click="toolsButton_Click">Tools</Button>
+                                </WrapPanel>
+                            </Grid>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Engine.Log}" Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}"/>
+                    </Expander>
 
-                <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True" >
-                    <Expander.Header>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock VerticalAlignment="Top" FontWeight="Bold">Report</TextBlock>
-                                <TextBlock VerticalAlignment="Top" Text="{Binding Path=Report.ShortDescription}"></TextBlock>
-                            </StackPanel>
-                            <Button Height="22" ToolTip="Load gps log file or a flight report" Click="loadReportButton_Click"
+                    <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True" >
+                        <Expander.Header>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Vertical" Grid.Column="0">
+                                    <TextBlock VerticalAlignment="Top" FontWeight="Bold">Report</TextBlock>
+                                    <TextBlock VerticalAlignment="Top" Text="{Binding Path=Report.ShortDescription}"></TextBlock>
+                                </StackPanel>
+                                <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1" Width="Auto">
+
+                                    <Button ToolTip="Load gps log file or a flight report" Click="loadReportButton_Click"
                                     Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}">Load</Button>
-                            <Button Height="22" Name="setLaunchButton" ToolTip="Sets the launch point to the current pointer position" Click="setLaunchLandingButton_Click"
+                                    <Button Name="setLaunchButton" ToolTip="Sets the launch point to the current pointer position" Click="setLaunchLandingButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Set launch</Button>
-                            <Button Height="22" Name="setLandingButton" ToolTip="Sets the landing point to the current pointer position" Click="setLaunchLandingButton_Click"
+                                    <Button Name="setLandingButton" ToolTip="Sets the landing point to the current pointer position" Click="setLaunchLandingButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Set landing</Button>
-                            <Button Height="22" ToolTip="Process the current report" Click="processReportButton_Click"
+                                    <Button ToolTip="Process the current report" Click="processReportButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
+                                </WrapPanel>
+                            </Grid>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical" >
+                            <ListBox ItemsSource="{Binding Path=Report.Markers}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
+                            <ListBox ItemsSource="{Binding Path=Report.DeclaredGoals}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
+                            <ListBox ItemsSource="{Binding Path=Report.Notes}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
                         </StackPanel>
-                    </Expander.Header>
-                    <StackPanel Orientation="Vertical" >
-                        <ListBox ItemsSource="{Binding Path=Report.Markers}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
-                        <ListBox ItemsSource="{Binding Path=Report.DeclaredGoals}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
-                        <ListBox ItemsSource="{Binding Path=Report.Notes}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
-                    </StackPanel>
-                    <!--<TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.Notes}"/>-->
-                </Expander>
-            </StackPanel>
-        </ScrollViewer>
-        <Border BorderBrush="Black" BorderThickness="1">
-            <maps:MapViewerControl Name="MapViewer" />
-        </Border>
+                        <!--<TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.Notes}"/>-->
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter Background="LightGray" Grid.Column="1" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
+                <maps:MapViewerControl Name="MapViewer" />
+            </Border>
+        </Grid>
     </DockPanel>
 </Window>

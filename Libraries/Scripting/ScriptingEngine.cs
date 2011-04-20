@@ -111,6 +111,7 @@ namespace AXToolbox.Scripting
             Settings = new FlightSettings();
             Heap.Clear();
             Report = null;
+            ClearLog();
 
             //TODO: initialize all variables
 
@@ -171,14 +172,12 @@ namespace AXToolbox.Scripting
                 obj.Reset();
             Report = null;
             RaisePropertyChanged("Report");
+            ClearLog();
         }
         public void Process()
         {
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                Log.Clear();
-            }));
+            ClearLog();
 
             //process all objects
             foreach (var obj in Heap.Values)
@@ -231,6 +230,12 @@ namespace AXToolbox.Scripting
             }));
         }
 
+        private void ClearLog() {
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                Log.Clear();
+            }));
+        }
         public void LogLine(string line)
         {
             Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
