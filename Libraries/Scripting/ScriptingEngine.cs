@@ -23,7 +23,7 @@ namespace AXToolbox.Scripting
         Track = 0x8,
         Pointer = 0x10,
         Pilot_Points = 0x20,
-        Extreme_Points = 0x40,
+        Launch_And_Landing = 0x40,
         Reference_Points = 0x80,
         Results = 0x100
     }
@@ -178,6 +178,7 @@ namespace AXToolbox.Scripting
         {
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
             ClearLog();
+            Report.ClearResults();
 
             //process all objects
             foreach (var obj in Heap.Values)
@@ -185,7 +186,7 @@ namespace AXToolbox.Scripting
 
             //collect results
             foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
-                Report.Results.Add(t.Result);
+                Report.AddResult(t.Result);
 
             Display();
         }
@@ -217,8 +218,8 @@ namespace AXToolbox.Scripting
                     TrackPointer = new CrosshairsOverlay(position) { Layer = (uint)OverlayLayers.Pointer };
                     MapViewer.AddOverlay(TrackPointer);
 
-                    MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Extreme_Points });
-                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Extreme_Points });
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Launch_And_Landing });
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Launch_And_Landing });
 
                     foreach (var m in Report.Markers)
                     {

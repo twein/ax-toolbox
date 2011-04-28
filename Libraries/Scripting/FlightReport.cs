@@ -259,6 +259,22 @@ namespace AXToolbox.Scripting
             //return ok;
         }
 
+        public void ClearResults()
+        {
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                Results.Clear();
+            }));
+        }
+        public void AddResult(Result result)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                Results.Add(result);
+            }));
+        }
+
+
         protected void RemoveInvalidPoints()
         {
             int nTime = 0, nDupe = 0, nSpike = 0;

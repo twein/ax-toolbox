@@ -47,7 +47,12 @@ namespace AXToolbox.Scripting
 
         public override string ToString()
         {
-            var str = "";
+            return string.Format("{0} ({1}): {2}", TaskName, TaskType, ValueToString());
+        }
+
+        public string ValueToString()
+        {
+            string str = "";
             switch (Type)
             {
                 case ResultType.No_Flight:

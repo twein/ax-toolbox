@@ -42,7 +42,7 @@ namespace FlightAnalyzer
             Worker.DoWork += Work;
             Worker.RunWorkerCompleted += WorkCompleted;
 
-            //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Extreme_Points);
+            //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Launch_And_Landing);
         }
         private void Window_Closed(object sender, EventArgs e)
         {
