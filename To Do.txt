@@ -2,7 +2,6 @@ BUGS
 
 
 PENDING
-Make layers the same way as track type selection (visibility property in engine)
 Display correctly AXTrackpoint.StartSubtrack
 Check the workflow of BindableObject.IsDirty
 
@@ -24,6 +23,12 @@ Steal ideas from http://boxy.fisch.lu
 Add a new type of point: TLU Track point last used: Last used point in any task
 
 
+PENALTIES:
+R13
+Result: distance, angle, group B (apply when "… will not achieve a result.")
+Score: task points, competition points.
+
+
 Checklist:
 Pilot number
 Track log signature
@@ -40,3 +45,8 @@ Pilot declared goals
 
 How to set different tasks:
 3DS: apply a filter for each area. the result is a DACC
+
+
+RULES:
+Read all COH!
+Checksum: the last four characters of the sum of all competitors' scores multiplied by their number. (COH13.33.2)
