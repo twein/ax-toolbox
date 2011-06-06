@@ -92,6 +92,7 @@
     </ApplicationDefinition>
     <Compile Include="Competition.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="EditPilotScore.cs" />
     <Compile Include="Pilot.cs" />
     <Compile Include="PilotScore.cs" />
     <Compile Include="Task.cs" />
