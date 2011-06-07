@@ -31,8 +31,8 @@ namespace Scorer
                 {
                     PilotNumber = i + 1,
                     PilotName = string.Format("Pilot number {0:##0}", i + 1),
-                    //ManualMeasure = new Result(AXToolbox.Scripting.ResultType.No_Result),
-                    ManualMeasure = (decimal)(100 * rnd.NextDouble()),
+                    ManualMeasure = new Result(AXToolbox.Scripting.ResultType.No_Result),
+                    //ManualMeasure = (decimal)(100 * rnd.NextDouble()),
                     ManualMeasurePenalty = rnd.NextDouble() < .05 ? (decimal)(100 * rnd.NextDouble()) : 0,
                     ManualTaskScorePenalty = rnd.NextDouble() < .05 ? (int)(100 * rnd.NextDouble()) : 0,
                     ManualCompetitionScorePenalty = rnd.NextDouble() < .05 ? (int)(100 * rnd.NextDouble()) : 0,

@@ -95,6 +95,7 @@
     <Compile Include="EditPilotScore.cs" />
     <Compile Include="Pilot.cs" />
     <Compile Include="PilotScore.cs" />
+    <Compile Include="ResultConverter.cs" />
     <Compile Include="Task.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
