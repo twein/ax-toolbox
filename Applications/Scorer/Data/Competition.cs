@@ -19,12 +19,10 @@ namespace Scorer
             get
             {
                 var db = Database.Instance;
-
                 var query = from p in db.Pilots
                             join cp in db.CompetitionPilots on p.Number equals cp.PilotNumber
                             where cp.CompetitionId == Id
                             select p;
-
                 return query;
             }
         }
@@ -33,12 +31,10 @@ namespace Scorer
             get
             {
                 var db = Database.Instance;
-
                 var query = from t in db.Tasks
                             join ct in db.CompetitionTasks on t.Number equals ct.TaskNumber
                             where ct.CompetitionId == Id
                             select t;
-
                 return query;
             }
         }
@@ -50,19 +46,5 @@ namespace Scorer
         {
             throw new NotImplementedException();
         }
-    }
-
-    [Serializable]
-    public class CompetitionPilot
-    {
-        public int CompetitionId { get; set; }
-        public int PilotNumber { get; set; }
-    }
-
-    [Serializable]
-    public class CompetitionTask
-    {
-        public int CompetitionId { get; set; }
-        public int TaskNumber { get; set; }
     }
 }
