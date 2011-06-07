@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Globalization;
-using System.Windows.Data;
-using AXToolbox.Scripting;
 
 namespace Scorer
 {
-    public class EditPilotScore
+    [Serializable]
+    public class PilotResult
     {
+        public int TaskNumber { get; set; }
         public int PilotNumber { get; set; }
-        public string PilotName { get; set; }
-
         public Result ManualMeasure { get; set; }
         public Result Measure { get; set; }
         public decimal ManualMeasurePenalty { get; set; }

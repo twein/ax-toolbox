@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Scorer
@@ -72,12 +71,14 @@ namespace Scorer
         }
         #endregion
 
-        public List<Competition> Competitions { get; set; }
-        public List<CompetitionPilot> CompetitionPilots { get; set; }
-        public List<CompetitionTask> CompetitionTasks { get; set; }
         public List<Pilot> Pilots { get; set; }
         public List<Flight> Flights { get; set; }
         public List<Task> Tasks { get; set; }
-        public List<PilotScore> Scores { get; set; }
+        public List<PilotResult> PilotResults { get; set; }
+
+        public List<Competition> Competitions { get; set; }
+        public List<CompetitionPilot> CompetitionPilots { get; set; }
+        public List<CompetitionTask> CompetitionTasks { get; set; }
+        public List<PilotScore> PilotScores { get; set; }
     }
 }
