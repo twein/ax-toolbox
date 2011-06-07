@@ -34,6 +34,30 @@ namespace Scorer
 
             return str;
         }
+        public static Result Parse(string value)
+        {
+            Result result;
+            decimal tmpResult;
+            var str = value.Trim().ToUpper();
+            if (decimal.TryParse(str, out tmpResult))
+            {
+                result = new Result(tmpResult);
+            }
+            else if (str == "NF")
+            {
+                result = new Result(AXToolbox.Scripting.ResultType.No_Flight);
+            }
+            else if (str == "NR")
+            {
+                result = new Result(AXToolbox.Scripting.ResultType.No_Result);
+            }
+            else
+            {
+                throw new InvalidCastException();
+            }
+
+            return result;
+        }
     }
 
 
@@ -42,8 +66,8 @@ namespace Scorer
         public int PilotNumber { get; set; }
         public string PilotName { get; set; }
 
-        public decimal ManualMeasure { get; set; }
-        public decimal Measure { get; set; }
+        public Result ManualMeasure { get; set; }
+        public Result Measure { get; set; }
         public decimal ManualMeasurePenalty { get; set; }
         public decimal MeasurePenalty { get; set; }
         public int ManualTaskScorePenalty { get; set; }
