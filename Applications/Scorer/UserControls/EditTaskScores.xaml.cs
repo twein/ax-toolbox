@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+using System.Threading;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Scorer
 {
@@ -27,6 +18,7 @@ namespace Scorer
 
             //http://www.i-programmer.info/programming/wpf-workings/620-using-the-wpf-net-40-datagrid-.html
             Score = new List<EditPilotScore>();
+            Thread.Sleep(100);
             var rnd = new Random();
             for (var i = 0; i < 30; i++)
             {
