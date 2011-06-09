@@ -19,6 +19,7 @@
         </Grid.RowDefinitions>
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
                   ItemsSource="{Binding}" 
+                  AlternatingRowBackground="LightGray" AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Path=PilotNumber}" IsReadOnly="True" />
