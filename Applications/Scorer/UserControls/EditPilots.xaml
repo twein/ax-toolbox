@@ -18,12 +18,13 @@
             <RowDefinition Height="33"></RowDefinition>
         </Grid.RowDefinitions>
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
-                  ItemsSource="Pilots" 
-                  AlternatingRowBackground="LightGray" AlternationCount="2"
+                  ItemsSource="{Binding Path=Pilots}" 
+                  AlternatingRowBackground="SkyBlue"  AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserReorderColumns="False" CanUserSortColumns="True" >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="#" Binding="{Binding Path=Number}" />
-                <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="*"/>
+                <DataGridTextColumn Header="#" Binding="{Binding Path=Number}"  CellStyle="{StaticResource RightCellStyle}"  />
+                <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="4*"/>
+                <DataGridTextColumn Header="Country" Binding="{Binding Path=Country}" Width="*" />
                 <DataGridTextColumn Header="Balloon" Binding="{Binding Path=Balloon}" Width="*" />
                 <DataGridCheckBoxColumn Header="Disqualified" Binding="{Binding Path=Disqualified}" />
             </DataGrid.Columns>
