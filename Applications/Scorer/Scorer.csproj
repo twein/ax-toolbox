@@ -92,12 +92,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Data\CompetitionPilot.cs" />
     <Compile Include="Data\CompetitionTask.cs" />
     <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Data\PilotScore.cs" />
+    <Compile Include="UserControls\EditPilots.xaml.cs">
+      <DependentUpon>EditPilots.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\EditTaskScores.xaml.cs">
       <DependentUpon>EditTaskScores.xaml</DependentUpon>
     </Compile>
@@ -105,6 +109,10 @@
     <Compile Include="Data\PilotResult.cs" />
     <Compile Include="Data\Result.cs" />
     <Compile Include="Data\Task.cs" />
+    <Page Include="UserControls\EditPilots.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UserControls\EditTaskScores.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -174,6 +182,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Common\Common.csproj">
+      <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Scripting\Scripting.csproj">
       <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
       <Name>Scripting</Name>
