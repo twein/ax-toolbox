@@ -5,6 +5,11 @@
         xmlns:local="clr-namespace:Scorer"
         Title="MainWindow" Height="600" Width="1024">
     <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Pilots" Click="menuPilots_Click"></MenuItem>
+            <MenuItem Header="Competitions"></MenuItem>
+            <MenuItem Header="Tasks"></MenuItem>
+        </Menu>
         <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
             <StatusBarItem>
                 <TextBlock/>
@@ -24,7 +29,7 @@
                         </Expander.Header>
                         <StackPanel Orientation="Vertical">
                             <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <Button ToolTip="Load pilot list" Click="loadPilotsButton_Click">Load</Button>
+                                <!--<Button Name="Import" ToolTip="Import pilot list" Click="importPilotsButton_Click">Load</Button>-->
                             </WrapPanel>
                             <ListBox ItemsSource="{Binding Path=db.Pilots}"/>
                         </StackPanel>

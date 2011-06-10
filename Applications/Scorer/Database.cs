@@ -5,11 +5,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using AXToolbox.Common;
 
 namespace Scorer
 {
     [Serializable]
-    public sealed class Database
+    public sealed class Database : BindableObject
     {
         #region "singleton"
         public static readonly Database Instance = new Database();
@@ -91,38 +92,5 @@ namespace Scorer
         public ObservableCollection<CompetitionPilot> CompetitionPilots { get; set; }
         public ObservableCollection<CompetitionTask> CompetitionTasks { get; set; }
         public ObservableCollection<PilotScore> PilotScores { get; set; }
-
-
-        public void LoadPilots(string filePath)
-        {
-            var pilotList = File.ReadAllLines(filePath);
-            var pilots = new List<Pilot>();
-            int i = 0;
-            try
-            {
-                foreach (var p in pilotList)
-                {
-                    i++;
-                    var pilot = p.Trim();
-                    if (pilot != "" && pilot[1] != '#')
-                    {
-                        var fields = pilot.Split(new char[] { '\t' }, StringSplitOptions.None);
-                        var number = int.Parse(fields[0]);
-                        var name = fields[1].Trim();
-                        var balloon = (fields.Length > 2) ? fields[2].Trim() : "";
-
-                        pilots.Add(new Pilot() { Number = number, Name = name, Balloon = balloon });
-                    }
-                }
-
-                Pilots.Clear();
-                foreach (var p in pilots)
-                    Pilots.Add(p);
-            }
-            catch (Exception ex)
-            {
-            }
-            finally { }
-        }
     }
 }

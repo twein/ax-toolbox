@@ -18,14 +18,6 @@ namespace Scorer
             AddHandler(CloseableTabItem.CloseTabEvent, new RoutedEventHandler(CloseTab));
 
             db = Database.Instance;
-            db.Pilots.Add(new Pilot() { Number = 1, Name = "PETIT, Joan" });
-            db.Pilots.Add(new Pilot() { Number = 2, Name = "PALOTES, Perico" });
-            db.Pilots.Add(new Pilot() { Number = 3, Name = "DOE, John" });
-
-            AddTab(new EditTaskScores(), "Prova1");
-            AddTab(new EditTaskScores(), "Prova2");
-            AddTab(new EditTaskScores(), "Prova3");
-            AddTab(new EditTaskScores(), "Prova4");
 
             DataContext = this;
         }
@@ -63,18 +55,6 @@ namespace Scorer
             }
         }
 
-        private void loadPilotsButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "CSV files (*.csv)|*.csv";
-            dlg.InitialDirectory = Environment.CurrentDirectory;
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog(this) == true)
-            {
-                db.LoadPilots(dlg.FileName);
-            }
-        }
-
         private void loadCompetitionsButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -83,6 +63,11 @@ namespace Scorer
         private void loadTaskResultsButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void menuPilots_Click(object sender, RoutedEventArgs e)
+        {
+            AddTab(new EditPilots(), "Pilots");
         }
     }
 }
