@@ -15,11 +15,10 @@ namespace Scorer
         public EditPilots()
         {
             InitializeComponent();
+            DataContext = this;
 
-            //http://www.i-programmer.info/programming/wpf-workings/620-using-the-wpf-net-40-datagrid-.html
             Pilots = new ObservableCollection<Pilot>();
             Database.Instance.Pilots.CopyTo(Pilots);
-            dgMain.ItemsSource = Pilots;
         }
 
         private void importButton_Click(object sender, RoutedEventArgs e)
@@ -31,7 +30,6 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 ImportPilots(dlg.FileName);
         }
-
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Pilots.Sort(p => p.Number).CopyTo(Database.Instance.Pilots);
@@ -56,18 +54,19 @@ namespace Scorer
                         var country = (fields.Length > 2) ? fields[2].Trim() : "";
                         var balloon = (fields.Length > 3) ? fields[3].Trim() : "";
 
-                        Pilots.Add(new Pilot() { Number = number, Name = name, Balloon = balloon });
+                        Pilots.Add(new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon });
                     }
                 }
 
             }
             catch (Exception ex)
             {
-                //TODO: do something
+                MessageBox.Show(
+                    "Error in line " + i.ToString() + ":" + Environment.NewLine + ex.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
-                dgMain.ItemsSource = Pilots;
             }
         }
     }
