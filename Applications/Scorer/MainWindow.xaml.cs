@@ -9,7 +9,7 @@ namespace Scorer
 {
     public partial class MainWindow : Window
     {
-        public Database db{get;set;}
+        public Database db { get; set; }
 
         public MainWindow()
         {
@@ -62,12 +62,16 @@ namespace Scorer
 
         private void loadTaskResultsButton_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void menuPilots_Click(object sender, RoutedEventArgs e)
         {
             AddTab(new EditPilots(), "Pilots");
+        }
+
+        private void menuTasks_Click(object sender, RoutedEventArgs e)
+        {
+            AddTab(new EditTasks(), "Tasks");
         }
     }
 }

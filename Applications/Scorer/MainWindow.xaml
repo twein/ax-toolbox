@@ -8,7 +8,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Pilots" Click="menuPilots_Click"></MenuItem>
             <MenuItem Header="Competitions"></MenuItem>
-            <MenuItem Header="Tasks"></MenuItem>
+            <MenuItem Header="Tasks" Click="menuTasks_Click"></MenuItem>
         </Menu>
         <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
             <StatusBarItem>
