@@ -10,14 +10,14 @@ namespace Scorer
         public int Number { get; private set; }
         public string Name { get; private set; }
         public string ShortName { get; private set; }
-        public bool SortAscending { get; private set; }
+        public bool LowerIsBetter { get; private set; }
 
-        public TaskType(int number, string name, string shortName, bool sortAscending)
+        public TaskType(int number, string name, string shortName, bool lowerIsBetter)
         {
             Number = number;
             Name = name;
             ShortName = shortName;
-            SortAscending = sortAscending;
+            LowerIsBetter = lowerIsBetter;
         }
 
         public override string ToString()

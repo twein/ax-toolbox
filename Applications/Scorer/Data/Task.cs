@@ -14,6 +14,8 @@ namespace Scorer
         public int FlightNumber { get; set; }
         public int TypeNumber { get; set; }
 
+        public bool Void { get; set; }
+
         public IEnumerable<PilotResult> Results
         {
             get
@@ -49,6 +51,11 @@ namespace Scorer
                 new TaskType(19,"Angle",                        "ANG", false),
                 new TaskType(20,"3D Shape",                     "3DT", false)
             };
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0:00}: 15.{1} {2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName);
         }
     }
 }
