@@ -13,8 +13,6 @@ namespace Scorer
         public int CompetitionId { get; set; }
         public int TaskNumber { get; set; }
 
-        public bool Void { get; set; }
-
         public TaskStatus Status { get; set; }
         public int Version { get; set; }
         public DateTime RevisionDate { get; set; }

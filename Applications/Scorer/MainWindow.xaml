@@ -53,7 +53,7 @@
                             <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top">
                                 <Button ToolTip="Load task results" Click="loadTaskResultsButton_Click">Load</Button>
                             </WrapPanel>
-                            <ListBox ItemsSource=""/>
+                            <ListBox ItemsSource="{Binding Path=db.Tasks}"/>
                         </StackPanel>
                     </Expander>
 
