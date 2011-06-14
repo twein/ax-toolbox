@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
 using AXToolbox.Common;
 
 namespace Scorer
@@ -23,7 +23,7 @@ namespace Scorer
             PilotResults = new ObservableCollection<PilotResult>();
             Competitions = new ObservableCollection<Competition>();
             CompetitionPilots = new ObservableCollection<CompetitionPilot>();
-            CompetitionTasks = new ObservableCollection<CompetitionTask>();
+            TaskScores = new ObservableCollection<TaskScore>();
             PilotScores = new ObservableCollection<PilotScore>();
         }
         #endregion
@@ -95,7 +95,18 @@ namespace Scorer
         public ObservableCollection<PilotResult> PilotResults { get; set; }
 
         public ObservableCollection<CompetitionPilot> CompetitionPilots { get; set; }
-        public ObservableCollection<CompetitionTask> CompetitionTasks { get; set; }
+        public ObservableCollection<TaskScore> TaskScores { get; set; }
         public ObservableCollection<PilotScore> PilotScores { get; set; }
+
+        public Visibility ModButtonsVisibility
+        {
+            get
+            {
+                if (Tasks.Count == 0)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Hidden;
+            }
+        }
     }
 }

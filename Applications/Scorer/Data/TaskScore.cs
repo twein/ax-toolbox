@@ -8,7 +8,7 @@ namespace Scorer
     public enum TaskStatus { Provisional, Official, Final }
 
     [Serializable]
-    public class CompetitionTask
+    public class TaskScore
     {
         public int CompetitionId { get; set; }
         public int TaskNumber { get; set; }
@@ -56,7 +56,7 @@ namespace Scorer
 
         /// <summary>Generate a pdf task scores sheet
         /// </summary>
-        /// <param name="fileName">desired pdf file path</param>
+        /// <param header="fileName">desired pdf file path</param>
         public void PdfScores(string fileName)
         {
             throw new NotImplementedException();
