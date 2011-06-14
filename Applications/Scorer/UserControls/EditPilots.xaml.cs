@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Windows;
-//using System.Linq;
 using Microsoft.Win32;
 
 namespace Scorer
@@ -15,6 +15,7 @@ namespace Scorer
         public EditPilots()
         {
             InitializeComponent();
+
             DataContext = this;
 
             Pilots = new ObservableCollection<Pilot>();
@@ -27,6 +28,19 @@ namespace Scorer
             throw new NotImplementedException();
         }
 
+        private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (Pilots.Count == 0)
+                Pilots.Add(new Pilot() { Number = 1 });
+            else
+                Pilots.Add(new Pilot() { Number = Pilots.Max(p => p.Number) + 1 });
+        }
+
+        private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (Pilots.Count > 0)
+                Pilots.RemoveAt(Pilots.Count - 1);
+        }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog();

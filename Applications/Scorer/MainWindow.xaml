@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:local="clr-namespace:Scorer"
+        DataContext="{Binding Source={x:Static local:Database.Instance}}"
         Title="MainWindow" Height="600" Width="1024"
         Closing="Window_Closing">
     <DockPanel LastChildFill="True">
@@ -15,21 +16,21 @@
             <MenuItem Header="Pilots" Click="menuPilots_Click"/>
             <MenuItem Header="Tasks" Click="menuTasks_Click"/>
         </Menu>
-        <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
+        <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <TextBlock Text="{Binding Path=db.Competitions.Count, StringFormat=Competitions: {0:0}}"/>
+                <TextBlock Text="{Binding Path=Competitions.Count, StringFormat=Competitions: {0:0}}"/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding Path=db.Pilots.Count, StringFormat=Pilots: {0:0}}"/>
+                <TextBlock Text="{Binding Path=Pilots.Count, StringFormat=Pilots: {0:0}}"/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding Path=db.Tasks.Count, StringFormat=Tasks: {0:0}}"/>
+                <TextBlock Text="{Binding Path=Tasks.Count, StringFormat=Tasks: {0:0}}"/>
             </StatusBarItem>
         </StatusBar>
         <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="2"/>
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
             <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
@@ -38,7 +39,7 @@
                         <Expander.Header>
                             <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Competitions</TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=db.Competitions}">
+                        <ListBox ItemsSource="{Binding Path=Competitions}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}">
@@ -58,13 +59,13 @@
                         <Expander.Header>
                             <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Pilots</TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=db.Pilots}"/>
+                        <ListBox ItemsSource="{Binding Path=Pilots}"/>
                     </Expander>
                     <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True">
                         <Expander.Header>
                             <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Tasks</TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=db.Tasks}">
+                        <ListBox ItemsSource="{Binding Path=Tasks}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}">
