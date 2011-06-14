@@ -118,5 +118,22 @@ namespace Scorer
                     e.Cancel = true;
             }
         }
+
+        private void menuTaskResults_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+            if (task != null)
+                AddTab(new EditTaskResults(task), string.Format("Task {0}", task.ToString()));
+        }
+
+        private void menuTaskScores_Click(object sender, RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+        }
+
+        private void menuGeneralScore_Click(object sender, RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+        }
     }
 }

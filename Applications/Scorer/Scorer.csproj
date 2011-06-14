@@ -109,8 +109,8 @@
     <Compile Include="UserControls\EditPilots.xaml.cs">
       <DependentUpon>EditPilots.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\EditTaskScores.xaml.cs">
-      <DependentUpon>EditTaskScores.xaml</DependentUpon>
+    <Compile Include="UserControls\EditTaskResults.xaml.cs">
+      <DependentUpon>EditTaskResults.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Pilot.cs" />
     <Compile Include="Data\PilotResult.cs" />
@@ -128,7 +128,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UserControls\EditTaskScores.xaml">
+    <Page Include="UserControls\EditTaskResults.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

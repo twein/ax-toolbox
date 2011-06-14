@@ -8,11 +8,11 @@ namespace Scorer
     /// <summary>
     /// Interaction logic for EditTaskScores.xaml
     /// </summary>
-    public partial class EditTaskScores : UserControl
+    public partial class EditTaskResults : UserControl
     {
         public List<EditPilotScore> Score { get; set; }
 
-        public EditTaskScores()
+        public EditTaskResults(Task task)
         {
             InitializeComponent();
 
@@ -20,12 +20,13 @@ namespace Scorer
             Score = new List<EditPilotScore>();
             Thread.Sleep(100);
             var rnd = new Random();
-            for (var i = 0; i < 30; i++)
+            foreach (var p in Database.Instance.Pilots)
             {
                 var pscore = new EditPilotScore()
                 {
-                    PilotNumber = i + 1,
-                    PilotName = string.Format("Pilot number {0:##0}", i + 1),
+                    TaskNumber = task.Number,
+                    PilotNumber = p.Number,
+                    PilotName = p.Name,
                     ManualMeasure = new Result(AXToolbox.Scripting.ResultType.No_Result),
                     //ManualMeasure = (decimal)(100 * rnd.NextDouble()),
                     ManualMeasurePenalty = rnd.NextDouble() < .05 ? (decimal)(100 * rnd.NextDouble()) : 0,
@@ -42,6 +43,11 @@ namespace Scorer
         public class EditPilotScore : PilotResult
         {
             public string PilotName { get; set; }
+        }
+
+        private void buttonSave_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
