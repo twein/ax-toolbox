@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System;
 using Microsoft.Win32;
 
 namespace Scorer
@@ -43,7 +43,6 @@ namespace Scorer
             //    you get a blank tab
             itemsTab.SelectedItem = newTab;
         }
-
         private void CloseTab(object source, RoutedEventArgs args)
         {
             var tabItem = args.Source as TabItem;
@@ -55,15 +54,41 @@ namespace Scorer
             }
         }
 
-        private void loadCompetitionsButton_Click(object sender, RoutedEventArgs e)
+        private void menuLoadEvent_Click(object sender, RoutedEventArgs e)
         {
+            if (db.IsDirty)
+            {
+                var response = MessageBox.Show(
+                    "The event data has not been saved. Are you sure you want to load other data?",
+                    "Warning!",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question,
+                    MessageBoxResult.No);
 
+                if (response == MessageBoxResult.No)
+                    return;
+            }
+
+            var dlg = new OpenFileDialog();
+            dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+            {
+                Database.Instance.Load(dlg.FileName);
+                DataContext = null;
+                DataContext = this;
+            }
         }
-
-        private void loadTaskResultsButton_Click(object sender, RoutedEventArgs e)
+        private void menuSaveEvent_Click(object sender, RoutedEventArgs e)
         {
+            var dlg = new SaveFileDialog();
+            dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                Database.Instance.Save(dlg.FileName);
         }
-
         private void menuPilots_Click(object sender, RoutedEventArgs e)
         {
             AddTab(new EditPilots(), "Pilots");
@@ -78,28 +103,20 @@ namespace Scorer
 
         }
 
-        private void menuLoadEvent_Click(object sender, RoutedEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
-            dlg.InitialDirectory = Environment.CurrentDirectory;
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == true)
+            if (db.IsDirty)
             {
-                Database.Instance.Load(dlg.FileName);
-                DataContext = null;
-                DataContext = this;
-            }
-        }
+                var response = MessageBox.Show(
+                    "The event data has not been saved. Are you sure you want to close the application?",
+                    "Warning!",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question,
+                    MessageBoxResult.No);
 
-        private void menuSaveEvent_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new SaveFileDialog();
-            dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
-            dlg.InitialDirectory = Environment.CurrentDirectory;
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == true)
-                Database.Instance.Save(dlg.FileName);
+                if (response == MessageBoxResult.No)
+                    e.Cancel = true;
+            }
         }
     }
 }
