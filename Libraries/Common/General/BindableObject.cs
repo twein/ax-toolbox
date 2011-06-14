@@ -57,7 +57,6 @@ namespace AXToolbox.Common
                     isDirty = value;
                     RaisePropertyChanged("IsDirty");
                 }
-
             }
         }
 

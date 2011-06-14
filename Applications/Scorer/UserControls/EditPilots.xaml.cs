@@ -39,6 +39,7 @@ namespace Scorer
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Pilots.Sort(p => p.Number).CopyTo(Database.Instance.Pilots);
+            Database.Instance.IsDirty = true;
         }
 
         private void ImportPilots(string filePath)

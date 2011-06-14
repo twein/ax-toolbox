@@ -3,15 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:local="clr-namespace:Scorer"
-        Title="MainWindow" Height="600" Width="1024">
+        Title="MainWindow" Height="600" Width="1024"
+        Closing="Window_Closing">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Event">
                 <MenuItem Header="Load" Click="menuLoadEvent_Click"/>
                 <MenuItem Header="Save" Click="menuSaveEvent_Click"/>
             </MenuItem>
-            <MenuItem Header="Pilots" Click="menuPilots_Click"/>
             <MenuItem Header="Competitions" Click="menuCompetitions_Click"/>
+            <MenuItem Header="Pilots" Click="menuPilots_Click"/>
             <MenuItem Header="Tasks" Click="menuTasks_Click"/>
         </Menu>
         <StatusBar Height="23" Name="statusBar1" DockPanel.Dock="Bottom">
@@ -30,30 +31,20 @@
                     <Expander ExpandDirection="Down" Background="LightGray">
                         <Expander.Header>
                             <StackPanel Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Pilots</TextBlock>
-                            <TextBlock Text="{Binding Path=db.Pilots.Count, StringFormat=({0:0})}"/>
-                            </StackPanel>
-                        </Expander.Header>
-                        <StackPanel Orientation="Vertical">
-                            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <!--<Button Name="Import" ToolTip="Import pilot list" Click="importPilotsButton_Click">Load</Button>-->
-                            </WrapPanel>
-                            <ListBox ItemsSource="{Binding Path=db.Pilots}"/>
-                        </StackPanel>
-                    </Expander>
-                    <Expander ExpandDirection="Down" Background="LightGray">
-                        <Expander.Header>
-                            <StackPanel Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Competitions</TextBlock>
                                 <TextBlock Text="{Binding Path=db.Competitions.Count, StringFormat=({0:0})}"/>
                             </StackPanel>
                         </Expander.Header>
-                        <StackPanel Orientation="Vertical">
-                            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <!--<Button ToolTip="Load competition list" Click="loadCompetitionsButton_Click">Load</Button>-->
-                            </WrapPanel>
-                            <ListBox ItemsSource="{Binding Path=db.Competitions}"/>
-                        </StackPanel>
+                        <ListBox ItemsSource="{Binding Path=db.Competitions}"/>
+                    </Expander>
+                    <Expander ExpandDirection="Down" Background="LightGray">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Pilots</TextBlock>
+                                <TextBlock Text="{Binding Path=db.Pilots.Count, StringFormat=({0:0})}"/>
+                            </StackPanel>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=db.Pilots}"/>
                     </Expander>
                     <Expander ExpandDirection="Down" Background="LightGray">
                         <Expander.Header>
@@ -62,14 +53,8 @@
                                 <TextBlock Text="{Binding Path=db.Tasks.Count, StringFormat=({0:0})}"/>
                             </StackPanel>
                         </Expander.Header>
-                        <StackPanel Orientation="Vertical">
-                            <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <!--<Button ToolTip="Load task results" Click="loadTaskResultsButton_Click">Load</Button>-->
-                            </WrapPanel>
-                            <ListBox ItemsSource="{Binding Path=db.Tasks}"/>
-                        </StackPanel>
+                        <ListBox ItemsSource="{Binding Path=db.Tasks}"/>
                     </Expander>
-
                 </StackPanel>
             </ScrollViewer>
             <GridSplitter Background="LightGray" Grid.Column="1" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

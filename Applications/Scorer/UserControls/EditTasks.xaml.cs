@@ -24,6 +24,7 @@ namespace Scorer
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Tasks.Sort(t => t.Number).CopyTo(Database.Instance.Tasks);
+            Database.Instance.IsDirty = true;
         }
     }
 }

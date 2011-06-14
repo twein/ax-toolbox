@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -29,6 +29,7 @@ namespace Scorer
         #endregion
 
         #region "persistence"
+        [NonSerialized]
         private bool EnableCompression = false;
 
         public void Save(string fileName)
@@ -49,6 +50,8 @@ namespace Scorer
                 foreach (FieldInfo fieldI in this.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
                     if (fieldI.GetCustomAttributes(typeof(NonSerializedAttribute), true).Length == 0)
                         bfmtr.Serialize(stream, fieldI.GetValue(this));
+
+                IsDirty = false;
             }
             finally
             {
@@ -74,6 +77,8 @@ namespace Scorer
                 foreach (FieldInfo fieldI in this.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
                     if (fieldI.GetCustomAttributes(typeof(NonSerializedAttribute), true).Length == 0)
                         fieldI.SetValue(this, bfmtr.Deserialize(stream));
+
+                IsDirty = false;
             }
             finally
             {
