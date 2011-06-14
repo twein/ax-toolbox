@@ -9,9 +9,7 @@ namespace Scorer
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Location { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string LocationDates { get; set; }
         public string Director { get; set; }
 
         public IEnumerable<Pilot> Pilots
@@ -37,6 +35,11 @@ namespace Scorer
                             select t;
                 return query;
             }
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         /// <summary>Generate a pdf general scores sheet

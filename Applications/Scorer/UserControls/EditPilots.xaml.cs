@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 //using System.Linq;
-using System.Windows.Controls;
 using Microsoft.Win32;
 
 namespace Scorer
@@ -19,6 +19,12 @@ namespace Scorer
 
             Pilots = new ObservableCollection<Pilot>();
             Database.Instance.Pilots.CopyTo(Pilots);
+            //Pilots.CollectionChanged += new NotifyCollectionChangedEventHandler(Pilots_CollectionChanged);
+        }
+
+        void Pilots_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void importButton_Click(object sender, RoutedEventArgs e)

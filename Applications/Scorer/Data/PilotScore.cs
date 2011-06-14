@@ -1,6 +1,8 @@
-﻿
+﻿using System;
+
 namespace Scorer
 {
+    [Serializable]
     public class PilotScore
     {
         public int CompetitionId { get; set; }

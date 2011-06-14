@@ -8,22 +8,22 @@ using Microsoft.Win32;
 
 namespace Scorer
 {
-    public partial class EditTasks
+    public partial class EditCompetitions
     {
-        public ObservableCollection<Task> Tasks { get; set; }
+        public ObservableCollection<Competition> Competitions { get; set; }
 
-        public EditTasks()
+        public EditCompetitions()
         {
             InitializeComponent();
             DataContext = this;
 
-            Tasks = new ObservableCollection<Task>();
-            Database.Instance.Tasks.CopyTo(Tasks);
+            Competitions = new ObservableCollection<Competition>();
+            Database.Instance.Competitions.CopyTo(Competitions);
         }
 
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Tasks.Sort(t => t.Number).CopyTo(Database.Instance.Tasks);
+            Competitions.Sort(c => c.Id).CopyTo(Database.Instance.Competitions);
         }
     }
 }
