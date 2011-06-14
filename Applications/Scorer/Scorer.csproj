@@ -100,6 +100,9 @@
     <Compile Include="Database.cs" />
     <Compile Include="Data\PilotScore.cs" />
     <Compile Include="Data\TaskType.cs" />
+    <Compile Include="UserControls\EditCompetitions.xaml.cs">
+      <DependentUpon>EditCompetitions.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\EditTasks.xaml.cs">
       <DependentUpon>EditTasks.xaml</DependentUpon>
     </Compile>
@@ -113,6 +116,10 @@
     <Compile Include="Data\PilotResult.cs" />
     <Compile Include="Data\Result.cs" />
     <Compile Include="Data\Task.cs" />
+    <Page Include="UserControls\EditCompetitions.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UserControls\EditTasks.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Scorer
 {
+    [Serializable]
     public class TaskType
     {
         public int Number { get; private set; }

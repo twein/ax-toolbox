@@ -68,10 +68,38 @@ namespace Scorer
         {
             AddTab(new EditPilots(), "Pilots");
         }
-
         private void menuTasks_Click(object sender, RoutedEventArgs e)
         {
             AddTab(new EditTasks(), "Tasks");
+        }
+        private void menuCompetitions_Click(object sender, RoutedEventArgs e)
+        {
+            AddTab(new EditCompetitions(), "Competitions");
+
+        }
+
+        private void menuLoadEvent_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+            {
+                Database.Instance.Load(dlg.FileName);
+                DataContext = null;
+                DataContext = this;
+            }
+        }
+
+        private void menuSaveEvent_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                Database.Instance.Save(dlg.FileName);
         }
     }
 }
