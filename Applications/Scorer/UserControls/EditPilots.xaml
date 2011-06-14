@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:converters="clr-namespace:Scorer"    
+             xmlns:local="clr-namespace:Scorer"    
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
     <UserControl.Resources>
         <Style x:Key="RightCellStyle" TargetType="DataGridCell">
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
-        <converters:ResultConverter x:Key="resultConverter" />
+        <local:ResultConverter x:Key="resultConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -20,7 +20,7 @@
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
                   ItemsSource="{Binding Path=Pilots}" 
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
-                  AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserReorderColumns="False" CanUserSortColumns="True" >
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Path=Number}" CellStyle="{StaticResource RightCellStyle}" MinWidth="30" />
                 <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="4*"/>
@@ -30,8 +30,11 @@
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
-            <Button Click="importButton_Click">Import</Button>
-            <Button Click="saveButton_Click">Save</Button>
+            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="addButton_Click" ToolTip="Add a new pilot">Add</Button>
+            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="deleteButton_Click" ToolTip="Delete last pilot">Delete</Button>
+            <Separator Width="5" Visibility="Hidden"></Separator>
+            <Button Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
+            <Button Click="saveButton_Click" ToolTip="Save changes to the database">Save</Button>
         </WrapPanel>
     </Grid>
 </UserControl>

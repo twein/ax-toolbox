@@ -30,7 +30,7 @@ namespace Scorer
             {
                 var db = Database.Instance;
                 var query = from t in db.Tasks
-                            join ct in db.CompetitionTasks on t.Number equals ct.TaskNumber
+                            join ct in db.TaskScores on t.Number equals ct.TaskNumber
                             where ct.CompetitionId == Id
                             select t;
                 return query;
@@ -44,8 +44,16 @@ namespace Scorer
 
         /// <summary>Generate a pdf general scores sheet
         /// </summary>
-        /// <param name="fileName">desired pdf file path</param>
-        public void PdfGeneralScores(string fileName)
+        /// <param header="fileName">desired pdf file path</param>
+        public void PdfGeneralScore(string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>Generate a pdf with all task scores
+        /// </summary>
+        /// <param header="fileName"></param>
+        public void PdfTaskScores(string fileName)
         {
             throw new NotImplementedException();
         }

@@ -94,10 +94,10 @@
     </ApplicationDefinition>
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Data\CompetitionPilot.cs" />
-    <Compile Include="Data\CompetitionTask.cs" />
+    <Compile Include="Data\TaskScore.cs" />
     <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
-    <Compile Include="Database.cs" />
+    <Compile Include="Data\Database.cs" />
     <Compile Include="Data\PilotScore.cs" />
     <Compile Include="Data\TaskType.cs" />
     <Compile Include="UserControls\EditCompetitions.xaml.cs">
