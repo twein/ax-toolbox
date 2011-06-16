@@ -10,7 +10,6 @@ namespace Scorer
 {
     public partial class MainWindow : Window
     {
-
         public MainWindow()
         {
             InitializeComponent();
@@ -104,14 +103,34 @@ namespace Scorer
         }
         private void menuPilots_Click(object sender, RoutedEventArgs e)
         {
-            AddTab(new EditPilots(Database.Instance.Pilots), "Pilots");
+            var editOptions = EditOptions.CanEdit;
+            if (Database.Instance.Tasks.Count == 0)
+                editOptions |= EditOptions.CanAdd | EditOptions.CanDelete;
+
+            AddTab(new EditPilots(Database.Instance.Pilots, editOptions), "Pilots");
         }
         private void menuTasks_Click(object sender, RoutedEventArgs e)
         {
-            AddTab(new EditTasks(Database.Instance.Tasks), "Tasks");
+            var editOptions = EditOptions.All;
+
+            AddTab(new EditTasks(Database.Instance.Tasks, editOptions), "Tasks");
         }
 
-        private void menuTaskScores_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionPilots_Click(object sender, RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+            var editOptions = EditOptions.CanDelete;
+
+            AddTab(new EditPilots(competition.Pilots, editOptions), competition.Name + " pilots");
+        }
+        private void menuCompetitionTasks_Click(object sender, RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+            var editOptions = EditOptions.CanDelete;
+
+            AddTab(new EditTasks(competition.Tasks, editOptions), competition.Name + " tasks");
+        }
+        private void menuCompetitionTaskScores_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
 
@@ -122,7 +141,7 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 competition.PdfTaskScores(dlg.FileName);
         }
-        private void menuGeneralScore_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionGeneralScore_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
 
