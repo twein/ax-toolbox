@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Scorer.Database">
+    <Position X="7.5" Y="3.25" Width="3.25" />
+    <AssociationLine Name="Competitions" Type="Scorer.Competition" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.5" Y="5.438" />
+        <Point X="7.062" Y="5.438" />
+        <Point X="7.062" Y="7.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-2.723" Y="0.175" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Pilots" Type="Scorer.Pilot">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.11" Y="0.06" Height="0.182" Width="2.704" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Tasks" Type="Scorer.Task">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.315" Y="0.516" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAEgIAAAAIAAAAAAAAACAAAAACAAAAAQAAIAAAAAAA=</HashCode>
+      <FileName>Data\Database.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Competitions" />
+      <Property Name="Pilots" />
+      <Property Name="Tasks" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Scorer.Competition">
+    <Position X="5.5" Y="7.75" Width="2" />
+    <AssociationLine Name="Pilots" Type="Scorer.Pilot" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.062" Y="7.75" />
+        <Point X="6.062" Y="5.434" />
+        <Point X="4.25" Y="5.434" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Tasks" Type="Scorer.Task">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.013" Y="0.11" Height="0.182" Width="2.358" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="TaskScores" Type="Scorer.TaskScore">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.203" Y="0.06" Height="0.182" Width="3.256" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAEABAAAAAAAAAEAAAAgAQAgAAAAAAAAAAICIAAAAA=</HashCode>
+      <FileName>Data\Competition.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Pilots" />
+      <Property Name="Tasks" />
+      <Property Name="TaskScores" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Scorer.Task">
+    <Position X="9.25" Y="7.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAgAAAEAEAAAAAAAAAAAAQAAAAAAAACAAA=</HashCode>
+      <FileName>Data\Task.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="PilotResults" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Scorer.Pilot">
+    <Position X="2.5" Y="3.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAUAEAAQAQAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Pilot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scorer.PilotResult" Collapsed="true">
+    <Position X="5.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAEAAAAAAAAQAAAQAAIAAAAAAAgCACCAEAAAAAAAAA=</HashCode>
+      <FileName>Data\PilotResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Scorer.TaskScore">
+    <Position X="0.5" Y="6.5" Width="2.5" />
+    <AssociationLine Name="PilotScores" Type="Scorer.PilotScore">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.221" Y="0.11" Height="0.182" Width="2.611" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="PilotResults" Type="Scorer.PilotResult" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.812" Y="10.555" />
+        <Point X="1.812" Y="11.25" />
+        <Point X="5.25" Y="11.25" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>IEIBAAAGAAAAAAAAAAAAwAAAAACAAAQgAEAAIAJIAAA=</HashCode>
+      <FileName>Data\TaskScore.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="PilotScores" />
+      <Property Name="PilotResults" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Scorer.PilotScore" Collapsed="true">
+    <Position X="0.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAggAAAAAAAAAACAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Data\PilotScore.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

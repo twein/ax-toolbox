@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Windows;
-using System.Linq;
-using System.Windows.Controls;
-using Microsoft.Win32;
+﻿using System.Collections.ObjectModel;
 
 namespace Scorer
 {
@@ -24,10 +18,7 @@ namespace Scorer
 
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Competitions.Count == 0)
-                Competitions.Add(new Competition() { Id = 1 });
-            else
-                Competitions.Add(new Competition() { Id = Competitions.Last().Id + 1 });
+            Competitions.Add(new Competition());
         }
 
         private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -38,7 +29,7 @@ namespace Scorer
 
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Competitions.Sort(c => c.Id).CopyTo(Database.Instance.Competitions);
+            Competitions.CopyTo(Database.Instance.Competitions);
             Database.Instance.IsDirty = true;
         }
     }

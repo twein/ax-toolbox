@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Scorer
 {
-    public enum TaskStatus { Provisional, Official, Final }
+    public enum ScoreStatus { Provisional, Official, Final }
 
     [Serializable]
     public class TaskScore
     {
-        public int CompetitionId { get; set; }
-        public int TaskNumber { get; set; }
+        public Competition Competition { get; set; }
+        public Task Task { get; set; }
 
-        public TaskStatus Status { get; set; }
+        public ScoreStatus Status { get; set; }
         public int Version { get; set; }
         public DateTime RevisionDate { get; set; }
         public DateTime PublicationDate { get; set; }
@@ -25,26 +24,19 @@ namespace Scorer
         public decimal RM { get; set; }
         public decimal W { get; set; }
 
-        public IEnumerable<PilotResult> Results
+        public IEnumerable<PilotResult> PilotResults
         {
-            get
-            {
-                var query = from r in Database.Instance.PilotResults
-                            where r.TaskNumber == TaskNumber
-                            select r;
-                return query;
-            }
+            get { return Task.PilotResults; }
         }
-        public IEnumerable<PilotScore> Scores
+
+        public List<PilotScore> PilotScores { get; set; }
+
+        public TaskScore(Competition competition, Task task)
         {
-            get
-            {
-                var query = from s in Database.Instance.PilotScores
-                            where s.CompetitionId == CompetitionId
-                                && s.TaskNumber == TaskNumber
-                            select s;
-                return query;
-            }
+            Competition = competition;
+            Task = task;
+
+            PilotScores = new List<PilotScore>();
         }
 
         /// <summary>Compute the scores for this task

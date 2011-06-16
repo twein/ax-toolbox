@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Scorer
@@ -35,20 +36,7 @@ namespace Scorer
             if (Tasks.Count > 0 && db.Tasks.Count == 0)
             {
                 //First task added
-                //prepare tables
-
-                //CompetitionPilots
-                var competitionsPilots = from c in db.Competitions
-                                         from p in db.Pilots
-                                         select new CompetitionPilot()
-                                         {
-                                             CompetitionId = c.Id,
-                                             PilotNumber = p.Number
-                                         };
-
-                db.CompetitionPilots.Clear();
-                foreach (var cp in competitionsPilots)
-                    db.CompetitionPilots.Add(cp);
+                throw new NotImplementedException();
             }
 
             Tasks.Sort(t => t.Number).CopyTo(Database.Instance.Tasks);

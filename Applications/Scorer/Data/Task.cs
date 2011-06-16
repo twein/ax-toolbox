@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Scorer
 {
@@ -9,23 +10,11 @@ namespace Scorer
     {
         public static TaskType[] Types;
 
-
         public int Number { get; set; }
-        public int FlightNumber { get; set; }
         public int TypeNumber { get; set; }
-
         public bool Void { get; set; }
 
-        public IEnumerable<PilotResult> Results
-        {
-            get
-            {
-                var query = from r in Database.Instance.PilotResults
-                            where r.TaskNumber == Number
-                            select r;
-                return query;
-            }
-        }
+        public ObservableCollection<PilotResult> PilotResults {get;set;}
 
         static Task()
         {
@@ -51,6 +40,10 @@ namespace Scorer
                 new TaskType(19,"Angle",                        "ANG", false),
                 new TaskType(20,"3D Shape",                     "3DT", false)
             };
+        }
+        public Task()
+        {
+            PilotResults = new ObservableCollection<PilotResult>();
         }
 
         public override string ToString()

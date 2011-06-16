@@ -1,48 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Scorer
 {
     [Serializable]
     public class Competition
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string LocationDates { get; set; }
         public string Director { get; set; }
 
-        //public IEnumerable<Pilot> Pilots
-        //{
-        //    get
-        //    {
-        //        var db = Database.Instance;
-        //        var query = from p in db.Pilots
-        //                    join cp in db.CompetitionPilots on p.Number equals cp.PilotNumber
-        //                    where cp.CompetitionId == Id
-        //                    select p;
-        //        return query;
-        //    }
-        //}
         public ObservableCollection<Pilot> Pilots { get; set; }
-        public IEnumerable<Task> Tasks
-        {
-            get
-            {
-                var db = Database.Instance;
-                var query = from t in db.Tasks
-                            join ct in db.TaskScores on t.Number equals ct.TaskNumber
-                            where ct.CompetitionId == Id
-                            select t;
-                return query;
-            }
-        }
+        public ObservableCollection<Task> Tasks { get; set; }
+
+        public ObservableCollection<TaskScore> TaskScores { get; set; }
 
         public Competition()
         {
             Pilots = new ObservableCollection<Pilot>();
-        } 
+            Tasks = new ObservableCollection<Task>();
+        }
 
         public override string ToString()
         {
