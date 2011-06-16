@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.IO.Compression;
-using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using AXToolbox.Common;
+using AXToolbox.Common.IO;
 
 namespace Scorer
 {
@@ -30,61 +27,36 @@ namespace Scorer
 
         #region "persistence"
         [NonSerialized]
-        private bool EnableCompression = false;
+        private SerializationFormat serializationFormat = SerializationFormat.XML;
 
         public void Save(string fileName)
         {
-            Stream stream;
+            ObjectSerializer<Database>.Save(this, fileName, serializationFormat);
 
-            var fStream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
-            var zStream = new GZipStream(fStream, CompressionMode.Compress);
-
-            if (EnableCompression)
-                stream = zStream;
-            else
-                stream = fStream;
-
-            try
-            {
-                var bfmtr = new BinaryFormatter();
-                foreach (FieldInfo fieldI in this.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
-                    if (fieldI.GetCustomAttributes(typeof(NonSerializedAttribute), true).Length == 0)
-                        bfmtr.Serialize(stream, fieldI.GetValue(this));
-
-                IsDirty = false;
-            }
-            finally
-            {
-                zStream.Close();
-                fStream.Close();
-            }
+            IsDirty = false;
         }
         public void Load(string fileName)
         {
-            Stream stream;
+            var db = ObjectSerializer<Database>.Load(fileName, serializationFormat);
 
-            var fStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            var zStream = new GZipStream(fStream, CompressionMode.Decompress, false);
+            Pilots = db.Pilots;
+            RaisePropertyChanged("Pilots");
+            Flights = db.Flights;
+            RaisePropertyChanged("Flights");
+            Tasks = db.Tasks;
+            RaisePropertyChanged("Tasks");
+            Competitions = db.Competitions;
+            RaisePropertyChanged("Competitions");
+            PilotResults = db.PilotResults;
+            RaisePropertyChanged("PilotResults");
+            CompetitionPilots = db.CompetitionPilots;
+            RaisePropertyChanged("CompetitionPilots");
+            TaskScores = db.TaskScores;
+            RaisePropertyChanged("TaskScores");
+            PilotScores = db.PilotScores;
+            RaisePropertyChanged("PilotScores");
 
-            if (EnableCompression)
-                stream = zStream;
-            else
-                stream = fStream;
-
-            try
-            {
-                var bfmtr = new BinaryFormatter();
-                foreach (FieldInfo fieldI in this.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
-                    if (fieldI.GetCustomAttributes(typeof(NonSerializedAttribute), true).Length == 0)
-                        fieldI.SetValue(this, bfmtr.Deserialize(stream));
-
-                IsDirty = false;
-            }
-            finally
-            {
-                zStream.Close();
-                fStream.Close();
-            }
+            IsDirty = false;
         }
         #endregion
 
