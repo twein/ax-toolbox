@@ -19,7 +19,7 @@
             <RowDefinition Height="33"></RowDefinition>
         </Grid.RowDefinitions>
         <DataGrid Name="grid" Grid.Row="0" Margin="5"
-                  ItemsSource="{Binding Path=Tasks}" 
+                  ItemsSource="{Binding Path=EditBuffer}" 
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False">
             <DataGrid.Columns>

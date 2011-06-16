@@ -10,17 +10,18 @@ namespace Scorer
 {
     public partial class EditPilots
     {
+        public ObservableCollection<Pilot> EditBuffer { get; set; }
         public ObservableCollection<Pilot> Pilots { get; set; }
 
-        public EditPilots()
+        public EditPilots(ObservableCollection<Pilot> pilots)
         {
             InitializeComponent();
 
             DataContext = this;
 
-            Pilots = new ObservableCollection<Pilot>();
-            Database.Instance.Pilots.CopyTo(Pilots);
-            //Pilots.CollectionChanged += new NotifyCollectionChangedEventHandler(Pilots_CollectionChanged);
+            EditBuffer = new ObservableCollection<Pilot>();
+            pilots.CopyTo(EditBuffer);
+            Pilots = pilots;
         }
 
         void Pilots_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -30,16 +31,16 @@ namespace Scorer
 
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Pilots.Count == 0)
-                Pilots.Add(new Pilot() { Number = 1 });
+            if (EditBuffer.Count == 0)
+                EditBuffer.Add(new Pilot() { Number = 1 });
             else
-                Pilots.Add(new Pilot() { Number = Pilots.Max(p => p.Number) + 1 });
+                EditBuffer.Add(new Pilot() { Number = EditBuffer.Max(p => p.Number) + 1 });
         }
 
         private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Pilots.Count > 0)
-                Pilots.RemoveAt(Pilots.Count - 1);
+            if (EditBuffer.Count > 0)
+                EditBuffer.RemoveAt(EditBuffer.Count - 1);
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
@@ -52,9 +53,7 @@ namespace Scorer
         }
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Pilots.Sort(p => p.Number).CopyTo(Database.Instance.Pilots);
-            foreach (var c in Database.Instance.Competitions)
-                Database.Instance.Pilots.CopyTo(c.Pilots);
+            EditBuffer.Sort(p => p.Number).CopyTo(Pilots);
             Database.Instance.IsDirty = true;
         }
 
@@ -64,7 +63,7 @@ namespace Scorer
             int i = 0;
             try
             {
-                Pilots.Clear();
+                EditBuffer.Clear();
                 foreach (var p in pilotList)
                 {
                     i++;
@@ -77,7 +76,7 @@ namespace Scorer
                         var country = (fields.Length > 2) ? fields[2].Trim() : "";
                         var balloon = (fields.Length > 3) ? fields[3].Trim() : "";
 
-                        Pilots.Add(new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon });
+                        EditBuffer.Add(new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon });
                     }
                 }
 

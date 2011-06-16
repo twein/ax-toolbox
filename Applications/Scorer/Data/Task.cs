@@ -44,6 +44,8 @@ namespace Scorer
         public Task()
         {
             PilotResults = new ObservableCollection<PilotResult>();
+            foreach (var c in Database.Instance.Competitions)
+                c.Tasks.Add(this);
         }
 
         public override string ToString()
