@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Scorer
@@ -12,18 +13,19 @@ namespace Scorer
         public string LocationDates { get; set; }
         public string Director { get; set; }
 
-        public IEnumerable<Pilot> Pilots
-        {
-            get
-            {
-                var db = Database.Instance;
-                var query = from p in db.Pilots
-                            join cp in db.CompetitionPilots on p.Number equals cp.PilotNumber
-                            where cp.CompetitionId == Id
-                            select p;
-                return query;
-            }
-        }
+        //public IEnumerable<Pilot> Pilots
+        //{
+        //    get
+        //    {
+        //        var db = Database.Instance;
+        //        var query = from p in db.Pilots
+        //                    join cp in db.CompetitionPilots on p.Number equals cp.PilotNumber
+        //                    where cp.CompetitionId == Id
+        //                    select p;
+        //        return query;
+        //    }
+        //}
+        public ObservableCollection<Pilot> Pilots { get; set; }
         public IEnumerable<Task> Tasks
         {
             get
@@ -36,6 +38,11 @@ namespace Scorer
                 return query;
             }
         }
+
+        public Competition()
+        {
+            Pilots = new ObservableCollection<Pilot>();
+        } 
 
         public override string ToString()
         {

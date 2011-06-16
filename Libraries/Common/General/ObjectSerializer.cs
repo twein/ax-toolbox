@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System.IO.Compression;
+
+//TODO: Implement this: http://stackoverflow.com/questions/1617528/net-xml-serialization-storing-reference-instead-of-object-copy
 
 namespace AXToolbox.Common.IO
 {
@@ -23,9 +26,14 @@ namespace AXToolbox.Common.IO
         CompressedBinary,
 
         /// <summary>
-        /// Document serialization format.
+        /// Document serialization format (xml by value).
         /// </summary>
-        XML
+        XML,
+
+        /// <summary>
+        /// Data Contract Serialization format (xml by ref).
+        /// </summary>
+        DataContract
     }
 
     /// <summary>
@@ -413,12 +421,29 @@ namespace AXToolbox.Common.IO
             return xmlSerializer;
         }
 
+        private static DataContractSerializer CreateDataContractSerializer(System.Type[] extraTypes)
+        {
+            Type ObjectType = typeof(T);
+
+            var dataContractSerializer = new DataContractSerializer(ObjectType, extraTypes, 0x7fff, false, true, null);
+            return dataContractSerializer;
+        }
+
         private static void SaveToDocumentFormat(T serializableObject, System.Type[] extraTypes, string path, IsolatedStorageFile isolatedStorageFolder)
         {
             using (TextWriter textWriter = CreateTextWriter(isolatedStorageFolder, path))
             {
                 XmlSerializer xmlSerializer = CreateXmlSerializer(extraTypes);
                 xmlSerializer.Serialize(textWriter, serializableObject);
+            }
+        }
+
+        private static void SaveToDataContractFormat(T serializableObject, System.Type[] extraTypes, string path, IsolatedStorageFile isolatedStorageFolder)
+        {
+            using (TextWriter textWriter = CreateTextWriter(isolatedStorageFolder, path))
+            {
+                var dataContractSerializer = CreateDataContractSerializer(extraTypes);
+                dataContractSerializer.WriteObject(textWriter, serializableObject);
             }
         }
 
