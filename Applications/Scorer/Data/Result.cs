@@ -14,6 +14,7 @@ namespace Scorer
         public ResultType Type { get; set; }
         public Decimal Value { get; set; }
 
+        protected Result() { }
         public Result(ResultType type)
         {
             Type = type;

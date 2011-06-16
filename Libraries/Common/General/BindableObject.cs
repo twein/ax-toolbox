@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Xml.Serialization;
 
 namespace AXToolbox.Common
 {
@@ -47,6 +48,7 @@ namespace AXToolbox.Common
 
         [NonSerialized]
         private Boolean isDirty = false;
+        [XmlIgnore]
         public Boolean IsDirty
         {
             get { return isDirty; }

@@ -86,11 +86,7 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
-            {
                 Database.Instance.Load(dlg.FileName);
-                DataContext = null;
-                DataContext = this;
-            }
         }
         private void menuSaveEvent_Click(object sender, RoutedEventArgs e)
         {
