@@ -27,7 +27,7 @@ namespace Scorer
 
         #region "persistence"
         [NonSerialized]
-        private SerializationFormat serializationFormat = SerializationFormat.XML;
+        private SerializationFormat serializationFormat = SerializationFormat.DataContract;
 
         public void Save(string fileName)
         {
