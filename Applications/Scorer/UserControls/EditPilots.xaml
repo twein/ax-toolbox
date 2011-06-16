@@ -18,9 +18,17 @@
             <RowDefinition Height="33"></RowDefinition>
         </Grid.RowDefinitions>
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
-                  ItemsSource="{Binding Path=EditBuffer}" 
+                  ItemsSource="{Binding Path=EditBuffer}"
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
-                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" >
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" IsReadOnly="{Binding Path=ReadOnly}">
+            <DataGrid.Resources>
+                <ContextMenu x:Key="RowContextMenu" Visibility="{Binding Path=DeleteVisibility}">
+                    <MenuItem Tag="{Binding}" Header="Remove pilot" Click="menuRemove_Click"/>
+                </ContextMenu>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ContextMenu" Value="{StaticResource RowContextMenu}" />
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Path=Number}" CellStyle="{StaticResource RightCellStyle}" MinWidth="30" />
                 <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="4*"/>
@@ -30,10 +38,9 @@
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
-            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="addButton_Click" ToolTip="Add a new pilot">Add</Button>
-            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="deleteButton_Click" ToolTip="Delete last pilot">Delete</Button>
+            <Button Visibility="{Binding Path=AddVisibility}" Click="addButton_Click" ToolTip="Add a new pilot">Add</Button>
             <Separator Width="5" Visibility="Hidden"></Separator>
-            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
+            <Button Visibility="{Binding Path=AddVisibility}" Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
             <Button Click="saveButton_Click" ToolTip="Save changes to the database">Save</Button>
         </WrapPanel>
     </Grid>

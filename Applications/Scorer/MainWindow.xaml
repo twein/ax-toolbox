@@ -45,14 +45,16 @@
                                     <TextBlock Text="{Binding}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="All Task scores" Click="menuTaskScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="General score" Click="menuGeneralScore_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Competition pilots" Click="menuCompetitionPilots_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Competition tasks" Click="menuCompetitionTasks_Click"/>
+                                                <Separator/>
+                                                <MenuItem Tag="{Binding}" Header="All Task scores" Click="menuCompetitionTaskScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="General score" Click="menuCompetitionGeneralScore_Click"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
-
                         </ListBox>
                     </Expander>
                     <Expander ExpandDirection="Down" Background="LightGray">

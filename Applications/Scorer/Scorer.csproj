@@ -102,6 +102,7 @@
     <Compile Include="UserControls\EditCompetitions.xaml.cs">
       <DependentUpon>EditCompetitions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\EditOptions.cs" />
     <Compile Include="UserControls\EditTasks.xaml.cs">
       <DependentUpon>EditTasks.xaml</DependentUpon>
     </Compile>

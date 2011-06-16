@@ -1,19 +1,34 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Win32;
 
 namespace Scorer
 {
     public partial class EditPilots
     {
-        public ObservableCollection<Pilot> EditBuffer { get; set; }
-        public ObservableCollection<Pilot> Pilots { get; set; }
+        public ObservableCollection<Pilot> EditBuffer { get; private set; }
+        public bool ReadOnly
+        {
+            get { return (Options & EditOptions.CanEdit) == 0; }
+        }
+        public Visibility DeleteVisibility
+        {
+            get { return (Options & EditOptions.CanDelete) > 0 ? Visibility.Visible : Visibility.Hidden; }
+        }
+        public Visibility AddVisibility
+        {
+            get { return (Options & EditOptions.CanAdd) > 0 ? Visibility.Visible : Visibility.Hidden; }
+        }
 
-        public EditPilots(ObservableCollection<Pilot> pilots)
+
+        private ObservableCollection<Pilot> Pilots;
+        private EditOptions Options;
+
+        public EditPilots(ObservableCollection<Pilot> pilots, EditOptions editOptions)
         {
             InitializeComponent();
 
@@ -22,25 +37,22 @@ namespace Scorer
             EditBuffer = new ObservableCollection<Pilot>();
             pilots.CopyTo(EditBuffer);
             Pilots = pilots;
+
+            Options = editOptions;
         }
 
-        void Pilots_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var menuItem = sender as MenuItem;
+            var pilot = menuItem.Tag as Pilot;
+            EditBuffer.Remove(pilot);
         }
-
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             if (EditBuffer.Count == 0)
                 EditBuffer.Add(new Pilot() { Number = 1 });
             else
                 EditBuffer.Add(new Pilot() { Number = EditBuffer.Max(p => p.Number) + 1 });
-        }
-
-        private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (EditBuffer.Count > 0)
-                EditBuffer.RemoveAt(EditBuffer.Count - 1);
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
