@@ -5,9 +5,9 @@ namespace Scorer
     [Serializable]
     public class PilotScore
     {
-        public int CompetitionId { get; set; }
-        public int TaskNumber { get; set; }
-        public int PilotNumber { get; set; }
+        public Competition Competition { get; set; }
+        public Task Task { get; set; }
+        public Pilot Pilot { get; set; }
 
         public int Position { get; set; }
         public int Score { get; set; }

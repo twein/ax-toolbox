@@ -93,7 +93,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CollectionExtensions.cs" />
-    <Compile Include="Data\CompetitionPilot.cs" />
     <Compile Include="Data\TaskScore.cs" />
     <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
@@ -140,7 +139,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\Flight.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -168,6 +166,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

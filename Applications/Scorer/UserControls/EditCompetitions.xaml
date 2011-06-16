@@ -22,7 +22,6 @@
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Binding="{Binding Path=Id}" CellStyle="{StaticResource RightCellStyle}" MinWidth="30" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="*" />
                 <DataGridTextColumn Header="Location and dates" Binding="{Binding Path=LocationDates}" Width="*" />
                 <DataGridTextColumn Header="Director" Binding="{Binding Path=Director}" Width="*" />

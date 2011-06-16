@@ -14,14 +14,9 @@ namespace Scorer
         static Database() { }
         Database()
         {
-            Pilots = new ObservableCollection<Pilot>();
-            Flights = new ObservableCollection<Flight>();
-            Tasks = new ObservableCollection<Task>();
-            PilotResults = new ObservableCollection<PilotResult>();
             Competitions = new ObservableCollection<Competition>();
-            CompetitionPilots = new ObservableCollection<CompetitionPilot>();
-            TaskScores = new ObservableCollection<TaskScore>();
-            PilotScores = new ObservableCollection<PilotScore>();
+            Pilots = new ObservableCollection<Pilot>();
+            Tasks = new ObservableCollection<Task>();
         }
         #endregion
 
@@ -39,22 +34,12 @@ namespace Scorer
         {
             var db = ObjectSerializer<Database>.Load(fileName, serializationFormat);
 
-            Pilots = db.Pilots;
-            RaisePropertyChanged("Pilots");
-            Flights = db.Flights;
-            RaisePropertyChanged("Flights");
-            Tasks = db.Tasks;
-            RaisePropertyChanged("Tasks");
             Competitions = db.Competitions;
             RaisePropertyChanged("Competitions");
-            PilotResults = db.PilotResults;
-            RaisePropertyChanged("PilotResults");
-            CompetitionPilots = db.CompetitionPilots;
-            RaisePropertyChanged("CompetitionPilots");
-            TaskScores = db.TaskScores;
-            RaisePropertyChanged("TaskScores");
-            PilotScores = db.PilotScores;
-            RaisePropertyChanged("PilotScores");
+            Pilots = db.Pilots;
+            RaisePropertyChanged("Pilots");
+            Tasks = db.Tasks;
+            RaisePropertyChanged("Tasks");
 
             IsDirty = false;
         }
@@ -62,13 +47,7 @@ namespace Scorer
 
         public ObservableCollection<Competition> Competitions { get; set; }
         public ObservableCollection<Pilot> Pilots { get; set; }
-        public ObservableCollection<Flight> Flights { get; set; }
         public ObservableCollection<Task> Tasks { get; set; }
-        public ObservableCollection<PilotResult> PilotResults { get; set; }
-
-        public ObservableCollection<CompetitionPilot> CompetitionPilots { get; set; }
-        public ObservableCollection<TaskScore> TaskScores { get; set; }
-        public ObservableCollection<PilotScore> PilotScores { get; set; }
 
         public Visibility ModButtonsVisibility
         {
