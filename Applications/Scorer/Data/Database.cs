@@ -60,10 +60,10 @@ namespace Scorer
         }
         #endregion
 
+        public ObservableCollection<Competition> Competitions { get; set; }
         public ObservableCollection<Pilot> Pilots { get; set; }
         public ObservableCollection<Flight> Flights { get; set; }
         public ObservableCollection<Task> Tasks { get; set; }
-        public ObservableCollection<Competition> Competitions { get; set; }
         public ObservableCollection<PilotResult> PilotResults { get; set; }
 
         public ObservableCollection<CompetitionPilot> CompetitionPilots { get; set; }

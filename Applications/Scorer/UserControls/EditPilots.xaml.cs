@@ -53,6 +53,8 @@ namespace Scorer
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Pilots.Sort(p => p.Number).CopyTo(Database.Instance.Pilots);
+            foreach (var c in Database.Instance.Competitions)
+                Database.Instance.Pilots.CopyTo(c.Pilots);
             Database.Instance.IsDirty = true;
         }
 
