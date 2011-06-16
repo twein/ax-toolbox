@@ -33,7 +33,7 @@
             <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="addButton_Click" ToolTip="Add a new pilot">Add</Button>
             <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="deleteButton_Click" ToolTip="Delete last pilot">Delete</Button>
             <Separator Width="5" Visibility="Hidden"></Separator>
-            <Button Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
+            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
             <Button Click="saveButton_Click" ToolTip="Save changes to the database">Save</Button>
         </WrapPanel>
     </Grid>
