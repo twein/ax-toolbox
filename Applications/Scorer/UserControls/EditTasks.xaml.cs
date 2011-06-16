@@ -6,41 +6,40 @@ namespace Scorer
 {
     public partial class EditTasks
     {
+        public ObservableCollection<Task> EditBuffer { get; set; }
         public ObservableCollection<Task> Tasks { get; set; }
 
-        public EditTasks()
+        public EditTasks(ObservableCollection<Task> tasks)
         {
             InitializeComponent();
             DataContext = this;
 
-            Tasks = new ObservableCollection<Task>();
-            Database.Instance.Tasks.CopyTo(Tasks);
+            EditBuffer = new ObservableCollection<Task>();
+            tasks.CopyTo(EditBuffer);
+            Tasks = tasks;
         }
 
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Tasks.Count == 0)
-                Tasks.Add(new Task() { Number = 1 });
-            else 
-                Tasks.Add(new Task() { Number = Tasks.Last().Number + 1 });
+            if (EditBuffer.Count == 0)
+                EditBuffer.Add(new Task() { Number = 1 });
+            else
+                EditBuffer.Add(new Task() { Number = EditBuffer.Last().Number + 1 });
         }
         private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Tasks.Count > 0)
-                Tasks.RemoveAt(Tasks.Count - 1);
+            if (EditBuffer.Count > 0)
+                EditBuffer.RemoveAt(EditBuffer.Count - 1);
         }
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var db = Database.Instance;
-
-            if (Tasks.Count > 0 && db.Tasks.Count == 0)
+            if (EditBuffer.Count > 0 && Tasks.Count == 0)
             {
                 //First task added
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
 
-            Tasks.Sort(t => t.Number).CopyTo(Database.Instance.Tasks);
-
+            EditBuffer.Sort(t => t.Number).CopyTo(Tasks);
             Database.Instance.IsDirty = true;
         }
     }

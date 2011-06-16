@@ -104,11 +104,11 @@ namespace Scorer
         }
         private void menuPilots_Click(object sender, RoutedEventArgs e)
         {
-            AddTab(new EditPilots(), "Pilots");
+            AddTab(new EditPilots(Database.Instance.Pilots), "Pilots");
         }
         private void menuTasks_Click(object sender, RoutedEventArgs e)
         {
-            AddTab(new EditTasks(), "Tasks");
+            AddTab(new EditTasks(Database.Instance.Tasks), "Tasks");
         }
 
         private void menuTaskScores_Click(object sender, RoutedEventArgs e)

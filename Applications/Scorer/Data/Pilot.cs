@@ -9,8 +9,13 @@ namespace Scorer
         public string Name { get; set; }
         public string Country { get; set; }
         public string Balloon { get; set; }
-
         public bool Disqualified { get; set; }
+
+        public Pilot()
+        {
+            foreach (var c in Database.Instance.Competitions)
+                c.Pilots.Add(this);
+        }
 
         public override string ToString()
         {
