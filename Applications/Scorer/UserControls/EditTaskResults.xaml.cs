@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Controls;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace Scorer
 {

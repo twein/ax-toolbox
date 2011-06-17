@@ -21,7 +21,8 @@
         <DataGrid Name="grid" Grid.Row="0" Margin="5"
                   ItemsSource="{Binding Path=BufferCollection}" 
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
-                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False">
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"
+                  IsReadOnly="{Binding Path=ReadOnly}">
             <DataGrid.Resources>
                 <ContextMenu x:Key="RowContextMenu" Visibility="{Binding Path=DeleteMenuVisibility}">
                     <MenuItem Tag="{Binding}" Header="Remove task" Click="menuRemove_Click"/>
@@ -37,7 +38,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
-            <Button Click="addButton_Click" ToolTip="Add a new task">Add</Button>
+            <Button Visibility="{Binding Path=AddVisibility}" Click="addButton_Click" ToolTip="Add a new task">Add</Button>
             <Separator Width="5" Visibility="Hidden"></Separator>
             <Button Click="saveButton_Click" ToolTip="Save changes to the database">Save</Button>
         </WrapPanel>

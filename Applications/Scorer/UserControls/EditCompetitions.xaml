@@ -18,9 +18,18 @@
             <RowDefinition Height="33"></RowDefinition>
         </Grid.RowDefinitions>
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
-                  ItemsSource="{Binding Path=Competitions}" 
+                  ItemsSource="{Binding Path=BufferCollection}" 
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
-                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" >
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" 
+                  IsReadOnly="{Binding Path=ReadOnly}">
+            <DataGrid.Resources>
+                <ContextMenu x:Key="RowContextMenu" Visibility="{Binding Path=DeleteVisibility}">
+                    <MenuItem Tag="{Binding}" Header="Remove competition" Click="menuRemove_Click"/>
+                </ContextMenu>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ContextMenu" Value="{StaticResource RowContextMenu}" />
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="*" />
                 <DataGridTextColumn Header="Location and dates" Binding="{Binding Path=LocationDates}" Width="*" />
@@ -28,8 +37,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
-            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="addButton_Click" ToolTip="Add a new competition">Add</Button>
-            <Button Visibility="{Binding Source={x:Static local:Database.Instance}, Path=ModButtonsVisibility}" Click="deleteButton_Click" ToolTip="Delete last competition">Delete</Button>
+            <Button Visibility="{Binding Path=AddVisibility}" Click="addButton_Click" ToolTip="Add a new competition">Add</Button>
             <Separator Width="5" Visibility="Hidden"></Separator>
             <Button Click="saveButton_Click" ToolTip="Save changes to the database">Save</Button>
         </WrapPanel>
