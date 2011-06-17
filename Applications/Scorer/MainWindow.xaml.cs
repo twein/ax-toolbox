@@ -128,12 +128,22 @@ namespace Scorer
 
             AddTab(new EditPilots(competition.Pilots, editOptions), competition.Name + " pilots");
         }
+        private void menuResetCompetitionPilots_Click(object sender, RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+            competition.ResetPilots();
+        }
         private void menuCompetitionTasks_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             var editOptions = EditOptions.CanDelete;
 
             AddTab(new EditTasks(competition.Tasks, editOptions), competition.Name + " tasks");
+        }
+        private void menuResetCompetitionTasks_Click(object sender, RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+            competition.ResetTasks();
         }
         private void menuTaskResults_Click(object sender, RoutedEventArgs e)
         {

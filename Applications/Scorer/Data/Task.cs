@@ -1,24 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using AXToolbox.Common;
 
 namespace Scorer
 {
     [Serializable]
-    public class Task
+    public class Task : BindableObject
     {
         public static TaskType[] Types;
 
-        public int Number { get; set; }
-        public int TypeNumber { get; set; }
-        public bool Void { get; set; }
+        private int number;
+        public int Number
+        {
+            get { return number; }
+            set
+            {
+                number = value;
+                RaisePropertyChanged("Number");
+            }
+        }
+        private int typeNumber;
+        public int TypeNumber
+        {
+            get { return typeNumber; }
+            set
+            {
+                typeNumber = value;
+                RaisePropertyChanged("TypeNumber");
+            }
+        }
+        private bool isVoid;
+        public bool IsVoid
+        {
+            get { return isVoid; }
+            set
+            {
+                isVoid = value;
+                RaisePropertyChanged("IsVoid");
+            }
+        }
 
         public ObservableCollection<PilotResult> PilotResults { get; set; }
 
         static Task()
         {
             Types = new TaskType[]{
+                new TaskType( 0,"Select a task type ",          "---", true ),
                 new TaskType( 1,"Pilot Declared Goal",          "PDG", true ),
                 new TaskType( 2,"Judge Declared Goal",          "JDG", true ),
                 new TaskType( 3,"Hesitation Waltz",             "HWZ", true ),
@@ -42,6 +69,11 @@ namespace Scorer
             };
         }
         public Task() { }
+
+        protected override void AfterPropertyChanged(string propertyName)
+        {
+            Database.Instance.IsDirty = true;
+        }
 
         public override string ToString()
         {

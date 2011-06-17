@@ -42,11 +42,13 @@
                         <ListBox ItemsSource="{Binding Path=Competitions}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}">
+                                    <TextBlock Text="{Binding Path=Status}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Competition pilots" Click="menuCompetitionPilots_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Competition tasks" Click="menuCompetitionTasks_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilots_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuResetCompetitionPilots_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasks_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuResetCompetitionTasks_Click"/>
                                                 <Separator/>
                                                 <MenuItem Tag="{Binding}" Header="All Task scores" Click="menuCompetitionTaskScores_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="General score" Click="menuCompetitionGeneralScore_Click"/>
@@ -57,12 +59,12 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Expander>
-                    <Expander ExpandDirection="Down" Background="LightGray">
+                    <!--<Expander ExpandDirection="Down" Background="LightGray">
                         <Expander.Header>
                             <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Pilots</TextBlock>
                         </Expander.Header>
                         <ListBox ItemsSource="{Binding Path=Pilots}"/>
-                    </Expander>
+                    </Expander>-->
                     <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True">
                         <Expander.Header>
                             <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Tasks</TextBlock>
