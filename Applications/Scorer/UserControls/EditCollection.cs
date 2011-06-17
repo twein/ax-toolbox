@@ -1,13 +1,24 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace Scorer
 {
+    [Flags]
+    public enum EditOptions
+    {
+        None = 0x0,
+        CanAdd = 0x1,
+        CanDelete = 0x2,
+        CanEdit = 0x4,
+        All = ~0x0
+    }
+
     public class EditCollection<T> : UserControl
     {
-        protected ObservableCollection<T> saveCollection;
-        public ObservableCollection<T> BufferCollection { get; protected set; }
+        public ObservableCollection<T> DataGridCollection { get; protected set; }
 
         protected EditOptions options;
         public bool ReadOnly
@@ -30,16 +41,7 @@ namespace Scorer
             DataContext = this;
 
             options = editOptions;
-            saveCollection = collection;
-
-            BufferCollection = new ObservableCollection<T>();
-            saveCollection.CopyTo(BufferCollection);
-        }
-
-        protected void Save()
-        {
-            BufferCollection.CopyTo(saveCollection);
-            Database.Instance.IsDirty = true;
+            DataGridCollection = collection;
         }
     }
 }

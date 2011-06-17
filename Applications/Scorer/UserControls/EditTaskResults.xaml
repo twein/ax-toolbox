@@ -19,7 +19,7 @@
             <RowDefinition Height="33"></RowDefinition>
         </Grid.RowDefinitions>
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
-                  ItemsSource="{Binding Path=BufferCollection}" 
+                  ItemsSource="{Binding Path=DataGridCollection}" 
                   AlternatingRowBackground="LightGray" AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" 
                   IsReadOnly="{Binding Path=ReadOnly}">
@@ -34,7 +34,6 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
-            <Button Click="buttonSave_Click">Save</Button>
         </StackPanel>
     </Grid>
 </local:EditCollection>

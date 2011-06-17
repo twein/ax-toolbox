@@ -17,24 +17,14 @@ namespace Scorer
         private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
-            BufferCollection.Remove(task);
+            DataGridCollection.Remove(task);
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (BufferCollection.Count == 0)
-                BufferCollection.Add(new Task() { Number = 1 });
+            if (DataGridCollection.Count == 0)
+                DataGridCollection.Add(new Task() { Number = 1 });
             else
-                BufferCollection.Add(new Task() { Number = BufferCollection.Last().Number + 1 });
-        }
-        private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (BufferCollection.Count > 0 && saveCollection.Count == 0)
-            {
-                //First task added
-                //throw new NotImplementedException();
-            }
-
-            Save();
+                DataGridCollection.Add(new Task() { Number = DataGridCollection.Last().Number + 1 });
         }
     }
 }

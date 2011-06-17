@@ -19,17 +19,17 @@ namespace Scorer
         private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
             var pilot = ((MenuItem)sender).Tag as Pilot;
-            BufferCollection.Remove(pilot);
+            DataGridCollection.Remove(pilot);
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Pilot newPilot = null;
-            if (BufferCollection.Count == 0)
+            if (DataGridCollection.Count == 0)
                 newPilot = new Pilot() { Number = 1 };
             else
-                newPilot = new Pilot() { Number = BufferCollection.Max(p => p.Number) + 1 };
+                newPilot = new Pilot() { Number = DataGridCollection.Max(p => p.Number) + 1 };
 
-            BufferCollection.Add(newPilot);
+            DataGridCollection.Add(newPilot);
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
@@ -40,10 +40,6 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 ImportPilots(dlg.FileName);
         }
-        private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            Save();
-        }
 
         private void ImportPilots(string filePath)
         {
@@ -51,7 +47,7 @@ namespace Scorer
             int i = 0;
             try
             {
-                BufferCollection.Clear();
+                DataGridCollection.Clear();
                 foreach (var p in pilotList)
                 {
                     i++;
@@ -65,7 +61,7 @@ namespace Scorer
                         var balloon = (fields.Length > 3) ? fields[3].Trim() : "";
 
                         var newPilot = new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon };
-                        BufferCollection.Add(newPilot);
+                        DataGridCollection.Add(newPilot);
                     }
                 }
             }

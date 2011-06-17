@@ -14,15 +14,11 @@ namespace Scorer
         private void menuRemove_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
-            BufferCollection.Remove(competition);
+            DataGridCollection.Remove(competition);
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            BufferCollection.Add(new Competition());
-        }
-        private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            Save();
+            DataGridCollection.Add(new Competition());
         }
     }
 }

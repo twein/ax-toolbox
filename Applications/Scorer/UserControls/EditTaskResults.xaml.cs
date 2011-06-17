@@ -9,10 +9,5 @@ namespace Scorer
         {
             InitializeComponent();
         }
-
-        private void buttonSave_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            Save();
-        }
     }
 }

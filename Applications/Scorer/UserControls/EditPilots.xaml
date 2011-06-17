@@ -18,7 +18,7 @@
             <RowDefinition Height="33"></RowDefinition>
         </Grid.RowDefinitions>
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
-                  ItemsSource="{Binding Path=BufferCollection}"
+                  ItemsSource="{Binding Path=DataGridCollection}"
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"
                   IsReadOnly="{Binding Path=ReadOnly}">
@@ -42,7 +42,6 @@
             <Button Visibility="{Binding Path=AddVisibility}" Click="addButton_Click" ToolTip="Add a new pilot">Add</Button>
             <Separator Width="5" Visibility="Hidden"></Separator>
             <Button Visibility="{Binding Path=AddVisibility}" Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
-            <Button Click="saveButton_Click" ToolTip="Save changes to the database">Save</Button>
         </WrapPanel>
     </Grid>
 </local:EditCollection>
