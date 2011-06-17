@@ -8,51 +8,26 @@ using Microsoft.Win32;
 
 namespace Scorer
 {
-    public partial class EditPilots
+    public partial class EditPilots : EditCollection<Pilot>
     {
-        public ObservableCollection<Pilot> EditBuffer { get; private set; }
-        public bool ReadOnly
-        {
-            get { return (Options & EditOptions.CanEdit) == 0; }
-        }
-        public Visibility DeleteVisibility
-        {
-            get { return (Options & EditOptions.CanDelete) > 0 ? Visibility.Visible : Visibility.Hidden; }
-        }
-        public Visibility AddVisibility
-        {
-            get { return (Options & EditOptions.CanAdd) > 0 ? Visibility.Visible : Visibility.Hidden; }
-        }
-
-
-        private ObservableCollection<Pilot> Pilots;
-        private EditOptions Options;
-
         public EditPilots(ObservableCollection<Pilot> pilots, EditOptions editOptions)
+            : base(pilots, editOptions)
         {
             InitializeComponent();
-
-            DataContext = this;
-
-            EditBuffer = new ObservableCollection<Pilot>();
-            pilots.CopyTo(EditBuffer);
-            Pilots = pilots;
-
-            Options = editOptions;
         }
 
         private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
             var pilot = menuItem.Tag as Pilot;
-            EditBuffer.Remove(pilot);
+            BufferCollection.Remove(pilot);
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (EditBuffer.Count == 0)
-                EditBuffer.Add(new Pilot() { Number = 1 });
+            if (BufferCollection.Count == 0)
+                BufferCollection.Add(new Pilot() { Number = 1 });
             else
-                EditBuffer.Add(new Pilot() { Number = EditBuffer.Max(p => p.Number) + 1 });
+                BufferCollection.Add(new Pilot() { Number = BufferCollection.Max(p => p.Number) + 1 });
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
@@ -65,8 +40,7 @@ namespace Scorer
         }
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            EditBuffer.Sort(p => p.Number).CopyTo(Pilots);
-            Database.Instance.IsDirty = true;
+            Save();
         }
 
         private void ImportPilots(string filePath)
@@ -75,7 +49,7 @@ namespace Scorer
             int i = 0;
             try
             {
-                EditBuffer.Clear();
+                BufferCollection.Clear();
                 foreach (var p in pilotList)
                 {
                     i++;
@@ -88,10 +62,9 @@ namespace Scorer
                         var country = (fields.Length > 2) ? fields[2].Trim() : "";
                         var balloon = (fields.Length > 3) ? fields[3].Trim() : "";
 
-                        EditBuffer.Add(new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon });
+                        BufferCollection.Add(new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon });
                     }
                 }
-
             }
             catch (Exception ex)
             {

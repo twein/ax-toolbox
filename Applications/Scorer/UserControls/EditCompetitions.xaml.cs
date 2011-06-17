@@ -2,35 +2,28 @@
 
 namespace Scorer
 {
-    public partial class EditCompetitions
+    public partial class EditCompetitions :EditCollection<Competition>
     {
-        public ObservableCollection<Competition> Competitions { get; set; }
-
-        public EditCompetitions()
+        public EditCompetitions(ObservableCollection<Competition> competitions, EditOptions editOptions)
+            : base(competitions, editOptions)
         {
             InitializeComponent();
-
-            DataContext = this;
-
-            Competitions = new ObservableCollection<Competition>();
-            Database.Instance.Competitions.CopyTo(Competitions);
         }
 
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Competitions.Add(new Competition());
+            BufferCollection.Add(new Competition());
         }
 
         private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (Competitions.Count > 0)
-                Competitions.RemoveAt(Competitions.Count - 1);
+            if (BufferCollection.Count > 0)
+                BufferCollection.RemoveAt(BufferCollection.Count - 1);
         }
 
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            Competitions.CopyTo(Database.Instance.Competitions);
-            Database.Instance.IsDirty = true;
+            Save();
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿<UserControl x:Class="Scorer.EditTaskResults"
+﻿<local:EditCollection x:Class="Scorer.EditTaskResults" x:TypeArguments="local:PilotResult"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                                   xmlns:local="clr-namespace:Scorer"    
              xmlns:converters="clr-namespace:Scorer"    
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
@@ -35,4 +36,4 @@
             <Button Click="buttonSave_Click">Save</Button>
         </StackPanel>
     </Grid>
-</UserControl>
+</local:EditCollection>

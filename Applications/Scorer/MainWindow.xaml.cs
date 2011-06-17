@@ -98,20 +98,25 @@ namespace Scorer
         }
         private void menuCompetitions_Click(object sender, RoutedEventArgs e)
         {
-            AddTab(new EditCompetitions(), "Competitions");
+            var editOptions = EditOptions.CanEdit;
+            if (Database.Instance.Pilots.Count == 0)
+                editOptions |= EditOptions.CanAdd | EditOptions.CanDelete;
 
+            AddTab(new EditCompetitions(Database.Instance.Competitions, editOptions), "Competitions");
         }
         private void menuPilots_Click(object sender, RoutedEventArgs e)
         {
             var editOptions = EditOptions.CanEdit;
-            if (Database.Instance.Tasks.Count == 0)
+            if (Database.Instance.Competitions.Count > 0 && Database.Instance.Tasks.Count == 0)
                 editOptions |= EditOptions.CanAdd | EditOptions.CanDelete;
 
             AddTab(new EditPilots(Database.Instance.Pilots, editOptions), "Pilots");
         }
         private void menuTasks_Click(object sender, RoutedEventArgs e)
         {
-            var editOptions = EditOptions.All;
+            var editOptions = EditOptions.CanEdit;
+            if (Database.Instance.Competitions.Count > 0 && Database.Instance.Pilots.Count > 0)
+                editOptions |= EditOptions.CanAdd | EditOptions.CanDelete;
 
             AddTab(new EditTasks(Database.Instance.Tasks, editOptions), "Tasks");
         }
@@ -129,6 +134,13 @@ namespace Scorer
             var editOptions = EditOptions.CanDelete;
 
             AddTab(new EditTasks(competition.Tasks, editOptions), competition.Name + " tasks");
+        }
+        private void menuTaskResults_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+            var editOptions = EditOptions.CanEdit;
+
+            AddTab(new EditTaskResults(task.PilotResults, editOptions), string.Format("Task {0}", task.ToString()));
         }
         private void menuCompetitionTaskScores_Click(object sender, RoutedEventArgs e)
         {
@@ -151,12 +163,6 @@ namespace Scorer
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
                 competition.PdfGeneralScore(dlg.FileName);
-        }
-        private void menuTaskResults_Click(object sender, RoutedEventArgs e)
-        {
-            var task = ((MenuItem)sender).Tag as Task;
-            if (task != null)
-                AddTab(new EditTaskResults(task), string.Format("Task {0}", task.ToString()));
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
