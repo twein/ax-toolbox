@@ -11,11 +11,7 @@ namespace Scorer
         public string Balloon { get; set; }
         public bool Disqualified { get; set; }
 
-        public Pilot()
-        {
-            foreach (var c in Database.Instance.Competitions)
-                c.Pilots.Add(this);
-        }
+        public Pilot() { }
 
         public override string ToString()
         {

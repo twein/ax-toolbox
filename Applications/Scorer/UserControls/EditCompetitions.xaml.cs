@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Controls;
 
 namespace Scorer
 {
@@ -10,17 +11,15 @@ namespace Scorer
             InitializeComponent();
         }
 
+        private void menuRemove_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+            BufferCollection.Remove(competition);
+        }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             BufferCollection.Add(new Competition());
         }
-
-        private void deleteButton_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (BufferCollection.Count > 0)
-                BufferCollection.RemoveAt(BufferCollection.Count - 1);
-        }
-
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Save();

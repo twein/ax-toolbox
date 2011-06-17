@@ -14,7 +14,7 @@ namespace Scorer
         public int TypeNumber { get; set; }
         public bool Void { get; set; }
 
-        public ObservableCollection<PilotResult> PilotResults {get;set;}
+        public ObservableCollection<PilotResult> PilotResults { get; set; }
 
         static Task()
         {
@@ -41,12 +41,7 @@ namespace Scorer
                 new TaskType(20,"3D Shape",                     "3DT", false)
             };
         }
-        public Task()
-        {
-            PilotResults = new ObservableCollection<PilotResult>();
-            foreach (var c in Database.Instance.Competitions)
-                c.Tasks.Add(this);
-        }
+        public Task() { }
 
         public override string ToString()
         {

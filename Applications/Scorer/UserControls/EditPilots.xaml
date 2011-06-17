@@ -20,7 +20,8 @@
         <DataGrid Name="dgMain" Grid.Row="0" Margin="5"
                   ItemsSource="{Binding Path=BufferCollection}"
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
-                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" IsReadOnly="{Binding Path=ReadOnly}">
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"
+                  IsReadOnly="{Binding Path=ReadOnly}">
             <DataGrid.Resources>
                 <ContextMenu x:Key="RowContextMenu" Visibility="{Binding Path=DeleteVisibility}">
                     <MenuItem Tag="{Binding}" Header="Remove pilot" Click="menuRemove_Click"/>

@@ -16,8 +16,7 @@ namespace Scorer
 
         private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var task = menuItem.Tag as Task;
+            var task = ((MenuItem)sender).Tag as Task;
             BufferCollection.Remove(task);
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)

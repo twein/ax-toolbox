@@ -18,16 +18,18 @@ namespace Scorer
 
         private void menuRemove_Click(object sender, RoutedEventArgs e)
         {
-            var menuItem = sender as MenuItem;
-            var pilot = menuItem.Tag as Pilot;
+            var pilot = ((MenuItem)sender).Tag as Pilot;
             BufferCollection.Remove(pilot);
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            Pilot newPilot = null;
             if (BufferCollection.Count == 0)
-                BufferCollection.Add(new Pilot() { Number = 1 });
+                newPilot = new Pilot() { Number = 1 };
             else
-                BufferCollection.Add(new Pilot() { Number = BufferCollection.Max(p => p.Number) + 1 });
+                newPilot = new Pilot() { Number = BufferCollection.Max(p => p.Number) + 1 };
+
+            BufferCollection.Add(newPilot);
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
@@ -53,16 +55,17 @@ namespace Scorer
                 foreach (var p in pilotList)
                 {
                     i++;
-                    var pilot = p.Trim();
-                    if (pilot != "" && pilot[0] != '#')
+                    var pilotStr = p.Trim();
+                    if (pilotStr != "" && pilotStr[0] != '#')
                     {
-                        var fields = pilot.Split(new char[] { '\t', ';' }, StringSplitOptions.None);
+                        var fields = pilotStr.Split(new char[] { '\t', ';' }, StringSplitOptions.None);
                         var number = int.Parse(fields[0]);
                         var name = fields[1].Trim();
                         var country = (fields.Length > 2) ? fields[2].Trim() : "";
                         var balloon = (fields.Length > 3) ? fields[3].Trim() : "";
 
-                        BufferCollection.Add(new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon });
+                        var newPilot = new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon };
+                        BufferCollection.Add(newPilot);
                     }
                 }
             }
