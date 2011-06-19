@@ -47,6 +47,7 @@
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilots_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuResetCompetitionPilots_Click"/>
+                                                <Separator/>
                                                 <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasks_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuResetCompetitionTasks_Click"/>
                                                 <Separator/>
@@ -72,10 +73,10 @@
                         <ListBox ItemsSource="{Binding Path=Tasks}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding}">
+                                    <TextBlock Text="{Binding Path=ShortDescription}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Results" Click="menuTaskResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskResults_Click"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>

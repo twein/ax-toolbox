@@ -27,6 +27,8 @@ namespace Scorer
             {
                 typeNumber = value;
                 RaisePropertyChanged("TypeNumber");
+                RaisePropertyChanged("Description");
+                RaisePropertyChanged("ShortDescription");
             }
         }
         private bool isVoid;
@@ -39,13 +41,22 @@ namespace Scorer
                 RaisePropertyChanged("IsVoid");
             }
         }
+        public string Description
+        {
+            get { return string.Format("{0:00}: 15.{1} {2} {3}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName, Task.Types[TypeNumber - 1].Name); }
+        }
+        public string ShortDescription
+        {
+            get { return string.Format("{0:00}: 15.{1} {2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName); }
+        }
+
 
         public ObservableCollection<PilotResult> PilotResults { get; set; }
 
         static Task()
         {
             Types = new TaskType[]{
-                new TaskType( 0,"Select a task type ",          "---", true ),
+                //new TaskType( 0,"Select a task type ",          "---", true ),
                 new TaskType( 1,"Pilot Declared Goal",          "PDG", true ),
                 new TaskType( 2,"Judge Declared Goal",          "JDG", true ),
                 new TaskType( 3,"Hesitation Waltz",             "HWZ", true ),
@@ -68,7 +79,13 @@ namespace Scorer
                 new TaskType(20,"3D Shape",                     "3DT", false)
             };
         }
-        public Task() { }
+        public Task()
+        {
+            typeNumber = 1;
+            PilotResults = new ObservableCollection<PilotResult>();
+            foreach (var p in Database.Instance.Pilots)
+                PilotResults.Add(new PilotResult(this, p));
+        }
 
         protected override void AfterPropertyChanged(string propertyName)
         {
@@ -77,7 +94,7 @@ namespace Scorer
 
         public override string ToString()
         {
-            return string.Format("{0:00}: 15.{1} {2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName);
+            return Description;
         }
     }
 }

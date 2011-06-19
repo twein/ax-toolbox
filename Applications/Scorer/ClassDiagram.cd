@@ -23,7 +23,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAEgIAAAAIAAAAAAAAACAAAAACAAAAAQAAIAAAAAAA=</HashCode>
+      <HashCode>AAAEgIAAAAIAAAAAAAAACAAAAACAAAAAUAAIAAACAAA=</HashCode>
       <FileName>Data\Database.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -37,8 +37,8 @@
     <AssociationLine Name="Pilots" Type="Scorer.Pilot" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="6.062" Y="7.75" />
-        <Point X="6.062" Y="5.573" />
-        <Point X="4.25" Y="5.573" />
+        <Point X="6.062" Y="4.823" />
+        <Point X="5.5" Y="4.823" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="Tasks" Type="Scorer.Task">
@@ -52,7 +52,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAEABAAAAAAAAAEAAAAgAQAgAAAAAAAAAAICIAAAAA=</HashCode>
+      <HashCode>AAAEABAEAAAQAAAEAAAApAQAgAAUAIAAEAAICIACAAA=</HashCode>
       <FileName>Data\Competition.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -64,7 +64,7 @@
   <Class Name="Scorer.Task">
     <Position X="9.25" Y="7.75" Width="3" />
     <TypeIdentifier>
-      <HashCode>AgAAAAAAAAAgAAAEAEAAAAAAAAAAAAQAAAAAAAACAAA=</HashCode>
+      <HashCode>AgAAACAAAAggQAAEAEAAAAAAAEAQAARAAAAAAAAAAAA=</HashCode>
       <FileName>Data\Task.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -72,16 +72,16 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Scorer.Pilot">
-    <Position X="2.5" Y="3.75" Width="1.75" />
+    <Position X="3.75" Y="3" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAUAEAAQAQAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAABAAQAAUAEAAAAQAAAYUAAAGAAAAAAAAAAA=</HashCode>
       <FileName>Data\Pilot.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Scorer.PilotResult" Collapsed="true">
-    <Position X="5.25" Y="11" Width="1.5" />
+    <Position X="3" Y="11.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gIAEAAAAAAAAQAAAQAAIAAAAAAAgCACCAEAAAAAAAAA=</HashCode>
+      <HashCode>gIAEAAAAAAAgQAQAQgAIAAAAAAAgCACCAEAIAAAAAAA=</HashCode>
       <FileName>Data\PilotResult.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -90,8 +90,8 @@
     <AssociationLine Name="PilotResults" Type="Scorer.PilotResult" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="1.812" Y="10.555" />
-        <Point X="1.812" Y="11.25" />
-        <Point X="5.25" Y="11.25" />
+        <Point X="1.812" Y="12.058" />
+        <Point X="3" Y="12.058" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="PilotScores" Type="Scorer.PilotScore">
