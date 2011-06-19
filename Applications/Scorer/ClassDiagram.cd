@@ -23,7 +23,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAEgIAAAAIAAAAAAAAACAAAAACAAAAAUAAIAAACAAA=</HashCode>
+      <HashCode>AAAEgIAAAAAAAAAAAAAACAAAAACAAAAEUAAIAAACAAA=</HashCode>
       <FileName>Data\Database.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -46,19 +46,13 @@
         <Position X="-0.013" Y="0.11" Height="0.182" Width="2.358" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="TaskScores" Type="Scorer.TaskScore">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.203" Y="0.06" Height="0.182" Width="3.256" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAEABAEAAAQAAAEAAAApAQAgAAUAIAAEAAICIACAAA=</HashCode>
+      <HashCode>AAAEABAEAAAQAAAEAAAApAQAgAAUAIAEEAAICIACAAA=</HashCode>
       <FileName>Data\Competition.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="Pilots" />
       <Property Name="Tasks" />
-      <Property Name="TaskScores" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Scorer.Task">
@@ -81,15 +75,16 @@
   <Class Name="Scorer.PilotResult" Collapsed="true">
     <Position X="3" Y="11.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gIAEAAAAAAAgQAQAQgAIAAAAAAAgCACCAEAIAAAAAAA=</HashCode>
+      <HashCode>gIAEAAAACAAgQAQAQgAIAAAAAAAwiACCAABIAAAgAAA=</HashCode>
       <FileName>Data\PilotResult.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Scorer.TaskScore">
     <Position X="0.5" Y="6.5" Width="2.5" />
     <AssociationLine Name="PilotResults" Type="Scorer.PilotResult" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="1.812" Y="10.555" />
+        <Point X="1.812" Y="10.363" />
         <Point X="1.812" Y="12.058" />
         <Point X="3" Y="12.058" />
       </Path>
@@ -100,7 +95,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>IEIBAAAGAAAAAAAAAAAAwAAAAACAAAQgAEAAIAJIAAA=</HashCode>
+      <HashCode>IEIBAAAGAAAAAAAAAAAAwAAAAAAAAAQgAEAAIAJIAAA=</HashCode>
       <FileName>Data\TaskScore.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -111,7 +106,7 @@
   <Class Name="Scorer.PilotScore" Collapsed="true">
     <Position X="0.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAEAAAAAAAAAAggAAAAAAAAAACAAAAAAEAAAAAAAAA=</HashCode>
+      <HashCode>AAAEAAAAAAAAAAggAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Data\PilotScore.cs</FileName>
     </TypeIdentifier>
   </Class>

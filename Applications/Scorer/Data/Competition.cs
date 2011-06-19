@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.Serialization;
 using AXToolbox.Common;
 
 namespace Scorer
@@ -44,7 +48,7 @@ namespace Scorer
 
         public ObservableCollection<Pilot> Pilots { get; set; }
         public ObservableCollection<Task> Tasks { get; set; }
-        public ObservableCollection<TaskScore> TaskScores { get; set; }
+        public List<TaskScore> TaskScores { get; set; }
 
         public string Status
         {
@@ -55,18 +59,54 @@ namespace Scorer
         {
             Pilots = new ObservableCollection<Pilot>();
             Tasks = new ObservableCollection<Task>();
+            TaskScores = new List<TaskScore>();
 
-            Pilots.CollectionChanged += new NotifyCollectionChangedEventHandler(Pilots_CollectionChanged);
-            Tasks.CollectionChanged += new NotifyCollectionChangedEventHandler(Tasks_CollectionChanged);
+            Pilots.CollectionChanged += Pilots_CollectionChanged;
+            Tasks.CollectionChanged += Tasks_CollectionChanged;
+        }
+
+        [OnDeserialized]
+        internal void OnDeserializedMethod(StreamingContext context)
+        {
+            Pilots.CollectionChanged += Pilots_CollectionChanged;
+            Tasks.CollectionChanged += Tasks_CollectionChanged;
         }
 
         void Pilots_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            Debug.Assert(Database.Instance.Tasks.Count == 0, "Can not modify pilot list if there are tasks defined");
             RaisePropertyChanged("Pilots");
             RaisePropertyChanged("Status");
         }
         void Tasks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            Debug.Assert(Database.Instance.Pilots.Count > 0, "Can not modify task list if there are no pilots defined");
+
+            //update the task scores list
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Reset:
+                    TaskScores.Clear();
+                    break;
+
+                case NotifyCollectionChangedAction.Add:
+                    foreach (Task t in e.NewItems)
+                        TaskScores.Add(new TaskScore(t, Pilots));
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (Task t in e.NewItems)
+                    {
+                        var old_ts = TaskScores.First(ts => ts.Task == t);
+                        TaskScores.Remove(old_ts);
+                    }
+
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
             RaisePropertyChanged("Tasks");
             RaisePropertyChanged("Status");
         }

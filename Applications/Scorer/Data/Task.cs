@@ -84,7 +84,7 @@ namespace Scorer
             typeNumber = 1;
             PilotResults = new ObservableCollection<PilotResult>();
             foreach (var p in Database.Instance.Pilots)
-                PilotResults.Add(new PilotResult(this, p));
+                PilotResults.Add(new PilotResult(p));
         }
 
         protected override void AfterPropertyChanged(string propertyName)
