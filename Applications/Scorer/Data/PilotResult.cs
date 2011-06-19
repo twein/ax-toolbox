@@ -13,7 +13,6 @@ namespace Scorer
         public Pilot Pilot { get; set; }
 
         protected Result manualMeasure;
-
         public Result ManualMeasure
         {
             get { return manualMeasure; }

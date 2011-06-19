@@ -25,6 +25,22 @@ namespace Scorer
             Value = value;
         }
 
+        public decimal VirtualValue
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case ResultType.No_Flight:
+                        return -2;
+                    case ResultType.No_Result:
+                        return -1;
+                    default:
+                        return Value;
+                }
+            }
+        }
+
         public override string ToString()
         {
             var str = "";
