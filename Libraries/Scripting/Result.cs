@@ -4,7 +4,7 @@ using AXToolbox.Common;
 
 namespace AXToolbox.Scripting
 {
-    public enum ResultType { No_Flight, No_Result, Result }
+    public enum ResultType { Not_Set, No_Flight, No_Result, Result }
 
     [Serializable]
     public class Result

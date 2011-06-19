@@ -9,6 +9,7 @@ namespace Scorer
     [Serializable]
     public class TaskScore
     {
+        public Competition Competition { get; set; }
         public Task Task { get; set; }
 
         public ScoreStatus Status { get; set; }
@@ -16,8 +17,9 @@ namespace Scorer
         public DateTime RevisionDate { get; set; }
         public DateTime PublicationDate { get; set; }
 
-        public int P { get; set; }
-        public int A { get; set; }
+        public int A { get; set; } // # pilots in group A
+        public int B { get; set; } // # pilots in group B
+        public int P { get; set; } // # active pilots
         public int M { get; set; }
         public int SM { get; set; }
         public decimal RM { get; set; }
@@ -31,19 +33,40 @@ namespace Scorer
         public List<PilotScore> PilotScores { get; set; }
 
         protected TaskScore() { }
-        public TaskScore(Task task, IEnumerable<Pilot> pilots)
+        public TaskScore(Competition competition, Task task)
         {
+            Competition = competition;
             Task = task;
 
             PilotScores = new List<PilotScore>();
-            foreach (var p in pilots)
-                PilotScores.Add(new PilotScore(Task,p));
         }
 
         /// <summary>Compute the scores for this task
         /// </summary>
         public void Compute()
         {
+            int B;
+
+            PilotScores.Clear();
+            A = B = P = 0;
+
+            foreach (var p in Competition.Pilots)
+            {
+                var ps = new PilotScore(Task, p);
+
+                if (ps.Group == 1)
+                    A++;
+                else if (ps.Group == 2)
+                    B++;
+
+                if (!p.IsDisqualified)
+                    P++;
+
+                PilotScores.Add(ps);
+            }
+
+            PilotScores.Sort(ps=> 
+
             throw new NotImplementedException();
         }
 
