@@ -77,6 +77,8 @@ namespace Scorer
             foreach (var p in Database.Instance.Pilots)
                 Pilots.Add(p);
 
+            //TODO: recompute task scores
+
             RaisePropertyChanged("Pilots");
             RaisePropertyChanged("Status");
         }
@@ -85,6 +87,8 @@ namespace Scorer
             Tasks.Clear();
             foreach (var t in Database.Instance.Tasks)
                 Tasks.Add(t);
+
+            //TODO: recompute task scores
 
             RaisePropertyChanged("Tasks");
             RaisePropertyChanged("Status");

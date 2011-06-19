@@ -6,7 +6,7 @@
                                    xmlns:local="clr-namespace:Scorer"    
              xmlns:converters="clr-namespace:Scorer"    
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="300" d:DesignWidth="600" >
     <UserControl.Resources>
         <Style x:Key="RightCellStyle" TargetType="DataGridCell">
             <Setter Property="HorizontalAlignment" Value="Right" />
@@ -22,18 +22,22 @@
                   ItemsSource="{Binding Path=DataGridCollection}" 
                   AlternatingRowBackground="LightGray" AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" 
-                  IsReadOnly="{Binding Path=ReadOnly}">
+                  IsReadOnly="{Binding Path=ReadOnly}" >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="#" Binding="{Binding Path=PilotNumber}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Name" Binding="{Binding Path=PilotName}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Measure" Binding="{Binding Path=ManualMeasure,StringFormat=\{0:0.00\}, Converter={StaticResource resultConverter}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
+                <DataGridTextColumn Header="#" Binding="{Binding Path=Pilot.Number}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Path=Pilot.Name}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Measure" Binding="{Binding Path=ManualMeasure,StringFormat=\{0:0.00\}, ValidatesOnExceptions=True, Converter={StaticResource resultConverter}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
                 <DataGridTextColumn Header="Measure penalty" Binding="{Binding Path=ManualMeasurePenalty,StringFormat=\{0:0.00\}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
                 <DataGridTextColumn Header="Task score penalty" Binding="{Binding Path=ManualTaskScorePenalty}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
                 <DataGridTextColumn Header="Competition score penalty" Binding="{Binding Path=ManualCompetitionScorePenalty}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
                 <DataGridTextColumn Header="Infringed rules" Binding="{Binding Path=ManualInfringedRules}" Width="*" />
             </DataGrid.Columns>
+            <!--<DataGrid.RowValidationRules>
+                <local:PilotResultValidationRule ValidationStep="UpdatedValue"/>
+            </DataGrid.RowValidationRules>-->
         </DataGrid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
+            <Button Visibility="{Binding Path=SaveVisibility}" ToolTip="Save Changes" Click="saveButton_Click">Save</Button>
         </StackPanel>
     </Grid>
 </local:EditCollection>

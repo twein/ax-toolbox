@@ -19,6 +19,8 @@ namespace Scorer
     public class EditCollection<T> : UserControl
     {
         public ObservableCollection<T> DataGridCollection { get; protected set; }
+        protected ObservableCollection<T> SaveCollection { get; set; }
+        protected bool buffered { get; set; }
 
         protected EditOptions options;
         public bool ReadOnly
@@ -33,15 +35,34 @@ namespace Scorer
         {
             get { return (options & EditOptions.CanAdd) > 0 ? Visibility.Visible : Visibility.Hidden; }
         }
+        public Visibility SaveVisibility
+        {
+            get { return buffered ? Visibility.Visible : Visibility.Hidden; }
+        }
 
         public EditCollection() { }
 
-        public EditCollection(ObservableCollection<T> collection, EditOptions editOptions)
+        public EditCollection(ObservableCollection<T> collection, EditOptions editOptions, bool buffered = false)
         {
             DataContext = this;
 
             options = editOptions;
-            DataGridCollection = collection;
+            this.buffered = buffered;
+
+            if (buffered)
+            {
+                SaveCollection = collection;
+                DataGridCollection = new ObservableCollection<T>();
+                collection.CopyTo(DataGridCollection);
+            }
+            else
+                DataGridCollection = collection;
+        }
+
+        public void Save()
+        {
+            if (buffered)
+                DataGridCollection.CopyTo(SaveCollection);
         }
     }
 }
