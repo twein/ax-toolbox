@@ -9,7 +9,6 @@ namespace Scorer
     [Serializable]
     public class TaskScore
     {
-        public Competition Competition { get; set; }
         public Task Task { get; set; }
 
         public ScoreStatus Status { get; set; }
@@ -31,12 +30,14 @@ namespace Scorer
 
         public List<PilotScore> PilotScores { get; set; }
 
-        public TaskScore(Competition competition, Task task)
+        protected TaskScore() { }
+        public TaskScore(Task task, IEnumerable<Pilot> pilots)
         {
-            Competition = competition;
             Task = task;
 
             PilotScores = new List<PilotScore>();
+            foreach (var p in pilots)
+                PilotScores.Add(new PilotScore(Task,p));
         }
 
         /// <summary>Compute the scores for this task

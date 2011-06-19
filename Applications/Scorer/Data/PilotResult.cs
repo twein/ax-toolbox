@@ -10,10 +10,9 @@ namespace Scorer
     [Serializable]
     public class PilotResult : BindableObject, IEditableObject
     {
-        public Task Task { get; private set; }
-        public Pilot Pilot { get; private set; }
+        public Pilot Pilot { get; set; }
 
-        private Result manualMeasure;
+        protected Result manualMeasure;
 
         public Result ManualMeasure
         {
@@ -24,8 +23,8 @@ namespace Scorer
                 RaisePropertyChanged("ManualMeasure");
             }
         }
-        public Result Measure { get; private set; }
-        private decimal manualMeasurePenalty;
+        public Result Measure { get; set; }
+        protected decimal manualMeasurePenalty;
         public decimal ManualMeasurePenalty
         {
             get { return manualMeasurePenalty; }
@@ -35,8 +34,8 @@ namespace Scorer
                 RaisePropertyChanged("ManualMeasurePenalty");
             }
         }
-        public decimal MeasurePenalty { get; private set; }
-        private int manualTaskScorePenalty;
+        public decimal MeasurePenalty { get; set; }
+        protected int manualTaskScorePenalty;
         public int ManualTaskScorePenalty
         {
             get { return manualTaskScorePenalty; }
@@ -46,8 +45,8 @@ namespace Scorer
                 RaisePropertyChanged("ManualTaskScorePenalty");
             }
         }
-        public int TaskScorePenalty { get; private set; }
-        private int manualCompetitionScorePenalty;
+        public int TaskScorePenalty { get; set; }
+        protected int manualCompetitionScorePenalty;
         public int ManualCompetitionScorePenalty
         {
             get { return manualCompetitionScorePenalty; }
@@ -57,8 +56,8 @@ namespace Scorer
                 RaisePropertyChanged("ManualCompetitionScorePenalty");
             }
         }
-        public int CompetitionScorePenalty { get; private set; }
-        private string manualInfringedRules;
+        public int CompetitionScorePenalty { get; set; }
+        protected string manualInfringedRules;
         public string ManualInfringedRules
         {
             get { return manualInfringedRules; }
@@ -68,11 +67,11 @@ namespace Scorer
                 RaisePropertyChanged("ManualInfringedRules");
             }
         }
-        public string InfringedRules { get; private set; }
+        public string InfringedRules { get; set; }
 
-        public PilotResult(Task task, Pilot pilot)
+        protected PilotResult() { }
+        public PilotResult(Pilot pilot)
         {
-            Task = task;
             Pilot = pilot;
 
             ManualMeasure = new Result(ResultType.No_Flight);

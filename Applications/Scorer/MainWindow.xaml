@@ -11,6 +11,7 @@
             <MenuItem Header="Event">
                 <MenuItem Header="Load" Click="menuLoadEvent_Click"/>
                 <MenuItem Header="Save" Click="menuSaveEvent_Click"/>
+                <MenuItem Header="Save XML" Click="menuSaveXmlEvent_Click"/>
             </MenuItem>
             <MenuItem Header="Competitions" Click="menuCompetitions_Click"/>
             <MenuItem Header="Pilots" Click="menuPilots_Click"/>

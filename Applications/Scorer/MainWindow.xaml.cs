@@ -96,6 +96,15 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 Database.Instance.Save(dlg.FileName);
         }
+        private void menuSaveXmlEvent_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.Filter = ".xml files (*.xml)|*.xml";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                Database.Instance.Save(dlg.FileName, AXToolbox.Common.IO.SerializationFormat.XML);
+        }
         private void menuCompetitions_Click(object sender, RoutedEventArgs e)
         {
             var editOptions = EditOptions.CanEdit;
