@@ -4,6 +4,10 @@ using AXToolbox.Common;
 
 namespace Scorer
 {
+    [Flags]
+    public enum CompletedPhases { AutoResults = 0x1, ManualResults = 0x2, Computed = 0x4 }
+
+
     [Serializable]
     public class Task : BindableObject
     {
@@ -17,6 +21,9 @@ namespace Scorer
             {
                 number = value;
                 RaisePropertyChanged("Number");
+                RaisePropertyChanged("Description");
+                RaisePropertyChanged("ShortDescription");
+                RaisePropertyChanged("Status");
             }
         }
         private int typeNumber;
@@ -29,6 +36,7 @@ namespace Scorer
                 RaisePropertyChanged("TypeNumber");
                 RaisePropertyChanged("Description");
                 RaisePropertyChanged("ShortDescription");
+                RaisePropertyChanged("Status");
             }
         }
         private bool isVoid;
@@ -39,8 +47,23 @@ namespace Scorer
             {
                 isVoid = value;
                 RaisePropertyChanged("IsVoid");
+                RaisePropertyChanged("Status");
             }
         }
+
+        private CompletedPhases phases;
+        public CompletedPhases Phases
+        {
+            get { return phases; }
+            set
+            {
+                phases = value;
+                RaisePropertyChanged("Phases");
+                RaisePropertyChanged("Status");
+            }
+        }
+
+
         public string Description
         {
             get { return string.Format("{0:00}: 15.{1} {2} {3}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName, Task.Types[TypeNumber - 1].Name); }
@@ -52,6 +75,26 @@ namespace Scorer
         public bool SortAscending
         {
             get { return Types[typeNumber].LowerIsBetter; }
+        }
+        public string Status
+        {
+            get
+            {
+                var status = "";
+                if ((Phases & CompletedPhases.AutoResults) > 0)
+                    status += "Auto ";
+                if ((Phases & CompletedPhases.ManualResults) > 0)
+                    status += "Manual ";
+                if ((Phases & CompletedPhases.Computed) > 0)
+                    status += "Computed ";
+                if (isVoid)
+                    status += "Void";
+                status = status.Trim();
+                if (!string.IsNullOrEmpty(status))
+                    status = "(" + status + ")";
+
+                return string.Format("{0} {1}", ShortDescription, status);
+            }
         }
 
         public ObservableCollection<PilotResult> PilotResults { get; set; }
@@ -87,7 +130,7 @@ namespace Scorer
             typeNumber = 1;
             PilotResults = new ObservableCollection<PilotResult>();
             foreach (var p in Database.Instance.Pilots)
-                PilotResults.Add(new PilotResult(p));
+                PilotResults.Add(new PilotResult(this, p));
         }
 
         protected override void AfterPropertyChanged(string propertyName)

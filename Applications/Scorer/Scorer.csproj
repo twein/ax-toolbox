@@ -97,8 +97,8 @@
     <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
     <Compile Include="Data\Database.cs" />
-    <Compile Include="Data\PilotScore.cs" />
     <Compile Include="Data\TaskType.cs" />
+    <Compile Include="Data\PilotScore.cs" />
     <Compile Include="UserControls\EditCollection.cs" />
     <Compile Include="UserControls\EditCompetitions.xaml.cs">
       <DependentUpon>EditCompetitions.xaml</DependentUpon>

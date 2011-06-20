@@ -11,8 +11,10 @@ namespace Scorer
     [Serializable]
     public class PilotResult : BindableObject, IEditableObject
     {
+        public Task Task { get; set; }
         public Pilot Pilot { get; set; }
 
+        //result
         protected Result manualMeasure;
         public Result ManualMeasure
         {
@@ -148,13 +150,35 @@ namespace Scorer
             }
         }
 
-        protected PilotResult() { }
-        public PilotResult(Pilot pilot)
+        //score
+        public int Group
         {
+            get
+            {
+                Debug.Assert(Measure.Type != ResultType.Not_Set, "The measure should not be Not_Set");
+
+                if (Pilot.IsDisqualified || Measure.Type == ResultType.No_Flight)
+                    return 3;
+                else if (Measure.Type == ResultType.No_Result)
+                    return 2;
+                else
+                    return 1;
+            }
+        }
+
+        protected PilotResult() { }
+        public PilotResult(Task task,Pilot pilot)
+        {
+            Task = task;
             Pilot = pilot;
 
             ManualMeasure = new Result(ResultType.Not_Set);
             AutoMeasure = new Result(ResultType.No_Flight);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
         }
 
         #region IEditableObject Members
