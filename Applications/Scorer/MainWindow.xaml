@@ -77,9 +77,10 @@
                                     <TextBlock Text="{Binding Path=Status}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit results" Click="menuEditTaskResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Results to PDF" Visibility="{Binding Path=ResultsVisibility}"  Click="menuShowTaskResults_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuComputeScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Task scores" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Task scores to PDF" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScores_Click"/>
                                                
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
