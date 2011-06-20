@@ -91,7 +91,7 @@ namespace Scorer
 
                 case NotifyCollectionChangedAction.Add:
                     foreach (Task t in e.NewItems)
-                        TaskScores.Add(new TaskScore(t, Pilots));
+                        TaskScores.Add(new TaskScore(this, t));
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
