@@ -4,7 +4,13 @@ using AXToolbox.Common;
 
 namespace AXToolbox.Scripting
 {
-    public enum ResultType { Not_Set, No_Flight, No_Result, Result }
+    public enum ResultType
+    {
+        Not_Set = 0,
+        No_Flight,
+        No_Result,
+        Result
+    }
 
     [Serializable]
     public class Result
@@ -24,7 +30,7 @@ namespace AXToolbox.Scripting
             }
         }
 
-        //TODO: rethink the result workflow
+        //TODO: URGENT! rethink the result workflow
         internal static Result NewNoFlight(string taskName, string taskType)
         {
             return new Result(taskName, taskType) { Type = ResultType.No_Flight };

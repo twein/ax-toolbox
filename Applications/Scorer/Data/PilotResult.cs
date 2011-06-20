@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using AXToolbox.Common;
 using AXToolbox.Scripting;
 using System.Windows.Data;
+using System.Diagnostics;
 
 namespace Scorer
 {
@@ -22,7 +23,16 @@ namespace Scorer
                 RaisePropertyChanged("ManualMeasure");
             }
         }
-        public Result Measure { get; set; }
+        private Result autoMeasure;
+        public Result AutoMeasure
+        {
+            get { return autoMeasure; }
+            set
+            {
+                Debug.Assert(value.Type != ResultType.Not_Set, "An automatic measure can not be 'not_set'");
+                autoMeasure = value;
+            }
+        }
         protected decimal manualMeasurePenalty;
         public decimal ManualMeasurePenalty
         {
@@ -33,7 +43,12 @@ namespace Scorer
                 RaisePropertyChanged("ManualMeasurePenalty");
             }
         }
-        public decimal MeasurePenalty { get; set; }
+        private decimal autoMeasurePenalty;
+        public decimal AutoMeasurePenalty
+        {
+            get { return autoMeasurePenalty; }
+            set { autoMeasurePenalty = value; }
+        }
         protected int manualTaskScorePenalty;
         public int ManualTaskScorePenalty
         {
@@ -44,7 +59,12 @@ namespace Scorer
                 RaisePropertyChanged("ManualTaskScorePenalty");
             }
         }
-        public int TaskScorePenalty { get; set; }
+        private int autoTaskScorePenalty;
+        public int AutoTaskScorePenalty
+        {
+            get { return autoTaskScorePenalty; }
+            set { autoTaskScorePenalty = value; }
+        }
         protected int manualCompetitionScorePenalty;
         public int ManualCompetitionScorePenalty
         {
@@ -55,7 +75,12 @@ namespace Scorer
                 RaisePropertyChanged("ManualCompetitionScorePenalty");
             }
         }
-        public int CompetitionScorePenalty { get; set; }
+        private int autoCompetitionScorePenalty;
+        public int AutoCompetitionScorePenalty
+        {
+            get { return autoCompetitionScorePenalty; }
+            set { autoCompetitionScorePenalty = value; }
+        }
         protected string manualInfringedRules;
         public string ManualInfringedRules
         {
@@ -66,15 +91,70 @@ namespace Scorer
                 RaisePropertyChanged("ManualInfringedRules");
             }
         }
-        public string InfringedRules { get; set; }
+        private string autoInfringedRules;
+        public string AutoInfringedRules
+        {
+            get { return autoInfringedRules; }
+            set { autoInfringedRules = value; }
+        }
+
+        //TODO: check all RaisePropertyChanged() calls
+        public Result Measure
+        {
+            get
+            {
+                if (manualMeasure.Type == ResultType.Not_Set)
+                    return autoMeasure;
+                else
+                    return manualMeasure;
+            }
+        }
+        public decimal MeasurePenalty
+        {
+            get
+            {
+                if (manualMeasure.Type == ResultType.Not_Set)
+                    return autoMeasurePenalty;
+                else
+                    return manualMeasurePenalty;
+            }
+        }
+        public int TaskScorePenalty
+        {
+            get
+            {
+                return manualTaskScorePenalty + autoTaskScorePenalty;
+            }
+        }
+        public int CompetitionScorePenalty
+        {
+            get
+            {
+                return manualCompetitionScorePenalty + autoCompetitionScorePenalty;
+            }
+        }
+        public string InfringedRules
+        {
+            get
+            {
+                var str = "";
+
+                if (!string.IsNullOrEmpty(manualInfringedRules))
+                    str += manualInfringedRules;
+                if (!string.IsNullOrEmpty(autoInfringedRules))
+                    str += ", " + autoInfringedRules;
+
+                return str;
+            }
+        }
 
         protected PilotResult() { }
         public PilotResult(Pilot pilot)
         {
             Pilot = pilot;
 
-            ManualMeasure = new Result(ResultType.No_Flight);
-            Measure = new Result(ResultType.No_Flight);
+            ManualMeasure = new Result(ResultType.Not_Set);
+            AutoMeasure = new Result(ResultType.No_Flight);
         }
 
         #region IEditableObject Members

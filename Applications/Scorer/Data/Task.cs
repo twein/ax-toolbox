@@ -49,7 +49,10 @@ namespace Scorer
         {
             get { return string.Format("{0:00}: 15.{1} {2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName); }
         }
-
+        public bool SortAscending
+        {
+            get { return Types[typeNumber].LowerIsBetter; }
+        }
 
         public ObservableCollection<PilotResult> PilotResults { get; set; }
 

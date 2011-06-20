@@ -12,6 +12,7 @@ namespace Scorer
 
         public int Position { get; set; }
         public int Group { get; set; }
+        public int ScoreNoPenalties { get; set; }
         public int Score { get; set; }
 
         protected PilotScore() { }
@@ -34,22 +35,39 @@ namespace Scorer
             Score = 0;
         }
 
-        public static int CompareByMeasure(PilotScore ri, PilotScore rj)
+        public static int CompareByMeasureAscending(PilotScore a, PilotScore b)
         {
             // disqualified pilots go last
-            int retval = (ri.Pilot.IsDisqualified ? 1 : 0) - (rj.Pilot.IsDisqualified ? 1 : 0);
+            int retval = (b.Pilot.IsDisqualified ? 1 : 0) - (a.Pilot.IsDisqualified ? 1 : 0);
 
             // then by group
+            // greater group go last
             if (retval == 0)
-                retval = ri.Group - rj.Group;
-            
-            // then by result
-            if (retval == 0)
-            {
-                var mi=
-                retval = ri.Result.me - rj.result;
-            }
+                retval = a.Group - b.Group;
 
+            // then by result
+            // lower resut go first
+            if (retval == 0)
+                retval = decimal.Compare(a.Result.Measure.VirtualValue, b.Result.Measure.VirtualValue);
+
+            return retval;
+        }
+        public static int CompareByMeasureDescending(PilotScore a, PilotScore b)
+        {
+            // disqualified pilots go last
+            int retval = (b.Pilot.IsDisqualified ? 1 : 0) - (a.Pilot.IsDisqualified ? 1 : 0);
+
+            // then by group
+            // greater group go last
+            if (retval == 0)
+                retval = a.Group - b.Group;
+
+            // then by result
+            // lower result go last
+            if (retval == 0)
+                retval = -decimal.Compare(a.Result.Measure.VirtualValue, b.Result.Measure.VirtualValue);
+
+            return retval;
         }
     }
 }
