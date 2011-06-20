@@ -180,6 +180,23 @@ namespace Scorer
                     return Visibility.Collapsed;
             }
         }
+        public Visibility ResultsVisibility
+        {
+            get
+            {
+                //show scores menu if the task is computed and clean
+                if ((Phases & CompletedPhases.Results) > 0)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
+
+        public void ResultsToPdf(string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return Description;

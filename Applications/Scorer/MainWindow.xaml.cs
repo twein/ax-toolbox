@@ -161,6 +161,7 @@ namespace Scorer
 
             var dlg = new SaveFileDialog();
             dlg.Filter = "pdf files (*.pdf)|*.pdf";
+            dlg.FileName = string.Format("{0}-Task scores", competition.Name);
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
@@ -172,17 +173,31 @@ namespace Scorer
 
             var dlg = new SaveFileDialog();
             dlg.Filter = "pdf files (*.pdf)|*.pdf";
+            dlg.FileName = string.Format("{0}-General score", competition.Name);
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
                 competition.PdfGeneralScore(dlg.FileName);
         }
-        private void menuTaskResults_Click(object sender, RoutedEventArgs e)
+
+        private void menuEditTaskResults_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
             var editOptions = EditOptions.CanEdit;
 
             AddTab(new EditTaskResults(task.PilotResults, editOptions), string.Format("Task {0}", task.ToString()));
+        }
+        private void menuShowTaskResults_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "pdf files (*.pdf)|*.pdf";
+            dlg.FileName = string.Format("{0}-Results", task.UltraShortDescription);
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                task.ResultsToPdf(dlg.FileName);
         }
         private void menuComputeScores_Click(object sender, RoutedEventArgs e)
         {
@@ -192,7 +207,6 @@ namespace Scorer
                 var ts = c.TaskScores.First(s => s.Task == task);
                 ts.Compute();
             }
-
         }
         private void menuTaskScores_Click(object sender, RoutedEventArgs e)
         {
