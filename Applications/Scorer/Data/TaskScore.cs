@@ -226,6 +226,7 @@ namespace Scorer
                     Version++;
 
                 Task.Phases |= CompletedPhases.Computed;
+                Task.Phases &= ~CompletedPhases.Dirty;
             }
         }
 

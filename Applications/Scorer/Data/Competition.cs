@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Windows;
 using AXToolbox.Common;
 
 namespace Scorer

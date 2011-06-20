@@ -14,7 +14,7 @@ namespace Scorer
         {
             //TODO: Hide the save button if validation fails
 
-            SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults;
+            SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults | CompletedPhases.Dirty;
             Save();
         }
     }

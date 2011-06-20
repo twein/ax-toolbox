@@ -29,15 +29,15 @@ namespace Scorer
         }
         public Visibility DeleteVisibility
         {
-            get { return (options & EditOptions.CanDelete) > 0 ? Visibility.Visible : Visibility.Hidden; }
+            get { return (options & EditOptions.CanDelete) > 0 ? Visibility.Visible : Visibility.Collapsed; }
         }
         public Visibility AddVisibility
         {
-            get { return (options & EditOptions.CanAdd) > 0 ? Visibility.Visible : Visibility.Hidden; }
+            get { return (options & EditOptions.CanAdd) > 0 ? Visibility.Visible : Visibility.Collapsed; }
         }
         public Visibility SaveVisibility
         {
-            get { return buffered ? Visibility.Visible : Visibility.Hidden; }
+            get { return buffered ? Visibility.Visible : Visibility.Collapsed; }
         }
 
         public EditCollection() { }

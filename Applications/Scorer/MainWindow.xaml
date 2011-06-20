@@ -78,8 +78,8 @@
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskResults_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Compute scores" Click="menuComputeScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Task scores" Click="menuTaskScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuComputeScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Task scores" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScores_Click"/>
                                                
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
