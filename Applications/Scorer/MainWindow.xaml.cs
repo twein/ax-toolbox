@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -185,7 +186,14 @@ namespace Scorer
             var task = ((MenuItem)sender).Tag as Task;
             var editOptions = EditOptions.CanEdit;
 
-            AddTab(new EditTaskResults(task.PilotResults, editOptions), string.Format("Task {0}", task.ToString()));
+            var query = from pr in task.PilotResults
+                        select pr.ManualResult;
+            var results = new ObservableCollection<Result>();
+            foreach (var r in query)
+                results.Add(r);
+
+
+            AddTab(new EditTaskResults(results, editOptions), string.Format("Task {0}", task.ToString()));
         }
         private void menuShowTaskResults_Click(object sender, RoutedEventArgs e)
         {

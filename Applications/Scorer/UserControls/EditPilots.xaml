@@ -10,7 +10,6 @@
         <Style x:Key="RightCellStyle" TargetType="DataGridCell">
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
-        <local:ResultConverter x:Key="resultConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
