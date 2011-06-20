@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using System.Linq;
 
 namespace Scorer
 {
@@ -197,6 +198,22 @@ namespace Scorer
         {
             var task = ((MenuItem)sender).Tag as Task;
 
+            var dlg = new System.Windows.Forms.FolderBrowserDialog();
+            dlg.Description = "Choose a folder to save the scores";
+            dlg.SelectedPath = Environment.CurrentDirectory;
+            dlg.ShowNewFolderButton = true;
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var path = dlg.SelectedPath;
+                foreach (var c in Database.Instance.Competitions)
+                {
+                    var ts = c.TaskScores.First(s => s.Task == task);
+                    var pdfName = string.Format("{0}-{1}-v{3:00}{4}-{2:MMdd HHmmss}",
+                        c.Name, task.UltraShortDescription, ts.RevisionDate, ts.Version, ts.Status.ToString().Substring(0, 1));
+                    var pdfPath = Path.Combine(path, pdfName);
+                    ts.PdfScores(pdfPath);
+                }
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

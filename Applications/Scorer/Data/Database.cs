@@ -59,17 +59,6 @@ namespace Scorer
         public ObservableCollection<Pilot> Pilots { get; set; }
         public ObservableCollection<Task> Tasks { get; set; }
 
-        public Visibility ModButtonsVisibility
-        {
-            get
-            {
-                if (Tasks.Count == 0)
-                    return Visibility.Visible;
-                else
-                    return Visibility.Hidden;
-            }
-        }
-
         void Pilots_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             Debug.Assert(Tasks.Count == 0, "Can not modify pilot list if there are tasks defined");

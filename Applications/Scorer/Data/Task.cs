@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using AXToolbox.Common;
+using System.Windows;
 
 namespace Scorer
 {
     [Flags]
-    public enum CompletedPhases { AutoResults = 0x1, ManualResults = 0x2, Computed = 0x4 }
+    public enum CompletedPhases
+    {
+        AutoResults = 0x1,
+        ManualResults = 0x2,
+        Results = 0x3,
+        Dirty = 0x4,
+        Computed = 0x8
+    }
 
 
     [Serializable]
@@ -60,6 +68,8 @@ namespace Scorer
                 phases = value;
                 RaisePropertyChanged("Phases");
                 RaisePropertyChanged("Status");
+                RaisePropertyChanged("ComputeVisibility");
+                RaisePropertyChanged("ScoresVisibility");
             }
         }
 
@@ -72,6 +82,10 @@ namespace Scorer
         {
             get { return string.Format("{0:00}: 15.{1} {2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName); }
         }
+        public string UltraShortDescription
+        {
+            get { return string.Format("T{0:00}{2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName); }
+        }
         public bool SortAscending
         {
             get { return Types[typeNumber].LowerIsBetter; }
@@ -82,11 +96,16 @@ namespace Scorer
             {
                 var status = "";
                 if ((Phases & CompletedPhases.AutoResults) > 0)
-                    status += "Auto ";
+                    status += "A ";
                 if ((Phases & CompletedPhases.ManualResults) > 0)
-                    status += "Manual ";
+                    status += "M ";
                 if ((Phases & CompletedPhases.Computed) > 0)
-                    status += "Computed ";
+                {
+                    if ((Phases & CompletedPhases.Dirty) > 0)
+                        status += "C* ";
+                    else
+                        status += "C ";
+                }
                 if (isVoid)
                     status += "Void";
                 status = status.Trim();
@@ -138,6 +157,29 @@ namespace Scorer
             Database.Instance.IsDirty = true;
         }
 
+        public Visibility ComputeVisibility
+        {
+            get
+            {
+                //Show compute menu if there are results
+                if ((Phases & CompletedPhases.Results) > 0)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
+        public Visibility ScoresVisibility
+        {
+            get
+            {
+                //show scores menu if the task is computed and clean
+                if ((Phases & CompletedPhases.Computed) > 0
+                    && (Phases & CompletedPhases.Dirty) == 0)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
         public override string ToString()
         {
             return Description;
