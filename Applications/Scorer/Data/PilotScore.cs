@@ -31,7 +31,7 @@ namespace Scorer
 
         public override string ToString()
         {
-            return string.Format("R={0}, S={1}", Result.Measure, Score);
+            return string.Format("R={0}, S={1}", Result.Result, Score);
         }
     }
 }

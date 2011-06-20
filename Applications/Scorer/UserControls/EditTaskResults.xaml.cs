@@ -2,10 +2,10 @@
 
 namespace Scorer
 {
-    public partial class EditTaskResults : EditCollection<PilotResult>
+    public partial class EditTaskResults : EditCollection<Result>
     {
-        public EditTaskResults(ObservableCollection<PilotResult> taskResults, EditOptions editOptions)
-            : base(taskResults, editOptions, true)
+        public EditTaskResults(ObservableCollection<Result> results, EditOptions editOptions)
+            : base(results, editOptions, true)
         {
             InitializeComponent();
         }

@@ -1,110 +1,225 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AXToolbox.Scripting;
-using System.Windows.Data;
+using System.ComponentModel;
 using System.Globalization;
+using System.Windows.Data;
+using AXToolbox.Common;
+using AXToolbox.Scripting;
+using System.Diagnostics;
 
 namespace Scorer
 {
     [Serializable]
-    public class Result
+    public class Result : BindableObject, IEditableObject, IResult
     {
-        public ResultType Type { get; set; }
-        public Decimal Value { get; set; }
+        public Task Task { get; set; }
+        public Pilot Pilot { get; set; }
 
-        protected Result() { }
-        public Result(ResultType type)
+        public ResultType Type
         {
-            Type = type;
-        }
-        public Result(decimal value)
-        {
-            Type = ResultType.Result;
-            Value = value;
+            get { return Result.GetType(measure); }
         }
 
-        public decimal VirtualValue
+        private Decimal measure;
+        public Decimal Measure
         {
             get
             {
-                switch (Type)
-                {
-                    case ResultType.Not_Set:
-                        throw new InvalidOperationException();
-                    case ResultType.No_Flight:
-                        return -2;
-                    case ResultType.No_Result:
-                        return -1;
-                    default:
-                        return Value;
-                }
+                //Debug.Assert(measure >= 0, "A non-measure result should not be asked to return a measure");
+                return measure;
             }
+            set
+            {
+                measure = value;
+                RaisePropertyChanged("Measure");
+                RaisePropertyChanged("Type");
+                RaisePropertyChanged("ResultValue");
+            }
+        }
+        protected decimal measurePenalty;
+        public decimal MeasurePenalty
+        {
+            get { return measurePenalty; }
+            set
+            {
+                measurePenalty = value;
+                RaisePropertyChanged("MeasurePenalty");
+                RaisePropertyChanged("ResultValue");
+            }
+        }
+        public decimal ResultValue
+        {
+            get
+            {
+                Debug.Assert(measure >= 0, "A non-measure result should not be asked to return a result");
+                return measure - measurePenalty;
+            }
+        }
+        protected int taskScorePenalty;
+        public int TaskScorePenalty
+        {
+            get { return taskScorePenalty; }
+            set
+            {
+                taskScorePenalty = value;
+                RaisePropertyChanged("TaskScorePenalty");
+            }
+        }
+        protected int competitionScorePenalty;
+        public int CompetitionScorePenalty
+        {
+            get { return competitionScorePenalty; }
+            set
+            {
+                competitionScorePenalty = value;
+                RaisePropertyChanged("CompetitionScorePenalty");
+            }
+        }
+        protected string infringedRules;
+        public string InfringedRules
+        {
+            get { return infringedRules; }
+            set
+            {
+                infringedRules = value;
+                RaisePropertyChanged("InfringedRules");
+            }
+        }
+
+        protected Result() { }
+        public Result(Task task, Pilot pilot, ResultType type)
+        {
+            Task = task;
+            Pilot = pilot;
+            switch (type)
+            {
+                case ResultType.Not_Set:
+                    Measure = -3;
+                    break;
+                case ResultType.No_Flight:
+                    Measure = -2;
+                    break;
+                case ResultType.No_Result:
+                    Measure = -1;
+                    break;
+                default:
+                    Debug.Assert(false, "A measure result should not be initialized with this constructor");
+                    Measure = 0;
+                    break;
+            }
+        }
+        public Result(Task task, Pilot pilot, decimal value)
+        {
+            Debug.Assert(value < 0, "A non-measure result should not be initialized with this constructor");
+
+            Task = task;
+            Pilot = pilot;
+            Measure = value;
         }
 
         public override string ToString()
         {
-            var str = "";
-
-            if (Type == ResultType.Not_Set)
-                str = "-";
-            else if (Type == ResultType.No_Flight)
-                str = "NF";
-            else if (Type == ResultType.No_Result)
-                str = "NR";
-            else
-                str = string.Format("{0:0.00}", Value);
-
-            return str;
+            return ToString(Measure);
         }
-        public static Result Parse(string value)
+
+        public static decimal ParseMeasure(string value)
         {
-            Result result;
-            decimal tmpResult;
+            decimal measure;
             var str = value.Trim().ToUpper();
-            if (decimal.TryParse(str, out tmpResult))
+            switch (value.Trim().ToUpper())
             {
-                result = new Result(tmpResult);
+                case "-":
+                    measure = -3;
+                    break;
+                case "NF":
+                case "C":
+                    measure = -2;
+                    break;
+                case "NR":
+                case "B":
+                    measure = -1;
+                    break;
+                default:
+                    measure = decimal.Parse(value);
+                    if (measure < 0)
+                        throw new InvalidCastException("A measure is not allowed to be negative");
+                    break;
             }
-            else if (str == "-")
+            return measure;
+        }
+        public static ResultType GetType(decimal measure)
+        {
+            switch ((int)measure)
             {
-                result = new Result(AXToolbox.Scripting.ResultType.Not_Set);
+                case -3:
+                    return ResultType.Not_Set;
+                case -2:
+                    return ResultType.No_Flight;
+                case -1:
+                    return ResultType.No_Result;
+                default:
+                    return ResultType.Result;
             }
-            else if (str == "NF")
+        }
+        public static string ToString(decimal measure)
+        {
+            switch (GetType(measure))
             {
-                result = new Result(AXToolbox.Scripting.ResultType.No_Flight);
-            }
-            else if (str == "NR")
-            {
-                result = new Result(AXToolbox.Scripting.ResultType.No_Result);
-            }
-            else
-            {
-                throw new InvalidCastException();
+                case ResultType.Not_Set:
+                    return "-";
+                case ResultType.No_Flight:
+                    return "NF";
+                case ResultType.No_Result:
+                    return "NR";
+                default:
+                    return string.Format("{0:0.00}", measure);
             }
 
-            return result;
         }
+
+        #region IEditableObject Members
+        protected Result buffer = null;
+        public void BeginEdit()
+        {
+            if (buffer == null)
+                buffer = MemberwiseClone() as Result;
+        }
+        public void CancelEdit()
+        {
+            if (buffer != null)
+            {
+                Measure = buffer.Measure;
+                MeasurePenalty = buffer.MeasurePenalty;
+                TaskScorePenalty = buffer.TaskScorePenalty;
+                CompetitionScorePenalty = buffer.CompetitionScorePenalty;
+                InfringedRules = buffer.InfringedRules;
+                buffer = null;
+            }
+        }
+        public void EndEdit()
+        {
+            if (buffer != null)
+                buffer = null;
+        }
+        #endregion
     }
 
-    [ValueConversion(typeof(Result), typeof(String))]
-    public class ResultConverter : IValueConverter
+    [ValueConversion(typeof(decimal), typeof(string))]
+    public class MeasureConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var result = value as Result;
-            return result.ToString();
+            var measure = (decimal)value;
+            return Result.ToString(measure);
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
-                return Result.Parse((string)value);
+                return Result.ParseMeasure((string)value);
             }
             catch
             {
-                return value;
+                return "ERROR";
             }
         }
     }

@@ -91,11 +91,11 @@ namespace Scorer
             //sort by result
             if (Task.SortAscending)
                 PilotScores = (from ps in PilotScores
-                               orderby ps.Pilot.IsDisqualified, ps.Result.Group, ps.Result.Measure.Value
+                               orderby ps.Pilot.IsDisqualified, ps.Result.Group, ps.Result.Result
                                select ps).ToArray();
             else
                 PilotScores = (from ps in PilotScores
-                               orderby ps.Pilot.IsDisqualified, ps.Result.Group, ps.Result.Measure.Value descending
+                               orderby ps.Pilot.IsDisqualified, ps.Result.Group, ps.Result.Result descending
                                select ps).ToArray();
 
             //rule 14.5.7
@@ -117,8 +117,8 @@ namespace Scorer
                     M = A; //rule 14.5.6: fewer than half the competitors scored
 
                 SM = (1000 * (P + 1 - M) / P);
-                RM = PilotScores[M - 1].Result.Measure.Value;
-                W = PilotScores[0].Result.Measure.Value;
+                RM = PilotScores[M - 1].Result.Result;
+                W = PilotScores[0].Result.Result;
 
                 PilotScores[0].ScoreNoPenalties = 1000; //rule 14.5.2
                 var remainingPoints = 0;
@@ -136,7 +136,7 @@ namespace Scorer
                         if (L <= M)
                         {
                             //rule 14.5.3 superior half
-                            var R = ps.Result.Measure.Value;
+                            var R = ps.Result.Result;
                             ps.ScoreNoPenalties = (int)Math.Round(1000m - ((1000 - SM) / (RM - W)) * (R - W));
                         }
                         else
@@ -184,8 +184,8 @@ namespace Scorer
                     {
                         var psj = PilotScores[j];
 
-                        //if not group A or different measure values, not in tie. Stop search
-                        if (psj.Result.Group != 1 || psi.Result.Measure.Value != psj.Result.Measure.Value)
+                        //if not group A or different result values, not in tie. Stop search
+                        if (psj.Result.Group != 1 || psi.Result.Result != psj.Result.Result)
                             break;
 
                         //tie found
