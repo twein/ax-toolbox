@@ -31,6 +31,8 @@ namespace Scorer
             {
                 switch (Type)
                 {
+                    case ResultType.Not_Set:
+                        throw new InvalidOperationException();
                     case ResultType.No_Flight:
                         return -2;
                     case ResultType.No_Result:
@@ -45,12 +47,14 @@ namespace Scorer
         {
             var str = "";
 
-            if (Type == ResultType.No_Flight)
+            if (Type == ResultType.Not_Set)
+                str = "-";
+            else if (Type == ResultType.No_Flight)
                 str = "NF";
             else if (Type == ResultType.No_Result)
                 str = "NR";
             else
-                str = string.Format("{0:#.00}", Value);
+                str = string.Format("{0:0.00}", Value);
 
             return str;
         }
@@ -62,6 +66,10 @@ namespace Scorer
             if (decimal.TryParse(str, out tmpResult))
             {
                 result = new Result(tmpResult);
+            }
+            else if (str == "-")
+            {
+                result = new Result(AXToolbox.Scripting.ResultType.Not_Set);
             }
             else if (str == "NF")
             {

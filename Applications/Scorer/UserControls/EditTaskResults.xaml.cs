@@ -13,6 +13,8 @@ namespace Scorer
         private void saveButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             //TODO: Hide the save button if validation fails
+
+            SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults;
             Save();
         }
     }

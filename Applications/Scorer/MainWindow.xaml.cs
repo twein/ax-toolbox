@@ -154,13 +154,6 @@ namespace Scorer
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetTasks();
         }
-        private void menuTaskResults_Click(object sender, RoutedEventArgs e)
-        {
-            var task = ((MenuItem)sender).Tag as Task;
-            var editOptions = EditOptions.CanEdit;
-
-            AddTab(new EditTaskResults(task.PilotResults, editOptions), string.Format("Task {0}", task.ToString()));
-        }
         private void menuCompetitionTaskScores_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
@@ -182,6 +175,28 @@ namespace Scorer
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
                 competition.PdfGeneralScore(dlg.FileName);
+        }
+        private void menuTaskResults_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+            var editOptions = EditOptions.CanEdit;
+
+            AddTab(new EditTaskResults(task.PilotResults, editOptions), string.Format("Task {0}", task.ToString()));
+        }
+        private void menuComputeScores_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+            foreach (var c in Database.Instance.Competitions)
+            {
+                var ts = c.TaskScores.First(s => s.Task == task);
+                ts.Compute();
+            }
+
+        }
+        private void menuTaskScores_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

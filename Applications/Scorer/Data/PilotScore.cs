@@ -1,73 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using AXToolbox.Scripting;
+using System.Text;
 
 namespace Scorer
 {
     [Serializable]
     public class PilotScore
     {
-        public Pilot Pilot { get; set; }
+        public Pilot Pilot
+        {
+            get { return Result.Pilot; }
+        }
         public PilotResult Result { get; set; }
 
         public int Position { get; set; }
-        public int Group { get; set; }
         public int ScoreNoPenalties { get; set; }
-        public int Score { get; set; }
-
-        protected PilotScore() { }
-
-        public PilotScore(Task task, Pilot pilot)
+        public int Score
         {
-            Pilot = pilot;
-            Result = task.PilotResults.First(pr => pr.Pilot == pilot);
-            Position = Pilot.Number;
-
-            //set the scoring group
-            if (Pilot.IsDisqualified || this.Result.Measure.Type == ResultType.No_Flight)
-                Group = 3;
-            else if (this.Result.Measure.Type == ResultType.No_Result)
-                Group = 2;
-            else
-                Group = 1;
-
-
-            Score = 0;
+            get
+            {
+                return (int)Math.Max(ScoreNoPenalties - Result.TaskScorePenalty, 0) - Result.CompetitionScorePenalty;
+            }
         }
 
-        public static int CompareByMeasureAscending(PilotScore a, PilotScore b)
+        public PilotScore(PilotResult result)
         {
-            // disqualified pilots go last
-            int retval = (b.Pilot.IsDisqualified ? 1 : 0) - (a.Pilot.IsDisqualified ? 1 : 0);
-
-            // then by group
-            // greater group go last
-            if (retval == 0)
-                retval = a.Group - b.Group;
-
-            // then by result
-            // lower resut go first
-            if (retval == 0)
-                retval = decimal.Compare(a.Result.Measure.VirtualValue, b.Result.Measure.VirtualValue);
-
-            return retval;
+            Result = result;
         }
-        public static int CompareByMeasureDescending(PilotScore a, PilotScore b)
+
+        public override string ToString()
         {
-            // disqualified pilots go last
-            int retval = (b.Pilot.IsDisqualified ? 1 : 0) - (a.Pilot.IsDisqualified ? 1 : 0);
-
-            // then by group
-            // greater group go last
-            if (retval == 0)
-                retval = a.Group - b.Group;
-
-            // then by result
-            // lower result go last
-            if (retval == 0)
-                retval = -decimal.Compare(a.Result.Measure.VirtualValue, b.Result.Measure.VirtualValue);
-
-            return retval;
+            return string.Format("R={0}, S={1}", Result.Measure, Score);
         }
     }
 }

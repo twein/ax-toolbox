@@ -52,7 +52,7 @@
                                                 <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasks_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuResetCompetitionTasks_Click"/>
                                                 <Separator/>
-                                                <MenuItem Tag="{Binding}" Header="All Task scores" Click="menuCompetitionTaskScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="All task scores" Click="menuCompetitionTaskScores_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="General score" Click="menuCompetitionGeneralScore_Click"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
@@ -74,10 +74,13 @@
                         <ListBox ItemsSource="{Binding Path=Tasks}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Path=ShortDescription}">
+                                    <TextBlock Text="{Binding Path=Status}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Compute scores" Click="menuComputeScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Task scores" Click="menuTaskScores_Click"/>
+                                               
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
