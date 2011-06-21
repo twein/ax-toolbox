@@ -34,7 +34,40 @@ namespace PdfHelpers
             PdfDocument.AddKeywords(pdfConfig.MetadataKeywords);
         }
 
+        public PdfPTable NewTable(string[] columnHeaders, float[] relativeColumnWidths)
+        {
+            var table = new PdfPTable(relativeColumnWidths)
+            {
+                WidthPercentage = 100,
+                SpacingBefore = 15,
+                SpacingAfter = 10,
+                HeaderRows = 1
+            };
 
+            //table.DefaultCell.BackgroundColor = new BaseColor(192, 192, 192);
+
+            var headerColor = new BaseColor(192, 192, 192);
+            foreach (var ch in columnHeaders)
+                table.AddCell(new PdfPCell(new Paragraph(ch, config.BoldFont)) { BackgroundColor = headerColor });
+
+            return table;
+        }
+        public PdfPCell NewCell(string cellContent, int horizontalAlignment = Element.ALIGN_LEFT)
+        {
+            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = horizontalAlignment };
+        }
+
+        public static void OpenPdf(string pdfFileName)
+        {
+            try
+            {
+                var proc = new System.Diagnostics.Process();
+                proc.EnableRaisingEvents = false;
+                proc.StartInfo.FileName = pdfFileName;
+                proc.Start();
+            }
+            catch { }
+        }
         internal class PageEvents : IPdfPageEvent
         {
             protected PdfConfig config;

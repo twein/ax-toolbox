@@ -46,8 +46,9 @@
                                     <TextBlock Text="{Binding Path=Status}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilots_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuEditCompetitionPilots_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuResetCompetitionPilots_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="List competition pilots to pdf" Click="menuPdfCompetitionPilots_Click"/>
                                                 <Separator/>
                                                 <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasks_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuResetCompetitionTasks_Click"/>

@@ -132,7 +132,7 @@ namespace Scorer
             AddTab(new EditTasks(Database.Instance.Tasks, editOptions), "Tasks");
         }
 
-        private void menuCompetitionPilots_Click(object sender, RoutedEventArgs e)
+        private void menuEditCompetitionPilots_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             var editOptions = EditOptions.CanDelete;
@@ -143,6 +143,17 @@ namespace Scorer
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetPilots();
+        }
+        private void menuPdfCompetitionPilots_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var competition = ((MenuItem)sender).Tag as Competition;
+
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "pdf files (*.pdf)|*.pdf";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                Pilot.PdfList(dlg.FileName, competition.Name + ": pilot list", competition.Pilots);
         }
         private void menuCompetitionTasks_Click(object sender, RoutedEventArgs e)
         {
