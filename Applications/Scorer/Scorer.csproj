@@ -202,6 +202,10 @@
       <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\PdfHelpers\PdfHelpers.csproj">
+      <Project>{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}</Project>
+      <Name>PdfHelpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Scripting\Scripting.csproj">
       <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
       <Name>Scripting</Name>

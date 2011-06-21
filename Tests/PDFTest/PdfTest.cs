@@ -45,28 +45,13 @@ namespace PdfTest
 
 
             //table
+            var headers = new string[] { "Date", "Dawn", "Dusk", "Outdoor activity time" };
             var relWidths = new float[] { 8, 2, 2, 3 };
-            var table = new PdfPTable(relWidths)
-            {
-                WidthPercentage = 100,
-                SpacingBefore = 15,
-                SpacingAfter = 10,
-                HeaderRows = 1
-            };
-            table.DefaultCell.HorizontalAlignment = Element.ALIGN_LEFT;
-            //table.DefaultCell.BackgroundColor = new BaseColor(192, 192, 192);
-
-            //table header
-            var headerColor = new BaseColor(192, 192, 192);
-            table.AddCell(new PdfPCell(new Paragraph("Date", config.BoldFont)) { BackgroundColor = headerColor });
-            table.AddCell(new PdfPCell(new Paragraph("Dawn", config.BoldFont)) { BackgroundColor = headerColor });
-            table.AddCell(new PdfPCell(new Paragraph("Dusk", config.BoldFont)) { BackgroundColor = headerColor });
-            table.AddCell(new PdfPCell(new Paragraph("Outdoor activity time", config.BoldFont)) { BackgroundColor = headerColor });
+            var table = helper.NewTable(headers, relWidths);
 
             //table body
 
             //compute cells
-            var cells = new List<string>();
             var sun = new Sun(lat, lng);
             var today = DateTime.Now;
             //var from = today - new TimeSpan(10, 0, 0, 0);
@@ -77,19 +62,26 @@ namespace PdfTest
 
             for (var date = from; date <= to; date += new TimeSpan(1, 0, 0, 0))
             {
-                var sr = sun.Sunrise(date, Sun.ZenithTypes.Custom);
-                var ss = sun.Sunset(date, Sun.ZenithTypes.Custom);
-                var span = ss - sr;
-                cells.Add(date.ToString("D", DateTimeFormatInfo.InvariantInfo));
-                cells.Add(sr.ToString("HH:mm"));
-                cells.Add(ss.ToString("HH:mm"));
-                cells.Add(span.ToString("hh\\:mm"));
+                var dawn = sun.Sunrise(date, Sun.ZenithTypes.Custom);
+                var dusk = sun.Sunset(date, Sun.ZenithTypes.Custom);
+                var span = dusk - dawn;
+
+                //strings
+                var strDate = date.ToString("D", DateTimeFormatInfo.InvariantInfo);
+                var strDawn = dawn.ToString("HH:mm");
+                var strDusk = dusk.ToString("HH:mm");
+                var strSpan = span.ToString("hh\\:mm");
+
+                //place cells in table
+                table.AddCell(helper.NewCell(strDate));
+                table.AddCell(helper.NewCell(strDawn, Element.ALIGN_RIGHT));
+                table.AddCell(helper.NewCell(strDusk, Element.ALIGN_RIGHT));
+                table.AddCell(helper.NewCell(strSpan, Element.ALIGN_RIGHT));
+
+                //var cell = helper.NewCell("Cell with colspan 2");
+                //cell.Colspan = 2;
+                //table.AddCell(cell);
             }
-
-            //place cells in table
-            foreach (var c in cells)
-                table.AddCell(new PdfPCell(new Paragraph(c, config.NormalFont)));
-
 
             //Place table on document
 

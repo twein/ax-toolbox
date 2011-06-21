@@ -11,10 +11,10 @@ namespace PdfHelpers
         public string MetadataKeywords { get; set; }
 
         public Rectangle PageLayout { get; set; }
-        public Single MarginLeft { get; set; }
-        public Single MarginRight { get; set; }
-        public Single MarginTop { get; set; }
-        public Single MarginBottom { get; set; }
+        public float MarginLeft { get; set; }
+        public float MarginRight { get; set; }
+        public float MarginTop { get; set; }
+        public float MarginBottom { get; set; }
 
         public string HeaderLeft { get; set; }
         public string HeaderRight { get; set; }
@@ -37,12 +37,12 @@ namespace PdfHelpers
             MarginTop = 1 * PdfHelper.cm2pt;
             MarginBottom = 1 * PdfHelper.cm2pt;
 
-            TitleFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
-            SubtitleFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD);
-            BoldFont = new Font(Font.FontFamily.HELVETICA, 7, Font.BOLD);
-            NormalFont = new Font(Font.FontFamily.HELVETICA, 6.5f, Font.NORMAL);
-            HeaderFont = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL);
-            FooterFont = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL);
+            TitleFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
+            SubtitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
+            BoldFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
+            NormalFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL);
+            HeaderFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
+            FooterFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
         }
     }
 }
