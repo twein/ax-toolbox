@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace PDFTest
+namespace PdfTest
 {
     /// <summary>
     /// Interaction logic for App.xaml
