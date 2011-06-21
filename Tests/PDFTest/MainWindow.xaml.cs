@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Documents;
 
-namespace PDFTest
+namespace PdfTest
 {
     public partial class MainWindow : Window
     {
@@ -39,7 +39,7 @@ namespace PDFTest
             Print("Writing " + fileName);
             try
             {
-                var pdftest = new PdfTest(fileName);
+                var pdftest = new PdfTestClass(fileName);
 
                 var proc = new System.Diagnostics.Process();
                 proc.EnableRaisingEvents = false;

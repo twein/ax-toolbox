@@ -1,4 +1,4 @@
-﻿<Window x:Class="PDFTest.MainWindow"
+﻿<Window x:Class="PdfTest.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="PDF Test" Height="480" Width="650" Loaded="Window_Loaded" Closed="Window_Closed" Icon="/PDFTest;component/balloon.ico">
