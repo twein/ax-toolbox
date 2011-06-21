@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
+using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.IO;
-using System.Globalization;
 
 namespace PdfHelpers
 {
@@ -36,6 +32,8 @@ namespace PdfHelpers
 
         public PdfPTable NewTable(string[] columnHeaders, float[] relativeColumnWidths)
         {
+            Debug.Assert(columnHeaders.Length == relativeColumnWidths.Length, "columnHeaders and relativeColumnWidths must have the same number of elements");
+
             var table = new PdfPTable(relativeColumnWidths)
             {
                 WidthPercentage = 100,

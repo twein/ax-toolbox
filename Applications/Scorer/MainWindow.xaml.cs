@@ -67,7 +67,7 @@ namespace Scorer
             }
         }
 
-        private void menuLoadEvent_Click(object sender, RoutedEventArgs e)
+        private void menuEventLoad_Click(object sender, RoutedEventArgs e)
         {
             if (Database.Instance.IsDirty)
             {
@@ -89,7 +89,7 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 Database.Instance.Load(dlg.FileName);
         }
-        private void menuSaveEvent_Click(object sender, RoutedEventArgs e)
+        private void menuEventSave_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new SaveFileDialog();
             dlg.Filter = ".AXevt files (*.AXevt)|*.AXEvt";
@@ -98,7 +98,7 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 Database.Instance.Save(dlg.FileName);
         }
-        private void menuSaveXmlEvent_Click(object sender, RoutedEventArgs e)
+        private void menuEventSaveXml_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new SaveFileDialog();
             dlg.Filter = ".xml files (*.xml)|*.xml";
@@ -107,7 +107,12 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 Database.Instance.Save(dlg.FileName, AXToolbox.Common.IO.SerializationFormat.XML);
         }
-        private void menuCompetitions_Click(object sender, RoutedEventArgs e)
+        private void menuEventExit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void menuCompetitionsEdit_Click(object sender, RoutedEventArgs e)
         {
             var editOptions = EditOptions.CanEdit;
             if (Database.Instance.Pilots.Count == 0)
@@ -115,7 +120,8 @@ namespace Scorer
 
             AddTab(new EditCompetitions(Database.Instance.Competitions, editOptions), "Competitions");
         }
-        private void menuPilots_Click(object sender, RoutedEventArgs e)
+        
+        private void menuPilotsEdit_Click(object sender, RoutedEventArgs e)
         {
             var editOptions = EditOptions.CanEdit;
             if (Database.Instance.Competitions.Count > 0 && Database.Instance.Tasks.Count == 0)
@@ -123,7 +129,26 @@ namespace Scorer
 
             AddTab(new EditPilots(Database.Instance.Pilots, editOptions), "Pilots");
         }
-        private void menuTasks_Click(object sender, RoutedEventArgs e)
+        private void menuPilotsPdfList_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "pdf files (*.pdf)|*.pdf";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                Pilot.PdfList(dlg.FileName, "Pilot list", Database.Instance.Pilots);
+        }
+        private void menuPilotsPdfWorkList_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "pdf files (*.pdf)|*.pdf";
+            dlg.InitialDirectory = Environment.CurrentDirectory;
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() == true)
+                Pilot.PdfWorkList(dlg.FileName, "Work list", Database.Instance.Pilots);
+        }
+        
+        private void menuTasksEdit_Click(object sender, RoutedEventArgs e)
         {
             var editOptions = EditOptions.CanEdit;
             if (Database.Instance.Competitions.Count > 0 && Database.Instance.Pilots.Count > 0)
@@ -132,19 +157,19 @@ namespace Scorer
             AddTab(new EditTasks(Database.Instance.Tasks, editOptions), "Tasks");
         }
 
-        private void menuEditCompetitionPilots_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionPilotsEdit_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             var editOptions = EditOptions.CanDelete;
 
             AddTab(new EditPilots(competition.Pilots, editOptions), competition.Name + " pilots");
         }
-        private void menuResetCompetitionPilots_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionPilotsReset_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetPilots();
         }
-        private void menuPdfCompetitionPilots_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void menuCompetitionPilotsPdfList_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
 
@@ -155,19 +180,20 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 Pilot.PdfList(dlg.FileName, competition.Name + ": pilot list", competition.Pilots);
         }
-        private void menuCompetitionTasks_Click(object sender, RoutedEventArgs e)
+
+        private void menuCompetitionTasksEdit_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             var editOptions = EditOptions.CanDelete;
 
             AddTab(new EditTasks(competition.Tasks, editOptions), competition.Name + " tasks");
         }
-        private void menuResetCompetitionTasks_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionTasksReset_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetTasks();
         }
-        private void menuCompetitionTaskScores_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionTasksPdfScores_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
 
@@ -179,7 +205,7 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 competition.PdfTaskScores(dlg.FileName);
         }
-        private void menuCompetitionGeneralScore_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionPdfGeneralScore_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
 
@@ -192,7 +218,7 @@ namespace Scorer
                 competition.PdfGeneralScore(dlg.FileName);
         }
 
-        private void menuEditTaskResults_Click(object sender, RoutedEventArgs e)
+        private void menuTaskEditResults_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
             var editOptions = EditOptions.CanEdit;
@@ -203,10 +229,9 @@ namespace Scorer
             foreach (var r in query)
                 results.Add(r);
 
-
-            AddTab(new EditTaskResults(results, editOptions), string.Format("Task {0}", task.ToString()));
+            AddTab(new EditTaskResults(results, editOptions), string.Format("Task {0}", task.ShortDescription));
         }
-        private void menuShowTaskResults_Click(object sender, RoutedEventArgs e)
+        private void menuTaskPdfResults_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
 
@@ -218,7 +243,7 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 task.ResultsToPdf(dlg.FileName);
         }
-        private void menuComputeScores_Click(object sender, RoutedEventArgs e)
+        private void menuTaskComputeScores_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
             foreach (var c in Database.Instance.Competitions)
@@ -227,7 +252,7 @@ namespace Scorer
                 ts.Compute();
             }
         }
-        private void menuTaskScores_Click(object sender, RoutedEventArgs e)
+        private void menuTaskPdfScores_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
 

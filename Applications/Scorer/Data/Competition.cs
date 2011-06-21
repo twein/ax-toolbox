@@ -64,6 +64,10 @@ namespace Scorer
 
             Pilots.CollectionChanged += Pilots_CollectionChanged;
             Tasks.CollectionChanged += Tasks_CollectionChanged;
+
+            name = "enter competition name";
+            locationDates = "enter location and dates";
+            director = "enter director name";
         }
 
         [OnDeserialized]
