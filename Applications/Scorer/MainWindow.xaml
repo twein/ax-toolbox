@@ -5,17 +5,35 @@
         xmlns:local="clr-namespace:Scorer"
         DataContext="{Binding Source={x:Static local:Database.Instance}}"
         Title="MainWindow" Height="600" Width="1024"
-        Closing="Window_Closing">
+        Closing="Window_Closing" Icon="/Scorer;component/balloon.ico">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Event">
-                <MenuItem Header="Load" Click="menuLoadEvent_Click"/>
-                <MenuItem Header="Save" Click="menuSaveEvent_Click"/>
-                <MenuItem Header="Save XML" Click="menuSaveXmlEvent_Click"/>
+                <MenuItem Header="Load" Click="menuEventLoad_Click"/>
+                <MenuItem Header="Save" Click="menuEventSave_Click"/>
+                <MenuItem Header="Save XML" Click="menuEventSaveXml_Click"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="menuEventExit_Click"/>
             </MenuItem>
-            <MenuItem Header="Competitions" Click="menuCompetitions_Click"/>
-            <MenuItem Header="Pilots" Click="menuPilots_Click"/>
-            <MenuItem Header="Tasks" Click="menuTasks_Click"/>
+            <MenuItem Header="Competitions">
+                <MenuItem Header="Edit" Click="menuCompetitionsEdit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Pilots">
+                <MenuItem Header="Edit" Click="menuPilotsEdit_Click"/>
+                <MenuItem Header="List to pdf" Click="menuPilotsPdfList_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Work list to pdf" Click="menuPilotsPdfWorkList_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Tasks">
+                <MenuItem Header="Edit" Click="menuTasksEdit_Click"/>
+            </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
@@ -46,15 +64,27 @@
                                     <TextBlock Text="{Binding Path=Status}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuEditCompetitionPilots_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuResetCompetitionPilots_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="List competition pilots to pdf" Click="menuPdfCompetitionPilots_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilotsEdit_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuCompetitionPilotsReset_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Competition pilots list" Click="menuCompetitionPilotsPdfList_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
                                                 <Separator/>
-                                                <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasks_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuResetCompetitionTasks_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasksEdit_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuCompetitionTasksReset_Click"/>
                                                 <Separator/>
-                                                <MenuItem Tag="{Binding}" Header="All task scores" Click="menuCompetitionTaskScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="General score" Click="menuCompetitionGeneralScore_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="All task scores" Click="menuCompetitionTasksPdfScores_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Tag="{Binding}" Header="General score" Click="menuCompetitionPdfGeneralScore_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
@@ -78,11 +108,18 @@
                                     <TextBlock Text="{Binding Path=Status}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Edit results" Click="menuEditTaskResults_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Results to PDF" Visibility="{Binding Path=ResultsVisibility}"  Click="menuShowTaskResults_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuComputeScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Task scores to PDF" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScores_Click"/>
-                                               
+                                                <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskEditResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Results" Visibility="{Binding Path=ResultsVisibility}" Click="menuTaskPdfResults_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuTaskComputeScores_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Scores" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskPdfScores_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>

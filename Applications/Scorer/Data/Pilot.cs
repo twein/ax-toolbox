@@ -61,7 +61,10 @@ namespace Scorer
             }
         }
 
-        public Pilot() { }
+        public Pilot()
+        {
+            name = "enter pilot name";
+        }
 
         protected override void AfterPropertyChanged(string propertyName)
         {
@@ -105,6 +108,45 @@ namespace Scorer
                 table.AddCell(helper.NewCell(pilot.Name));
                 table.AddCell(helper.NewCell(pilot.Country));
                 table.AddCell(helper.NewCell(pilot.Balloon));
+            }
+            document.Add(table);
+
+            document.Close();
+
+            PdfHelper.OpenPdf(pdfFileName);
+        }
+        public static void PdfWorkList(string pdfFileName, string title, IEnumerable<Pilot> pilots)
+        {
+            var config = new PdfConfig()
+            {
+                PageLayout = PageSize.A4.Rotate(),
+                MarginTop = 1.5f * PdfHelper.cm2pt,
+                MarginBottom = 1.5f * PdfHelper.cm2pt,
+
+                HeaderLeft = title,
+                FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+            };
+            var helper = new PdfHelper(pdfFileName, config);
+            var document = helper.PdfDocument;
+
+            //title
+            document.Add(new Paragraph(title, config.TitleFont)
+            {
+                Alignment = Element.ALIGN_LEFT,
+                SpacingAfter = 10
+            });
+
+
+            //table
+            var headers = new string[] { "#", "Name", "", "", "", "", "", "", "", "" };
+            var relWidths = new float[] { 1, 6, 3, 3, 3, 3, 3, 3, 3, 3 };
+            var table = helper.NewTable(headers, relWidths);
+            foreach (var pilot in pilots.OrderBy(p => p.Number))
+            {
+                table.AddCell(helper.NewCell(pilot.Number.ToString(), Element.ALIGN_RIGHT));
+                table.AddCell(helper.NewCell(pilot.Name));
+                for (var i = 0; i < 8; i++)
+                    table.AddCell(helper.NewCell(""));
             }
             document.Add(table);
 

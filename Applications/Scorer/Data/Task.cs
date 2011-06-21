@@ -68,6 +68,7 @@ namespace Scorer
                 phases = value;
                 RaisePropertyChanged("Phases");
                 RaisePropertyChanged("Status");
+                RaisePropertyChanged("ResultsVisibility");
                 RaisePropertyChanged("ComputeVisibility");
                 RaisePropertyChanged("ScoresVisibility");
             }
@@ -157,6 +158,17 @@ namespace Scorer
             Database.Instance.IsDirty = true;
         }
 
+        public Visibility ResultsVisibility
+        {
+            get
+            {
+                //Show compute menu if there are results
+                if ((Phases & CompletedPhases.Results) > 0)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
         public Visibility ComputeVisibility
         {
             get
@@ -175,17 +187,6 @@ namespace Scorer
                 //show scores menu if the task is computed and clean
                 if ((Phases & CompletedPhases.Computed) > 0
                     && (Phases & CompletedPhases.Dirty) == 0)
-                    return Visibility.Visible;
-                else
-                    return Visibility.Collapsed;
-            }
-        }
-        public Visibility ResultsVisibility
-        {
-            get
-            {
-                //show scores menu if the task is computed and clean
-                if ((Phases & CompletedPhases.Results) > 0)
                     return Visibility.Visible;
                 else
                     return Visibility.Collapsed;
