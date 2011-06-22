@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AXToolbox.Common;
-using PdfHelpers;
+using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using System.Linq;
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Common
 {

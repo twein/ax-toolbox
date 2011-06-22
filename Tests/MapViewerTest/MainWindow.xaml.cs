@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
 using Microsoft.Win32;
 

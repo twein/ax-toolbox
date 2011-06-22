@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GPSLoggersTest.Properties
+namespace GpsLoggersTest.Properties
 {
 
 

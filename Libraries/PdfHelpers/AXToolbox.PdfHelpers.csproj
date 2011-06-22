@@ -8,8 +8,8 @@
     <ProjectGuid>{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PdfHelper</RootNamespace>
-    <AssemblyName>PdfHelper</AssemblyName>
+    <RootNamespace>AXToolbox.PdfHelpers</RootNamespace>
+    <AssemblyName>AXToolbox.PdfHelpers</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
