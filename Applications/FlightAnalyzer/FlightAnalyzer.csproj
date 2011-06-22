@@ -142,19 +142,19 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Common\Common.csproj">
+    <ProjectReference Include="..\..\Libraries\Common\AXToolbox.Common.csproj">
       <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\MapViewer\MapViewer.csproj">
+    <ProjectReference Include="..\..\Libraries\MapViewer\AXToolbox.MapViewer.csproj">
       <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
       <Name>MapViewer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Model\Model.csproj">
+    <ProjectReference Include="..\..\Libraries\Model\AXToolbox.Model.csproj">
       <Project>{1995DB1D-2B57-49B3-BD4A-AD7FDFCF47CD}</Project>
       <Name>Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Scripting\Scripting.csproj">
+    <ProjectReference Include="..\..\Libraries\Scripting\AXToolbox.Scripting.csproj">
       <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
       <Name>Scripting</Name>
     </ProjectReference>

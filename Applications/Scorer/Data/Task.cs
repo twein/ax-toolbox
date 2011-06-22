@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using AXToolbox.Common;
+using System.Linq;
 using System.Windows;
+using AXToolbox.Common;
+using AXToolbox.PdfHelpers;
+using iTextSharp.text;
 
 namespace Scorer
 {
@@ -193,9 +196,65 @@ namespace Scorer
             }
         }
 
-        public void ResultsToPdf(string fileName)
+        public void ResultsToPdf(string pdfFileName)
         {
-            throw new NotImplementedException();
+            var title = "Task " + Description + " results";
+
+            var config = new PdfConfig()
+            {
+                PageLayout = PageSize.A4.Rotate(),
+                MarginTop = 1.5f * PdfHelper.cm2pt,
+                MarginBottom = 1.5f * PdfHelper.cm2pt,
+
+                HeaderLeft = title,
+                FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+            };
+            var helper = new PdfHelper(pdfFileName, config);
+            var document = helper.PdfDocument;
+
+            //title
+            document.Add(new Paragraph(title, config.TitleFont)
+            {
+                Alignment = Element.ALIGN_LEFT,
+                SpacingAfter = 10
+            });
+
+
+            //table
+            var headers = new string[] { 
+                "#", "Name", 
+                "Measure (M)", "Measure (A)", 
+                "Measure penalty (M)", "Measure penalty (A)",
+                "Task penalty (M)", "Task penalty (A)",
+                "Comp. penalty (M)", "Comp. penalty (A)",
+                "Infringed rules (M)", "Infringed rules (A)"
+            };
+            var relWidths = new float[] { 1, 6, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6 };
+            var table = helper.NewTable(headers, relWidths, title);
+
+            foreach (var pilotResult in PilotResults.OrderBy(pr => pr.Pilot.Number))
+            {
+                var mr = pilotResult.ManualResult;
+                var ar = pilotResult.AutoResult;
+
+                table.AddCell(helper.NewRCell(pilotResult.Pilot.Number.ToString()));
+                table.AddCell(helper.NewLCell(pilotResult.Pilot.Name));
+                table.AddCell(helper.NewRCell(Result.ToString(mr.Measure)));
+                table.AddCell(helper.NewRCell(Result.ToString(ar.Measure)));
+                table.AddCell(helper.NewRCell(mr.MeasurePenalty.ToString("0.00")));
+                table.AddCell(helper.NewRCell(ar.MeasurePenalty.ToString("0.00")));
+                table.AddCell(helper.NewRCell(mr.TaskScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ar.TaskScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(mr.CompetitionScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ar.CompetitionScorePenalty.ToString("0")));
+                table.AddCell(helper.NewLCell(mr.InfringedRules));
+                table.AddCell(helper.NewLCell(ar.InfringedRules));
+            }
+            document.Add(table);
+
+            document.Close();
+
+            PdfHelper.OpenPdf(pdfFileName);
         }
 
         public override string ToString()

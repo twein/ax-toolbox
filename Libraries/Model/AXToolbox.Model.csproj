@@ -80,7 +80,7 @@
     <Compile Include="Validation\Validator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\AXToolbox.Common.csproj">
       <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
       <Name>Common</Name>
     </ProjectReference>
