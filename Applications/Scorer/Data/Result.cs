@@ -1,16 +1,18 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Data;
+using System.Xml.Serialization;
 using AXToolbox.Common;
 using AXToolbox.Scripting;
-using System.Diagnostics;
 
 namespace Scorer
 {
     [Serializable]
-    public class Result : BindableObject, IEditableObject, IResult
+    public class Result : BindableObject, IEditableObject
     {
+        [XmlIgnore]
         public Task Task { get; set; }
         public Pilot Pilot { get; set; }
 
@@ -50,8 +52,11 @@ namespace Scorer
         {
             get
             {
-                Debug.Assert(measure >= 0, "A non-measure result should not be asked to return a result");
-                return measure - measurePenalty;
+                //Debug.Assert(measure >= 0, "A non-measure result should not be asked to return a result");
+                if (measure >= 0)
+                    return measure - measurePenalty;
+                else
+                    return measure;
             }
         }
         protected int taskScorePenalty;

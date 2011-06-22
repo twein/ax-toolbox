@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Scorer
 {
@@ -24,6 +21,7 @@ namespace Scorer
             }
         }
 
+        protected PilotScore() { }
         public PilotScore(PilotResult result)
         {
             Result = result;
