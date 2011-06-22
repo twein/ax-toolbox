@@ -1,30 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.Common", "Libraries\Common\AXToolbox.Common.csproj", "{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.Model", "Libraries\Model\AXToolbox.Model.csproj", "{1995DB1D-2B57-49B3-BD4A-AD7FDFCF47CD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DC1659C9-5C0A-45E1-9DEA-81425B8FA14C}"
 	ProjectSection(SolutionItems) = preProject
 		To Do.txt = To Do.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.MapViewer", "Libraries\MapViewer\AXToolbox.MapViewer.csproj", "{94F0165C-81F4-4C28-8745-1C60129E6772}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{C1A54428-1B3A-4D9D-A0F3-42F78587EE57}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{63D336CD-8579-4479-8DD7-11CC2B6F0AE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{22C909AE-5A04-4249-B2E8-46250FF39E49}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupTests", "Deployment\SetupTests.vdproj", "{C9814175-EC54-495A-9D9E-BAF09E03D081}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A6C5392A-EEEB-4B86-AC83-F424F74A77FF} = {A6C5392A-EEEB-4B86-AC83-F424F74A77FF}
-		{94F0165C-81F4-4C28-8745-1C60129E6772} = {94F0165C-81F4-4C28-8745-1C60129E6772}
-		{7FA1A995-EDA9-4F2F-828E-B8018011E9C6} = {7FA1A995-EDA9-4F2F-828E-B8018011E9C6}
-		{2A865EE6-8580-462A-ABC5-DC88177FEDC3} = {2A865EE6-8580-462A-ABC5-DC88177FEDC3}
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{C1A54428-1B3A-4D9D-A0F3-42F78587EE57}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{44FC5981-CB62-4CBE-979A-130A1286F5B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.Common", "Libraries\Common\AXToolbox.Common.csproj", "{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.GpsLoggers", "Libraries\GpsLoggers\AXToolbox.GpsLoggers.csproj", "{2A865EE6-8580-462A-ABC5-DC88177FEDC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.MapViewer", "Libraries\MapViewer\AXToolbox.MapViewer.csproj", "{94F0165C-81F4-4C28-8745-1C60129E6772}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.Model", "Libraries\Model\AXToolbox.Model.csproj", "{1995DB1D-2B57-49B3-BD4A-AD7FDFCF47CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.PdfHelpers", "Libraries\PdfHelpers\AXToolbox.PdfHelpers.csproj", "{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.Scripting", "Libraries\Scripting\AXToolbox.Scripting.csproj", "{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,9 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.Scripting", "Libr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightAnalyzer", "Applications\FlightAnalyzer\FlightAnalyzer.csproj", "{53BC0BD5-D609-49C6-939A-1BE1E2047B04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.GpsLoggers", "Libraries\GpsLoggers\AXToolbox.GpsLoggers.csproj", "{2A865EE6-8580-462A-ABC5-DC88177FEDC3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{44FC5981-CB62-4CBE-979A-130A1286F5B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scorer", "Applications\Scorer\Scorer.csproj", "{F1AAC5DC-1C64-4692-AA68-93F35BC663D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPSLoggersTest", "Tests\GPSLoggersTest\GPSLoggersTest.csproj", "{7A0C5328-48CA-4B76-93B6-27F36FEEF9F9}"
 EndProject
@@ -47,9 +43,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptingTest", "Tests\Scri
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupFlightAnalyzer", "Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.vdproj", "{3D85FB85-F3A1-4168-9D56-C971DC69244A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scorer", "Applications\Scorer\Scorer.csproj", "{F1AAC5DC-1C64-4692-AA68-93F35BC663D1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AXToolbox.PdfHelpers", "Libraries\PdfHelpers\AXToolbox.PdfHelpers.csproj", "{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupTests", "Deployment\SetupTests.vdproj", "{C9814175-EC54-495A-9D9E-BAF09E03D081}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A6C5392A-EEEB-4B86-AC83-F424F74A77FF} = {A6C5392A-EEEB-4B86-AC83-F424F74A77FF}
+		{94F0165C-81F4-4C28-8745-1C60129E6772} = {94F0165C-81F4-4C28-8745-1C60129E6772}
+		{7FA1A995-EDA9-4F2F-828E-B8018011E9C6} = {7FA1A995-EDA9-4F2F-828E-B8018011E9C6}
+		{2A865EE6-8580-462A-ABC5-DC88177FEDC3} = {2A865EE6-8580-462A-ABC5-DC88177FEDC3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

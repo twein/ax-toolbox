@@ -30,7 +30,7 @@ namespace AXToolbox.PdfHelpers
             PdfDocument.AddKeywords(pdfConfig.MetadataKeywords);
         }
 
-        public PdfPTable NewTable(string[] columnHeaders, float[] relativeColumnWidths)
+        public PdfPTable NewTable(string[] columnHeaders, float[] relativeColumnWidths, string title = null)
         {
             Debug.Assert(columnHeaders.Length == relativeColumnWidths.Length, "columnHeaders and relativeColumnWidths must have the same number of elements");
 
@@ -39,20 +39,33 @@ namespace AXToolbox.PdfHelpers
                 WidthPercentage = 100,
                 SpacingBefore = 15,
                 SpacingAfter = 10,
-                HeaderRows = 1
+                HeaderRows = string.IsNullOrEmpty(title) ? 1 : 2
             };
 
             //table.DefaultCell.BackgroundColor = new BaseColor(192, 192, 192);
 
             var headerColor = new BaseColor(192, 192, 192);
+
+            if (!string.IsNullOrEmpty(title))
+                table.AddCell(new PdfPCell(new Paragraph(title, config.BoldFont)) { Colspan = columnHeaders.Length, BackgroundColor = headerColor });
+
             foreach (var ch in columnHeaders)
                 table.AddCell(new PdfPCell(new Paragraph(ch, config.BoldFont)) { BackgroundColor = headerColor });
 
             return table;
         }
-        public PdfPCell NewCell(string cellContent, int horizontalAlignment = Element.ALIGN_LEFT)
+
+        public PdfPCell NewLCell(string cellContent)
         {
-            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = horizontalAlignment };
+            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT };
+        }
+        public PdfPCell NewRCell(string cellContent)
+        {
+            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT };
+        }
+        public PdfPCell NewCCell(string cellContent)
+        {
+            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE };
         }
 
         public static void OpenPdf(string pdfFileName)
@@ -81,7 +94,7 @@ namespace AXToolbox.PdfHelpers
                 if (document.PageNumber > 0)
                 {
                     //insert header
-                    //title
+                    //left
                     if (!string.IsNullOrEmpty(config.HeaderLeft))
                     {
                         ColumnText.ShowTextAligned(
@@ -92,7 +105,7 @@ namespace AXToolbox.PdfHelpers
                             document.Top + config.HeaderFont.Size,
                             0);
                     }
-                    //subtitle
+                    //right
                     if (!string.IsNullOrEmpty(config.HeaderRight))
                     {
                         ColumnText.ShowTextAligned(
@@ -105,6 +118,7 @@ namespace AXToolbox.PdfHelpers
                     }
 
                     //insert footer
+                    //left
                     if (!string.IsNullOrEmpty(config.FooterLeft))
                     {
                         ColumnText.ShowTextAligned(
@@ -115,12 +129,23 @@ namespace AXToolbox.PdfHelpers
                             document.Bottom - 10,
                             0);
                     }
+                    //right
+                    if (!string.IsNullOrEmpty(config.FooterRight))
+                    {
+                        ColumnText.ShowTextAligned(
+                            cb,
+                            Element.ALIGN_LEFT,
+                            new Paragraph(config.FooterRight, config.FooterFont),
+                            document.Right,
+                            document.Bottom - 10,
+                            0);
+                    }
                     //page number
                     ColumnText.ShowTextAligned(
                         cb,
-                        Element.ALIGN_RIGHT,
+                        Element.ALIGN_MIDDLE,
                         new Paragraph(writer.PageNumber.ToString("Page 0"), config.FooterFont),
-                        document.Right,
+                        document.PageSize.Width / 2,
                         document.Bottom - 10,
                         0);
                 }

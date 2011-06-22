@@ -104,10 +104,10 @@ namespace Scorer
             var table = helper.NewTable(headers, relWidths);
             foreach (var pilot in pilots.OrderBy(p => p.Number))
             {
-                table.AddCell(helper.NewCell(pilot.Number.ToString(), Element.ALIGN_RIGHT));
-                table.AddCell(helper.NewCell(pilot.Name));
-                table.AddCell(helper.NewCell(pilot.Country));
-                table.AddCell(helper.NewCell(pilot.Balloon));
+                table.AddCell(helper.NewRCell(pilot.Number.ToString()));
+                table.AddCell(helper.NewLCell(pilot.Name));
+                table.AddCell(helper.NewLCell(pilot.Country));
+                table.AddCell(helper.NewLCell(pilot.Balloon));
             }
             document.Add(table);
 
@@ -143,10 +143,10 @@ namespace Scorer
             var table = helper.NewTable(headers, relWidths);
             foreach (var pilot in pilots.OrderBy(p => p.Number))
             {
-                table.AddCell(helper.NewCell(pilot.Number.ToString(), Element.ALIGN_RIGHT));
-                table.AddCell(helper.NewCell(pilot.Name));
+                table.AddCell(helper.NewRCell(pilot.Number.ToString()));
+                table.AddCell(helper.NewLCell(pilot.Name));
                 for (var i = 0; i < 8; i++)
-                    table.AddCell(helper.NewCell(""));
+                    table.AddCell(helper.NewLCell(""));
             }
             document.Add(table);
 

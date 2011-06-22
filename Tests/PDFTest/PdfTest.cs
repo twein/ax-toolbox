@@ -48,6 +48,7 @@ namespace PdfTest
             var headers = new string[] { "Date", "Dawn", "Dusk", "Outdoor activity time" };
             var relWidths = new float[] { 8, 2, 2, 3 };
             var table = helper.NewTable(headers, relWidths);
+            //var table = helper.NewTable(headers, relWidths, "Sun table"); //with table title
 
             //table body
 
@@ -73,10 +74,10 @@ namespace PdfTest
                 var strSpan = span.ToString("hh\\:mm");
 
                 //place cells in table
-                table.AddCell(helper.NewCell(strDate));
-                table.AddCell(helper.NewCell(strDawn, Element.ALIGN_RIGHT));
-                table.AddCell(helper.NewCell(strDusk, Element.ALIGN_RIGHT));
-                table.AddCell(helper.NewCell(strSpan, Element.ALIGN_RIGHT));
+                table.AddCell(helper.NewLCell(strDate));
+                table.AddCell(helper.NewRCell(strDawn));
+                table.AddCell(helper.NewRCell(strDusk));
+                table.AddCell(helper.NewRCell(strSpan));
 
                 //var cell = helper.NewCell("Cell with colspan 2");
                 //cell.Colspan = 2;
@@ -85,10 +86,10 @@ namespace PdfTest
 
             //Place table on document
 
-            //normal layout
+            ////normal layout
             //document.Add(table);
 
-            //page break
+            ////page break
             //document.NewPage();
 
             //multicolumn layout
