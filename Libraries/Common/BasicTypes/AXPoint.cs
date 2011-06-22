@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 using System.Windows;
 
 namespace AXToolbox.Common

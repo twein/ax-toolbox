@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Netline.BalloonLogger.SignatureLib;
 
-namespace AXToolbox.GPSLoggers
+namespace AXToolbox.GpsLoggers
 {
     public class IGCFile : LoggerFile
     {

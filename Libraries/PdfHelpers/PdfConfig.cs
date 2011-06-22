@@ -1,7 +1,7 @@
 ﻿using iTextSharp.text;
 using System;
 
-namespace PdfHelpers
+namespace AXToolbox.PdfHelpers
 {
     public class PdfConfig
     {

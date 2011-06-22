@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using PdfHelpers;
+using AXToolbox.PdfHelpers;
 
 namespace PdfTest
 {

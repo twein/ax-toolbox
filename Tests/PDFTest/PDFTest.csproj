@@ -120,13 +120,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\GPSLoggers\GPSLoggers.csproj">
+    <ProjectReference Include="..\..\Libraries\GPSLoggers\AXToolbox.GpsLoggers.csproj">
       <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
-      <Name>GPSLoggers</Name>
+      <Name>AXToolbox.GpsLoggers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\PdfHelpers\PdfHelpers.csproj">
+    <ProjectReference Include="..\..\Libraries\PdfHelpers\AXToolbox.PdfHelpers.csproj">
       <Project>{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}</Project>
-      <Name>PdfHelpers</Name>
+      <Name>AXToolbox.PdfHelpers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

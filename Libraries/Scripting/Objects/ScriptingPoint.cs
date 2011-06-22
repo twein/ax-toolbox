@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.MapViewer;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {

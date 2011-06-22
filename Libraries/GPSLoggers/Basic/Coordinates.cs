@@ -15,7 +15,7 @@
 
 using System;
 
-namespace AXToolbox.GPSLoggers
+namespace AXToolbox.GpsLoggers
 {
     [Serializable]
     public abstract class Coordinates

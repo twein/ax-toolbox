@@ -124,11 +124,11 @@
     <Resource Include="balloon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\GPSLoggers\GPSLoggers.csproj">
+    <ProjectReference Include="..\..\Libraries\GPSLoggers\AXToolbox.GpsLoggers.csproj">
       <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
       <Name>GPSLoggers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\MapViewer\MapViewer.csproj">
+    <ProjectReference Include="..\..\Libraries\MapViewer\AXToolbox.MapViewer.csproj">
       <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
       <Name>MapViewer</Name>
     </ProjectReference>
