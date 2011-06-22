@@ -1,17 +1,12 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Windows.Controls;
-using AXToolbox.Common;
-using AXToolbox.Scripting;
-using System.Windows.Data;
 using System.Diagnostics;
+using AXToolbox.Scripting;
 
 namespace Scorer
 {
     [Serializable]
-    public class PilotResult
+    public class PilotResult 
     {
-        public Task Task { get; set; }
         public Pilot Pilot { get; set; }
 
         public Result ManualResult { get; set; }
@@ -35,7 +30,6 @@ namespace Scorer
         protected PilotResult() { }
         public PilotResult(Task task, Pilot pilot)
         {
-            Task = task;
             Pilot = pilot;
 
             ManualResult = new Result(task, pilot, ResultType.Not_Set);
@@ -47,7 +41,6 @@ namespace Scorer
             return base.ToString();
         }
 
-        #region IResult Members
         public ResultType Type
         {
             get
@@ -115,11 +108,10 @@ namespace Scorer
             get
             {
                 if (ManualResult.Type != ResultType.Not_Set)
-                    return ManualResult.InfringedRules + ", " + AutoResult.InfringedRules;
+                    return (ManualResult.InfringedRules + ", " + AutoResult.InfringedRules).Trim(new char[] { ' ', ',' });
                 else
                     return AutoResult.InfringedRules;
             }
         }
-        #endregion
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
+using AXToolbox.PdfHelpers;
+using iTextSharp.text;
 
 namespace Scorer
 {
@@ -10,7 +11,6 @@ namespace Scorer
     [Serializable]
     public class TaskScore
     {
-        public Competition Competition { get; set; }
         public Task Task { get; set; }
 
         public ScoreStatus Status { get; set; }
@@ -39,14 +39,13 @@ namespace Scorer
         protected TaskScore() { }
         public TaskScore(Competition competition, Task task)
         {
-            Competition = competition;
             Task = task;
 
             PilotScores = (from r in Task.PilotResults
-                          where Competition.Pilots.Contains(r.Pilot)
-                          select new PilotScore(r)).ToArray();
+                           where competition.Pilots.Contains(r.Pilot)
+                           select new PilotScore(r)).ToArray();
 
-            Debug.Assert(PilotScores.Length == Competition.Pilots.Count, "PilotScores should have as many elements as Competition.Pilots");
+            Debug.Assert(PilotScores.Length == competition.Pilots.Count, "PilotScores should have as many elements as Competition.Pilots");
         }
 
         /// <summary>Compute the scores for this task
@@ -74,7 +73,7 @@ namespace Scorer
             int B;
 
             A = B = P = 0;
-            var N = Competition.Pilots.Count;
+            var N = PilotScores.Length;
 
             //compute groups and counters and add pilotscores
             foreach (var ps in PilotScores)
@@ -159,13 +158,11 @@ namespace Scorer
                 }
 
                 //share the remaining points
+                if (B > 0)
                 {
                     var sharePoints = (int)Math.Round(1m * remainingPoints / B);
-                    foreach (var ps in PilotScores)
-                    {
-                        if (ps.Result.Group == 2 && ps.ScoreNoPenalties < sharePoints)
-                            ps.ScoreNoPenalties = sharePoints;
-                    }
+                    foreach (var ps in PilotScores.Where(s => s.Result.Group == 2))
+                        ps.ScoreNoPenalties = Math.Max(ps.ScoreNoPenalties, sharePoints);
                 }
 
                 //resolve ties
@@ -233,9 +230,62 @@ namespace Scorer
         /// <summary>Generate a pdf task scores sheet
         /// </summary>
         /// <param header="fileName">desired pdf file path</param>
-        public void PdfScores(string fileName)
+        public void PdfScores(string pdfFileName)
         {
-            throw new NotImplementedException();
+            var title = "Task " + Task.Description + " results";
+
+            var config = new PdfConfig()
+            {
+                PageLayout = PageSize.A4.Rotate(),
+                MarginTop = 1.5f * PdfHelper.cm2pt,
+                MarginBottom = 1.5f * PdfHelper.cm2pt,
+
+                HeaderLeft = title,
+                FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+            };
+            var helper = new PdfHelper(pdfFileName, config);
+            var document = helper.PdfDocument;
+
+            //title
+            document.Add(new Paragraph(title, config.TitleFont)
+            {
+                Alignment = Element.ALIGN_LEFT,
+                SpacingAfter = 10
+            });
+
+
+            //table
+            var headers = new string[] { 
+                "Pos", "#", "Name", 
+                "Measure", "Measure penalty", "Result",
+                "Score", 
+                "Task penalty", "Comp. penalty", 
+                "Final score",
+                "Infringed rules"
+            };
+            var relWidths = new float[] { 1, 1, 6, 3, 3, 3, 3, 3, 3, 3, 6 };
+            var table = helper.NewTable(headers, relWidths, title);
+
+            foreach (var ps in PilotScores)
+            {
+                table.AddCell(helper.NewRCell(ps.Position.ToString()));
+                table.AddCell(helper.NewRCell(ps.Pilot.Number.ToString()));
+                table.AddCell(helper.NewLCell(ps.Pilot.Name));
+
+                table.AddCell(helper.NewRCell(Result.ToString(ps.Result.Measure)));
+                table.AddCell(helper.NewRCell(ps.Result.MeasurePenalty.ToString("0.00")));
+                table.AddCell(helper.NewRCell(Result.ToString(ps.Result.Result)));
+                table.AddCell(helper.NewRCell(ps.ScoreNoPenalties.ToString("0")));
+                table.AddCell(helper.NewRCell(ps.Result.TaskScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ps.Result.CompetitionScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ps.Score.ToString("0")));
+                table.AddCell(helper.NewLCell(ps.Result.InfringedRules));
+            }
+            document.Add(table);
+
+            document.Close();
+
+            PdfHelper.OpenPdf(pdfFileName);
         }
     }
 }
