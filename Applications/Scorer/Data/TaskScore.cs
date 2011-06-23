@@ -11,9 +11,11 @@ namespace Scorer
     [Serializable]
     public class TaskScore
     {
+
         protected int A, B, P, M, SM;
         protected decimal RM, W;
 
+        protected Competition competition;
         public Task Task { get; set; }
 
         public PilotScore[] PilotScores { get; set; }
@@ -35,6 +37,7 @@ namespace Scorer
         protected TaskScore() { }
         public TaskScore(Competition competition, Task task)
         {
+            this.competition = competition;
             Task = task;
 
             PilotScores = (from r in Task.PilotResults
@@ -245,17 +248,14 @@ namespace Scorer
 
                 HeaderLeft = title,
                 FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
+                FooterRight = Database.Instance.GetProgramInfo(),
+                Title = competition.Name,
+                Subtitle = competition.LocationDates
             };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.PdfDocument;
 
-            //title
-            document.Add(new Paragraph(title, config.TitleFont)
-            {
-                Alignment = Element.ALIGN_LEFT,
-                SpacingAfter = 10
-            });
+
 
 
             //table
@@ -285,9 +285,9 @@ namespace Scorer
                 table.AddCell(helper.NewRCell(ps.FinalScore.ToString("0")));
                 table.AddCell(helper.NewLCell(ps.ResultInfo.InfringedRules));
             }
-            table.AddCell(helper.NewLCell(Constants, 11));
-
             document.Add(table);
+
+            document.Add(helper.NewParagraph(Constants));
 
             document.Close();
 
