@@ -5,11 +5,6 @@ namespace AXToolbox.PdfHelpers
 {
     public class PdfConfig
     {
-        public string MetadataAuthor { get; set; }
-        public string MetadataTitle { get; set; }
-        public string MetadataSubject { get; set; }
-        public string MetadataKeywords { get; set; }
-
         public Rectangle PageLayout { get; set; }
         public float MarginLeft { get; set; }
         public float MarginRight { get; set; }
@@ -17,8 +12,10 @@ namespace AXToolbox.PdfHelpers
         public float MarginBottom { get; set; }
 
         public string HeaderLeft { get; set; }
+        public string HeaderCenter { get; set; }
         public string HeaderRight { get; set; }
         public string FooterLeft { get; set; }
+        public string FooterCenter { get; set; }
         public string FooterRight { get; set; }
 
         public Font TitleFont { get; set; }

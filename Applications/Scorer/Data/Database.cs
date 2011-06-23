@@ -6,6 +6,7 @@ using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using System.Runtime.Serialization;
+using System.Reflection;
 
 namespace Scorer
 {
@@ -21,8 +22,8 @@ namespace Scorer
             Pilots = new ObservableCollection<Pilot>();
             Tasks = new ObservableCollection<Task>();
 
-            Pilots.CollectionChanged +=Pilots_CollectionChanged;
-            Tasks.CollectionChanged +=Tasks_CollectionChanged;
+            Pilots.CollectionChanged += Pilots_CollectionChanged;
+            Tasks.CollectionChanged += Tasks_CollectionChanged;
         }
         #endregion
 
@@ -124,6 +125,20 @@ namespace Scorer
                         throw new NotImplementedException();
                 }
             }
+        }
+
+        public string GetProgramInfo()
+        {
+            var assembly = GetType().Assembly;
+            var aName = assembly.GetName();
+            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+
+            return string.Format("{0} v{1} {2}",
+                ((AssemblyTitleAttribute)aTitle[0]).Title,
+                aName.Version,
+                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
         }
     }
 }

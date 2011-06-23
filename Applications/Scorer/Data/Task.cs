@@ -120,7 +120,7 @@ namespace Scorer
             }
         }
 
-        public ObservableCollection<PilotResult> PilotResults { get; set; }
+        public ObservableCollection<PilotResultInfo> PilotResults { get; set; }
 
         static Task()
         {
@@ -151,9 +151,9 @@ namespace Scorer
         public Task()
         {
             typeNumber = 1;
-            PilotResults = new ObservableCollection<PilotResult>();
+            PilotResults = new ObservableCollection<PilotResultInfo>();
             foreach (var p in Database.Instance.Pilots)
-                PilotResults.Add(new PilotResult(this, p));
+                PilotResults.Add(new PilotResultInfo(this, p));
         }
 
         protected override void AfterPropertyChanged(string propertyName)
@@ -177,7 +177,7 @@ namespace Scorer
             get
             {
                 //Show compute menu if there are results
-                if ((Phases & CompletedPhases.Results) > 0)
+                if ((Phases & CompletedPhases.Dirty) > 0)
                     return Visibility.Visible;
                 else
                     return Visibility.Collapsed;
@@ -208,6 +208,7 @@ namespace Scorer
 
                 HeaderLeft = title,
                 FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.PdfDocument;
@@ -234,13 +235,13 @@ namespace Scorer
 
             foreach (var pilotResult in PilotResults.OrderBy(pr => pr.Pilot.Number))
             {
-                var mr = pilotResult.ManualResult;
-                var ar = pilotResult.AutoResult;
+                var mr = pilotResult.ManualResultInfo;
+                var ar = pilotResult.AutoResultInfo;
 
                 table.AddCell(helper.NewRCell(pilotResult.Pilot.Number.ToString()));
                 table.AddCell(helper.NewLCell(pilotResult.Pilot.Name));
-                table.AddCell(helper.NewRCell(Result.ToString(mr.Measure)));
-                table.AddCell(helper.NewRCell(Result.ToString(ar.Measure)));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(mr.Measure)));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ar.Measure)));
                 table.AddCell(helper.NewRCell(mr.MeasurePenalty.ToString("0.00")));
                 table.AddCell(helper.NewRCell(ar.MeasurePenalty.ToString("0.00")));
                 table.AddCell(helper.NewRCell(mr.TaskScorePenalty.ToString("0")));

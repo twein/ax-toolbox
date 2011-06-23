@@ -14,7 +14,6 @@ namespace PdfTest
         public double lat = 41.950904;
         public double lng = 3.225684;
 
-
         public PdfTestClass(string pdfFileName)
         {
             var config = new PdfConfig()

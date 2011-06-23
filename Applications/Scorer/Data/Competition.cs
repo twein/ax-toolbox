@@ -149,10 +149,10 @@ namespace Scorer
             return Name;
         }
 
-        /// <summary>Generate a pdf general scores sheet
+        /// <summary>Generate a pdf total scores sheet
         /// </summary>
         /// <param header="fileName">desired pdf file path</param>
-        public void PdfGeneralScore(string fileName)
+        public void PdfTotalScore(string fileName)
         {
             throw new NotImplementedException();
         }

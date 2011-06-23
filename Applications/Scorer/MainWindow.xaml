@@ -80,7 +80,7 @@
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Tag="{Binding}" Header="General score" Click="menuCompetitionPdfGeneralScore_Click">
+                                                <MenuItem Tag="{Binding}" Header="Total score" Click="menuCompetitionPdfTotalScore_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
