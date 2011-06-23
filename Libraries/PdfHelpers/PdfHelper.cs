@@ -2,6 +2,7 @@
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.draw;
 
 namespace AXToolbox.PdfHelpers
 {
@@ -24,6 +25,16 @@ namespace AXToolbox.PdfHelpers
             PdfWriter.GetInstance(PdfDocument, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents(pdfConfig);
 
             PdfDocument.Open();
+
+            //title
+            if (!string.IsNullOrEmpty(config.Title))
+                PdfDocument.Add(new Paragraph(config.Title, config.TitleFont) { SpacingAfter = 10 });
+            //subtitle
+            if (!string.IsNullOrEmpty(config.Subtitle))
+                PdfDocument.Add(new Paragraph(config.Subtitle, config.SubtitleFont) { SpacingAfter = 0 });
+            //line separator
+            if (!string.IsNullOrEmpty(config.Title) || !string.IsNullOrEmpty(config.Title))
+                PdfDocument.Add(new Paragraph(new Chunk(new LineSeparator())) { SpacingBefore = -10, SpacingAfter = 10 });
         }
 
         public void AddMetadata(string author, string title, string subject, string keywords)
@@ -57,6 +68,11 @@ namespace AXToolbox.PdfHelpers
                 table.AddCell(new PdfPCell(new Paragraph(ch, config.BoldFont)) { BackgroundColor = headerColor });
 
             return table;
+        }
+
+        public Paragraph NewParagraph(string content)
+        {
+            return new Paragraph(content, config.NormalFont);
         }
 
         public PdfPCell NewLCell(string cellContent, int colSpan = 1)
@@ -134,6 +150,9 @@ namespace AXToolbox.PdfHelpers
                             document.Top + config.HeaderFont.Size,
                             0);
                     }
+                    cb.MoveTo(document.Left, document.Top);
+                    cb.LineTo(document.Right, document.Top);
+                    cb.Stroke();
 
                     //insert footer
                     //left
@@ -180,6 +199,10 @@ namespace AXToolbox.PdfHelpers
                             document.Bottom - 10,
                             0);
                     }
+
+                    cb.MoveTo(document.Left, document.Bottom);
+                    cb.LineTo(document.Right, document.Bottom);
+                    cb.Stroke();
                 }
             }
             public void OnChapter(PdfWriter writer, Document document, float paragraphPosition, Paragraph title) { }

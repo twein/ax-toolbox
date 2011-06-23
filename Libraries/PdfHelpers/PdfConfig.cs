@@ -18,6 +18,9 @@ namespace AXToolbox.PdfHelpers
         public string FooterCenter { get; set; }
         public string FooterRight { get; set; }
 
+        public string Title { get; set; }
+        public string Subtitle { get; set; }
+
         public Font TitleFont { get; set; }
         public Font SubtitleFont { get; set; }
         public Font BoldFont { get; set; }
