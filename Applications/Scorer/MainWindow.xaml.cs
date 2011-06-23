@@ -205,17 +205,17 @@ namespace Scorer
             if (dlg.ShowDialog() == true)
                 competition.PdfTaskScores(dlg.FileName);
         }
-        private void menuCompetitionPdfGeneralScore_Click(object sender, RoutedEventArgs e)
+        private void menuCompetitionPdfTotalScore_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
 
             var dlg = new SaveFileDialog();
             dlg.Filter = "pdf files (*.pdf)|*.pdf";
-            dlg.FileName = string.Format("{0}-General score", competition.Name);
+            dlg.FileName = string.Format("{0}-Total score", competition.Name);
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
-                competition.PdfGeneralScore(dlg.FileName);
+                competition.PdfTotalScore(dlg.FileName);
         }
 
         private void menuTaskEditResults_Click(object sender, RoutedEventArgs e)
@@ -224,8 +224,8 @@ namespace Scorer
             var editOptions = EditOptions.CanEdit;
 
             var query = from pr in task.PilotResults
-                        select pr.ManualResult;
-            var results = new ObservableCollection<Result>();
+                        select pr.ManualResultInfo;
+            var results = new ObservableCollection<ResultInfo>();
             foreach (var r in query)
                 results.Add(r);
 

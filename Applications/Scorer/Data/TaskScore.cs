@@ -11,28 +11,24 @@ namespace Scorer
     [Serializable]
     public class TaskScore
     {
+        protected int A, B, P, M, SM;
+        protected decimal RM, W;
+
         public Task Task { get; set; }
+
+        public PilotScore[] PilotScores { get; set; }
 
         public ScoreStatus Status { get; set; }
         public int Version { get; set; }
         public DateTime RevisionDate { get; set; }
         public DateTime PublicationDate { get; set; }
-
-        protected int A;
-        protected int B;
-        protected int P;
-        protected int M;
-        protected int SM;
-        protected decimal RM;
-        protected decimal W;
-
-        public PilotScore[] PilotScores { get; set; }
-
+        public string CheckSum { get; protected set; }
         public string Constants
         {
             get
             {
-                return string.Format("P={0}; A={1}; M={2}; RM={3}; SM={4}; W={5}", P, A, M, RM, SM, W);
+                return string.Format("P={0}; A={1}; M={2}; RM={3}; SM={4}; W={5}; checksum={6}",
+                    P, A, M, ResultInfo.ToString(RM), SM, ResultInfo.ToString(W), CheckSum);
             }
         }
 
@@ -75,94 +71,99 @@ namespace Scorer
             A = B = P = 0;
             var N = PilotScores.Length;
 
-            //compute groups and counters and add pilotscores
+            //compute counters and add pilotscores
             foreach (var ps in PilotScores)
             {
-                if (ps.Result.Group == 1)
+                if (ps.ResultInfo.Group == 1)
                     A++;
-                else if (ps.Result.Group == 2)
+                else if (ps.ResultInfo.Group == 2)
                     B++;
 
                 if (!ps.Pilot.IsDisqualified)
                     P++;
             }
 
-            //sort by result
-            if (Task.SortAscending)
-                PilotScores = (from ps in PilotScores
-                               orderby ps.Pilot.IsDisqualified, ps.Result.Group, ps.Result.Result
-                               select ps).ToArray();
-            else
-                PilotScores = (from ps in PilotScores
-                               orderby ps.Pilot.IsDisqualified, ps.Result.Group, ps.Result.Result descending
-                               select ps).ToArray();
-
             //rule 14.5.7
             if (A == 0)
             {
                 foreach (var ps in PilotScores)
                 {
-                    if (ps.Result.Group == 2)
-                        ps.ScoreNoPenalties = 500; //rule 14.5.7
+                    if (ps.ResultInfo.Group == 2)
+                        ps.Score = 500; //rule 14.5.7
                     else
-                        ps.ScoreNoPenalties = 0; //rule 14.4.1, group C
+                        ps.Score = 0; //rule 14.4.1.C
                 }
             }
             else
             {
+                //sort by result
+                if (Task.SortAscending)
+                    PilotScores = (from ps in PilotScores
+                                   orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result
+                                   select ps).ToArray();
+                else
+                    PilotScores = (from ps in PilotScores
+                                   orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result descending
+                                   select ps).ToArray();
+
                 if (A >= (P / 2))
                     M = (int)Math.Ceiling(P / 2m); //rule 14.5.5: more than half the competitors scored
                 else
                     M = A; //rule 14.5.6: fewer than half the competitors scored
 
-                SM = (1000 * (P + 1 - M) / P);
-                RM = PilotScores[M - 1].Result.Result;
-                W = PilotScores[0].Result.Result;
+                SM = (1000 * (P + 1 - M) / P); //formula 2
+                RM = PilotScores[M - 1].ResultInfo.Result; //array is zero based
+                W = PilotScores[0].ResultInfo.Result;
 
-                PilotScores[0].ScoreNoPenalties = 1000; //rule 14.5.2
                 var remainingPoints = 0;
 
-                for (int i = 1; i < N; i++)
+                for (int i = 0; i < N; i++) //zero based
                 {
                     var ps = PilotScores[i];
                     if (ps.Pilot.IsDisqualified)
                         break; //done
 
-                    var L = i + 1;
-                    if (ps.Result.Group == 1)
+                    var L = i + 1; //index i is zero based
+                    var R = ps.ResultInfo.Result;
+
+                    if (ps.ResultInfo.Group == 1)
                     {
                         //Group A
-                        if (L <= M)
+                        if (R == W)
+                        {
+                            //rule 14.5.2 best result
+                            ps.Score = 1000;
+                        }
+                        else if (L <= M)
                         {
                             //rule 14.5.3 superior half
-                            var R = ps.Result.Result;
-                            ps.ScoreNoPenalties = (int)Math.Round(1000m - ((1000 - SM) / (RM - W)) * (R - W));
+                            ps.Score = (int)Math.Round(1000m - ((1000 - SM) / (RM - W)) * (R - W)); //formula 1
                         }
                         else
                         {
                             //rule 14.5.4 inferior half
-                            ps.ScoreNoPenalties = (int)Math.Round(1000m * (P + 1 - L) / P);
+                            ps.Score = (int)Math.Round(1000m * (P + 1 - L) / P); //formula 2
                         }
                     }
-                    else if (ps.Result.Group == 2)
+                    else if (ps.ResultInfo.Group == 2)
                     {
                         //rule 14.4.1.B group B
-                        ps.ScoreNoPenalties = (int)Math.Round(1000m * ((P + 1 - A) / P) - 200);
-                        remainingPoints += (int)Math.Round(1000m * (P + 1 - L) / P);
+                        ps.Score = (int)Math.Round(1000m * ((P + 1 - A) / P) - 200); //formula 3
+                        remainingPoints += (int)Math.Round(1000m * (P + 1 - L) / P); //formula 2
                     }
                     else
                     {
                         //rule 14.4.1.C group C
-                        ps.ScoreNoPenalties = 0;
+                        ps.Score = 0;
                     }
                 }
 
-                //share the remaining points
+                //rule 14.4.1.B share the remaining points 
                 if (B > 0)
                 {
                     var sharePoints = (int)Math.Round(1m * remainingPoints / B);
-                    foreach (var ps in PilotScores.Where(s => s.Result.Group == 2))
-                        ps.ScoreNoPenalties = Math.Max(ps.ScoreNoPenalties, sharePoints);
+                    foreach (var ps in PilotScores.Where(s => s.ResultInfo.Group == 2))
+                        ps.Score = Math.Max(ps.Score, sharePoints);
                 }
 
                 //resolve ties
@@ -171,23 +172,23 @@ namespace Scorer
                     var psi = PilotScores[i];
 
                     //only for group A
-                    if (psi.Result.Group != 1)
+                    if (psi.ResultInfo.Group != 1)
                         break;
 
                     //look for ties
                     var lastTieMember = i;
-                    var tieScoreSum = psi.ScoreNoPenalties;
+                    var tieScoreSum = psi.Score;
                     for (int j = i + 1; j < N; j++)
                     {
                         var psj = PilotScores[j];
 
-                        //if not group A or different result values, not in tie. Stop search
-                        if (psj.Result.Group != 1 || psi.Result.Result != psj.Result.Result)
+                        //if not group A or different result values then not in tie. Stop search
+                        if (psi.ResultInfo.Result != psj.ResultInfo.Result)
                             break;
 
                         //tie found
                         lastTieMember = j;
-                        tieScoreSum += psj.ScoreNoPenalties;
+                        tieScoreSum += psj.Score;
                     }
 
                     if (lastTieMember > i)
@@ -196,26 +197,28 @@ namespace Scorer
                         //share the score between tie members
                         var sharePoints = (int)Math.Round(tieScoreSum / (lastTieMember - i + 1m));
                         for (var j = i; j <= lastTieMember; j++)
-                            PilotScores[j].ScoreNoPenalties = sharePoints;
+                            PilotScores[j].Score = sharePoints;
                     }
                 }
 
-                //set positions
-                int position = 1;
-
+                //sort
                 PilotScores = (from ps in PilotScores
-                               orderby ps.Score descending, ps.Pilot.IsDisqualified, ps.Pilot.Number
+                               orderby ps.FinalScore descending, ps.Pilot.IsDisqualified, ps.Pilot.Number
                                select ps).ToArray();
 
-                PilotScores[0].Position = position;
-                for (var i = 1; i < N; i++)
+                //set rank and compute checksum
+                int rank = 0;
+                int sum = 0;
+                for (var i = 0; i < N; i++)
                 {
                     //increment position when not in tie
-                    if (PilotScores[i].Score != PilotScores[i - 1].Score)
-                        position = i + 1;
+                    if (i == 0 || PilotScores[i].FinalScore != PilotScores[i - 1].FinalScore)
+                        rank = i + 1;
 
-                    PilotScores[i].Position = position;
+                    PilotScores[i].Rank = rank;
+                    sum += PilotScores[i].Pilot.Number * PilotScores[i].FinalScore;
                 }
+                CheckSum = (sum % 1e4).ToString("0000");
 
                 //update revision
                 RevisionDate = DateTime.Now;
@@ -242,6 +245,7 @@ namespace Scorer
 
                 HeaderLeft = title,
                 FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.PdfDocument;
@@ -256,7 +260,7 @@ namespace Scorer
 
             //table
             var headers = new string[] { 
-                "Pos", "#", "Name", 
+                "Rank", "#", "Name", 
                 "Measure", "Measure penalty", "Result",
                 "Score", 
                 "Task penalty", "Comp. penalty", 
@@ -268,19 +272,21 @@ namespace Scorer
 
             foreach (var ps in PilotScores)
             {
-                table.AddCell(helper.NewRCell(ps.Position.ToString()));
+                table.AddCell(helper.NewRCell(ps.Rank.ToString()));
                 table.AddCell(helper.NewRCell(ps.Pilot.Number.ToString()));
                 table.AddCell(helper.NewLCell(ps.Pilot.Name));
 
-                table.AddCell(helper.NewRCell(Result.ToString(ps.Result.Measure)));
-                table.AddCell(helper.NewRCell(ps.Result.MeasurePenalty.ToString("0.00")));
-                table.AddCell(helper.NewRCell(Result.ToString(ps.Result.Result)));
-                table.AddCell(helper.NewRCell(ps.ScoreNoPenalties.ToString("0")));
-                table.AddCell(helper.NewRCell(ps.Result.TaskScorePenalty.ToString("0")));
-                table.AddCell(helper.NewRCell(ps.Result.CompetitionScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Measure)));
+                table.AddCell(helper.NewRCell(ps.ResultInfo.MeasurePenalty.ToString("0.00")));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Result)));
                 table.AddCell(helper.NewRCell(ps.Score.ToString("0")));
-                table.AddCell(helper.NewLCell(ps.Result.InfringedRules));
+                table.AddCell(helper.NewRCell(ps.ResultInfo.TaskScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ps.ResultInfo.CompetitionScorePenalty.ToString("0")));
+                table.AddCell(helper.NewRCell(ps.FinalScore.ToString("0")));
+                table.AddCell(helper.NewLCell(ps.ResultInfo.InfringedRules));
             }
+            table.AddCell(helper.NewLCell(Constants, 11));
+
             document.Add(table);
 
             document.Close();

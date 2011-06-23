@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Scorer")]
+[assembly: AssemblyTitle("AXToolbox.Scorer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Balloonerds.com")]
 [assembly: AssemblyProduct("AXToolbox")]
-[assembly: AssemblyCopyright("(c) 2009-2011 Balloonerds.com")]
+[assembly: AssemblyCopyright("(c) 2011 Balloonerds.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

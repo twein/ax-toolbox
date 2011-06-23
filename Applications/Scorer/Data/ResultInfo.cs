@@ -10,7 +10,7 @@ using AXToolbox.Scripting;
 namespace Scorer
 {
     [Serializable]
-    public class Result : BindableObject, IEditableObject
+    public class ResultInfo : BindableObject, IEditableObject
     {
         [XmlIgnore]
         public Task Task { get; set; }
@@ -18,7 +18,7 @@ namespace Scorer
 
         public ResultType Type
         {
-            get { return Result.GetType(measure); }
+            get { return ResultInfo.GetType(measure); }
         }
 
         private Decimal measure;
@@ -34,7 +34,7 @@ namespace Scorer
                 measure = value;
                 RaisePropertyChanged("Measure");
                 RaisePropertyChanged("Type");
-                RaisePropertyChanged("ResultValue");
+                RaisePropertyChanged("Result");
             }
         }
         protected decimal measurePenalty;
@@ -45,15 +45,15 @@ namespace Scorer
             {
                 measurePenalty = value;
                 RaisePropertyChanged("MeasurePenalty");
-                RaisePropertyChanged("ResultValue");
+                RaisePropertyChanged("Result");
             }
         }
-        public decimal ResultValue
+        public decimal Result
         {
             get
             {
                 //Debug.Assert(measure >= 0, "A non-measure result should not be asked to return a result");
-                if (measure >= 0)
+                if (Type != ResultType.Not_Set)
                     return measure - measurePenalty;
                 else
                     return measure;
@@ -90,8 +90,8 @@ namespace Scorer
             }
         }
 
-        protected Result() { }
-        public Result(Task task, Pilot pilot, ResultType type)
+        protected ResultInfo() { }
+        public ResultInfo(Task task, Pilot pilot, ResultType type)
         {
             Task = task;
             Pilot = pilot;
@@ -112,7 +112,7 @@ namespace Scorer
                     break;
             }
         }
-        public Result(Task task, Pilot pilot, decimal value)
+        public ResultInfo(Task task, Pilot pilot, decimal value)
         {
             Debug.Assert(value < 0, "A non-measure result should not be initialized with this constructor");
 
@@ -182,11 +182,11 @@ namespace Scorer
         }
 
         #region IEditableObject Members
-        protected Result buffer = null;
+        protected ResultInfo buffer = null;
         public void BeginEdit()
         {
             if (buffer == null)
-                buffer = MemberwiseClone() as Result;
+                buffer = MemberwiseClone() as ResultInfo;
         }
         public void CancelEdit()
         {
@@ -214,13 +214,13 @@ namespace Scorer
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var measure = (decimal)value;
-            return Result.ToString(measure);
+            return ResultInfo.ToString(measure);
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
-                return Result.ParseMeasure((string)value);
+                return ResultInfo.ParseMeasure((string)value);
             }
             catch
             {

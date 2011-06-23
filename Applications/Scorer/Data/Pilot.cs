@@ -4,6 +4,7 @@ using AXToolbox.Common;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using System.Linq;
+using System.Windows;
 
 namespace Scorer
 {
@@ -56,8 +57,19 @@ namespace Scorer
             get { return isDisqualified; }
             set
             {
-                isDisqualified = value;
-                Database.Instance.IsDirty = true;
+                if (isDisqualified != value)
+                {
+                    if (MessageBox.Show("This action will invalidate all current scores." + Environment.NewLine + "Are you sure?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+                    {
+                        isDisqualified = value;
+                        Database.Instance.IsDirty = true;
+
+                        // void all scores
+                        foreach (var t in Database.Instance.Tasks)
+                            t.Phases |= CompletedPhases.Dirty;
+                        RaisePropertyChanged("IsDisqualified");
+                    }
+                }
             }
         }
 
@@ -86,6 +98,7 @@ namespace Scorer
 
                 HeaderLeft = title,
                 FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.PdfDocument;
@@ -125,6 +138,7 @@ namespace Scorer
 
                 HeaderLeft = title,
                 FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.PdfDocument;

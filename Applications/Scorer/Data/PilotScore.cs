@@ -5,31 +5,31 @@ namespace Scorer
     [Serializable]
     public class PilotScore
     {
+        public PilotResultInfo ResultInfo { get; set; }
         public Pilot Pilot
         {
-            get { return Result.Pilot; }
+            get { return ResultInfo.Pilot; }
         }
-        public PilotResult Result { get; set; }
 
-        public int Position { get; set; }
-        public int ScoreNoPenalties { get; set; }
-        public int Score
+        public int Rank { get; set; }
+        public int Score { get; set; }
+        public int FinalScore
         {
             get
             {
-                return (int)Math.Max(ScoreNoPenalties - Result.TaskScorePenalty, 0) - Result.CompetitionScorePenalty;
+                return (int)Math.Max(Score - ResultInfo.TaskScorePenalty, 0) - ResultInfo.CompetitionScorePenalty;
             }
         }
 
         protected PilotScore() { }
-        public PilotScore(PilotResult result)
+        public PilotScore(PilotResultInfo resultInfo)
         {
-            Result = result;
+            ResultInfo = resultInfo;
         }
 
         public override string ToString()
         {
-            return string.Format("R={0}, S={1}", Result.Result, Score);
+            return string.Format("M={0.00}, S={1}", ResultInfo.Result, FinalScore);
         }
     }
 }

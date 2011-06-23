@@ -34,7 +34,7 @@
                 <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="4*"/>
                 <DataGridTextColumn Header="Country" Binding="{Binding Path=Country}" Width="*" />
                 <DataGridTextColumn Header="Balloon" Binding="{Binding Path=Balloon}" Width="*" />
-                <DataGridCheckBoxColumn Header="Disqualified" Binding="{Binding Path=Disqualified}" />
+                <DataGridCheckBoxColumn Header="Disqualified" Binding="{Binding Path=IsDisqualified}" />
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
