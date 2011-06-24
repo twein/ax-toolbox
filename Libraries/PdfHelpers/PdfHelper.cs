@@ -25,16 +25,6 @@ namespace AXToolbox.PdfHelpers
             PdfWriter.GetInstance(PdfDocument, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents(pdfConfig);
 
             PdfDocument.Open();
-
-            //title
-            if (!string.IsNullOrEmpty(config.Title))
-                PdfDocument.Add(new Paragraph(config.Title, config.TitleFont) { SpacingAfter = 10 });
-            //subtitle
-            if (!string.IsNullOrEmpty(config.Subtitle))
-                PdfDocument.Add(new Paragraph(config.Subtitle, config.SubtitleFont) { SpacingAfter = 0 });
-            //line separator
-            if (!string.IsNullOrEmpty(config.Title) || !string.IsNullOrEmpty(config.Title))
-                PdfDocument.Add(new Paragraph(new Chunk(new LineSeparator())) { SpacingBefore = -10, SpacingAfter = 10 });
         }
 
         public void AddMetadata(string author, string title, string subject, string keywords)

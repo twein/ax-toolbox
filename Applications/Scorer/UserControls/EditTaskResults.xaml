@@ -35,8 +35,10 @@
                 <local:PilotResultValidationRule ValidationStep="UpdatedValue"/>
             </DataGrid.RowValidationRules>-->
         </DataGrid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="5">
-            <Button Visibility="{Binding Path=SaveVisibility}" ToolTip="Save Changes" Click="saveButton_Click">Save</Button>
-        </StackPanel>
+        <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
+            <Button ToolTip="Randomize measures" Click="randomButton_Click">Randomize</Button>
+            <Separator Width="5" Visibility="Hidden"></Separator>
+            <Button Visibility="{Binding Path=SaveVisibility}" ToolTip="Save Changes" Click="saveButton_Click">Save</Button>            
+        </WrapPanel>
     </Grid>
 </local:EditCollection>

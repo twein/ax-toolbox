@@ -102,6 +102,7 @@
     <Compile Include="Data\Database.cs" />
     <Compile Include="Data\TaskType.cs" />
     <Compile Include="Data\PilotScore.cs" />
+    <Compile Include="PilotTotalScore.cs" />
     <Compile Include="UserControls\EditCollection.cs" />
     <Compile Include="UserControls\EditCompetitions.xaml.cs">
       <DependentUpon>EditCompetitions.xaml</DependentUpon>
@@ -218,6 +219,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="balloon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="To Do.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

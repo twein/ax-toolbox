@@ -5,8 +5,10 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Windows;
 using AXToolbox.Common;
+using AXToolbox.PdfHelpers;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace Scorer
 {
@@ -35,7 +37,7 @@ namespace Scorer
                 RaisePropertyChanged("Status");
             }
         }
-        public string director;
+        protected string director;
         public string Director
         {
             get { return director; }
@@ -100,7 +102,7 @@ namespace Scorer
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (Task t in e.NewItems)
+                    foreach (Task t in e.OldItems)
                     {
                         var old_ts = TaskScores.First(ts => ts.Task == t);
                         TaskScores.Remove(old_ts);
@@ -152,9 +154,81 @@ namespace Scorer
         /// <summary>Generate a pdf total scores sheet
         /// </summary>
         /// <param header="fileName">desired pdf file path</param>
-        public void PdfTotalScore(string fileName)
+        public void PdfTotalScore(string pdfFileName)
         {
-            throw new NotImplementedException();
+            var title = Name + " total score";
+
+            var config = new PdfConfig()
+            {
+                PageLayout = PageSize.A4.Rotate(),
+                MarginTop = 1.5f * PdfHelper.cm2pt,
+                MarginBottom = 1.5f * PdfHelper.cm2pt,
+
+                HeaderLeft = Name,
+                HeaderRight = "Event director: " + Director,
+                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
+            };
+            var helper = new PdfHelper(pdfFileName, config);
+            var document = helper.PdfDocument;
+
+            //title
+            document.Add(new Paragraph(Name, config.TitleFont));
+            //subtitle
+            document.Add(new Paragraph(LocationDates, config.SubtitleFont) { SpacingAfter = 20 });
+            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
+
+
+            //table
+            var headers = new List<string>() { "Rank", "#", "Name", "TOTAL", "Average" };
+            var relWidths = new List<float>() { 2, 2, 6, 3, 3 };
+            foreach (var t in Tasks)
+            {
+                headers.Add("Task " + t.UltraShortDescription);
+                relWidths.Add(3);
+            }
+            var table = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
+
+            //scores
+            var pilotTotalScores = new List<PilotTotalScore>();
+            foreach (var p in Pilots)
+                pilotTotalScores.Add(new PilotTotalScore(this, p));
+
+            var rank = 0;
+            var i = 1;
+            var lastScore = int.MinValue;
+            foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total))
+            {
+                if (pts.Total != lastScore)
+                {
+                    lastScore = pts.Total;
+                    rank = i;
+                }
+
+                table.AddCell(helper.NewRCell(rank.ToString()));
+                table.AddCell(helper.NewRCell(pts.Pilot.Number.ToString()));
+                table.AddCell(helper.NewLCell(pts.Pilot.Name));
+                table.AddCell(new PdfPCell(new Paragraph(pts.Total.ToString(), config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
+                table.AddCell(helper.NewRCell(pts.Average.ToString()));
+
+                foreach (var taskScore in pts.TaskScores)
+                    table.AddCell(helper.NewRCell(taskScore.ToString()));
+
+                i++;
+            }
+
+            //checksums
+            table.AddCell(helper.NewLCell(""));
+            table.AddCell(helper.NewLCell(""));
+            table.AddCell(new PdfPCell(new Paragraph("Checksum", config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_LEFT });
+            table.AddCell(helper.NewLCell(""));
+            table.AddCell(helper.NewLCell(""));
+            foreach (var taskScore in TaskScores)
+                table.AddCell(new PdfPCell(new Paragraph(taskScore.CheckSum, config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
+
+            document.Add(table);
+
+            document.Close();
         }
         /// <summary>Generate a pdf with all task scores
         /// </summary>

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
+using AXToolbox.PdfHelpers;
 
 namespace Scorer
 {
@@ -136,7 +137,10 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
+            {
                 Pilot.PdfList(dlg.FileName, "Pilot list", Database.Instance.Pilots);
+                PdfHelper.OpenPdf(dlg.FileName);
+            }
         }
         private void menuPilotsPdfWorkList_Click(object sender, System.Windows.RoutedEventArgs e)
         {
@@ -145,7 +149,10 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
+            {
                 Pilot.PdfWorkList(dlg.FileName, "Work list", Database.Instance.Pilots);
+                PdfHelper.OpenPdf(dlg.FileName);
+            }
         }
         
         private void menuTasksEdit_Click(object sender, RoutedEventArgs e)
@@ -178,7 +185,10 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
+            {
                 Pilot.PdfList(dlg.FileName, competition.Name + ": pilot list", competition.Pilots);
+                PdfHelper.OpenPdf(dlg.FileName);
+            }
         }
 
         private void menuCompetitionTasksEdit_Click(object sender, RoutedEventArgs e)
@@ -203,7 +213,10 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
+            {
                 competition.PdfTaskScores(dlg.FileName);
+                PdfHelper.OpenPdf(dlg.FileName);
+            }
         }
         private void menuCompetitionPdfTotalScore_Click(object sender, RoutedEventArgs e)
         {
@@ -215,7 +228,10 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
+            {
                 competition.PdfTotalScore(dlg.FileName);
+                PdfHelper.OpenPdf(dlg.FileName);
+            }
         }
 
         private void menuTaskEditResults_Click(object sender, RoutedEventArgs e)
@@ -241,7 +257,10 @@ namespace Scorer
             dlg.InitialDirectory = Environment.CurrentDirectory;
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
+            {
                 task.ResultsToPdf(dlg.FileName);
+                PdfHelper.OpenPdf(dlg.FileName);
+            }
         }
         private void menuTaskComputeScores_Click(object sender, RoutedEventArgs e)
         {
@@ -270,6 +289,7 @@ namespace Scorer
                         c.Name, task.UltraShortDescription, ts.RevisionDate, ts.Version, ts.Status.ToString().Substring(0, 1));
                     var pdfPath = Path.Combine(path, pdfName);
                     ts.PdfScores(pdfPath);
+                    PdfHelper.OpenPdf(pdfPath);
                 }
             }
         }
