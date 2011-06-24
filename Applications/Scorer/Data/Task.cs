@@ -92,7 +92,10 @@ namespace Scorer
         }
         public bool SortAscending
         {
-            get { return Types[typeNumber].LowerIsBetter; }
+            get
+            {
+                return Types[typeNumber - 1].LowerIsBetter; //array is zero based 
+            }
         }
         public string Status
         {
@@ -206,8 +209,9 @@ namespace Scorer
                 MarginTop = 1.5f * PdfHelper.cm2pt,
                 MarginBottom = 1.5f * PdfHelper.cm2pt,
 
-                HeaderLeft = title,
-                FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
+                //HeaderLeft = title,
+                //HeaderRight = "Event director: " + Director,
+                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
                 FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
@@ -254,8 +258,6 @@ namespace Scorer
             document.Add(table);
 
             document.Close();
-
-            PdfHelper.OpenPdf(pdfFileName);
         }
 
         public override string ToString()

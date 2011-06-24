@@ -18,12 +18,10 @@ namespace AXToolbox.PdfHelpers
         public string FooterCenter { get; set; }
         public string FooterRight { get; set; }
 
-        public string Title { get; set; }
-        public string Subtitle { get; set; }
-
         public Font TitleFont { get; set; }
         public Font SubtitleFont { get; set; }
         public Font BoldFont { get; set; }
+        public Font ItalicFont { get; set; }
         public Font NormalFont { get; set; }
         public Font HeaderFont { get; set; }
         public Font FooterFont { get; set; }
@@ -41,6 +39,7 @@ namespace AXToolbox.PdfHelpers
             TitleFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
             SubtitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
             BoldFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
+            ItalicFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.ITALIC);
             NormalFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL);
             HeaderFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
             FooterFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);

@@ -246,17 +246,24 @@ namespace Scorer
                 MarginTop = 1.5f * PdfHelper.cm2pt,
                 MarginBottom = 1.5f * PdfHelper.cm2pt,
 
-                HeaderLeft = title,
-                FooterLeft = string.Format("Printed on {0:yyyy/MM/dd HH:mm}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo(),
-                Title = competition.Name,
-                Subtitle = competition.LocationDates
+                HeaderLeft = competition.Name,
+                HeaderRight = "Event director: " + competition.Director,
+                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.PdfDocument;
 
+            //title
+            document.Add(new Paragraph(competition.Name, config.TitleFont));
+            //subtitle
+            document.Add(new Paragraph(competition.LocationDates, config.SubtitleFont) { SpacingAfter = 10 });
 
-
+            //status
+            string statusMsg = Status.ToString() + " score";
+            if (Version > 0)
+                statusMsg += string.Format(" version {0} - {1}", Version, RevisionDate);
+            document.Add(helper.NewParagraph(statusMsg));
 
             //table
             var headers = new string[] { 
@@ -267,7 +274,7 @@ namespace Scorer
                 "Final score",
                 "Infringed rules"
             };
-            var relWidths = new float[] { 1, 1, 6, 3, 3, 3, 3, 3, 3, 3, 6 };
+            var relWidths = new float[] { 2, 2, 6, 3, 3, 3, 3, 3, 3, 3, 10 };
             var table = helper.NewTable(headers, relWidths, title);
 
             foreach (var ps in PilotScores)
@@ -290,8 +297,6 @@ namespace Scorer
             document.Add(helper.NewParagraph(Constants));
 
             document.Close();
-
-            PdfHelper.OpenPdf(pdfFileName);
         }
     }
 }

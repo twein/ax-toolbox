@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System;
 
 namespace Scorer
 {
@@ -16,6 +17,13 @@ namespace Scorer
 
             SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults | CompletedPhases.Dirty;
             Save();
+        }
+
+        private void randomButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var rnd = new Random();
+            foreach (var r in DataGridCollection)
+                r.Measure = 50 * (decimal)rnd.NextDouble();
         }
     }
 }

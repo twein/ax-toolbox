@@ -5,6 +5,7 @@ using AXToolbox.GpsLoggers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using AXToolbox.PdfHelpers;
+using iTextSharp.text.pdf.draw;
 
 namespace PdfTest
 {
@@ -42,6 +43,8 @@ namespace PdfTest
             //    SpacingAfter = 10
             //});
 
+            //line separator
+            //document.Add(new Paragraph(new Chunk(new LineSeparator())) { SpacingBefore = -10, SpacingAfter = 10 });
 
             //table
             var headers = new string[] { "Date", "Dawn", "Dusk", "Outdoor activity time" };

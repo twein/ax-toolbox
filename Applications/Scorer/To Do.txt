@@ -1,0 +1,5 @@
+﻿Fix headers and titles in all pdf files
+Competition: short name
+Event information: Name, location and date, director, short name, path (non serialized)
+Change score status. Optional force revision datetime
+Check visibility of all menus and buttons
