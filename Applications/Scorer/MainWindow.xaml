@@ -13,8 +13,8 @@
                 <MenuItem Header="Edit" Click="menuEventEdit_Click"/>
                 <Separator />
                 <MenuItem Header="Load" Click="menuEventLoad_Click"/>
-                <MenuItem Header="Save" Click="menuEventSave_Click"/>
-                <MenuItem Header="Save XML" Click="menuEventSaveXml_Click"/>
+                <MenuItem Header="Save" Visibility="{Binding Path=SaveVisibility}" Click="menuEventSave_Click"/>
+                <MenuItem Header="Save XML" Visibility="{Binding Path=SaveVisibility}" Click="menuEventSaveXml_Click"/>
                 <Separator/>
                 <MenuItem Header="Exit" Click="menuEventExit_Click"/>
             </MenuItem>
@@ -23,19 +23,42 @@
             </MenuItem>
             <MenuItem Header="Pilots">
                 <MenuItem Header="Edit" Click="menuPilotsEdit_Click"/>
-                <MenuItem Header="List to pdf" Click="menuPilotsListToPdf_Click">
-                    <MenuItem.Icon>
-                        <Image Source="/Scorer;component/pdf.png" Height="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Work list to pdf" Click="menuPilotsWorkListToPdf_Click">
-                    <MenuItem.Icon>
-                        <Image Source="/Scorer;component/pdf.png" Height="16" />
-                    </MenuItem.Icon>
-                </MenuItem>
             </MenuItem>
             <MenuItem Header="Tasks">
                 <MenuItem Header="Edit" Click="menuTasksEdit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Output">
+                <MenuItem Header="Event pilot list to pdf" ToolTip="Pilot list." Click="menuOutputPilotsListToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Work spreadsheet to pdf" ToolTip="Work spreadsheet for officials." Click="menuOutputPilotsWorkListToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Pilot list by competition" ToolTip="For each competition, make a pdf with the pilot list." Click="menuOutputPilotsListByCompetitionToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Tag="{Binding}" Header="Task scores (1 file)" ToolTip="For each competition, make a pdf with all task scores." Click="menuOutputTaskScoresTo1Pdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Task scores (n files)" ToolTip="For each competition, make a pdf for each task score." Click="menuOutputTaskScoresToNPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Total scores" ToolTip="For each competition, make a pdf with the total score." Click="menuOutputTotalScoresToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
@@ -69,30 +92,9 @@
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilotsEdit_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuCompetitionPilotsReset_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Competition pilots list" Click="menuCompetitionPilotsListToPdf_Click">
-                                                    <MenuItem.Icon>
-                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
                                                 <Separator/>
                                                 <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasksEdit_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuCompetitionTasksReset_Click"/>
-                                                <Separator/>
-                                                <MenuItem Tag="{Binding}" Header="All task scores (1 file)" Click="menuCompetitionTasksScoresTo1Pdf_Click">
-                                                    <MenuItem.Icon>
-                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Tag="{Binding}" Header="All task scores (n files)" Click="menuCompetitionTasksScoresToNPdf_Click">
-                                                    <MenuItem.Icon>
-                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
-                                                <MenuItem Tag="{Binding}" Header="Total score" Click="menuCompetitionTotalScoreToPdf_Click">
-                                                    <MenuItem.Icon>
-                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
-                                                    </MenuItem.Icon>
-                                                </MenuItem>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>

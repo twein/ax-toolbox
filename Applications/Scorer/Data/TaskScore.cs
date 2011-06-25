@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using AXToolbox.PdfHelpers;
@@ -25,7 +26,7 @@ namespace Scorer
         public int Version { get; set; }
         public DateTime RevisionDate { get; set; }
         public DateTime PublicationDate { get; set; }
-        public string CheckSum { get; protected set; }
+        public string CheckSum { get; set; }
         public string Constants
         {
             get
@@ -48,9 +49,7 @@ namespace Scorer
             Debug.Assert(PilotScores.Length == competition.Pilots.Count, "PilotScores should have as many elements as Competition.Pilots");
         }
 
-        /// <summary>Compute the scores for this task
-        /// </summary>
-        public void Compute()
+        public void ComputeScores()
         {
             //formulae apllication
             /*
@@ -234,19 +233,22 @@ namespace Scorer
             }
         }
 
-        /// <summary>Generate a pdf task scores sheet
-        /// </summary>
-        /// <param header="fileName">desired pdf file path</param>
-        public void ScoresToPdf(string pdfFileName)
+        public void ScoresToPdf(string folder, bool openAfterCreation)
         {
+            var fileName = Path.Combine(folder, string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
+                       competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = competition.Name;
-            var helper = new PdfHelper(pdfFileName, config);
+
+            var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
 
             ScoresToTable(helper);
 
             document.Close();
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
         }
         public void ScoresToTable(PdfHelper helper)
         {
@@ -296,12 +298,6 @@ namespace Scorer
             document.Add(table);
 
             document.Add(helper.NewParagraph(Constants));
-        }
-
-        public string GetPdfScoresFileName()
-        {
-            return string.Format("{0}-Task {1}-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
-                       competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1));
         }
     }
 }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using AXToolbox.Common;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.IO;
 
 namespace Scorer
 {
@@ -56,8 +56,8 @@ namespace Scorer
             Pilots.CollectionChanged += Pilots_CollectionChanged;
             Tasks.CollectionChanged += Tasks_CollectionChanged;
 
-            name = "enter competition name";
-            shortName = "enter short name (for file names)";
+            name = "new competition";
+            shortName = "short name";
         }
 
         [OnDeserialized]
@@ -139,15 +139,21 @@ namespace Scorer
             return Name;
         }
 
-        /// <summary>Generate a pdf total scores sheet
-        /// </summary>
-        /// <param header="fileName">desired pdf file path</param>
-        public void TotalScoreToPdf(string pdfFileName)
+        public void PilotListToPdf(string folder, bool openAfterCreation = false)
         {
+            var fileName = Path.Combine(folder, ShortName + " pilot list.pdf");
+            Pilot.ListToPdf(fileName, "Pilot list", Pilots);
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
+        }
+        public void TotalScoreToPdf(string folder, bool openAfterCreation = false)
+        {
+            var fileName = Path.Combine(folder, ShortName + " total scores.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Name;
 
-            var helper = new PdfHelper(pdfFileName, config);
+            var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
             var title = Name + " total score";
 
@@ -207,16 +213,17 @@ namespace Scorer
             document.Add(table);
 
             document.Close();
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
         }
-        /// <summary>Generate a pdf with all task scores
-        /// </summary>
-        /// <param header="fileName"></param>
-        public void TaskScoresTo1Pdf(string pdfFileName)
+        public void TaskScoresTo1Pdf(string folder, bool openAfterCreation = false)
         {
+            var fileName = Path.Combine(folder, ShortName + " task scores.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Name;
 
-            var helper = new PdfHelper(pdfFileName, config);
+            var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
 
             var isFirstTask = true;
@@ -230,16 +237,14 @@ namespace Scorer
             }
 
             document.Close();
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
         }
-        /// <summary>Generate a pdf for each task score</summary>
-        /// <param name="folder">folder where to place the generated pdf files</param>
         public void TaskScoresToNPdf(string folder)
         {
             foreach (var ts in TaskScores)
-            {
-                var fileName = Path.Combine(folder, ts.GetPdfScoresFileName());
-                ts.ScoresToPdf(fileName);
-            }
+                ts.ScoresToPdf(folder, false);
         }
     }
 }

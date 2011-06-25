@@ -107,26 +107,6 @@ namespace Scorer
 
             AddTab(new EditPilots(Event.Instance.Pilots, editOptions), "Pilots");
         }
-        private void menuPilotsListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var fileName = GetSaveFileName("pdf files (*.pdf)|*.pdf", Event.Instance.ShortName + " pilot list");
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                //TODO: make an Event Method
-                Pilot.PdfList(fileName, "Pilot list", Event.Instance.Pilots);
-                PdfHelper.OpenPdf(fileName);
-            }
-        }
-        private void menuPilotsWorkListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var fileName = GetSaveFileName("pdf files (*.pdf)|*.pdf", Event.Instance.ShortName + " work list");
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                //TODO: make an Event Method
-                Pilot.PdfWorkList(fileName, "Work list", Event.Instance.Pilots);
-                PdfHelper.OpenPdf(fileName);
-            }
-        }
 
         private void menuTasksEdit_Click(object sender, RoutedEventArgs e)
         {
@@ -135,6 +115,47 @@ namespace Scorer
                 editOptions |= EditOptions.CanAdd | EditOptions.CanDelete;
 
             AddTab(new EditTasks(Event.Instance.Tasks, editOptions), "Tasks");
+        }
+
+        private void menuOutputPilotsListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                Event.Instance.PilotListToPdf(folder, true);
+        }
+        private void menuOutputPilotsWorkListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                Event.Instance.WorkListToPdf(folder, true);
+        }
+        private void menuOutputPilotsListByCompetitionToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                foreach (var competition in Event.Instance.Competitions)
+                    competition.PilotListToPdf(folder, true);
+        }
+        private void menuOutputTaskScoresTo1Pdf_Click(object sender, RoutedEventArgs e)
+        {
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                foreach (var competition in Event.Instance.Competitions)
+                    competition.TaskScoresTo1Pdf(folder, true);
+        }
+        private void menuOutputTaskScoresToNPdf_Click(object sender, RoutedEventArgs e)
+        {
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                foreach (var competition in Event.Instance.Competitions)
+                    competition.TaskScoresToNPdf(folder);
+        }
+        private void menuOutputTotalScoresToPdf_Click(object sender, RoutedEventArgs e)
+        {
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                foreach (var competition in Event.Instance.Competitions)
+                    competition.TotalScoreToPdf(folder, true);
         }
 
         private void menuCompetitionPilotsEdit_Click(object sender, RoutedEventArgs e)
@@ -149,19 +170,6 @@ namespace Scorer
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetPilots();
         }
-        private void menuCompetitionPilotsListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var competition = ((MenuItem)sender).Tag as Competition;
-
-            var fileName = GetSaveFileName("pdf files (*.pdf)|*.pdf", competition.ShortName + " pilot list");
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                //TODO: make a competition method
-                Pilot.PdfList(fileName, competition.Name + ": pilot list", competition.Pilots);
-                PdfHelper.OpenPdf(fileName);
-            }
-        }
-
         private void menuCompetitionTasksEdit_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
@@ -173,36 +181,6 @@ namespace Scorer
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetTasks();
-        }
-        private void menuCompetitionTasksScoresTo1Pdf_Click(object sender, RoutedEventArgs e)
-        {
-            var competition = ((MenuItem)sender).Tag as Competition;
-
-            var fileName = GetSaveFileName("pdf files (*.pdf)|*.pdf", competition.ShortName + " task scores");
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                competition.TaskScoresTo1Pdf(fileName);
-                PdfHelper.OpenPdf(fileName);
-            }
-        }
-        private void menuCompetitionTasksScoresToNPdf_Click(object sender, RoutedEventArgs e)
-        {
-            var competition = ((MenuItem)sender).Tag as Competition;
-
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                competition.TaskScoresToNPdf(folder);
-        }
-        private void menuCompetitionTotalScoreToPdf_Click(object sender, RoutedEventArgs e)
-        {
-            var competition = ((MenuItem)sender).Tag as Competition;
-
-            var fileName = GetSaveFileName("pdf files (*.pdf)|*.pdf", competition.ShortName + " total score");
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                competition.TotalScoreToPdf(fileName);
-                PdfHelper.OpenPdf(fileName);
-            }
         }
 
         private void menuTaskEditResults_Click(object sender, RoutedEventArgs e)
@@ -222,12 +200,9 @@ namespace Scorer
         {
             var task = ((MenuItem)sender).Tag as Task;
 
-            var fileName = GetSaveFileName("pdf files (*.pdf)|*.pdf", Event.Instance.ShortName + " Task " + task.UltraShortDescription + " results");
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                task.ResultsToPdf(fileName);
-                PdfHelper.OpenPdf(fileName);
-            }
+            var folder = GetFolderName();
+            if (!string.IsNullOrEmpty(folder))
+                task.ResultsToPdf(folder, true);
         }
         private void menuTaskComputeScores_Click(object sender, RoutedEventArgs e)
         {
@@ -235,7 +210,7 @@ namespace Scorer
             foreach (var c in Event.Instance.Competitions)
             {
                 var ts = c.TaskScores.First(s => s.Task == task);
-                ts.Compute();
+                ts.ComputeScores();
             }
         }
         private void menuTaskScoresToPdf_Click(object sender, RoutedEventArgs e)
@@ -249,11 +224,7 @@ namespace Scorer
                 foreach (var c in Event.Instance.Competitions)
                 {
                     var ts = c.TaskScores.First(s => s.Task == task);
-                    var pdfName = string.Format("{0}-Task {1}-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
-                        c.ShortName, task.UltraShortDescription, ts.RevisionDate, ts.Version, ts.Status.ToString().Substring(0, 1));
-                    var pdfPath = Path.Combine(folder, pdfName);
-                    ts.ScoresToPdf(pdfPath);
-                    PdfHelper.OpenPdf(pdfPath);
+                    ts.ScoresToPdf(folder, true);
                 }
             }
         }

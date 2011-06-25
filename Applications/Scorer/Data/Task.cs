@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using AXToolbox.Common;
@@ -199,12 +200,13 @@ namespace Scorer
             }
         }
 
-        public void ResultsToPdf(string pdfFileName)
+        public void ResultsToPdf(string folder, bool openAfterCreation)
         {
+            var fileName = Path.Combine(folder, "Task "+UltraShortDescription + " results.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Event.Instance.Name;
 
-            var helper = new PdfHelper(pdfFileName, config);
+            var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
 
             //title
@@ -246,6 +248,9 @@ namespace Scorer
             document.Add(table);
 
             document.Close();
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
         }
 
         public override string ToString()
