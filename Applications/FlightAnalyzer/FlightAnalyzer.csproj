@@ -146,6 +146,10 @@
       <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\GpsLoggers\AXToolbox.GpsLoggers.csproj">
+      <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
+      <Name>AXToolbox.GpsLoggers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\MapViewer\AXToolbox.MapViewer.csproj">
       <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
       <Name>MapViewer</Name>

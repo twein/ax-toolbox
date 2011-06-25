@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Controls;
-using AXToolbox.Common;
+using AXToolbox.GpsLoggers;
 using System.Collections.Generic;
 
 namespace AXToolbox.Model.Validation

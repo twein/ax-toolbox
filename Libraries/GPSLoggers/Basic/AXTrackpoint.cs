@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace AXToolbox.Common
+namespace AXToolbox.GpsLoggers
 {
     [Serializable]
     public class AXTrackpoint : AXPoint

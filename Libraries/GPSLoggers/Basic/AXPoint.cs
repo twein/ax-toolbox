@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using AXToolbox.GpsLoggers;
 using System.Windows;
 
-namespace AXToolbox.Common
+namespace AXToolbox.GpsLoggers
 {
     [Flags]
     public enum AXPointInfo

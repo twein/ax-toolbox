@@ -5,10 +5,17 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using AXToolbox.Common;
-using AXToolbox.Scripting;
 
 namespace Scorer
 {
+    public enum ResultType
+    {
+        Not_Set = 0,
+        No_Flight,
+        No_Result,
+        Result
+    }
+
     [Serializable]
     public class ResultInfo : BindableObject, IEditableObject
     {

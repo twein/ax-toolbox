@@ -71,6 +71,9 @@
   <PropertyGroup>
     <ApplicationIcon>balloon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Scorer.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp">
       <HintPath>..\..\ThirdParty\iText\itextsharp.dll</HintPath>
@@ -222,10 +225,6 @@
     <ProjectReference Include="..\..\Libraries\PdfHelpers\AXToolbox.PdfHelpers.csproj">
       <Project>{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}</Project>
       <Name>AXToolbox.PdfHelpers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Scripting\AXToolbox.Scripting.csproj">
-      <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
-      <Name>AXToolbox.Scripting</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

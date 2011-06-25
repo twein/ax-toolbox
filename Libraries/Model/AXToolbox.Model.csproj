@@ -80,9 +80,9 @@
     <Compile Include="Validation\Validator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\AXToolbox.Common.csproj">
-      <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\GpsLoggers\AXToolbox.GpsLoggers.csproj">
+      <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
+      <Name>AXToolbox.GpsLoggers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
