@@ -10,29 +10,29 @@ namespace AXToolbox.PdfHelpers
     {
         public static float cm2pt = 72f / 2.54f;
 
-        protected PdfConfig config;
+        public PdfConfig Config;
 
-        public Document PdfDocument { get; protected set; }
+        public Document Document { get; protected set; }
 
         public PdfHelper(string pdfFileName, PdfConfig pdfConfig)
         {
-            config = pdfConfig;
+            Config = pdfConfig;
 
-            PdfDocument = new Document();
-            PdfDocument.SetPageSize(pdfConfig.PageLayout);
-            PdfDocument.SetMargins(config.MarginLeft, config.MarginRight, config.MarginTop, config.MarginBottom); // in pt
+            Document = new Document();
+            Document.SetPageSize(pdfConfig.PageLayout);
+            Document.SetMargins(Config.MarginLeft, Config.MarginRight, Config.MarginTop, Config.MarginBottom); // in pt
 
-            PdfWriter.GetInstance(PdfDocument, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents(pdfConfig);
+            PdfWriter.GetInstance(Document, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents(pdfConfig);
 
-            PdfDocument.Open();
+            Document.Open();
         }
 
         public void AddMetadata(string author, string title, string subject, string keywords)
         {
-            PdfDocument.AddAuthor(author);
-            PdfDocument.AddTitle(title);
-            PdfDocument.AddSubject(subject);
-            PdfDocument.AddKeywords(keywords);
+            Document.AddAuthor(author);
+            Document.AddTitle(title);
+            Document.AddSubject(subject);
+            Document.AddKeywords(keywords);
         }
 
         public PdfPTable NewTable(string[] columnHeaders, float[] relativeColumnWidths, string title = null)
@@ -52,30 +52,30 @@ namespace AXToolbox.PdfHelpers
             var headerColor = new BaseColor(192, 192, 192);
 
             if (!string.IsNullOrEmpty(title))
-                table.AddCell(new PdfPCell(new Paragraph(title, config.BoldFont)) { Colspan = columnHeaders.Length, BackgroundColor = headerColor });
+                table.AddCell(new PdfPCell(new Paragraph(title, Config.BoldFont)) { Colspan = columnHeaders.Length, BackgroundColor = headerColor });
 
             foreach (var ch in columnHeaders)
-                table.AddCell(new PdfPCell(new Paragraph(ch, config.BoldFont)) { BackgroundColor = headerColor });
+                table.AddCell(new PdfPCell(new Paragraph(ch, Config.BoldFont)) { BackgroundColor = headerColor });
 
             return table;
         }
 
         public Paragraph NewParagraph(string content)
         {
-            return new Paragraph(content, config.NormalFont);
+            return new Paragraph(content, Config.NormalFont);
         }
 
         public PdfPCell NewLCell(string cellContent, int colSpan = 1)
         {
-            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT, Colspan = colSpan };
+            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT, Colspan = colSpan };
         }
         public PdfPCell NewRCell(string cellContent, int colSpan = 1)
         {
-            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
+            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
         }
         public PdfPCell NewCCell(string cellContent, int colSpan = 1)
         {
-            return new PdfPCell(new Phrase(cellContent, config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE, Colspan = colSpan };
+            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE, Colspan = colSpan };
         }
 
         public static void OpenPdf(string pdfFileName)

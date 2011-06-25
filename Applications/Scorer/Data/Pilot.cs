@@ -102,7 +102,7 @@ namespace Scorer
                 FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.PdfDocument;
+            var document = helper.Document;
 
             //title
             document.Add(new Paragraph(title, config.TitleFont)
@@ -143,7 +143,7 @@ namespace Scorer
                 FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.PdfDocument;
+            var document = helper.Document;
 
             //title
             document.Add(new Paragraph(title, config.TitleFont)

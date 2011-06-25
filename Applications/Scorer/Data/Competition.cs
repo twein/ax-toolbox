@@ -9,6 +9,7 @@ using AXToolbox.Common;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using System.IO;
 
 namespace Scorer
 {
@@ -23,6 +24,16 @@ namespace Scorer
             {
                 name = value;
                 RaisePropertyChanged("Name");
+            }
+        }
+        protected string shortName;
+        public string ShortName
+        {
+            get { return shortName; }
+            set
+            {
+                shortName = value;
+                RaisePropertyChanged("ShortName");
                 RaisePropertyChanged("Status");
             }
         }
@@ -55,7 +66,7 @@ namespace Scorer
 
         public string Status
         {
-            get { return string.Format("{0}: {1} pilots, {2} tasks", Name, Pilots.Count, Tasks.Count); }
+            get { return string.Format("{0}: {1} pilots, {2} tasks", ShortName, Pilots.Count, Tasks.Count); }
         }
 
         public Competition()
@@ -154,10 +165,8 @@ namespace Scorer
         /// <summary>Generate a pdf total scores sheet
         /// </summary>
         /// <param header="fileName">desired pdf file path</param>
-        public void PdfTotalScore(string pdfFileName)
+        public void TotalScoreToPdf(string pdfFileName)
         {
-            var title = Name + " total score";
-
             var config = new PdfConfig()
             {
                 PageLayout = PageSize.A4.Rotate(),
@@ -170,7 +179,8 @@ namespace Scorer
                 FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.PdfDocument;
+            var document = helper.Document;
+            var title = Name + " total score";
 
             //title
             document.Add(new Paragraph(Name, config.TitleFont));
@@ -233,9 +243,43 @@ namespace Scorer
         /// <summary>Generate a pdf with all task scores
         /// </summary>
         /// <param header="fileName"></param>
-        public void PdfTaskScores(string fileName)
+        public void TaskScoresTo1Pdf(string pdfFileName)
         {
-            throw new NotImplementedException();
+            var config = new PdfConfig()
+            {
+                PageLayout = PageSize.A4.Rotate(),
+                MarginTop = 1.5f * PdfHelper.cm2pt,
+                MarginBottom = 1.5f * PdfHelper.cm2pt,
+
+                HeaderLeft = Name,
+                HeaderRight = "Event director: " + Director,
+                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
+                FooterRight = Database.Instance.GetProgramInfo()
+            };
+            var helper = new PdfHelper(pdfFileName, config);
+            var document = helper.Document;
+
+            var isFirstTask = true;
+            foreach (var ts in TaskScores)
+            {
+                if (!isFirstTask)
+                    document.NewPage();
+
+                ts.ScoresToTable(helper);
+                isFirstTask = false;
+            }
+
+            document.Close();
+        }
+        /// <summary>Generate a pdf for each task score</summary>
+        /// <param name="folder">folder where to place the generated pdf files</param>
+        public void TaskScoresToNPdf(string folder)
+        {
+            foreach (var ts in TaskScores)
+            {
+                var fileName = Path.Combine(folder, ts.GetPdfScoresFileName());
+                ts.ScoresToPdf(fileName);
+            }
         }
     }
 }
