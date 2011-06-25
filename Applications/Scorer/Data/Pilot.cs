@@ -62,10 +62,10 @@ namespace Scorer
                     if (MessageBox.Show("This action will invalidate all current scores." + Environment.NewLine + "Are you sure?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
                     {
                         isDisqualified = value;
-                        Database.Instance.IsDirty = true;
+                        Event.Instance.IsDirty = true;
 
                         // void all scores
-                        foreach (var t in Database.Instance.Tasks)
+                        foreach (var t in Event.Instance.Tasks)
                             t.Phases |= CompletedPhases.Dirty;
                         RaisePropertyChanged("IsDisqualified");
                     }
@@ -78,9 +78,9 @@ namespace Scorer
             name = "enter pilot name";
         }
 
-        protected override void AfterPropertyChanged(string propertyName)
+        public override void AfterPropertyChanged(string propertyName)
         {
-            Database.Instance.IsDirty = true;
+            Event.Instance.IsDirty = true;
         }
 
         public override string ToString()
@@ -90,27 +90,16 @@ namespace Scorer
 
         public static void PdfList(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
-            var config = new PdfConfig()
-            {
-                PageLayout = PageSize.A4,
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
+            var config = Event.Instance.GetDefaultPdfConfig();
+            config.HeaderLeft = Event.Instance.Name;
 
-                //HeaderLeft = title,
-                //HeaderRight = "Event director: " + Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
-            };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
 
             //title
-            document.Add(new Paragraph(title, config.TitleFont)
-            {
-                Alignment = Element.ALIGN_LEFT,
-                SpacingAfter = 10
-            });
-
+            document.Add(new Paragraph(Event.Instance.Name, config.TitleFont));
+            //subtitle
+            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
             //table
             var headers = new string[] { "Num.", "Name", "Country", "Balloon" };
@@ -131,27 +120,16 @@ namespace Scorer
         }
         public static void PdfWorkList(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
-            var config = new PdfConfig()
-            {
-                PageLayout = PageSize.A4.Rotate(),
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
+            var config = Event.Instance.GetDefaultPdfConfig();
+            config.HeaderLeft = Event.Instance.Name;
 
-                //HeaderLeft = title,
-                //HeaderRight = "Event director: " + Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
-            };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
 
             //title
-            document.Add(new Paragraph(title, config.TitleFont)
-            {
-                Alignment = Element.ALIGN_LEFT,
-                SpacingAfter = 10
-            });
-
+            document.Add(new Paragraph(Event.Instance.Name, config.TitleFont));
+            //subtitle
+            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
             //table
             var headers = new string[] { "#", "Name", "", "", "", "", "", "", "", "" };

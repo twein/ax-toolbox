@@ -19,13 +19,7 @@ namespace AXToolbox.Common
     [Serializable]
     public abstract class BindableObject : INotifyPropertyChanged
     {
-        #region Data
-
         private static readonly Dictionary<string, PropertyChangedEventArgs> eventArgCache;
-
-        #endregion // Data
-
-        #region Constructors
 
         static BindableObject()
         {
@@ -35,10 +29,6 @@ namespace AXToolbox.Common
         protected BindableObject()
         {
         }
-
-        #endregion // Constructors
-
-        #region Public Members
 
         /// <summary>
         /// Raised when a public property of this object is set.
@@ -96,10 +86,6 @@ namespace AXToolbox.Common
             return args;
         }
 
-        #endregion // Public Members
-
-        #region Protected Members
-
         /// <summary>
         /// Derived classes can override this method to
         /// execute logic after a property is set. The 
@@ -108,7 +94,7 @@ namespace AXToolbox.Common
         /// <param name="propertyName">
         /// The property which was changed.
         /// </param>
-        protected virtual void AfterPropertyChanged(string propertyName)
+        public virtual void AfterPropertyChanged(string propertyName)
         {
         }
 
@@ -137,10 +123,11 @@ namespace AXToolbox.Common
             this.AfterPropertyChanged(propertyName);
 
             if (propertyName != "IsDirty")
+            {
+                isDirty = true;
                 RaisePropertyChanged("IsDirty");
+            }
         }
-
-        #endregion // Protected Members
 
         #region Private Helpers
 

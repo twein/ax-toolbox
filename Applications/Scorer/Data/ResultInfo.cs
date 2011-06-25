@@ -121,6 +121,11 @@ namespace Scorer
             Measure = value;
         }
 
+        public override void AfterPropertyChanged(string propertyName)
+        {
+            Event.Instance.IsDirty = true;
+        }
+
         public override string ToString()
         {
             return ToString(Measure);

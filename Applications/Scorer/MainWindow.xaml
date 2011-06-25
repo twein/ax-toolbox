@@ -3,12 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:local="clr-namespace:Scorer"
-        DataContext="{Binding Source={x:Static local:Database.Instance}}"
-        Title="MainWindow" Height="600" Width="1024"
+        DataContext="{Binding Source={x:Static local:Event.Instance}}"
+        Title="{Binding Path=Name}" Height="600" Width="1024"
+        Loaded="Window_Loaded"
         Closing="Window_Closing" Icon="/Scorer;component/balloon.ico">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Event">
+                <MenuItem Header="Edit" Click="menuEventEdit_Click"/>
+                <Separator />
                 <MenuItem Header="Load" Click="menuEventLoad_Click"/>
                 <MenuItem Header="Save" Click="menuEventSave_Click"/>
                 <MenuItem Header="Save XML" Click="menuEventSaveXml_Click"/>
@@ -20,12 +23,12 @@
             </MenuItem>
             <MenuItem Header="Pilots">
                 <MenuItem Header="Edit" Click="menuPilotsEdit_Click"/>
-                <MenuItem Header="List to pdf" Click="menuPilotsPdfList_Click">
+                <MenuItem Header="List to pdf" Click="menuPilotsListToPdf_Click">
                     <MenuItem.Icon>
                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Work list to pdf" Click="menuPilotsPdfWorkList_Click">
+                <MenuItem Header="Work list to pdf" Click="menuPilotsWorkListToPdf_Click">
                     <MenuItem.Icon>
                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                     </MenuItem.Icon>
@@ -66,7 +69,7 @@
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilotsEdit_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuCompetitionPilotsReset_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Competition pilots list" Click="menuCompetitionPilotsPdfList_Click">
+                                                <MenuItem Tag="{Binding}" Header="Competition pilots list" Click="menuCompetitionPilotsListToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
@@ -75,12 +78,17 @@
                                                 <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasksEdit_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuCompetitionTasksReset_Click"/>
                                                 <Separator/>
-                                                <MenuItem Tag="{Binding}" Header="All task scores" Click="menuCompetitionTasksPdfScores_Click">
+                                                <MenuItem Tag="{Binding}" Header="All task scores (1 file)" Click="menuCompetitionTasksScoresTo1Pdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Tag="{Binding}" Header="Total score" Click="menuCompetitionPdfTotalScore_Click">
+                                                <MenuItem Tag="{Binding}" Header="All task scores (n files)" Click="menuCompetitionTasksScoresToNPdf_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Tag="{Binding}" Header="Total score" Click="menuCompetitionTotalScoreToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
@@ -109,13 +117,13 @@
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskEditResults_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Results" Visibility="{Binding Path=ResultsVisibility}" Click="menuTaskPdfResults_Click">
+                                                <MenuItem Tag="{Binding}" Header="Results" Visibility="{Binding Path=ResultsVisibility}" Click="menuTaskResultsToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                                 <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuTaskComputeScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Scores" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskPdfScores_Click">
+                                                <MenuItem Tag="{Binding}" Header="Scores" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScoresToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
