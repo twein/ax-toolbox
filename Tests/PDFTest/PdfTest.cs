@@ -34,7 +34,7 @@ namespace PdfTest
                     FooterFont = new Font(Font.FontFamily.HELVETICA, 6.5f, Font.NORMAL)
                 };
             var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.PdfDocument;
+            var document = helper.Document;
 
             //title
             //document.Add(new Paragraph("Sun table", config.TitleFont)

@@ -1,4 +1,4 @@
-﻿Fix headers and titles in all pdf files
+﻿Fix headers and titles in all pdf files (config in competition)
 Competition: short name
 Event information: Name, location and date, director, short name, path (non serialized)
 Change score status. Optional force revision datetime

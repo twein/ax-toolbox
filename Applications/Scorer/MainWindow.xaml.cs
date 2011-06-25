@@ -214,7 +214,7 @@ namespace Scorer
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
             {
-                competition.PdfTaskScores(dlg.FileName);
+                competition.TaskScoresTo1Pdf(dlg.FileName);
                 PdfHelper.OpenPdf(dlg.FileName);
             }
         }
@@ -229,7 +229,7 @@ namespace Scorer
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == true)
             {
-                competition.PdfTotalScore(dlg.FileName);
+                competition.TotalScoreToPdf(dlg.FileName);
                 PdfHelper.OpenPdf(dlg.FileName);
             }
         }
@@ -288,7 +288,7 @@ namespace Scorer
                     var pdfName = string.Format("{0}-{1}-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
                         c.Name, task.UltraShortDescription, ts.RevisionDate, ts.Version, ts.Status.ToString().Substring(0, 1));
                     var pdfPath = Path.Combine(path, pdfName);
-                    ts.PdfScores(pdfPath);
+                    ts.ScoresToPdf(pdfPath);
                     PdfHelper.OpenPdf(pdfPath);
                 }
             }

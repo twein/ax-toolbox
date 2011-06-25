@@ -88,7 +88,7 @@ namespace Scorer
         }
         public string UltraShortDescription
         {
-            get { return string.Format("T{0:00}{2}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName); }
+            get { return string.Format("{0:00} {1}", Number, Task.Types[TypeNumber - 1].ShortName); }
         }
         public bool SortAscending
         {
@@ -215,7 +215,7 @@ namespace Scorer
                 FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.PdfDocument;
+            var document = helper.Document;
 
             //title
             document.Add(new Paragraph(title, config.TitleFont)

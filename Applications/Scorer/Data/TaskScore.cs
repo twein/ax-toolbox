@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Xml.Serialization;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 
@@ -11,10 +12,10 @@ namespace Scorer
     [Serializable]
     public class TaskScore
     {
-
         protected int A, B, P, M, SM;
         protected decimal RM, W;
 
+        [XmlIgnore]
         protected Competition competition;
         public Task Task { get; set; }
 
@@ -236,10 +237,8 @@ namespace Scorer
         /// <summary>Generate a pdf task scores sheet
         /// </summary>
         /// <param header="fileName">desired pdf file path</param>
-        public void PdfScores(string pdfFileName)
+        public void ScoresToPdf(string pdfFileName)
         {
-            var title = "Task " + Task.Description + " results";
-
             var config = new PdfConfig()
             {
                 PageLayout = PageSize.A4.Rotate(),
@@ -252,12 +251,24 @@ namespace Scorer
                 FooterRight = Database.Instance.GetProgramInfo()
             };
             var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.PdfDocument;
+            var document = helper.Document;
+
+            ScoresToTable(helper);
+
+            document.Close();
+        }
+        public void ScoresToTable(PdfHelper helper)
+        {
+            var document = helper.Document;
+            var config = helper.Config;
+
+            var title = "Task " + Task.Description + " score";
 
             //title
             document.Add(new Paragraph(competition.Name, config.TitleFont));
             //subtitle
-            document.Add(new Paragraph(competition.LocationDates, config.SubtitleFont) { SpacingAfter = 10 });
+            document.Add(new Paragraph(competition.LocationDates, config.SubtitleFont) { SpacingAfter = 20 });
+            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
             //status
             string statusMsg = Status.ToString() + " score";
@@ -295,8 +306,12 @@ namespace Scorer
             document.Add(table);
 
             document.Add(helper.NewParagraph(Constants));
+        }
 
-            document.Close();
+        public string GetPdfScoresFileName()
+        {
+            return string.Format("{0}-Task {1}-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
+                       competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1));
         }
     }
 }
