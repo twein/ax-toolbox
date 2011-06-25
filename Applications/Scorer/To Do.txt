@@ -1,2 +1,1 @@
-﻿Support to change score status. Optional force revision datetime
-Check visibility of all menus and buttons
+﻿Check visibility of all menus and buttons

@@ -103,6 +103,9 @@
     <Compile Include="Data\TaskType.cs" />
     <Compile Include="Data\PilotScore.cs" />
     <Compile Include="Data\PilotTotalScore.cs" />
+    <Compile Include="ScoreStatusWindow.xaml.cs">
+      <DependentUpon>ScoreStatusWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\EditEvent.xaml.cs">
       <DependentUpon>EditEvent.xaml</DependentUpon>
     </Compile>
@@ -123,6 +126,10 @@
     <Compile Include="Data\PilotResultInfo.cs" />
     <Compile Include="Data\ResultInfo.cs" />
     <Compile Include="Data\Task.cs" />
+    <Page Include="ScoreStatusWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\EditEvent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

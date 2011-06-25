@@ -6,11 +6,11 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Xml.Serialization;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
-using System.Xml.Serialization;
 
 namespace Scorer
 {
