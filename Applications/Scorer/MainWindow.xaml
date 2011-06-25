@@ -71,6 +71,9 @@
             <StatusBarItem>
                 <TextBlock Text="{Binding Path=Tasks.Count, StringFormat=Tasks: {0:0}}"/>
             </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Name="textDescription"/>
+            </StatusBarItem>
         </StatusBar>
         <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
@@ -115,7 +118,7 @@
                         <ListBox ItemsSource="{Binding Path=Tasks}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Path=Status}">
+                                    <TextBlock Tag="{Binding}" Text="{Binding Path=Status}" MouseEnter="listBoxTask_MouseEnter" MouseLeave="listBoxTask_MouseLeave">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskEditResults_Click"/>
@@ -125,7 +128,8 @@
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                                 <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuTaskComputeScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Scores" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScoresToPdf_Click">
+                                                <MenuItem Tag="{Binding}" Header="Change status" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskSetStatus_Click" />
+                                                <MenuItem Tag="{Binding}" Header="Score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScoresToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>

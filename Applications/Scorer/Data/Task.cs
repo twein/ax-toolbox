@@ -202,7 +202,7 @@ namespace Scorer
 
         public void ResultsToPdf(string folder, bool openAfterCreation)
         {
-            var fileName = Path.Combine(folder, "Task "+UltraShortDescription + " results.pdf");
+            var fileName = Path.Combine(folder, "Task " + UltraShortDescription + " results.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Event.Instance.Name;
 
@@ -256,6 +256,19 @@ namespace Scorer
         public override string ToString()
         {
             return Description;
+        }
+
+        public string ExtendedStatus
+        {
+            get
+            {
+                //TODO: fix [0]
+                var ts = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == this);
+                var str = string.Format("Task {0} {1} v{2:00} {3}",
+                       ShortDescription, ts.Status.ToString(), ts.Version, ts.RevisionDate);
+
+                return str;
+            }
         }
     }
 }

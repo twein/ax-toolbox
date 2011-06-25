@@ -183,6 +183,15 @@ namespace Scorer
             competition.ResetTasks();
         }
 
+        private void listBoxTask_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var task = ((TextBlock)sender).Tag as Task;
+            textDescription.Text = task.ExtendedStatus;
+        }
+        private void listBoxTask_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            textDescription.Text = "";
+        }
         private void menuTaskEditResults_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
@@ -212,6 +221,30 @@ namespace Scorer
                 var ts = c.TaskScores.First(s => s.Task == task);
                 ts.ComputeScores();
             }
+        }
+        private void menuTaskSetStatus_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+
+            //TODO: fix [0]
+            var ts = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == task);
+            var dlg = new ScoreStatusWindow()
+            {
+                Title = "Task " + task.Description,
+                Status = ts.Status,
+                Version = ts.Version,
+                RevisionDate = ts.RevisionDate,
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
+            };
+            dlg.ShowDialog();
+            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+                foreach (var c in Event.Instance.Competitions)
+                {
+                    var taskScore = c.TaskScores.First(s => s.Task == task);
+                    taskScore.Status = dlg.Status;
+                    taskScore.Version = dlg.Version;
+                    taskScore.RevisionDate = dlg.RevisionDate;
+                }
         }
         private void menuTaskScoresToPdf_Click(object sender, RoutedEventArgs e)
         {

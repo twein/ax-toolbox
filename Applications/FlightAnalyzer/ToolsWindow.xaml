@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:scripting="clr-namespace:AXToolbox.Scripting;assembly=AXToolbox.Scripting"
-        Title="Tools" Height="Auto" Width="Auto" MaxWidth="300" WindowStyle="ToolWindow" Loaded="Window_Loaded" Closing="Window_Closing" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="Manual">
+        Title="Tools" Height="Auto" Width="Auto" MaxWidth="300" 
+        WindowStyle="ToolWindow" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="Manual"
+        Loaded="Window_Loaded" Closing="Window_Closing" >
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}"
