@@ -1,7 +1,6 @@
 ﻿using System;
-using AXToolbox.GpsLoggers;
 
-namespace AXToolbox.Common
+namespace AXToolbox.GpsLoggers
 {
     public static class Physics
     {

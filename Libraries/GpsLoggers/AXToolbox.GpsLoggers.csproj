@@ -56,10 +56,15 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basic\Angle.cs" />
+    <Compile Include="Basic\AXPoint.cs" />
+    <Compile Include="Basic\AXTrackpoint.cs" />
+    <Compile Include="Basic\AXWaypoint.cs" />
     <Compile Include="Basic\Coordinates.cs" />
+    <Compile Include="Basic\Physics.cs" />
     <Compile Include="Geodesy\Datum.cs" />
     <Compile Include="Geodesy\GeodeticCurve.cs" />
     <Compile Include="Basic\GeoPoint.cs" />

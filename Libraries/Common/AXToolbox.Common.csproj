@@ -78,17 +78,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicTypes\AXTrackpoint.cs" />
     <Compile Include="General\ObjectSerializer.cs" />
     <Compile Include="Extensions\Double.cs" />
     <Compile Include="General\TimeStampTraceListener.cs" />
     <Compile Include="General\Singleton.cs" />
-    <Compile Include="BasicTypes\AXPoint.cs" />
-    <Compile Include="BasicTypes\AXWaypoint.cs" />
     <Compile Include="General\BindableObject.cs" />
     <Compile Include="Extensions\DateTime.cs" />
     <Compile Include="Extensions\String.cs" />
-    <Compile Include="Physics\Physics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -107,12 +103,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GPSLoggers\AXToolbox.GpsLoggers.csproj">
-      <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
-      <Name>AXToolbox.GpsLoggers</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
