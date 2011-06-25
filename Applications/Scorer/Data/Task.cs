@@ -155,13 +155,13 @@ namespace Scorer
         {
             typeNumber = 1;
             PilotResults = new ObservableCollection<PilotResultInfo>();
-            foreach (var p in Database.Instance.Pilots)
+            foreach (var p in Event.Instance.Pilots)
                 PilotResults.Add(new PilotResultInfo(this, p));
         }
 
-        protected override void AfterPropertyChanged(string propertyName)
+        public override void AfterPropertyChanged(string propertyName)
         {
-            Database.Instance.IsDirty = true;
+            Event.Instance.IsDirty = true;
         }
 
         public Visibility ResultsVisibility
@@ -201,29 +201,17 @@ namespace Scorer
 
         public void ResultsToPdf(string pdfFileName)
         {
-            var title = "Task " + Description + " results";
+            var config = Event.Instance.GetDefaultPdfConfig();
+            config.HeaderLeft = Event.Instance.Name;
 
-            var config = new PdfConfig()
-            {
-                PageLayout = PageSize.A4.Rotate(),
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
-
-                //HeaderLeft = title,
-                //HeaderRight = "Event director: " + Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
-            };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
 
             //title
-            document.Add(new Paragraph(title, config.TitleFont)
-            {
-                Alignment = Element.ALIGN_LEFT,
-                SpacingAfter = 10
-            });
-
+            var title = "Task " + Description + " results";
+            document.Add(new Paragraph(Event.Instance.Name, config.TitleFont));
+            //subtitle
+            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
             //table
             var headers = new string[] { 

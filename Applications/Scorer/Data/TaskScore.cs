@@ -239,17 +239,8 @@ namespace Scorer
         /// <param header="fileName">desired pdf file path</param>
         public void ScoresToPdf(string pdfFileName)
         {
-            var config = new PdfConfig()
-            {
-                PageLayout = PageSize.A4.Rotate(),
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
-
-                HeaderLeft = competition.Name,
-                HeaderRight = "Event director: " + competition.Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
-            };
+            var config = Event.Instance.GetDefaultPdfConfig();
+            config.HeaderLeft = competition.Name;
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
 
@@ -267,7 +258,6 @@ namespace Scorer
             //title
             document.Add(new Paragraph(competition.Name, config.TitleFont));
             //subtitle
-            document.Add(new Paragraph(competition.LocationDates, config.SubtitleFont) { SpacingAfter = 20 });
             document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
             //status

@@ -1,4 +1,4 @@
-﻿<local:EditCollection x:Class="Scorer.EditCompetitions" x:TypeArguments="local:Competition"
+﻿<local:EditCollection x:Class="Scorer.EditEvent" x:TypeArguments="local:Event"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -22,22 +22,14 @@
                   AlternatingRowBackground="SkyBlue"  AlternationCount="2"
                   AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="False" 
                   IsReadOnly="{Binding Path=ReadOnly}">
-            <DataGrid.Resources>
-                <ContextMenu x:Key="RowContextMenu" Visibility="{Binding Path=DeleteVisibility}">
-                    <MenuItem Tag="{Binding}" Header="Remove competition" Click="menuRemove_Click"/>
-                </ContextMenu>
-                <Style TargetType="DataGridRow">
-                    <Setter Property="ContextMenu" Value="{StaticResource RowContextMenu}" />
-                </Style>
-            </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="3*" />
-                <DataGridTextColumn Header="Short name" Binding="{Binding Path=ShortName}" Width="*" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="4*" />
+                <DataGridTextColumn Header="Short name" Binding="{Binding Path=ShortName}" Width="2*" />
+                <DataGridTextColumn Header="Location and dates" Binding="{Binding Path=LocationDates}" Width="3*" />
+                <DataGridTextColumn Header="Director name" Binding="{Binding Path=Director}" Width="2*" />
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
-            <Button Visibility="{Binding Path=AddVisibility}" Click="addButton_Click" ToolTip="Add a new competition">Add</Button>
-            <Separator Width="5" Visibility="Hidden"></Separator>
         </WrapPanel>
     </Grid>
 </local:EditCollection>

@@ -99,10 +99,13 @@
     <Compile Include="Data\TaskScore.cs" />
     <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
-    <Compile Include="Data\Database.cs" />
+    <Compile Include="Data\Event.cs" />
     <Compile Include="Data\TaskType.cs" />
     <Compile Include="Data\PilotScore.cs" />
-    <Compile Include="PilotTotalScore.cs" />
+    <Compile Include="Data\PilotTotalScore.cs" />
+    <Compile Include="UserControls\EditEvent.xaml.cs">
+      <DependentUpon>EditEvent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\EditCollection.cs" />
     <Compile Include="UserControls\EditCompetitions.xaml.cs">
       <DependentUpon>EditCompetitions.xaml</DependentUpon>
@@ -120,6 +123,10 @@
     <Compile Include="Data\PilotResultInfo.cs" />
     <Compile Include="Data\ResultInfo.cs" />
     <Compile Include="Data\Task.cs" />
+    <Page Include="UserControls\EditEvent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UserControls\EditCompetitions.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

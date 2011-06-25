@@ -37,28 +37,6 @@ namespace Scorer
                 RaisePropertyChanged("Status");
             }
         }
-        protected string locationDates;
-        public string LocationDates
-        {
-            get { return locationDates; }
-            set
-            {
-                locationDates = value;
-                RaisePropertyChanged("LocationDates");
-                RaisePropertyChanged("Status");
-            }
-        }
-        protected string director;
-        public string Director
-        {
-            get { return director; }
-            set
-            {
-                director = value;
-                RaisePropertyChanged("Director");
-                RaisePropertyChanged("Status");
-            }
-        }
 
         public ObservableCollection<Pilot> Pilots { get; set; }
         public ObservableCollection<Task> Tasks { get; set; }
@@ -79,8 +57,7 @@ namespace Scorer
             Tasks.CollectionChanged += Tasks_CollectionChanged;
 
             name = "enter competition name";
-            locationDates = "enter location and dates";
-            director = "enter director name";
+            shortName = "enter short name (for file names)";
         }
 
         [OnDeserialized]
@@ -92,13 +69,13 @@ namespace Scorer
 
         void Pilots_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Debug.Assert(Database.Instance.Tasks.Count == 0, "Can not modify pilot list if there are tasks defined");
+            Debug.Assert(Event.Instance.Tasks.Count == 0, "Can not modify pilot list if there are tasks defined");
             RaisePropertyChanged("Pilots");
             RaisePropertyChanged("Status");
         }
         void Tasks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Debug.Assert(Database.Instance.Pilots.Count > 0, "Can not modify task list if there are no pilots defined");
+            Debug.Assert(Event.Instance.Pilots.Count > 0, "Can not modify task list if there are no pilots defined");
 
             //update the task scores list
             switch (e.Action)
@@ -132,7 +109,7 @@ namespace Scorer
         public void ResetPilots()
         {
             Pilots.Clear();
-            foreach (var p in Database.Instance.Pilots)
+            foreach (var p in Event.Instance.Pilots)
                 Pilots.Add(p);
 
             //TODO: recompute task scores
@@ -143,7 +120,7 @@ namespace Scorer
         public void ResetTasks()
         {
             Tasks.Clear();
-            foreach (var t in Database.Instance.Tasks)
+            foreach (var t in Event.Instance.Tasks)
                 Tasks.Add(t);
 
             //TODO: recompute task scores
@@ -152,9 +129,9 @@ namespace Scorer
             RaisePropertyChanged("Status");
         }
 
-        protected override void AfterPropertyChanged(string propertyName)
+        public override void AfterPropertyChanged(string propertyName)
         {
-            Database.Instance.IsDirty = true;
+            Event.Instance.IsDirty = true;
         }
 
         public override string ToString()
@@ -167,17 +144,9 @@ namespace Scorer
         /// <param header="fileName">desired pdf file path</param>
         public void TotalScoreToPdf(string pdfFileName)
         {
-            var config = new PdfConfig()
-            {
-                PageLayout = PageSize.A4.Rotate(),
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
+            var config = Event.Instance.GetDefaultPdfConfig();
+            config.HeaderLeft = Name;
 
-                HeaderLeft = Name,
-                HeaderRight = "Event director: " + Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
-            };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
             var title = Name + " total score";
@@ -185,7 +154,6 @@ namespace Scorer
             //title
             document.Add(new Paragraph(Name, config.TitleFont));
             //subtitle
-            document.Add(new Paragraph(LocationDates, config.SubtitleFont) { SpacingAfter = 20 });
             document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
 
@@ -245,17 +213,9 @@ namespace Scorer
         /// <param header="fileName"></param>
         public void TaskScoresTo1Pdf(string pdfFileName)
         {
-            var config = new PdfConfig()
-            {
-                PageLayout = PageSize.A4.Rotate(),
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
+            var config = Event.Instance.GetDefaultPdfConfig();
+            config.HeaderLeft = Name;
 
-                HeaderLeft = Name,
-                HeaderRight = "Event director: " + Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
-                FooterRight = Database.Instance.GetProgramInfo()
-            };
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
 
