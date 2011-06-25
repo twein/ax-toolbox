@@ -2,13 +2,15 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
-using System.Runtime.Serialization;
-using System.Reflection;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
+using System.Xml.Serialization;
 
 namespace Scorer
 {
@@ -26,9 +28,10 @@ namespace Scorer
             get { return name; }
             set
             {
-                IsDirty = true;
                 name = value;
+                isNew = false;
                 RaisePropertyChanged("Name");
+                RaisePropertyChanged("SaveVisibility");
             }
         }
         private string shortName;
@@ -38,7 +41,9 @@ namespace Scorer
             set
             {
                 shortName = value;
+                isNew = false;
                 RaisePropertyChanged("ShortName");
+                RaisePropertyChanged("SaveVisibility");
             }
         }
         private string locationDates;
@@ -48,7 +53,9 @@ namespace Scorer
             set
             {
                 locationDates = value;
+                isNew = false;
                 RaisePropertyChanged("LocationDates");
+                RaisePropertyChanged("SaveVisibility");
             }
         }
         private string director;
@@ -58,12 +65,46 @@ namespace Scorer
             set
             {
                 director = value;
+                isNew = false;
                 RaisePropertyChanged("Director");
+                RaisePropertyChanged("SaveVisibility");
+            }
+        }
+
+        private ObservableCollection<Competition> competitions;
+        public ObservableCollection<Competition> Competitions
+        {
+            get { return competitions; }
+            set
+            {
+                competitions = value;
+                RaisePropertyChanged("Competitions");
+            }
+        }
+        private ObservableCollection<Pilot> pilots;
+        public ObservableCollection<Pilot> Pilots
+        {
+            get { return pilots; }
+            set
+            {
+                pilots = value;
+                RaisePropertyChanged("Pilots");
+            }
+        }
+        private ObservableCollection<Task> tasks;
+        public ObservableCollection<Task> Tasks
+        {
+            get { return tasks; }
+            set
+            {
+                tasks = value;
+                RaisePropertyChanged("Tasks");
             }
         }
 
         [NonSerialized]
         private string filePath;
+        [XmlIgnore]
         public string FilePath
         {
             get { return filePath; }
@@ -74,43 +115,15 @@ namespace Scorer
             }
         }
 
-        private ObservableCollection<Competition> competitions;
-        public ObservableCollection<Competition> Competitions
-        {
-            get { return competitions; }
-            private set
-            {
-                competitions = value;
-                RaisePropertyChanged("Competitions");
-            }
-        }
-        private ObservableCollection<Pilot> pilots;
-        public ObservableCollection<Pilot> Pilots
-        {
-            get { return pilots; }
-            private set
-            {
-                pilots = value;
-                RaisePropertyChanged("Pilots");
-            }
-        }
-        private ObservableCollection<Task> tasks;
-        public ObservableCollection<Task> Tasks
-        {
-            get { return tasks; }
-            private set
-            {
-                tasks = value;
-                RaisePropertyChanged("Tasks");
-            }
-        }
+        [NonSerialized]
+        private bool isNew = true;
 
         private Event()
         {
-            name = "enter event name";
-            shortName = "enter short name (for file names)";
-            locationDates = "enter location and dates";
-            director = "enter event director name";
+            name = "new event";
+            shortName = "short name";
+            locationDates = "location and dates";
+            director = "event director";
 
             competitions = new ObservableCollection<Competition>();
             pilots = new ObservableCollection<Pilot>();
@@ -204,6 +217,7 @@ namespace Scorer
             ObjectSerializer<Event>.Save(this, fileName, serializationFormat);
 
             IsDirty = false;
+            isNew = false;
         }
         public void Load(string fileName, SerializationFormat serializationFormat = SerializationFormat.DataContract)
         {
@@ -220,6 +234,24 @@ namespace Scorer
             FilePath = fileName;
 
             IsDirty = false;
+            isNew = false;
+        }
+
+        public void PilotListToPdf(string folder, bool openAfterCreation = false)
+        {
+            var fileName = Path.Combine(folder, ShortName + " pilot list.pdf");
+            Pilot.ListToPdf(fileName, "Pilot list", Pilots);
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
+        }
+        public void WorkListToPdf(string folder, bool openAfterCreation = false)
+        {
+            var fileName = Path.Combine(folder, ShortName + " work list.pdf");
+            Pilot.WorkListToPdf(fileName, "Work list", Pilots);
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
         }
 
         public string GetProgramInfo()
@@ -249,5 +281,17 @@ namespace Scorer
                 FooterRight = Event.Instance.GetProgramInfo()
             };
         }
+
+        public Visibility SaveVisibility
+        {
+            get
+            {
+                if (!isNew)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
+
     }
 }

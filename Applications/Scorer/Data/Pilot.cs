@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
-using System.Linq;
-using System.Windows;
 
 namespace Scorer
 {
@@ -75,7 +75,7 @@ namespace Scorer
 
         public Pilot()
         {
-            name = "enter pilot name";
+            name = "new pilot";
         }
 
         public override void AfterPropertyChanged(string propertyName)
@@ -88,7 +88,7 @@ namespace Scorer
             return string.Format("{0:000}: {1}", Number, Name);
         }
 
-        public static void PdfList(string pdfFileName, string title, IEnumerable<Pilot> pilots)
+        public static void ListToPdf(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Event.Instance.Name;
@@ -118,7 +118,7 @@ namespace Scorer
 
             PdfHelper.OpenPdf(pdfFileName);
         }
-        public static void PdfWorkList(string pdfFileName, string title, IEnumerable<Pilot> pilots)
+        public static void WorkListToPdf(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Event.Instance.Name;
