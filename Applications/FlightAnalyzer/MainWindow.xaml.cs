@@ -187,7 +187,7 @@ namespace FlightAnalyzer
             Cursor = Cursors.Arrow;
         }
 
-        #region "INotifyPropertyCahnged implementation"
+        #region "INotifyPropertyChanged implementation"
         private void RaisePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -198,5 +198,36 @@ namespace FlightAnalyzer
 
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion "INotifyPropertyCahnged implementation"
+
+        private void buttonAddMarkers_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new EditWaypointWindow()
+            {
+                Title = "Enter waypoint",
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
+                Date = Report.Date.Date
+            };
+
+            if (listBoxMarkers.SelectedItem != null)
+                dlg.Waypoint = (AXWaypoint)listBoxMarkers.SelectedItem;
+            else
+                dlg.Waypoint = new AXWaypoint("00", TrackPointer);
+
+            dlg.ShowDialog();
+            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+                Report.AddMarker(dlg.Waypoint);
+        }
+        private void buttonDeleteMarkers_Click(object sender, RoutedEventArgs e)
+        {
+            Report.RemoveMarker((AXWaypoint)listBoxMarkers.SelectedItem);
+        }
+        private void buttonAddDeclaredGoals_Click(object sender, RoutedEventArgs e)
+        {
+            //Report.AddDeclaredGoal(new AXWaypoint());
+        }
+        private void buttonDeleteDeclaredGoals_Click(object sender, RoutedEventArgs e)
+        {
+            Report.RemoveMarker((AXWaypoint)listBoxDeclaredGoals.SelectedItem);
+        }
     }
 }

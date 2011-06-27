@@ -10,7 +10,7 @@ namespace AXToolbox.Model.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
-                return Visibility.Hidden;
+                return Visibility.Collapsed;
             else
                 return Visibility.Visible;
         }

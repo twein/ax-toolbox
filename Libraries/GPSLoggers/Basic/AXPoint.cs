@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using System.Windows;
+using System.Windows.Data;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -71,21 +72,45 @@ namespace AXToolbox.GpsLoggers
         /// <returns></returns>
         public static AXPoint Parse(string strValue)
         {
-            var fields = strValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var easting = double.Parse(fields[0], NumberFormatInfo.InvariantInfo);
-            var northing = double.Parse(fields[1], NumberFormatInfo.InvariantInfo);
+            var time = TimeSpan.Parse(fields[0]);
+            var easting = double.Parse(fields[1], NumberFormatInfo.InvariantInfo);
+            var northing = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
 
             var altitude = 0.0;
-            if (fields.Length == 3)
-                altitude = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
+            if (fields.Length == 4)
+                altitude = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
 
-            return new AXPoint(DateTime.Now, easting, northing, altitude);
+            //TODO: fix this
+            return new AXPoint(DateTime.Now.Date + time, easting, northing, altitude);
         }
 
         public Point ToWindowsPoint()
         {
             return new Point(Easting, Northing);
+        }
+    }
+
+    [ValueConversion(typeof(AXPoint), typeof(String))]
+    public class AXPointConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            AXPoint point = value as AXPoint;
+            return point.ToString(AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude).TrimEnd();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                return AXPoint.Parse((string)value);
+            }
+            catch
+            {
+                return value;
+            }
         }
     }
 }
