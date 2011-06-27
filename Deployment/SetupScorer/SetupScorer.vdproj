@@ -233,7 +233,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4195.21316, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B6321C10EFCE5B53A9150D56E421687A"
@@ -392,7 +392,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox Scorer"
         "ProductCode" = "8:{E1CD990C-CB71-4E55-A58E-7D204D5B1151}"
-        "PackageCode" = "8:{B43D6611-1565-4BFB-9ACB-DDAAB751038E}"
+        "PackageCode" = "8:{9D629C51-4A06-43FE-A9AC-54A2E5BD75E1}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
