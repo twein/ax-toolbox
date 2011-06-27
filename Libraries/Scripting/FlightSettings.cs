@@ -27,6 +27,8 @@ namespace AXToolbox.Scripting
         public double MinSpeed { get; set; }
         public double MaxAcceleration { get; set; }
 
+        public string AltitudeCorrectionsFileName { get; set; }
+
         public override string ToString()
         {
             if (AreWellInitialized())

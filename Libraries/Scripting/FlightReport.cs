@@ -127,7 +127,7 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                var logFile = LoggerFile.Load(filePath);
+                var logFile = LoggerFile.Load(filePath, settings.AltitudeCorrectionsFileName);
 
                 //Convert geographical coordinates to AX coordinates
                 var track = new List<AXTrackpoint>();
