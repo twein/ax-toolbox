@@ -54,7 +54,7 @@
                         <ListBox ItemsSource="{Binding Path=Engine.Log}" Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}"/>
                     </Expander>
 
-                    <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True" >
+                    <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True"  >
                         <Expander.Header>
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
@@ -73,11 +73,43 @@
                                 </WrapPanel>
                             </StackPanel>
                         </Expander.Header>
-                        <StackPanel Orientation="Vertical" >
-                            <ListBox ItemsSource="{Binding Path=Report.Markers}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
-                            <ListBox ItemsSource="{Binding Path=Report.DeclaredGoals}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
-                            <ListBox ItemsSource="{Binding Path=Report.Notes}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
-                            <ListBox ItemsSource="{Binding Path=Report.Results}" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}"/>
+                        <StackPanel Orientation="Vertical" Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}" >
+                            <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Markers</TextBlock>
+                                        <Button Click="buttonAddMarkers_Click">Add</Button>
+                                        <Button Click="buttonDeleteMarkers_Click">Delete</Button>
+                                    </StackPanel>
+                                    <ListBox Name="listBoxMarkers" ItemsSource="{Binding Path=Report.Markers}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Declared goals</TextBlock>
+                                        <Button Click="buttonAddDeclaredGoals_Click">Add</Button>
+                                        <Button Click="buttonDeleteDeclaredGoals_Click">Delete</Button>
+                                    </StackPanel>
+                                    <ListBox Name="listBoxDeclaredGoals" ItemsSource="{Binding Path=Report.DeclaredGoals}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Notes</TextBlock>
+                                    </StackPanel>
+                                    <ListBox ItemsSource="{Binding Path=Report.Notes}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Results</TextBlock>
+                                    </StackPanel>
+                                    <ListBox ItemsSource="{Binding Path=Report.Results}"/>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                         <!--<TextBlock TextWrapping="Wrap" Background="White" Text="{Binding Path=Report.Notes}"/>-->
                     </Expander>
