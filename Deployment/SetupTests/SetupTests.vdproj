@@ -231,7 +231,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\Setup\\Debug\\SetupTests.msi"
+        "OutputFilename" = "8:..\\..\\Setup\\Debug\\SetupTests.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -268,7 +268,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:..\\Setup\\Release\\SetupTests.msi"
+        "OutputFilename" = "8:..\\..\\Setup\\Release\\SetupTests.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -363,7 +363,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4195.21316, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1FC24516E58DA62FF92820B210CDA3B8"
@@ -425,7 +425,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4195.21316, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_571DC73C99D00F9334DB14096DE18FAB"
@@ -476,7 +476,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4195.21316, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8B7995632777B06F6D668EA897911E87"
@@ -538,7 +538,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.GpsLoggers, Version=1.0.4195.21315, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.GpsLoggers, Version=1.0.4195.21767, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_BB83AC97FCE5407E6BB3CFF7FB5546F1"
@@ -644,7 +644,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox Tests"
         "ProductCode" = "8:{3763219E-582F-4E33-B754-15E401E6E897}"
-        "PackageCode" = "8:{99398458-C037-4CA3-9AFA-924B2BDF6AF1}"
+        "PackageCode" = "8:{F74AAEC1-9536-4897-BEFE-81E279F6ACC7}"
         "UpgradeCode" = "8:{0B97C931-6212-40F3-88F4-B8DE3520C514}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
