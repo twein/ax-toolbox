@@ -79,17 +79,17 @@
     <Compile Include="Objects\ScriptingTask.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\AXToolbox.Common.csproj">
       <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
-      <Name>Common</Name>
+      <Name>AXToolbox.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GPSLoggers\GPSLoggers.csproj">
+    <ProjectReference Include="..\GPSLoggers\AXToolbox.GpsLoggers.csproj">
       <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
-      <Name>GPSLoggers</Name>
+      <Name>AXToolbox.GpsLoggers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MapViewer\MapViewer.csproj">
+    <ProjectReference Include="..\MapViewer\AXToolbox.MapViewer.csproj">
       <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
-      <Name>MapViewer</Name>
+      <Name>AXToolbox.MapViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using AXToolbox.Common;
+using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting

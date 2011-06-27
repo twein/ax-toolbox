@@ -2,9 +2,9 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Documents;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 
-namespace GPSLoggersTest
+namespace GpsLoggersTest
 {
     public partial class MainWindow : Window
     {

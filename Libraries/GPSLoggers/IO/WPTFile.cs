@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 
 
-namespace AXToolbox.GPSLoggers
+namespace AXToolbox.GpsLoggers
 {
     public class WPTFile
     {
