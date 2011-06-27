@@ -34,7 +34,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Path=Number}" CellStyle="{StaticResource RightCellStyle}" MinWidth="30" IsReadOnly="True" />
                 <DataGridComboBoxColumn Header="Type" SelectedValueBinding="{Binding TypeNumber}" SelectedValuePath="Number" ItemsSource="{Binding Source={x:Static local:Task.Types}}" Width="*" />
-                <DataGridCheckBoxColumn Header="Void" Binding="{Binding Path=IsVoid}" />
+                <DataGridCheckBoxColumn Header="Cancelled" Binding="{Binding Path=IsCancelled}" Width="Auto"/>
             </DataGrid.Columns>
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
