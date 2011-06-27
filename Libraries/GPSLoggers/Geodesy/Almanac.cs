@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AXToolbox.GPSLoggers
+namespace AXToolbox.GpsLoggers
 {
     // Almanac for Computers, 1990
     // published by Nautical Almanac Office

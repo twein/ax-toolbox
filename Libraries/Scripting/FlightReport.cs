@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {

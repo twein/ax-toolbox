@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace AXToolbox.GPSLoggers
+namespace AXToolbox.GpsLoggers
 {
     public class TRKFile : LoggerFile
     {

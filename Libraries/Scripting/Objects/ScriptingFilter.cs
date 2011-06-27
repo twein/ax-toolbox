@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AXToolbox.Common;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {

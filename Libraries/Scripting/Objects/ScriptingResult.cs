@@ -5,7 +5,7 @@ using System.Text;
 using AXToolbox.MapViewer;
 using AXToolbox.Common;
 using System.Windows;
-using AXToolbox.GPSLoggers;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {

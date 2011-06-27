@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Xml.Serialization;
 
 namespace AXToolbox.Common
 {
@@ -18,13 +19,7 @@ namespace AXToolbox.Common
     [Serializable]
     public abstract class BindableObject : INotifyPropertyChanged
     {
-        #region Data
-
         private static readonly Dictionary<string, PropertyChangedEventArgs> eventArgCache;
-
-        #endregion // Data
-
-        #region Constructors
 
         static BindableObject()
         {
@@ -35,10 +30,6 @@ namespace AXToolbox.Common
         {
         }
 
-        #endregion // Constructors
-
-        #region Public Members
-
         /// <summary>
         /// Raised when a public property of this object is set.
         /// </summary>
@@ -47,6 +38,7 @@ namespace AXToolbox.Common
 
         [NonSerialized]
         private Boolean isDirty = false;
+        [XmlIgnore]
         public Boolean IsDirty
         {
             get { return isDirty; }
@@ -57,7 +49,6 @@ namespace AXToolbox.Common
                     isDirty = value;
                     RaisePropertyChanged("IsDirty");
                 }
-
             }
         }
 
@@ -95,10 +86,6 @@ namespace AXToolbox.Common
             return args;
         }
 
-        #endregion // Public Members
-
-        #region Protected Members
-
         /// <summary>
         /// Derived classes can override this method to
         /// execute logic after a property is set. The 
@@ -107,7 +94,7 @@ namespace AXToolbox.Common
         /// <param name="propertyName">
         /// The property which was changed.
         /// </param>
-        protected virtual void AfterPropertyChanged(string propertyName)
+        public virtual void AfterPropertyChanged(string propertyName)
         {
         }
 
@@ -136,10 +123,11 @@ namespace AXToolbox.Common
             this.AfterPropertyChanged(propertyName);
 
             if (propertyName != "IsDirty")
+            {
+                isDirty = true;
                 RaisePropertyChanged("IsDirty");
+            }
         }
-
-        #endregion // Protected Members
 
         #region Private Helpers
 

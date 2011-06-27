@@ -4,11 +4,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using AXToolbox.Common;
+using AXToolbox.GpsLoggers;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
 using System.Windows.Controls;
-
 
 namespace FlightAnalyzer
 {

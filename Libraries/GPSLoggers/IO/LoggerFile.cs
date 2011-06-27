@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 
-namespace AXToolbox.GPSLoggers
+namespace AXToolbox.GpsLoggers
 {
     public enum SignatureStatus { NotSigned, Genuine, Counterfeit }
 
