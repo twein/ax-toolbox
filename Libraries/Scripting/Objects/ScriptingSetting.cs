@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 
@@ -86,6 +87,14 @@ namespace AXToolbox.Scripting
                     var listener = new TimeStampTraceListener(ObjectParameters[0]);
                     Trace.Listeners.Add(listener);
                     Trace.AutoFlush = true;
+                    break;
+
+                case "ALTITUDECORRECTIONSFILE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    var fileName = ParseOrDie<string>(0, s => s);
+                    if (!File.Exists(fileName))
+                        throw new Exception("Logger altitude corrections file does not exist");
+                    Engine.Settings.AltitudeCorrectionsFileName = fileName;
                     break;
             }
         }

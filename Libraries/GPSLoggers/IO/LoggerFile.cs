@@ -36,13 +36,13 @@ namespace AXToolbox.GpsLoggers
         public abstract List<GeoWaypoint> GetMarkers();
         public abstract List<GoalDeclaration> GetGoalDeclarations();
 
-        public static LoggerFile Load(string fileName)
+        public static LoggerFile Load(string fileName, string altitudeCorrectionsFilePath = null)
         {
             LoggerFile logFile = null;
             switch (Path.GetExtension(fileName).ToLower())
             {
                 case ".igc":
-                    logFile = new IGCFile(fileName);
+                    logFile = new IGCFile(fileName, altitudeCorrectionsFilePath);
                     break;
                 case ".trk":
                     logFile = new TRKFile(fileName);

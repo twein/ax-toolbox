@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Netline.BalloonLogger.SignatureLib;
@@ -8,15 +10,17 @@ namespace AXToolbox.GpsLoggers
 {
     public class IGCFile : LoggerFile
     {
-        public IGCFile(string filePath)
-            : base(filePath)
+        private double altitudeCorrection;
+
+        public IGCFile(string logFilePath, string altitudeCorrectionsFilePath = null)
+            : base(logFilePath)
         {
             IsAltitudeBarometric = true;
             LogFileExtension = ".igc";
 
             //get signature info
             var v = new Verifier();
-            if (v.Verify(filePath))
+            if (v.Verify(logFilePath))
                 SignatureStatus = SignatureStatus.Genuine;
             else
                 SignatureStatus = SignatureStatus.Counterfeit;
@@ -64,6 +68,15 @@ namespace AXToolbox.GpsLoggers
             }
             catch (InvalidOperationException) { }
 
+            //load altitude correction
+            altitudeCorrection = 0;
+            try
+            {
+                var strCorrection = File.ReadAllLines(altitudeCorrectionsFilePath).First(l => l.Trim().StartsWith(LoggerSerialNumber)).Split(new char[] { '=' })[1];
+                altitudeCorrection = double.Parse(strCorrection) / 10; //altitude correction in file is in dm, convert to m
+            }
+            catch { }
+            Debug.WriteLine(string.Format("Logger altitude correction={0}", altitudeCorrection));
         }
 
         public override GeoPoint[] GetTrackLog()
@@ -191,7 +204,7 @@ namespace AXToolbox.GpsLoggers
                 var longitude = (double.Parse(line.Substring(pos + 8, 3)) +
                     double.Parse(line.Substring(pos + 11, 5)) / 60000)
                     * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
-                var altitude = double.Parse(line.Substring(pos + 18, 5));
+                var altitude = double.Parse(line.Substring(pos + 18, 5)) - altitudeCorrection;
                 //var gpsAltitude = double.Parse(line.Substring(pos + 23, 5));
                 //var accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //var satellites = int.Parse(line.Substring(pos + 32, 2));
