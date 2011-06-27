@@ -166,9 +166,9 @@ namespace Scorer
             //table
             var headers = new List<string>() { "Rank", "#", "Name", "TOTAL", "Average" };
             var relWidths = new List<float>() { 2, 2, 6, 3, 3 };
-            foreach (var t in Tasks)
+            foreach (var task in Tasks.OrderBy(t => t.Number))
             {
-                headers.Add("Task " + t.UltraShortDescription);
+                headers.Add("Task " + task.UltraShortDescription);
                 relWidths.Add(3);
             }
             var table = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
@@ -178,17 +178,9 @@ namespace Scorer
             foreach (var p in Pilots)
                 pilotTotalScores.Add(new PilotTotalScore(this, p));
 
-            var rank = 0;
-            var i = 1;
-            var lastScore = int.MinValue;
-            foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total))
+            var rank = 1;
+            foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total).ThenByDescending(s => s.Average))
             {
-                if (pts.Total != lastScore)
-                {
-                    lastScore = pts.Total;
-                    rank = i;
-                }
-
                 table.AddCell(helper.NewRCell(rank.ToString()));
                 table.AddCell(helper.NewRCell(pts.Pilot.Number.ToString()));
                 table.AddCell(helper.NewLCell(pts.Pilot.Name));
@@ -198,7 +190,8 @@ namespace Scorer
                 foreach (var taskScore in pts.TaskScores)
                     table.AddCell(helper.NewRCell(taskScore.ToString()));
 
-                i++;
+                //TODO: fix complete ties in total and average scores
+                rank++;
             }
 
             //checksums
@@ -227,7 +220,7 @@ namespace Scorer
             var document = helper.Document;
 
             var isFirstTask = true;
-            foreach (var ts in TaskScores)
+            foreach (var ts in TaskScores.OrderBy(ts => ts.Task.Number))
             {
                 if (!isFirstTask)
                     document.NewPage();
@@ -243,7 +236,7 @@ namespace Scorer
         }
         public void TaskScoresToNPdf(string folder)
         {
-            foreach (var ts in TaskScores)
+            foreach (var ts in TaskScores.OrderBy(ts => ts.Task.Number))
                 ts.ScoresToPdf(folder, false);
         }
     }

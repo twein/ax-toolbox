@@ -197,11 +197,9 @@ namespace Scorer
             var task = ((MenuItem)sender).Tag as Task;
             var editOptions = EditOptions.CanEdit;
 
-            var query = from pr in task.PilotResults
-                        select pr.ManualResultInfo;
             var results = new ObservableCollection<ResultInfo>();
-            foreach (var r in query)
-                results.Add(r);
+            foreach (var pr in task.PilotResults)
+                results.Add(pr.ManualResultInfo);
 
             AddTab(new EditTaskResults(results, editOptions), string.Format("Task {0}", task.ShortDescription));
         }
@@ -271,7 +269,7 @@ namespace Scorer
 
             // locate the TabControl that the tab will be added to
             var itemsTab = this.FindName("ItemsTab") as TabControl;
-            Debug.Assert(itemsTab != null, "can't find ItemsTab");
+            Debug.Assert(itemsTab != null, "can'task find ItemsTab");
 
             //recycle if already open
             //find a tab with the same header

@@ -18,7 +18,7 @@ namespace Scorer
 
             Total = 0;
             var taskScores = new List<int>();
-            foreach(var ts in competition.TaskScores)
+            foreach (var ts in competition.TaskScores.Where(s => !s.Task.IsCancelled).OrderBy(ts => ts.Task.Number))
             {
                 var ps = ts.PilotScores.First(s => s.Pilot.Number == pilot.Number);
                 Total += ps.FinalScore;

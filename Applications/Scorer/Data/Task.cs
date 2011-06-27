@@ -51,14 +51,14 @@ namespace Scorer
                 RaisePropertyChanged("Status");
             }
         }
-        private bool isVoid;
-        public bool IsVoid
+        private bool isCancelled;
+        public bool IsCancelled
         {
-            get { return isVoid; }
+            get { return isCancelled; }
             set
             {
-                isVoid = value;
-                RaisePropertyChanged("IsVoid");
+                isCancelled = value;
+                RaisePropertyChanged("IsCancelled");
                 RaisePropertyChanged("Status");
             }
         }
@@ -114,8 +114,8 @@ namespace Scorer
                     else
                         status += "C ";
                 }
-                if (isVoid)
-                    status += "Void";
+                if (isCancelled)
+                    status += "Cancelled";
                 status = status.Trim();
                 if (!string.IsNullOrEmpty(status))
                     status = "(" + status + ")";
