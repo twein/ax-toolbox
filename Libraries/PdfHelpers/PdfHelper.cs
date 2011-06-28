@@ -115,7 +115,7 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_LEFT,
                             new Paragraph(config.HeaderLeft, config.HeaderFont),
                             document.Left,
-                            document.Top + config.HeaderFont.Size,
+                            document.Top + config.MarginHeader + config.HeaderFont.Size / 2,
                             0);
                     }
                     //center
@@ -126,7 +126,7 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_CENTER,
                             new Paragraph(config.HeaderCenter, config.HeaderFont),
                             document.PageSize.Width / 2,
-                            document.Top + config.HeaderFont.Size,
+                            document.Top + config.MarginHeader + config.HeaderFont.Size / 2,
                             0);
                     }
                     //right
@@ -137,11 +137,11 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_RIGHT,
                             new Paragraph(config.HeaderRight, config.HeaderFont),
                             document.Right,
-                            document.Top + config.HeaderFont.Size,
+                            document.Top + config.MarginHeader + config.HeaderFont.Size / 2,
                             0);
                     }
-                    cb.MoveTo(document.Left, document.Top);
-                    cb.LineTo(document.Right, document.Top);
+                    cb.MoveTo(document.Left, document.Top + config.MarginHeader);
+                    cb.LineTo(document.Right, document.Top + config.MarginHeader);
                     cb.Stroke();
 
                     //insert footer
@@ -153,7 +153,7 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_LEFT,
                             new Paragraph(config.FooterLeft, config.FooterFont),
                             document.Left,
-                            document.Bottom - 10,
+                            document.Bottom - config.MarginFooter - config.FooterFont.Size,
                             0);
                     }
                     //center
@@ -164,7 +164,7 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_CENTER,
                             new Paragraph(config.FooterCenter, config.FooterFont),
                             document.PageSize.Width / 2,
-                            document.Bottom - 10,
+                            document.Bottom - config.MarginFooter - config.FooterFont.Size,
                             0);
                     }
                     else
@@ -175,7 +175,7 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_CENTER,
                             new Paragraph(writer.PageNumber.ToString("Page 0"), config.FooterFont),
                             document.PageSize.Width / 2,
-                            document.Bottom - 10,
+                            document.Bottom - config.MarginFooter - config.FooterFont.Size,
                             0);
                     }
                     //right
@@ -186,12 +186,12 @@ namespace AXToolbox.PdfHelpers
                             Element.ALIGN_RIGHT,
                             new Paragraph(config.FooterRight, config.FooterFont),
                             document.Right,
-                            document.Bottom - 10,
+                            document.Bottom - config.MarginFooter - config.FooterFont.Size,
                             0);
                     }
 
-                    cb.MoveTo(document.Left, document.Bottom);
-                    cb.LineTo(document.Right, document.Bottom);
+                    cb.MoveTo(document.Left, document.Bottom - config.MarginFooter);
+                    cb.LineTo(document.Right, document.Bottom - config.MarginFooter);
                     cb.Stroke();
                 }
             }
