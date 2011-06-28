@@ -66,6 +66,7 @@
     <Compile Include="Basic\AXTrackpoint.cs" />
     <Compile Include="Basic\AXWaypoint.cs" />
     <Compile Include="Basic\Coordinates.cs" />
+    <Compile Include="Basic\ITime.cs" />
     <Compile Include="Basic\Physics.cs" />
     <Compile Include="Geodesy\Datum.cs" />
     <Compile Include="Geodesy\GeodeticCurve.cs" />

@@ -84,12 +84,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EditGoalDeclarationWindow.xaml.cs">
+      <DependentUpon>EditGoalDeclarationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EditWaypointWindow.xaml.cs">
       <DependentUpon>EditWaypointWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolsWindow.xaml.cs">
       <DependentUpon>ToolsWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="EditGoalDeclarationWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="EditWaypointWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

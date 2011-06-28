@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
+using System.Windows.Data;
 
 namespace AXToolbox.GpsLoggers
 {
     [Serializable]
-    public class AXWaypoint : AXPoint
+    public class AXWaypoint : AXPoint, ITime
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -38,7 +39,7 @@ namespace AXToolbox.GpsLoggers
             else
             {
                 if ((info & AXPointInfo.Name) > 0)
-                    str.Append(Name + ": ");
+                    str.Append(Name + " ");
 
                 str.Append(base.ToString(info));
 
@@ -52,19 +53,20 @@ namespace AXToolbox.GpsLoggers
             return str.ToString();
         }
 
-        public new AXWaypoint Parse(string strValue)
+        public static new AXWaypoint Parse(string strValue)
         {
-            var fields = strValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var name = fields[0];
-            var easting = double.Parse(fields[1], NumberFormatInfo.InvariantInfo);
-            var northing = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
+            var name = int.Parse(fields[0].Trim(new char[] { ':' })).ToString("00");
+            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToUniversalTime();
+            var easting = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
+            var northing = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 
             var altitude = 0.0;
-            if (fields.Length == 4)
-                altitude = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
+            if (fields.Length == 6)
+                altitude = double.Parse(fields[5], NumberFormatInfo.InvariantInfo);
 
-            return new AXWaypoint(name, DateTime.Now, easting, northing, altitude);
+            return new AXWaypoint(name, time, easting, northing, altitude);
         }
     }
 
@@ -88,6 +90,28 @@ namespace AXToolbox.GpsLoggers
                     comparison = wpA.Name.CompareTo(wpB.Name);
             }
             return comparison;
+        }
+    }
+
+    [ValueConversion(typeof(AXWaypoint), typeof(String))]
+    public class AXWaypointConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var point = value as AXWaypoint;
+            return point.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude).TrimEnd();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                return AXWaypoint.Parse((string)value);
+            }
+            catch
+            {
+                return value;
+            }
         }
     }
 }

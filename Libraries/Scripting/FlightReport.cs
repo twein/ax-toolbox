@@ -244,19 +244,17 @@ namespace AXToolbox.Scripting
                 Notes.Add(string.Format("Marker removed: {0}", marker));
             return ok;
         }
-        public void AddDeclaredGoal(AXWaypoint declaration)
+        public void AddDeclaredGoal(GoalDeclaration declaration)
         {
-            throw new NotImplementedException();
-            //InsertIntoCollection(DeclaredGoals, declaration);
-            //Log.Add(string.Format("New goal declaration added: {0}", declaration));
+            InsertIntoCollection(DeclaredGoals, declaration);
+            Notes.Add(string.Format("New goal declaration added: {0}", declaration));
         }
-        public bool RemoveDeclaredGoal(AXWaypoint declaration)
+        public bool RemoveDeclaredGoal(GoalDeclaration declaration)
         {
-            throw new NotImplementedException();
-            //var ok = DeclaredGoals.Remove(declaration);
-            //if (ok)
-            //    Log.Add(string.Format("Goal declaration removed: {0}", declaration));
-            //return ok;
+            var ok = DeclaredGoals.Remove(declaration);
+            if (ok)
+                Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
+            return ok;
         }
 
         public void ClearResults()
@@ -375,7 +373,7 @@ namespace AXToolbox.Scripting
             {
                 track = track.Reverse();
                 if (Markers.Count > 0)
-                    reference = Markers.First();//TODO: use the goal declarations times too
+                    reference = Markers.First();//TODO: use the goal declaration times too
             }
             else
             {
@@ -410,18 +408,20 @@ namespace AXToolbox.Scripting
 
             return groundContact;
         }
-        protected void InsertIntoCollection(Collection<AXWaypoint> collection, AXWaypoint point)
+        protected void InsertIntoCollection<T>(Collection<T> collection, T point) where T : ITime
         {
-            AXWaypoint next = null;
+            T next = default(T);
+            bool found = true;
             try
             {
                 next = collection.First(m => m.Time > point.Time);
             }
             catch (InvalidOperationException)
             {
+                found = false;
             }
 
-            if (next == null)
+            if (!found)
             {
                 collection.Add(point);
             }

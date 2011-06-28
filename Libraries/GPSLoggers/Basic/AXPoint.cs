@@ -11,19 +11,20 @@ namespace AXToolbox.GpsLoggers
     {
         None = 0,
         All = 0xffff,
-        Date = 1,
-        Time = 2,
-        Altitude = 4,
-        Coords = 8,
-        CompetitionCoords = 16,
-        Validity = 32,
-        Name = 64,
-        Description = 128,
-        Radius = 256,
-        Input = 512
+        Date = 0x1,
+        Time = 0x2,
+        Altitude = 0x4,
+        Coords = 0x8,
+        CompetitionCoords = 0x10,
+        Validity = 0x20,
+        Name = 0x40,
+        Description = 0x80,
+        Radius = 0x100,
+        Input = 0x200,
+        Declaration = 0x400
     }
 
-    public class AXPoint
+    public class AXPoint : ITime
     {
         public DateTime Time { get; protected set; }
         public Double Easting { get; protected set; }
@@ -61,12 +62,12 @@ namespace AXToolbox.GpsLoggers
                 str.Append(string.Format("{0:0000}/{1:0000} ", Easting % 1e5 / 10, Northing % 1e5 / 10));
 
             if ((info & AXPointInfo.Altitude) > 0)
-                str.Append(Altitude.ToString("0m "));
+                str.Append(Altitude.ToString("0 "));
 
             return str.ToString();
         }
 
-        /// <summary>Parses an AXPoint. Example: 355030 4612000 [1000]
+        /// <summary>Parses an AXPoint. Example: 2011/06/24 08:00:00 355030,4612000 [1000]
         /// </summary>
         /// <param name="strValue"></param>
         /// <returns></returns>
@@ -74,43 +75,20 @@ namespace AXToolbox.GpsLoggers
         {
             var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var time = TimeSpan.Parse(fields[0]);
-            var easting = double.Parse(fields[1], NumberFormatInfo.InvariantInfo);
-            var northing = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
+            var time = DateTime.Parse(fields[0] + ' ' + fields[1], DateTimeFormatInfo.InvariantInfo).ToLocalTime();
+            var easting = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
+            var northing = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
 
             var altitude = 0.0;
-            if (fields.Length == 4)
-                altitude = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
+            if (fields.Length == 5)
+                altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 
-            //TODO: fix this
-            return new AXPoint(DateTime.Now.Date + time, easting, northing, altitude);
+            return new AXPoint(time, easting, northing, altitude);
         }
 
         public Point ToWindowsPoint()
         {
             return new Point(Easting, Northing);
-        }
-    }
-
-    [ValueConversion(typeof(AXPoint), typeof(String))]
-    public class AXPointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            AXPoint point = value as AXPoint;
-            return point.ToString(AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude).TrimEnd();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            try
-            {
-                return AXPoint.Parse((string)value);
-            }
-            catch
-            {
-                return value;
-            }
         }
     }
 }

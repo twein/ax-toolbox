@@ -6,23 +6,22 @@ using AXToolbox.GpsLoggers;
 
 namespace FlightAnalyzer
 {
-    public partial class EditWaypointWindow : Window, INotifyPropertyChanged
+    public partial class EditGoalDeclarationWindow : Window, INotifyPropertyChanged
     {
-
         public DialogResult Response { get; set; }
 
-        protected AXWaypoint waypoint;
-        public AXWaypoint Waypoint
+        protected GoalDeclaration declaration;
+        public GoalDeclaration Declaration
         {
-            get { return waypoint; }
+            get { return declaration; }
             set
             {
-                waypoint = value;
-                RaisePropertyChanged("Waypoint");
+                declaration = value;
+                RaisePropertyChanged("Declaration");
             }
         }
 
-        public EditWaypointWindow()
+        public EditGoalDeclarationWindow()
         {
             InitializeComponent();
             DataContext = this;
@@ -32,7 +31,7 @@ namespace FlightAnalyzer
         {
             try
             {
-                var x = AXWaypoint.Parse(textBox.Text);
+                var x = GoalDeclaration.Parse(textBox.Text);
                 Response = System.Windows.Forms.DialogResult.OK;
                 Close();
             }

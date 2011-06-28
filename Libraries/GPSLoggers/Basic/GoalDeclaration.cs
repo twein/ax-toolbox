@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Globalization;
+using System.Text;
+using System.Windows.Data;
 
 namespace AXToolbox.GpsLoggers
 {
     [Serializable]
-    public class GoalDeclaration
+    public class GoalDeclaration : ITime
     {
         public enum DeclarationType { GoalName, CompetitionCoordinates };
 
@@ -16,23 +19,90 @@ namespace AXToolbox.GpsLoggers
         public double Altitude { get; protected set; }
         public string Description { get; set; }
 
-        public GoalDeclaration(int number, DateTime time, string goalName, double altitude)
+        public GoalDeclaration(int number, DateTime time, string definition, double altitude)
         {
-            Type = DeclarationType.GoalName;
             Number = number;
             Time = time;
-            Name = goalName;
             Altitude = altitude;
+
+            if (definition.Length == 3)
+            {
+                //Type 000
+                Type = DeclarationType.GoalName;
+                Name = definition;
+            }
+            else if (definition.Length == 9)
+            {
+                // type 0000/0000
+                Type = DeclarationType.CompetitionCoordinates;
+                Easting4Digits = double.Parse(definition.Substring(0, 4));
+                Northing4Digits = double.Parse(definition.Substring(5, 4));
+            }
+            else
+                throw new InvalidOperationException("Invalid goal declaration");
+
         }
 
-        public GoalDeclaration(int number, DateTime time, double easting4Digits, double northing4Digits, double altitude)
+        public override string ToString()
         {
-            Type = DeclarationType.CompetitionCoordinates;
-            Number = number;
-            Time = time;
-            Easting4Digits = easting4Digits;
-            Northing4Digits = northing4Digits;
-            Altitude = altitude;
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude);
+        }
+        public string ToString(AXPointInfo info)
+        {
+            var str = new StringBuilder();
+
+            if ((info & AXPointInfo.Name) > 0)
+                str.Append(Number.ToString("00 "));
+
+            if ((info & AXPointInfo.Date) > 0)
+                str.Append(Time.ToLocalTime().ToString("yyyy/MM/dd "));
+
+            if ((info & AXPointInfo.Time) > 0)
+                str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
+
+            if ((info & AXPointInfo.Declaration) > 0)
+                if (Type == DeclarationType.GoalName)
+                    str.Append(Name + " ");
+                else
+                    str.Append(string.Format("{0:0000}/{1:0000} ", Easting4Digits, Northing4Digits));
+
+            if ((info & AXPointInfo.Altitude) > 0)
+                str.Append(Altitude.ToString("0 "));
+
+            return str.ToString();
+        }
+
+        public static GoalDeclaration Parse(string strValue)
+        {
+            var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var number = int.Parse(fields[0]);
+            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToLocalTime();
+            var definition = fields[3];
+            var altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
+
+            return new GoalDeclaration(number, time, definition, altitude);
+        }
+    }
+
+    [ValueConversion(typeof(GoalDeclaration), typeof(String))]
+    public class GoalDeclarationConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var declaration = value as GoalDeclaration;
+            return declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude);
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                return GoalDeclaration.Parse((string)value);
+            }
+            catch
+            {
+                return value;
+            }
         }
     }
 }
