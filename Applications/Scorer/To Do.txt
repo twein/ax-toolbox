@@ -1,1 +1,2 @@
 ﻿Check visibility of all menus and buttons
+Allow more space below header and above footer

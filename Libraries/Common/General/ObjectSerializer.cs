@@ -133,7 +133,7 @@ namespace AXToolbox.Common.IO
         {
             using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
             {
-                var dataContractSerializer = new DataContractSerializer(typeof(T), null, 0x7fff, true, true, null);
+                var dataContractSerializer = new DataContractSerializer(typeof(T), null, int.MaxValue, true, true, null);
                 var serializableObject = dataContractSerializer.ReadObject(fileStream) as T;
                 return serializableObject;
             }
@@ -177,7 +177,7 @@ namespace AXToolbox.Common.IO
             using (var fileStream = new FileStream(path, FileMode.Create))
             using (var xmlWriter = XmlWriter.Create(fileStream, xmlSettings))
             {
-                var dataContractSerializer = new DataContractSerializer(typeof(T), null, 0x7fff, true, true, null);
+                var dataContractSerializer = new DataContractSerializer(typeof(T), null, int.MaxValue, true, true, null);
                 dataContractSerializer.WriteObject(xmlWriter, serializableObject);
             }
         }

@@ -64,13 +64,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B010427CF3B734D81B1A6998FBF3338D"
+        "OwnerKey" = "8:_B6321C10EFCE5B53A9150D56E421687A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B6321C10EFCE5B53A9150D56E421687A"
+        "OwnerKey" = "8:_B010427CF3B734D81B1A6998FBF3338D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -391,15 +391,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox Scorer"
-        "ProductCode" = "8:{E1CD990C-CB71-4E55-A58E-7D204D5B1151}"
-        "PackageCode" = "8:{9D629C51-4A06-43FE-A9AC-54A2E5BD75E1}"
+        "ProductCode" = "8:{44A774EA-9FD2-4CB1-A769-106F90FB4F6A}"
+        "PackageCode" = "8:{BE214156-0B32-4D47-93D6-F9C04CF6256F}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.3"
+        "ProductVersion" = "8:0.1.4"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -927,7 +927,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_157134081F2B460BB09B6D20312032E2"
             {
-            "SourcePath" = "8:..\\..\\Applications\\Scorer\\obj\\Release\\Scorer.exe"
+            "SourcePath" = "8:"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
