@@ -114,7 +114,7 @@ namespace Scorer
                 else
                     M = A; //rule 14.5.6: fewer than half the competitors scored
 
-                SM = (1000 * (P + 1 - M) / P); //formula 2
+                SM = (int)Math.Round(1000m * (P + 1 - M) / P); //formula 2
                 RM = PilotScores[M - 1].ResultInfo.Result; //array is zero based
                 W = PilotScores[0].ResultInfo.Result;
 

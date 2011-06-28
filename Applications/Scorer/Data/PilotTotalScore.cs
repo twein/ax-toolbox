@@ -17,8 +17,14 @@ namespace Scorer
             Pilot = pilot;
 
             Total = 0;
+
+            var validTScores = from ts in competition.TaskScores
+                               where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
+                               && !ts.Task.IsCancelled
+                               orderby ts.Task.Number
+                               select ts;
             var taskScores = new List<int>();
-            foreach (var ts in competition.TaskScores.Where(s => !s.Task.IsCancelled).OrderBy(ts => ts.Task.Number))
+            foreach (var ts in validTScores)
             {
                 var ps = ts.PilotScores.First(s => s.Pilot.Number == pilot.Number);
                 Total += ps.FinalScore;

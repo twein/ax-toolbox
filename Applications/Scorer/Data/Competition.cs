@@ -162,11 +162,16 @@ namespace Scorer
             //subtitle
             document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
-
             //table
+            var validTasks = from t in Tasks
+                             where (t.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
+                             && !t.IsCancelled
+                             orderby t.Number
+                             select t;
+
             var headers = new List<string>() { "Rank", "#", "Name", "TOTAL", "Average" };
             var relWidths = new List<float>() { 2, 2, 6, 3, 3 };
-            foreach (var task in Tasks.OrderBy(t => t.Number))
+            foreach (var task in validTasks)
             {
                 headers.Add("Task " + task.UltraShortDescription);
                 relWidths.Add(3);
@@ -219,8 +224,13 @@ namespace Scorer
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
 
+            var validTScores = from ts in TaskScores
+                               where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
+                               && !ts.Task.IsCancelled
+                               orderby ts.Task.Number
+                               select ts;
             var isFirstTask = true;
-            foreach (var ts in TaskScores.OrderBy(ts => ts.Task.Number))
+            foreach (var ts in validTScores)
             {
                 if (!isFirstTask)
                     document.NewPage();
@@ -236,7 +246,12 @@ namespace Scorer
         }
         public void TaskScoresToNPdf(string folder)
         {
-            foreach (var ts in TaskScores.OrderBy(ts => ts.Task.Number))
+            var validTScores = from ts in TaskScores
+                               where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
+                               && !ts.Task.IsCancelled
+                               orderby ts.Task.Number
+                               select ts;
+            foreach (var ts in validTScores)
                 ts.ScoresToPdf(folder, false);
         }
     }

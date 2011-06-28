@@ -166,25 +166,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CDC0E0F280CC424AAFF2DE292E27394C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_13E6D24C79B005640E400D0AE423CA79"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8BC35BE18D1595DF85DC6157C4E78D70"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -197,12 +179,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8B7995632777B06F6D668EA897911E87"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C56897226B3F4F8BB234D5454DD8DD1B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -221,6 +197,30 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_40D3B9BDBC5184DB9B336C48D6883980"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_CDC0E0F280CC424AAFF2DE292E27394C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_8BC35BE18D1595DF85DC6157C4E78D70"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_CB30100632F94D499654BCC1C6448B10"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C56897226B3F4F8BB234D5454DD8DD1B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -363,7 +363,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4196.22992, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1FC24516E58DA62FF92820B210CDA3B8"
@@ -538,7 +538,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.GpsLoggers, Version=1.0.4195.21767, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.GpsLoggers, Version=1.0.4196.22991, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_BB83AC97FCE5407E6BB3CFF7FB5546F1"
@@ -644,7 +644,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox Tests"
         "ProductCode" = "8:{3763219E-582F-4E33-B754-15E401E6E897}"
-        "PackageCode" = "8:{F74AAEC1-9536-4897-BEFE-81E279F6ACC7}"
+        "PackageCode" = "8:{CBAE3013-EFD5-4C68-9A43-8BD4A5F36447}"
         "UpgradeCode" = "8:{0B97C931-6212-40F3-88F4-B8DE3520C514}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1221,7 +1221,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BBD40605FD144106BF9DC2A54029E100"
             {
-            "SourcePath" = "8:..\\..\\Tests\\GPSLoggersTest\\obj\\Release\\GPSLoggersTest.exe"
+            "SourcePath" = "8:..\\..\\Tests\\GPSLoggersTest\\obj\\Debug\\GPSLoggersTest.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
@@ -1249,7 +1249,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C56897226B3F4F8BB234D5454DD8DD1B"
             {
-            "SourcePath" = "8:..\\..\\Tests\\MapViewerTest\\obj\\Release\\MapViewerTest.exe"
+            "SourcePath" = "8:..\\..\\Tests\\MapViewerTest\\obj\\Debug\\MapViewerTest.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
@@ -1277,7 +1277,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CB30100632F94D499654BCC1C6448B10"
             {
-            "SourcePath" = "8:..\\..\\Tests\\ScriptingTest\\obj\\Release\\ScriptingTest.exe"
+            "SourcePath" = "8:..\\..\\Tests\\ScriptingTest\\obj\\Debug\\ScriptingTest.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
@@ -1305,7 +1305,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_CDC0E0F280CC424AAFF2DE292E27394C"
             {
-            "SourcePath" = "8:..\\..\\Tests\\PDFTest\\obj\\Release\\PdfTest.exe"
+            "SourcePath" = "8:..\\..\\Tests\\PdfTest\\obj\\Debug\\PdfTest.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_8422F0CCC5134D549AB92B464DCC02C8"
