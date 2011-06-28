@@ -153,26 +153,7 @@ namespace AXToolbox.GpsLoggers
 
             // position declaration
             var strGoal = line.Substring(12).Split(',')[0];
-            if (strGoal.Length == 3)
-            {
-                //Type 000
-                declaration = new GoalDeclaration(number, time, strGoal, altitude) { Description = description };
-            }
-
-            else if (strGoal.Length == 9)
-            {
-                // type 0000/0000
-                var easting4Digits = double.Parse(strGoal.Substring(0, 4));
-                var northing4Digits = double.Parse(strGoal.Substring(5, 4));
-
-                declaration = new GoalDeclaration(number, time, easting4Digits, northing4Digits, altitude) { Description = description };
-            }
-
-            else
-            {
-                // invalid declaration
-                throw new InvalidOperationException(string.Format("Unknown goal declaration format \"{0}\": [{1}]", strGoal, line));
-            }
+            declaration = new GoalDeclaration(number, time, strGoal, altitude) { Description = description };
 
             return declaration;
         }

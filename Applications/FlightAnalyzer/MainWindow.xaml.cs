@@ -199,35 +199,78 @@ namespace FlightAnalyzer
         public event PropertyChangedEventHandler PropertyChanged;
         #endregion "INotifyPropertyCahnged implementation"
 
-        private void buttonAddMarkers_Click(object sender, RoutedEventArgs e)
+        private void buttonAddMarker_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new EditWaypointWindow()
-            {
-                Title = "Enter waypoint",
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
-                Date = Report.Date.Date
-            };
+            AXWaypoint waypoint = null;
 
             if (listBoxMarkers.SelectedItem != null)
-                dlg.Waypoint = (AXWaypoint)listBoxMarkers.SelectedItem;
+                waypoint = (AXWaypoint)listBoxMarkers.SelectedItem;
+            else if (TrackPointer != null)
+                waypoint = new AXWaypoint("00", TrackPointer);
             else
-                dlg.Waypoint = new AXWaypoint("00", TrackPointer);
+                return;
 
+            var dlg = new EditWaypointWindow()
+            {
+                Title = "Enter marker",
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
+                Waypoint = waypoint
+            };
             dlg.ShowDialog();
             if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+            {
                 Report.AddMarker(dlg.Waypoint);
+                Engine.Display();
+            }
         }
-        private void buttonDeleteMarkers_Click(object sender, RoutedEventArgs e)
+        private void buttonDeleteMarker_Click(object sender, RoutedEventArgs e)
         {
             Report.RemoveMarker((AXWaypoint)listBoxMarkers.SelectedItem);
+            Engine.Display();
         }
-        private void buttonAddDeclaredGoals_Click(object sender, RoutedEventArgs e)
+        private void menuAddDeclaredGoal_Click(object sender, RoutedEventArgs e)
         {
-            //Report.AddDeclaredGoal(new AXWaypoint());
+            var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, Engine.Settings.DefaultAltitude);
+            var declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), Engine.Settings.DefaultAltitude);
+
+            var dlg = new EditGoalDeclarationWindow()
+            {
+                Title = "Enter goal declaration",
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
+                Declaration = declaration
+            };
+            dlg.ShowDialog();
+            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+            {
+                Report.AddDeclaredGoal(dlg.Declaration);
+                Engine.Display();
+            }
         }
-        private void buttonDeleteDeclaredGoals_Click(object sender, RoutedEventArgs e)
+        private void buttonAddDeclaredGoal_Click(object sender, RoutedEventArgs e)
         {
-            Report.RemoveMarker((AXWaypoint)listBoxDeclaredGoals.SelectedItem);
+            GoalDeclaration declaration = null;
+            if (listBoxDeclaredGoals.SelectedItem != null)
+                declaration = (GoalDeclaration)listBoxDeclaredGoals.SelectedItem;
+            else
+                declaration = new GoalDeclaration(0, Engine.Settings.Date, "0000/0000", Engine.Settings.DefaultAltitude);
+
+            var dlg = new EditGoalDeclarationWindow()
+            {
+                Title = "Enter goal declaration",
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
+                Declaration = declaration
+            };
+            dlg.ShowDialog();
+            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+            {
+                Report.AddDeclaredGoal(dlg.Declaration);
+                Engine.Display();
+            }
+        }
+        private void buttonDeleteDeclaredGoal_Click(object sender, RoutedEventArgs e)
+        {
+            Report.RemoveDeclaredGoal((GoalDeclaration)listBoxDeclaredGoals.SelectedItem);
+            Engine.Display();
         }
     }
 }
