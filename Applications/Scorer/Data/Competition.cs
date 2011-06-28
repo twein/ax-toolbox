@@ -149,18 +149,18 @@ namespace Scorer
         }
         public void TotalScoreToPdf(string folder, bool openAfterCreation = false)
         {
-            var fileName = Path.Combine(folder, ShortName + " total scores.pdf");
+            var fileName = Path.Combine(folder, ShortName + " total score.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
             config.HeaderLeft = Name;
 
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
-            var title = Name + " total score";
+            var title = "Total score";
 
             //title
             document.Add(new Paragraph(Name, config.TitleFont));
             //subtitle
-            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
+            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = config.SubtitleFont.Size });
 
             //table
             var validTasks = from t in Tasks

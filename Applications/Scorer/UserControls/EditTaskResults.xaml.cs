@@ -19,7 +19,38 @@ namespace Scorer
         {
             var rnd = new Random();
             foreach (var r in DataGridCollection)
-                r.Measure = 50 * (decimal)rnd.NextDouble();
+            {
+                r.InfringedRules = "";
+
+                int prob;
+                prob = rnd.Next(100);
+                if (prob < 5)
+                    r.Measure = ResultInfo.ParseMeasure("NF");
+                else if (prob < 15)
+                    r.Measure = ResultInfo.ParseMeasure("NR");
+                else
+                {
+                    r.Measure = 50 * (decimal)rnd.NextDouble();
+
+                    if (rnd.Next(100) < 5)
+                    {
+                        r.MeasurePenalty = 50 * (decimal)rnd.NextDouble();
+                        r.InfringedRules += "Some rule ";
+                    }
+                }
+
+                if (rnd.Next(100) < 5)
+                {
+                    r.TaskScorePenalty = rnd.Next(50) * 10;
+                    r.InfringedRules += "Some rule ";
+                }
+
+                if (rnd.Next(100) < 5)
+                {
+                    r.CompetitionScorePenalty = rnd.Next(50) * 10;
+                    r.InfringedRules += "Some rule ";
+                }
+            }
         }
 
         private void buttonImport_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -35,7 +66,6 @@ namespace Scorer
         private void buttonSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             //TODO: Hide the save button if validation fails
-
             SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults | CompletedPhases.Dirty;
             Save();
         }

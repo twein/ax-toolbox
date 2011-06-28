@@ -292,6 +292,5 @@ namespace Scorer
                     return Visibility.Collapsed;
             }
         }
-
     }
 }
