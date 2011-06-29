@@ -80,10 +80,11 @@ namespace Scorer
             {
                 Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set && AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
 
+                //TODO: 'this' should have a Task property (ManualResultInfo.Task.MeasurePenaltySign!!!)
                 if (ManualResultInfo.Type != ResultType.Not_Set)
-                    return ManualResultInfo.Result - AutoResultInfo.MeasurePenalty;
+                    return ManualResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
                 else
-                    return AutoResultInfo.Result - ManualResultInfo.MeasurePenalty;
+                    return AutoResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
             }
         }
         public int TaskScorePenalty
