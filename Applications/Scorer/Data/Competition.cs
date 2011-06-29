@@ -112,8 +112,6 @@ namespace Scorer
             foreach (var p in Event.Instance.Pilots)
                 Pilots.Add(p);
 
-            //TODO: recompute task scores
-
             RaisePropertyChanged("Pilots");
             RaisePropertyChanged("Status");
         }
@@ -122,8 +120,6 @@ namespace Scorer
             Tasks.Clear();
             foreach (var t in Event.Instance.Tasks)
                 Tasks.Add(t);
-
-            //TODO: recompute task scores
 
             RaisePropertyChanged("Tasks");
             RaisePropertyChanged("Status");
@@ -184,7 +180,7 @@ namespace Scorer
                 pilotTotalScores.Add(new PilotTotalScore(this, p));
 
             var rank = 1;
-            foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total).ThenByDescending(s => s.Average))
+            foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total).ThenByDescending(s => s.Average).ThenBy(s => s.Pilot.Number))
             {
                 table.AddCell(helper.NewRCell(rank.ToString()));
                 table.AddCell(helper.NewRCell(pts.Pilot.Number.ToString()));

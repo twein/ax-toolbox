@@ -41,7 +41,6 @@ namespace Scorer
                 measure = value;
                 RaisePropertyChanged("Measure");
                 RaisePropertyChanged("Type");
-                RaisePropertyChanged("Result");
             }
         }
         protected decimal measurePenalty;
@@ -52,18 +51,6 @@ namespace Scorer
             {
                 measurePenalty = value;
                 RaisePropertyChanged("MeasurePenalty");
-                RaisePropertyChanged("Result");
-            }
-        }
-        public decimal Result
-        {
-            get
-            {
-                //Debug.Assert(measure >= 0, "A non-measure result should not be asked to return a result");
-                if (Type != ResultType.Not_Set)
-                    return measure - measurePenalty;
-                else
-                    return measure;
             }
         }
         protected int taskScorePenalty;

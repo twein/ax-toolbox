@@ -98,6 +98,10 @@ namespace Scorer
                 return Types[typeNumber - 1].LowerIsBetter; //array is zero based 
             }
         }
+        public int MeasurePenaltySign
+        {
+            get { return Types[typeNumber - 1].LowerIsBetter ? 1 : -1; }
+        }
         public string Status
         {
             get
