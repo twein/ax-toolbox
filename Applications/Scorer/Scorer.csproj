@@ -99,6 +99,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="Converters.cs" />
     <Compile Include="Data\TaskScore.cs" />
     <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
