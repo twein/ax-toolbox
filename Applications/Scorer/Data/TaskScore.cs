@@ -255,12 +255,13 @@ namespace Scorer
             var document = helper.Document;
             var config = helper.Config;
 
-            var title = "Task " + Task.Description + " score";
-
             //title
-            document.Add(new Paragraph(competition.Name, config.TitleFont));
+            document.Add(new Paragraph(competition.Name, config.TitleFont) { SpacingAfter = 10 });
             //subtitle
-            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
+            var title = "Task " + Task.Description + " score";
+            document.Add(new Paragraph(title, config.SubtitleFont));
+            var date = string.Format("{0:d} {1}", Task.Date, Task.Date.Hour < 12 ? "AM" : "PM");
+            document.Add(new Paragraph(date, config.BoldFont) { SpacingAfter = 10 });
 
             //status
             string statusMsg = Status.ToString() + " score";

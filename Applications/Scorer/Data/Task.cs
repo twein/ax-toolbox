@@ -25,6 +25,16 @@ namespace Scorer
     {
         public static TaskType[] Types;
 
+        private DateTime date;
+        public DateTime Date
+        {
+            get { return date; }
+            set
+            {
+                date = value;
+                RaisePropertyChanged("Date");
+            }
+        }
         private int number;
         public int Number
         {
@@ -159,6 +169,12 @@ namespace Scorer
         public Task()
         {
             typeNumber = 1;
+
+            if (Event.Instance.Tasks.Count > 0)
+                date = Event.Instance.Tasks[Event.Instance.Tasks.Count - 1].Date;
+            else
+                date = DateTime.Now.Date;
+
             PilotResults = new ObservableCollection<PilotResultInfo>();
             foreach (var p in Event.Instance.Pilots)
                 PilotResults.Add(new PilotResultInfo(this, p));
@@ -214,10 +230,12 @@ namespace Scorer
             var document = helper.Document;
 
             //title
-            var title = "Task " + Description + " results";
-            document.Add(new Paragraph(Event.Instance.Name, config.TitleFont));
+            document.Add(new Paragraph(Event.Instance.Name, config.TitleFont) { SpacingAfter = 10 });
             //subtitle
-            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
+            var title = "Task " + Description + " results";
+            document.Add(new Paragraph(title, config.SubtitleFont));
+            var date = string.Format("{0:d} {1}", Date, Date.Hour < 12 ? "AM" : "PM");
+            document.Add(new Paragraph(date, config.BoldFont) { SpacingAfter = 10 });
 
             //table
             var headers = new string[] { 

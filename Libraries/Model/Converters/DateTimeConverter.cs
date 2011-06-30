@@ -27,28 +27,28 @@ namespace AXToolbox.Model.Converters
                 return value;
             }
         }
+    }
 
-        [ValueConversion(typeof(DateTime), typeof(String))]
-        public class DateTimeConverter : IValueConverter
+    [ValueConversion(typeof(DateTime), typeof(String))]
+    public class DateTimeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            {
-                DateTime date = (DateTime)value;
-                return string.Format("{0:yyyy/MMM/dd HH:mm}", date);
-            }
+            DateTime date = (DateTime)value;
+            return string.Format("{0:yyyy/MMM/dd HH:mm}", date);
+        }
 
-            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string strValue = value as string;
+            DateTime resultDateTime;
+            if (DateTime.TryParse(strValue, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal, out resultDateTime))
             {
-                string strValue = value as string;
-                DateTime resultDateTime;
-                if (DateTime.TryParse(strValue, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal, out resultDateTime))
-                {
-                    return resultDateTime;
-                }
-                else
-                {
-                    return value;
-                }
+                return resultDateTime;
+            }
+            else
+            {
+                return value;
             }
         }
     }

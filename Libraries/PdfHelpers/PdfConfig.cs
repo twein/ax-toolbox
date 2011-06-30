@@ -41,8 +41,8 @@ namespace AXToolbox.PdfHelpers
             MarginHeader = 0.3f * PdfHelper.cm2pt;
             MarginFooter = 0.3f * PdfHelper.cm2pt;
 
-            TitleFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
-            SubtitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
+            TitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
+            SubtitleFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
             NormalFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
             BoldFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.BOLD);
             ItalicFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.ITALIC); 
