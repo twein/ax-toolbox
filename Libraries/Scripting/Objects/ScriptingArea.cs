@@ -13,6 +13,8 @@ namespace AXToolbox.Scripting
     {
         protected ScriptingPoint center = null;
         protected double radius = 0;
+        protected double lowerLimit = double.NegativeInfinity;
+        protected double upperLimit = double.PositiveInfinity;
         protected List<AXTrackpoint> outline;
 
 
@@ -29,16 +31,30 @@ namespace AXToolbox.Scripting
                     throw new ArgumentException("Unknown area type '" + ObjectType + "'");
 
                 case "CIRCLE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
+                    center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
+                    radius = ParseOrDie<double>(1, ParseLength);
+                    if (ObjectParameters.Length >= 3)
+                        lowerLimit = ParseOrDie<double>(2, ParseLength);
+                    if (ObjectParameters.Length >= 4)
+                        upperLimit = ParseOrDie<double>(3, ParseLength);
+                    break;
+
+                case "DOME":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, ParseLength);
                     break;
 
                 case "POLY":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     var fileName = ParseOrDie<string>(0, s => s);
                     var trackLog = LoggerFile.Load(fileName);
                     outline = Engine.Settings.GetTrack(trackLog);
+                    if (ObjectParameters.Length >= 2)
+                        lowerLimit = ParseOrDie<double>(1, ParseLength);
+                    if (ObjectParameters.Length >= 3)
+                        upperLimit = ParseOrDie<double>(2, ParseLength);
                     break;
             }
         }
@@ -92,6 +108,7 @@ namespace AXToolbox.Scripting
                 switch (ObjectType)
                 {
                     case "CIRCLE":
+                    case "DOME":
                         if (center.Point != null)
                             overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName);
                         break;
@@ -125,18 +142,83 @@ namespace AXToolbox.Scripting
                 {
                     case "CIRCLE":
                         if (center.Point != null)
-                        {
-                            isInside = Physics.Distance2D(center.Point, point) < radius;
-                        }
+                            isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && Physics.Distance2D(center.Point, point) < radius;
+                        break;
+
+                    case "DOME":
+                        if (center.Point != null)
+                            isInside = Physics.Distance3D(center.Point, point) <= radius;
                         break;
 
                     case "POLY":
-                        isInside = InPolygon(point);
+                        isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && InPolygon(point);
                         break;
                 }
             }
 
             return isInside;
+        }
+
+        public double ScaledBPZInfringement(AXPoint point)
+        {
+            double infringement = 0;
+
+            if (point == null)
+                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+            else //if (Contains(point))
+                infringement = (point.Altitude - lowerLimit) / 30.48;
+
+            return infringement;
+        }
+        public double ScaledRPZInfringement(AXPoint point)
+        {
+            double infringement = 0;
+
+            if (point == null)
+                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+            else
+            {
+                //if (Contains(point))
+                {
+                    switch (ObjectType)
+                    {
+                        case "CIRCLE":
+                            {
+                                var hInfringement = radius - Physics.Distance2D(center.Point, point);
+                                var vInfringement = upperLimit - point.Altitude;
+                                infringement = Math.Sqrt(hInfringement * hInfringement + vInfringement * vInfringement) / 8;
+                            }
+                            break;
+
+                        case "DOME":
+                            infringement = radius - Physics.Distance2D(center.Point, point) / 8;
+                            break;
+
+                        case "POLY":
+                            {
+                                //var hInfringement = min(distance2D(p, foreach segment in outline));
+                                //var vInfringement = upperLimit - point.Altitude;
+                                //infringement = Math.Sqrt(hInfringement * hInfringement + vInfringement * vInfringement) / 8;
+
+
+                                //Vector p, q;
+                                //q = new Vector(outline[outline.Count - 1].Easting, outline[outline.Count - 1].Northing);
+                                //for (var i = 0; i < outline.Count; i++)
+                                //{
+                                //    p = q;
+                                //    q = new Vector(outline[i].Easting, outline[i].Northing);
+
+                                //    var pq = (q - p);
+                                //    pq = pq / Math.Sqrt(pq.X * pq.X + pq.Y * pq.Y);
+                                //}
+                            }
+                            throw new NotImplementedException();
+                            break;
+                    }
+                }
+            }
+
+            return infringement;
         }
 
         /// <summary>Check if a given point is inside the polygonal area. 2D only.
