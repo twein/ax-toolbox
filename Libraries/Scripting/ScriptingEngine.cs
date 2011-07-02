@@ -26,7 +26,8 @@ namespace AXToolbox.Scripting
         Pilot_Points = 0x20,
         Launch_And_Landing = 0x40,
         Reference_Points = 0x80,
-        Results = 0x100
+        Results = 0x100,
+        Penalties = 0x200
     }
     public enum TrackTypes { OriginalTrack, CleanTrack, FligthTrack }
 
@@ -232,7 +233,8 @@ namespace AXToolbox.Scripting
             }));
         }
 
-        private void ClearLog() {
+        private void ClearLog()
+        {
             Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
             {
                 Log.Clear();

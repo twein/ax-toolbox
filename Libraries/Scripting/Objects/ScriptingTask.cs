@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace AXToolbox.Scripting
 {
@@ -8,10 +8,14 @@ namespace AXToolbox.Scripting
         protected string resultUnit;
         protected int resultPrecission;
         public Result Result { get; protected set; }
+        public List<Penalty> Penalties { get; protected set; }
+
 
         internal ScriptingTask(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
-        { }
+        {
+            Penalties = new List<Penalty>();
+        }
 
         public override void CheckConstructorSyntax()
         {
@@ -91,6 +95,11 @@ namespace AXToolbox.Scripting
         public override void Display()
         { }
 
+        public override void Reset()
+        {
+            base.Reset();
+            Penalties.Clear();
+        }
         public override void Process()
         {
             base.Process();
