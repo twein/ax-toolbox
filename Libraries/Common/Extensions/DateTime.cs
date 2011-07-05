@@ -4,6 +4,11 @@ namespace AXToolbox.Common
 {
     public static class DateTimeExtensions
     {
+        public static string GetDateAmPm(this DateTime date)
+        {
+            return date.Date.ToShortDateString() + " " + ((date.TimeOfDay.TotalHours < 12) ? "AM" : "PM");
+        }
+
         public static string GetAmPm(this DateTime date)
         {
             return date.TimeOfDay.TotalHours < 12 ? "AM" : "PM";

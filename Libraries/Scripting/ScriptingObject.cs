@@ -38,7 +38,7 @@ namespace AXToolbox.Scripting
         }
 
         public string ObjectName { get; protected set; }
-        protected string ObjectType { get; set; }
+        public string ObjectType { get; protected set; }
         protected string[] ObjectParameters { get; set; }
         protected string DisplayMode { get; set; }
         protected string[] DisplayParameters { get; set; }
@@ -322,6 +322,10 @@ namespace AXToolbox.Scripting
 
 
         //parser functions for ParseOrDie<T>
+        protected static int ParseInt(string str)
+        {
+            return int.Parse(str, NumberFormatInfo.InvariantInfo);
+        }
         protected static double ParseDouble(string str)
         {
             return double.Parse(str, NumberFormatInfo.InvariantInfo);

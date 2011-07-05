@@ -347,7 +347,7 @@ namespace Scorer
             else
             {
                 var dlg = new System.Windows.Forms.FolderBrowserDialog();
-                dlg.Description = "Choose a filePath to save the scores";
+                dlg.Description = "Choose a folder to save the scores";
                 dlg.SelectedPath = Environment.CurrentDirectory;
                 dlg.ShowNewFolderButton = true;
                 if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)

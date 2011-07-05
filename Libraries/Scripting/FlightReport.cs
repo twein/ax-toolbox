@@ -82,9 +82,7 @@ namespace AXToolbox.Scripting
 
         public ObservableCollection<AXWaypoint> Markers { get; protected set; }
         public ObservableCollection<GoalDeclaration> DeclaredGoals { get; protected set; }
-        public ObservableCollection<Result> Results { get; protected set; }
         public ObservableCollection<string> Notes { get; protected set; }
-
 
         /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
         /// </summary>
@@ -187,7 +185,6 @@ namespace AXToolbox.Scripting
             OriginalTrack = new AXTrackpoint[0];
             Markers = new ObservableCollection<AXWaypoint>();
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
-            Results = new ObservableCollection<Result>();
             Notes = new ObservableCollection<string>();
         }
 
@@ -202,11 +199,31 @@ namespace AXToolbox.Scripting
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
+
+        public void SaveAll(string folder)
+        {
+            if (pilotId > 0)
+            {
+                Save(folder);
+                ExportTrackLog(folder);
+            }
+            else
+                throw new InvalidOperationException("The pilot id can not be zero");
+        }
         public void ExportTrackLog(string folder)
         {
             if (pilotId > 0)
             {
                 LogFile.Save(Path.Combine(folder, toShortString()));
+            }
+            else
+                throw new InvalidOperationException("The pilot id can not be zero");
+        }
+        public void ExportResults(string folder)
+        {
+            if (pilotId > 0)
+            {
+                throw new NotImplementedException();
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
@@ -256,22 +273,6 @@ namespace AXToolbox.Scripting
                 Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
             return ok;
         }
-
-        public void ClearResults()
-        {
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                Results.Clear();
-            }));
-        }
-        public void AddResult(Result result)
-        {
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                Results.Add(result);
-            }));
-        }
-
 
         protected void RemoveInvalidPoints()
         {
