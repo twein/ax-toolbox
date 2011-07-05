@@ -98,6 +98,33 @@ namespace AXToolbox.Scripting
 
         public ObservableCollection<string> Log { get; private set; }
 
+        public IEnumerable<string> Results
+        {
+            get
+            {
+                var taskQuery = from t in Heap.Values
+                                where t is ScriptingTask
+                                select t as ScriptingTask;
+
+                foreach (var t in taskQuery)
+                    if (t.Result != null)
+                        yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.ObjectType, t.Result.ToString());
+            }
+        }
+        public IEnumerable<string> Penalties
+        {
+            get
+            {
+                var taskQuery = from t in Heap.Values
+                                where t is ScriptingTask
+                                select t as ScriptingTask;
+
+                foreach (var t in taskQuery)
+                    foreach (var p in t.Penalties)
+                        yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.ObjectType, p.ToString());
+            }
+        }
+
         public ScriptingEngine(MapViewerControl mapViewer)
         {
             MapViewer = mapViewer;
@@ -178,19 +205,19 @@ namespace AXToolbox.Scripting
         }
         public void Process()
         {
+            if (Report.PilotId == 0)
+                throw new InvalidOperationException("The pilot id can not be zero");
+
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
             ClearLog();
-            Report.ClearResults();
 
             //process all objects
             foreach (var obj in Heap.Values)
                 obj.Process();
 
-            //collect results
-            foreach (ScriptingTask t in Heap.Values.Where(o => o is ScriptingTask))
-                Report.AddResult(t.Result);
-
             Display();
+            RaisePropertyChanged("Results");
+            RaisePropertyChanged("Penalties");
         }
 
         public void Display(bool factoryReset = false)

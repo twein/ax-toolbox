@@ -2,12 +2,12 @@
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using AXToolbox.GpsLoggers;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
-using System.Windows.Controls;
 
 namespace FlightAnalyzer
 {
@@ -24,6 +24,7 @@ namespace FlightAnalyzer
         public AXTrackpoint TrackPointer { get; private set; }
 
         protected BackgroundWorker Worker = new BackgroundWorker();
+        protected string saveFolder;
 
         public MainWindow()
         {
@@ -97,6 +98,11 @@ namespace FlightAnalyzer
         {
             Cursor = Cursors.Wait;
             Worker.RunWorkerAsync(""); // look Work() and WorkCompleted()
+        }
+        private void saveReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(GetFolderName()))
+                Report.Save(saveFolder);
         }
 
         //Handles all property changes from the Tools window
@@ -175,6 +181,8 @@ namespace FlightAnalyzer
                         break;
                     case "report":
                         Report = Engine.Report;
+                        if (Report.PilotId <= 0)
+                            throw new InvalidOperationException("The pilot number cannot be zero");
                         TrackPointer = null;
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Report");
@@ -271,6 +279,27 @@ namespace FlightAnalyzer
         {
             Report.RemoveDeclaredGoal((GoalDeclaration)listBoxDeclaredGoals.SelectedItem);
             Engine.Display();
+        }
+
+        private string GetFolderName()
+        {
+            string folder = null;
+            if (!string.IsNullOrEmpty(saveFolder))
+                folder = saveFolder;
+            else
+            {
+                var dlg = new System.Windows.Forms.FolderBrowserDialog();
+                dlg.Description = "Choose a folder to save the report and associated files";
+                dlg.SelectedPath = Environment.CurrentDirectory;
+                dlg.ShowNewFolderButton = true;
+                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    folder = dlg.SelectedPath;
+                    saveFolder = folder;
+                }
+            }
+
+            return folder;
         }
     }
 }

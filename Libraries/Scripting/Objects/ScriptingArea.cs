@@ -47,7 +47,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "POLY":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     var fileName = ParseOrDie<string>(0, s => s);
                     var trackLog = LoggerFile.Load(fileName);
                     outline = Engine.Settings.GetTrack(trackLog);

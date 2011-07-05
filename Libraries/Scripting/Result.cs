@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AXToolbox.GpsLoggers;
+using System.IO;
 
 namespace AXToolbox.Scripting
 {
@@ -15,8 +16,6 @@ namespace AXToolbox.Scripting
     [Serializable]
     public class Result
     {
-        public string TaskName { get; protected set; }
-        public string TaskType { get; protected set; }
         public ResultType Type { get; protected set; }
         public string Unit { get; protected set; }
         public double Value { get; protected set; }
@@ -31,32 +30,30 @@ namespace AXToolbox.Scripting
         }
 
         //TODO: URGENT! rethink the result workflow
-        internal static Result NewNoFlight(string taskName, string taskType)
+        internal static Result NewNoFlight()
         {
-            return new Result(taskName, taskType) { Type = ResultType.No_Flight };
+            return new Result() { Type = ResultType.No_Flight };
         }
-        internal static Result NewNoResult(string taskName, string taskType)
+        internal static Result NewNoResult()
         {
-            return new Result(taskName, taskType) { Type = ResultType.No_Result };
+            return new Result() { Type = ResultType.No_Result };
         }
-        internal static Result NewResult(string taskName, string taskType, double value, string unit)
+        internal static Result NewResult(double value, string unit)
         {
-            return new Result(taskName, taskType) { Type = ResultType.Result, Value = value, Unit = unit };
+            return new Result() { Type = ResultType.Result, Value = value, Unit = unit };
         }
 
-        protected Result(string taskName, string taskType)
+        protected Result()
         {
             UsedPoints = new List<AXPoint>();
-            TaskName = taskName;
-            TaskType = taskType;
         }
 
         public override string ToString()
         {
-            return string.Format("{0} ({1}): {2}", TaskName, TaskType, ValueToString());
+            return ValueUnitToString();
         }
 
-        public string ValueToString()
+        public string ValueUnitToString()
         {
             string str = "";
             switch (Type)
@@ -69,6 +66,24 @@ namespace AXToolbox.Scripting
                     break;
                 case ResultType.Result:
                     str = string.Format("{0:0.00}{1}", Value, Unit);
+                    break;
+            }
+
+            return str;
+        }
+        public string ValueToString()
+        {
+            string str = "";
+            switch (Type)
+            {
+                case ResultType.No_Flight:
+                    str = "NF";
+                    break;
+                case ResultType.No_Result:
+                    str = "NR";
+                    break;
+                case ResultType.Result:
+                    str = string.Format("{0:0.00}", Value);
                     break;
             }
 

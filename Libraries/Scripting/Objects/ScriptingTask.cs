@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using AXToolbox.Common;
 
 namespace AXToolbox.Scripting
 {
     public class ScriptingTask : ScriptingObject
     {
+        public int Number { get; protected set; }
         protected string resultUnit;
         protected int resultPrecission;
         public Result Result { get; protected set; }
@@ -19,7 +22,8 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
+            AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+            Number = ParseOrDie<int>(0, ParseInt);
 
             resultPrecission = 2;
             switch (ObjectType)
@@ -98,6 +102,7 @@ namespace AXToolbox.Scripting
         public override void Reset()
         {
             base.Reset();
+            Result = null;
             Penalties.Clear();
         }
         public override void Process()
@@ -111,15 +116,40 @@ namespace AXToolbox.Scripting
 
         public Result NewResult(double value)
         {
-            return Result = Result.NewResult(ObjectName, ObjectType, value, resultUnit);
+            return Result = Result.NewResult(value, resultUnit);
         }
         public Result NewNoResult()
         {
-            return Result = Result.NewNoResult(ObjectName, ObjectType);
+            return Result = Result.NewNoResult();
         }
         public Result NewNoFlight()
         {
-            return Result = Result.NewNoFlight(ObjectName, ObjectType);
+            return Result = Result.NewNoFlight();
+        }
+
+        public void SaveCsv(string folder)
+        {
+            var content = new List<string>();
+
+            double measurePenalty = 0;
+            int taskPoints = 0;
+            int competitionPoints = 0;
+            string infringedRules = "";
+
+            foreach (var p in Penalties)
+            {
+                measurePenalty += p.Measure;
+                taskPoints += p.TaskPoints;
+                competitionPoints += p.CompetitionPoints;
+                infringedRules += p.InfringedRules;
+            }
+
+            content.Add(string.Format("#{0} Task {1} {2}", Engine.Settings.Date.GetDateAmPm(), Number, ObjectType));
+            content.Add(string.Format("{0};{1}", Engine.Settings.Date.GetDateAmPm(), Number));
+            content.Add(string.Format("{0};{1:0.00};{2:0.00};{3:0};{4:0};{5}", Engine.Report.PilotId, Result.ValueToString(), measurePenalty, taskPoints, competitionPoints, infringedRules));
+
+            var fileName = Path.Combine(folder, string.Format("T{0:00}{1}-P{2:000}.csv", Number, ObjectType, Engine.Report.PilotId));
+            File.WriteAllLines(fileName, content);
         }
     }
 }

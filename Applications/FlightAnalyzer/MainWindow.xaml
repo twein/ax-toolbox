@@ -70,6 +70,8 @@
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Set landing</Button>
                                     <Button ToolTip="Process the current report" Click="processReportButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
+                                    <Button ToolTip="Save the current report" Click="saveReportButton_Click"
+                                    Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
                                 </WrapPanel>
                             </StackPanel>
                         </Expander.Header>
@@ -107,7 +109,15 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontWeight="Bold" VerticalAlignment="Center">Results</TextBlock>
                                     </StackPanel>
-                                    <ListBox ItemsSource="{Binding Path=Report.Results}"/>
+                                    <ListBox ItemsSource="{Binding Path=Engine.Results}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Penalties</TextBlock>
+                                    </StackPanel>
+                                    <ListBox ItemsSource="{Binding Path=Engine.Penalties}"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
