@@ -1,0 +1,53 @@
+BUGS
+
+
+PENDING
+Display correctly AXTrackpoint.StartSubtrack
+Check the workflow of BindableObject.IsDirty
+
+
+TO DO
+Add logger altitude correction file support
+Add notes for every user action.
+Keep track of debriefer identity. Assign pilot ranges to each debriefer?
+Don't score counterfeit logs.
+Mark manually added markers and declarations. Don't allow to delete non-manual ones.
+Perform all measurements and penalizations in FlightAnalyzer.
+Force analyzing of all assigned pilots?
+List of saved reports.
+Add distance measure tool (shift-click) to MapViewer.
+Add metadata to all pdfs
+
+IDEAS
+Make an error log to output all recoverable error causes.
+Steal ideas from http://boxy.fisch.lu
+Add a new type of point: TLU Track point last used: Last used point in any task
+
+
+PENALTIES:
+R13
+Result: distance, angle, group B (apply when "… will not achieve a result.")
+Score: task points, competition points.
+
+
+Checklist:
+Pilot number
+Track log signature
+Max vertical speed
+Launch and landing
+Markers
+	Incorrect marker number
+Pilot declared goals
+	Incorrect declaration number
+	Incorrect allowed goal number
+	Road crossing distance
+
+
+
+How to set different tasks:
+3DS: apply a filter for each area. the result is a DACC
+
+
+RULES:
+Read all COH!
+Checksum: the last four characters of the sum of all competitors' scores multiplied by their number. (COH13.33.2)
