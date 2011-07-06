@@ -24,6 +24,7 @@ namespace AXToolbox.GpsLoggers
         Declaration = 0x400
     }
 
+    [Serializable]
     public class AXPoint : ITime
     {
         public DateTime Time { get; protected set; }

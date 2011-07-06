@@ -148,7 +148,7 @@ namespace AXToolbox.Scripting
             content.Add(string.Format("{0};{1}", Engine.Settings.Date.GetDateAmPm(), Number));
             content.Add(string.Format("{0};{1:0.00};{2:0.00};{3:0};{4:0};{5}", Engine.Report.PilotId, Result.ValueToString(), measurePenalty, taskPoints, competitionPoints, infringedRules));
 
-            var fileName = Path.Combine(folder, string.Format("T{0:00}{1}-P{2:000}.csv", Number, ObjectType, Engine.Report.PilotId));
+            var fileName = Path.Combine(folder, string.Format("T{0:00} {1}-P{2:000}.csv", Number, ObjectType, Engine.Report.PilotId));
             File.WriteAllLines(fileName, content);
         }
     }

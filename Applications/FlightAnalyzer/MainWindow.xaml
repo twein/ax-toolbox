@@ -71,7 +71,7 @@
                                     <Button ToolTip="Process the current report" Click="processReportButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
                                     <Button ToolTip="Save the current report" Click="saveReportButton_Click"
-                                    Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Process</Button>
+                                    Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Save</Button>
                                 </WrapPanel>
                             </StackPanel>
                         </Expander.Header>

@@ -8,6 +8,7 @@ using Netline.BalloonLogger.SignatureLib;
 
 namespace AXToolbox.GpsLoggers
 {
+    [Serializable]
     public class IGCFile : LoggerFile
     {
         private double altitudeCorrection;

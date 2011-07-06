@@ -199,31 +199,11 @@ namespace AXToolbox.Scripting
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
-
-        public void SaveAll(string folder)
-        {
-            if (pilotId > 0)
-            {
-                Save(folder);
-                ExportTrackLog(folder);
-            }
-            else
-                throw new InvalidOperationException("The pilot id can not be zero");
-        }
         public void ExportTrackLog(string folder)
         {
             if (pilotId > 0)
             {
                 LogFile.Save(Path.Combine(folder, toShortString()));
-            }
-            else
-                throw new InvalidOperationException("The pilot id can not be zero");
-        }
-        public void ExportResults(string folder)
-        {
-            if (pilotId > 0)
-            {
-                throw new NotImplementedException();
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");

@@ -190,8 +190,10 @@ namespace AXToolbox.Scripting
             Trace.WriteLine("Loading " + loggerFile, "ENGINE");
             Reset();
             Report = FlightReport.Load(loggerFile, Settings);
-            RaisePropertyChanged("Report");
             Display();
+            RaisePropertyChanged("Report");
+            RaisePropertyChanged("Results");
+            RaisePropertyChanged("Penalties");
         }
 
         public void Reset()
@@ -218,6 +220,33 @@ namespace AXToolbox.Scripting
             Display();
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
+        }
+        public void SaveAll(string folder)
+        {
+            if (Report.PilotId > 0)
+            {
+                Report.Save(folder);
+                Report.ExportTrackLog(folder);
+                if (Results.Count() > 0)
+                    ExportResults(folder);
+            }
+            else
+                throw new InvalidOperationException("The pilot id can not be zero");
+        }
+
+        public void ExportResults(string folder)
+        {
+            if (Report.PilotId > 0)
+            {
+                var taskQuery = from t in Heap.Values
+                                where t is ScriptingTask
+                                select t as ScriptingTask;
+
+                foreach (var t in taskQuery)
+                    t.SaveCsv(folder);
+            }
+            else
+                throw new InvalidOperationException("The pilot id can not be zero");
         }
 
         public void Display(bool factoryReset = false)

@@ -5,6 +5,7 @@ using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {
+    [Serializable]
     public class FlightSettings : BindableObject
     {
         //TODO: document all this

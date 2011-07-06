@@ -102,7 +102,7 @@ namespace FlightAnalyzer
         private void saveReportButton_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(GetFolderName()))
-                Report.Save(saveFolder);
+                Engine.SaveAll(saveFolder);
         }
 
         //Handles all property changes from the Tools window
