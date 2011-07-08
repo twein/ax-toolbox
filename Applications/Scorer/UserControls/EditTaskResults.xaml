@@ -37,7 +37,6 @@
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
             <Button Click="buttonRandom_Click" ToolTip="Randomize measures">Randomize</Button>
-            <Button Click="buttonImport_Click" ToolTip="Import results from a .csv file">Import</Button>
             <Separator Width="5" Visibility="Hidden"></Separator>
             <Button Visibility="{Binding Path=SaveVisibility}" ToolTip="Save Changes" Click="buttonSave_Click">Save</Button>
         </WrapPanel>

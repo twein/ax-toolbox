@@ -31,49 +31,5 @@ namespace Scorer
 
             DataGridCollection.Add(newPilot);
         }
-        private void importButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "CSV files (*.csv)|*.csv";
-            dlg.InitialDirectory = Environment.CurrentDirectory;
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == true)
-                ImportPilots(dlg.FileName);
-        }
-
-        private void ImportPilots(string filePath)
-        {
-            var pilotList = File.ReadAllLines(filePath);
-            int i = 0;
-            try
-            {
-                DataGridCollection.Clear();
-                foreach (var p in pilotList)
-                {
-                    i++;
-                    var pilotStr = p.Trim();
-                    if (pilotStr != "" && pilotStr[0] != '#')
-                    {
-                        var fields = pilotStr.Split(new char[] { '\t', ';' }, StringSplitOptions.None);
-                        var number = int.Parse(fields[0]);
-                        var name = fields[1].Trim();
-                        var country = (fields.Length > 2) ? fields[2].Trim() : "";
-                        var balloon = (fields.Length > 3) ? fields[3].Trim() : "";
-
-                        var newPilot = new Pilot() { Number = number, Name = name, Country = country, Balloon = balloon };
-                        DataGridCollection.Add(newPilot);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error in line " + i.ToString() + ":" + Environment.NewLine + ex.Message,
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-            }
-        }
     }
 }

@@ -105,7 +105,7 @@ namespace AXToolbox.Scripting
         {
             return string.Format("{0:yyyy/MM/dd} {1} Pilot {2:000}", Date, Date.GetAmPm(), pilotId);
         }
-        public string toShortString()
+        public string ToShortString()
         {
             return string.Format("{0:yyyyMMdd}{1}{2:000}", Date, Date.GetAmPm(), pilotId);
         }
@@ -192,7 +192,7 @@ namespace AXToolbox.Scripting
         {
             if (pilotId > 0)
             {
-                var filename = Path.Combine(folder, toShortString() + SerializedFileExtension);
+                var filename = Path.Combine(folder, ToShortString() + SerializedFileExtension);
                 ObjectSerializer<FlightReport>.Save(this, filename, serializationFormat);
                 IsDirty = false;
             }
@@ -203,7 +203,7 @@ namespace AXToolbox.Scripting
         {
             if (pilotId > 0)
             {
-                LogFile.Save(Path.Combine(folder, toShortString()));
+                LogFile.Save(Path.Combine(folder, ToShortString()));
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");

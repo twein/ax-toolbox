@@ -39,8 +39,6 @@
         </DataGrid>
         <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Margin="5">
             <Button Visibility="{Binding Path=AddVisibility}" Click="addButton_Click" ToolTip="Add a new pilot">Add</Button>
-            <Separator Width="5" Visibility="Hidden"></Separator>
-            <Button Visibility="{Binding Path=AddVisibility}" Click="importButton_Click" ToolTip="Import the pilot list from a .csv file">Import</Button>
         </WrapPanel>
     </Grid>
 </local:EditCollection>

@@ -19,7 +19,6 @@ namespace Scorer
             string strValue = value as string;
             var fields = strValue.Split(new[] { ' ' });
 
-
             DateTime resultDateTime;
             if (DateTime.TryParse(fields[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal, out resultDateTime))
             {
