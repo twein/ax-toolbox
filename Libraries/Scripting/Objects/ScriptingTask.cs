@@ -127,10 +127,8 @@ namespace AXToolbox.Scripting
             return Result = Result.NewNoFlight();
         }
 
-        public void SaveCsv(string folder)
+        public string ToCsvString()
         {
-            var content = new List<string>();
-
             double measurePenalty = 0;
             int taskPoints = 0;
             int competitionPoints = 0;
@@ -144,12 +142,8 @@ namespace AXToolbox.Scripting
                 infringedRules += p.InfringedRules;
             }
 
-            content.Add(string.Format("#{0} Task {1} {2}", Engine.Settings.Date.GetDateAmPm(), Number, ObjectType));
-            content.Add(string.Format("{0};{1}", Engine.Settings.Date.GetDateAmPm(), Number));
-            content.Add(string.Format("{0};{1:0.00};{2:0.00};{3:0};{4:0};{5}", Engine.Report.PilotId, Result.ValueToString(), measurePenalty, taskPoints, competitionPoints, infringedRules));
-
-            var fileName = Path.Combine(folder, string.Format("T{0:00} {1}-P{2:000}.csv", Number, ObjectType, Engine.Report.PilotId));
-            File.WriteAllLines(fileName, content);
+            return string.Format("result;auto;{0};{1};{2:0.00};{3:0.00};{4:0};{5:0};{6}",
+                Number, Engine.Report.PilotId, Result.ValueToString(), measurePenalty, taskPoints, competitionPoints, infringedRules);
         }
     }
 }

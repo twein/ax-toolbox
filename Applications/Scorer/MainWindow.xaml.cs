@@ -45,6 +45,15 @@ namespace Scorer
             }
         }
 
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                foreach (var fileName in e.Data.GetData(DataFormats.FileDrop, true) as string[])
+                    Event.Instance.ImportFile(fileName);
+            }
+        }
+
         private void menuEventEdit_Click(object sender, RoutedEventArgs e)
         {
             var fakeCollection = new ObservableCollection<Event>();
@@ -84,6 +93,12 @@ namespace Scorer
             var fileName = GetSaveFileName(".xml files (*.xml)|*.xml", Event.Instance.ShortName);
             if (!string.IsNullOrEmpty(fileName))
                 Event.Instance.Save(fileName, AXToolbox.Common.IO.SerializationFormat.XML);
+        }
+        private void menuEventLoadDef_Click(object sender, RoutedEventArgs e)
+        {
+            var fileName = GetOpenFileName(".csv files (*.csv)|*.csv");
+            if (!string.IsNullOrEmpty(fileName))
+                Event.Instance.ImportFile(fileName);
         }
         private void menuEventExit_Click(object sender, RoutedEventArgs e)
         {

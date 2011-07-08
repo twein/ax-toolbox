@@ -238,12 +238,15 @@ namespace AXToolbox.Scripting
         {
             if (Report.PilotId > 0)
             {
+                var contents = new List<string>();
                 var taskQuery = from t in Heap.Values
                                 where t is ScriptingTask
                                 select t as ScriptingTask;
 
                 foreach (var t in taskQuery)
-                    t.SaveCsv(folder);
+                    contents.Add(t.ToCsvString());
+
+                File.WriteAllLines(Path.Combine(folder, Report.ToShortString() + ".csv"), contents);
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");

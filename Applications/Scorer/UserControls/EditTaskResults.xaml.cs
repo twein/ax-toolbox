@@ -53,69 +53,11 @@ namespace Scorer
             }
         }
 
-        private void buttonImport_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog();
-            dlg.Filter = "CSV files (*.csv)|*.csv";
-            dlg.InitialDirectory = Environment.CurrentDirectory;
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() == true)
-                ImportResults(dlg.FileName);
-        }
-
         private void buttonSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             //TODO: Hide the save button if validation fails
             SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults | CompletedPhases.Dirty;
             Save();
-        }
-
-        private void ImportResults(string filePath)
-        {
-            var resultList = File.ReadAllLines(filePath);
-            int i = 0;
-            try
-            {
-                foreach (var p in resultList)
-                {
-                    i++;
-                    var resultStr = p.Trim();
-                    if (resultStr != "" && resultStr[0] != '#')
-                    {
-                        var fields = resultStr.Split(new char[] { '\t', ';' }, StringSplitOptions.None);
-
-                        var number = int.Parse(fields[0]);
-                        var measure = ResultInfo.ParseMeasure(fields[1]);
-                        var measurePenalty = decimal.Parse(fields[2]);
-                        var taskPoints = int.Parse(fields[3]);
-                        var competitionPoints = int.Parse(fields[4]);
-                        var infringedRules = fields[5];
-
-                        try
-                        {
-                            var result = DataGridCollection.First(r => r.Pilot.Number == number);
-                            result.Measure = ResultInfo.ParseMeasure(fields[1]);
-                            result.MeasurePenalty = decimal.Parse(fields[2]);
-                            result.TaskScorePenalty = int.Parse(fields[3]);
-                            result.CompetitionScorePenalty = int.Parse(fields[4]);
-                            result.InfringedRules = fields[5];
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            //not found
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error in line " + i.ToString() + ":" + Environment.NewLine + ex.Message,
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-            }
         }
     }
 }
