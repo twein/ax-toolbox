@@ -44,7 +44,7 @@ namespace Scorer
         {
             get
             {
-                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set && AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
+                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set || AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
 
                 if (ManualResultInfo.Type != ResultType.Not_Set)
                     return ManualResultInfo.Type;
@@ -56,7 +56,7 @@ namespace Scorer
         {
             get
             {
-                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set && AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
+                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set || AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
 
                 if (ManualResultInfo.Type != ResultType.Not_Set)
                     return ManualResultInfo.Measure;
@@ -78,7 +78,7 @@ namespace Scorer
         {
             get
             {
-                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set && AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
+                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set || AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
 
                 //TODO: 'this' should have a Task property (ManualResultInfo.Task.MeasurePenaltySign!!!)
                 if (ManualResultInfo.Type != ResultType.Not_Set)
