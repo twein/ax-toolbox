@@ -68,10 +68,7 @@ namespace Scorer
         {
             get
             {
-                if (ManualResultInfo.Type != ResultType.Not_Set)
-                    return ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty;
-                else
-                    return AutoResultInfo.MeasurePenalty;
+                return ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty;
             }
         }
         public decimal Result
