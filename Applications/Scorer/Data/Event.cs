@@ -331,7 +331,7 @@ namespace Scorer
         }
         private void ImportCompetition(string[] record)
         {
-            ShortName = record[2].Trim();
+            var shortName = record[2].Trim();
 
             Competition competition;
             if (Competitions.Any(c => c.ShortName == shortName))

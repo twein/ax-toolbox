@@ -86,18 +86,7 @@ namespace Scorer
                     P++;
             }
 
-            //rule 14.5.7
-            if (A == 0)
-            {
-                foreach (var ps in PilotScores)
-                {
-                    if (ps.ResultInfo.Group == 2)
-                        ps.Score = 500; //rule 14.5.7
-                    else
-                        ps.Score = 0; //rule 14.4.1.C
-                }
-            }
-            else
+            if (A > 0)
             {
                 //sort by result
                 if (Task.SortAscending)
@@ -203,34 +192,46 @@ namespace Scorer
                             PilotScores[j].Score = sharePoints;
                     }
                 }
-
-                //sort
-                PilotScores = (from ps in PilotScores
-                               orderby ps.FinalScore descending, ps.Pilot.IsDisqualified, ps.Pilot.Number
-                               select ps).ToArray();
-
-                //set rank and compute checksum
-                int rank = 0;
-                int sum = 0;
-                for (var i = 0; i < N; i++)
-                {
-                    //increment position when not in tie
-                    if (i == 0 || PilotScores[i].FinalScore != PilotScores[i - 1].FinalScore)
-                        rank = i + 1;
-
-                    PilotScores[i].Rank = rank;
-                    sum += PilotScores[i].Pilot.Number * PilotScores[i].FinalScore;
-                }
-                CheckSum = (sum % 1e4).ToString("0000");
-
-                //update revision
-                RevisionDate = DateTime.Now;
-                if (Status != ScoreStatus.Provisional)
-                    Version++;
-
-                Task.Phases |= CompletedPhases.Computed;
-                Task.Phases &= ~CompletedPhases.Dirty;
             }
+            else
+            {
+                //No pilots in group A
+                //rule 14.5.7
+                foreach (var ps in PilotScores)
+                {
+                    if (ps.ResultInfo.Group == 2)
+                        ps.Score = 500; //rule 14.5.7
+                    else
+                        ps.Score = 0; //rule 14.4.1.C
+                }
+            }
+
+            //sort
+            PilotScores = (from ps in PilotScores
+                           orderby ps.FinalScore descending, ps.Pilot.IsDisqualified, ps.Pilot.Number
+                           select ps).ToArray();
+
+            //set rank and compute checksum
+            int rank = 0;
+            int sum = 0;
+            for (var i = 0; i < N; i++)
+            {
+                //increment position when not in tie
+                if (i == 0 || PilotScores[i].FinalScore != PilotScores[i - 1].FinalScore)
+                    rank = i + 1;
+
+                PilotScores[i].Rank = rank;
+                sum += PilotScores[i].Pilot.Number * PilotScores[i].FinalScore;
+            }
+            CheckSum = (sum % 1e4).ToString("0000");
+
+            //update revision
+            RevisionDate = DateTime.Now;
+            if (Status != ScoreStatus.Provisional)
+                Version++;
+
+            Task.Phases |= CompletedPhases.Computed;
+            Task.Phases &= ~CompletedPhases.Dirty;
         }
 
         public void ScoresToPdf(string folder, bool openAfterCreation)

@@ -82,6 +82,12 @@ namespace Scorer
             if (!string.IsNullOrEmpty(fileName))
                 Event.Instance.Load(fileName);
         }
+        private void menuEventLoadDef_Click(object sender, RoutedEventArgs e)
+        {
+            var fileName = GetOpenFileName(".csv files (*.csv)|*.csv");
+            if (!string.IsNullOrEmpty(fileName))
+                Event.Instance.ImportFile(fileName);
+        }
         private void menuEventSave_Click(object sender, RoutedEventArgs e)
         {
             var fileName = GetSaveFileName(".AXevt files (*.AXevt)|*.AXEvt", Event.Instance.ShortName);
@@ -93,12 +99,6 @@ namespace Scorer
             var fileName = GetSaveFileName(".xml files (*.xml)|*.xml", Event.Instance.ShortName);
             if (!string.IsNullOrEmpty(fileName))
                 Event.Instance.Save(fileName, AXToolbox.Common.IO.SerializationFormat.XML);
-        }
-        private void menuEventLoadDef_Click(object sender, RoutedEventArgs e)
-        {
-            var fileName = GetOpenFileName(".csv files (*.csv)|*.csv");
-            if (!string.IsNullOrEmpty(fileName))
-                Event.Instance.ImportFile(fileName);
         }
         private void menuEventExit_Click(object sender, RoutedEventArgs e)
         {
