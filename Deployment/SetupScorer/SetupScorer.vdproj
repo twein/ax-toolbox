@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_1424088AF242C9C4CCD49EEC48DBEDB7"
+        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -27,31 +33,25 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2A8D0F044D0BCFD35EBAA392DA107975"
+        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5EFB5F0FEBC24384AE0626A1F3E1E4EA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
-        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmKey" = "8:_FA19953FAC28922E933EF4975348393D"
+        "OwnerKey" = "8:_1424088AF242C9C4CCD49EEC48DBEDB7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_AF556DEB7B640EA83A1218E11ED5EACB"
-        "OwnerKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AF556DEB7B640EA83A1218E11ED5EACB"
-        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B5D81A9C908D3E3090956365D68DEECA"
+        "MsmKey" = "8:_FA19953FAC28922E933EF4975348393D"
         "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -64,19 +64,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
+        "OwnerKey" = "8:_1424088AF242C9C4CCD49EEC48DBEDB7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_AF556DEB7B640EA83A1218E11ED5EACB"
+        "OwnerKey" = "8:_2A8D0F044D0BCFD35EBAA392DA107975"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B5D81A9C908D3E3090956365D68DEECA"
+        "OwnerKey" = "8:_FA19953FAC28922E933EF4975348393D"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -184,54 +184,14 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_25A307B0B27345EEB7AC08004DC657A8"
-            {
-            "SourcePath" = "8:..\\..\\Applications\\Scorer\\GettingStarted.txt"
-            "TargetName" = "8:GettingStarted.txt"
-            "Tag" = "8:"
-            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5EFB5F0FEBC24384AE0626A1F3E1E4EA"
-            {
-            "SourcePath" = "8:..\\..\\Applications\\Scorer\\balloon.ico"
-            "TargetName" = "8:balloon.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6443CBBED0DFCBCC437C3B61A18A6516"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1424088AF242C9C4CCD49EEC48DBEDB7"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4196.30096, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4210.30578, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6443CBBED0DFCBCC437C3B61A18A6516"
+                    "_1424088AF242C9C4CCD49EEC48DBEDB7"
                     {
                     "Name" = "8:AXToolbox.PdfHelpers.dll"
                     "Attributes" = "3:512"
@@ -255,20 +215,40 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AF556DEB7B640EA83A1218E11ED5EACB"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_25A307B0B27345EEB7AC08004DC657A8"
+            {
+            "SourcePath" = "8:..\\..\\Applications\\Scorer\\GettingStarted.txt"
+            "TargetName" = "8:GettingStarted.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2A8D0F044D0BCFD35EBAA392DA107975"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4210.30578, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_AF556DEB7B640EA83A1218E11ED5EACB"
+                    "_2A8D0F044D0BCFD35EBAA392DA107975"
                     {
-                    "Name" = "8:itextsharp.dll"
+                    "Name" = "8:AXToolbox.Common.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:itextsharp.dll"
+            "SourcePath" = "8:AXToolbox.Common.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
@@ -286,20 +266,40 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B5D81A9C908D3E3090956365D68DEECA"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5EFB5F0FEBC24384AE0626A1F3E1E4EA"
+            {
+            "SourcePath" = "8:..\\..\\Applications\\Scorer\\balloon.ico"
+            "TargetName" = "8:balloon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FA19953FAC28922E933EF4975348393D"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4196.27978, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B5D81A9C908D3E3090956365D68DEECA"
+                    "_FA19953FAC28922E933EF4975348393D"
                     {
-                    "Name" = "8:AXToolbox.Common.dll"
+                    "Name" = "8:itextsharp.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:AXToolbox.Common.dll"
+            "SourcePath" = "8:itextsharp.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
@@ -417,15 +417,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox Scorer"
-        "ProductCode" = "8:{124A02DB-64FE-4041-B571-4FA3D85A19BA}"
-        "PackageCode" = "8:{2F8E309F-D33D-43E3-8F81-8FBF701C1B4A}"
+        "ProductCode" = "8:{208C8378-D6D3-43F4-869A-6A7AC4BB7F75}"
+        "PackageCode" = "8:{696CC146-17FD-48FE-9FD4-4E0A4FA728D1}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:11.8.0"
+        "ProductVersion" = "8:11.9.0"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1015,6 +1015,34 @@
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{F1AAC5DC-1C64-4692-AA68-93F35BC663D1}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5F3700A0844B408DB793EDA8C330AF00"
+            {
+            "SourcePath" = "8:"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_753648A71B9743C18C0987B01A284A4F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:ContentFiles"
             "OutputProjectGuid" = "8:{F1AAC5DC-1C64-4692-AA68-93F35BC663D1}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
