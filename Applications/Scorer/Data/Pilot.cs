@@ -72,6 +72,17 @@ namespace Scorer
                 }
             }
         }
+        public string Info
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(country))
+                    return string.Format("{0,3} - {1}", number, name);
+                else
+                    return string.Format("{0,3} - {1} ({2})", number, name, country);
+            }
+        }
+
 
         public Pilot()
         {
@@ -91,7 +102,6 @@ namespace Scorer
         public static void ListToPdf(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
             var config = Event.Instance.GetDefaultPdfConfig();
-            config.HeaderLeft = Event.Instance.Name;
 
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
@@ -121,7 +131,6 @@ namespace Scorer
         public static void WorkListToPdf(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
             var config = Event.Instance.GetDefaultPdfConfig();
-            config.HeaderLeft = Event.Instance.Name;
 
             var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
@@ -132,13 +141,12 @@ namespace Scorer
             document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = 10 });
 
             //table
-            var headers = new string[] { "#", "Name", "", "", "", "", "", "", "", "" };
-            var relWidths = new float[] { 1, 6, 3, 3, 3, 3, 3, 3, 3, 3 };
+            var headers = new string[] { "Pilot", "", "", "", "", "", "", "", "" };
+            var relWidths = new float[] { 8, 3, 3, 3, 3, 3, 3, 3, 3 };
             var table = helper.NewTable(headers, relWidths);
             foreach (var pilot in pilots.OrderBy(p => p.Number))
             {
-                table.AddCell(helper.NewRCell(pilot.Number.ToString()));
-                table.AddCell(helper.NewLCell(pilot.Name));
+                table.AddCell(helper.NewLCell(pilot.Info));
                 for (var i = 0; i < 8; i++)
                     table.AddCell(helper.NewLCell(""));
             }

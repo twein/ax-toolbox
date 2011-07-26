@@ -224,7 +224,6 @@ namespace Scorer
         {
             var fileName = Path.Combine(folder, "Task " + UltraShortDescription + " results.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
-            config.HeaderLeft = Event.Instance.Name;
 
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
@@ -239,14 +238,14 @@ namespace Scorer
 
             //table
             var headers = new string[] { 
-                "#", "Name", 
+                "Pilot", 
                 "Measure (M)", "Measure (A)", 
                 "Measure penalty (M)", "Measure penalty (A)",
                 "Task penalty (M)", "Task penalty (A)",
                 "Comp. penalty (M)", "Comp. penalty (A)",
                 "Infringed rules (M)", "Infringed rules (A)"
             };
-            var relWidths = new float[] { 1, 6, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6 };
+            var relWidths = new float[] { 8, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6 };
             var table = helper.NewTable(headers, relWidths, title);
 
             foreach (var pilotResult in PilotResults.OrderBy(pr => pr.Pilot.Number))
@@ -254,8 +253,7 @@ namespace Scorer
                 var mr = pilotResult.ManualResultInfo;
                 var ar = pilotResult.AutoResultInfo;
 
-                table.AddCell(helper.NewRCell(pilotResult.Pilot.Number.ToString()));
-                table.AddCell(helper.NewLCell(pilotResult.Pilot.Name));
+                table.AddCell(helper.NewLCell(pilotResult.Pilot.Info));
                 table.AddCell(helper.NewRCell(ResultInfo.ToString(mr.Measure)));
                 table.AddCell(helper.NewRCell(ResultInfo.ToString(ar.Measure)));
                 table.AddCell(helper.NewRCell(mr.MeasurePenalty.ToString("0.00")));

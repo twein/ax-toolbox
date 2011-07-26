@@ -263,10 +263,14 @@ namespace Scorer
             var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
             Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
 
-            return string.Format("{0} v{1} {2}",
+            return string.Format("{0} {2}",
                 ((AssemblyTitleAttribute)aTitle[0]).Title,
                 aName.Version,
                 ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+            //return string.Format("{0} v{1} {2}",
+            //    ((AssemblyTitleAttribute)aTitle[0]).Title,
+            //    aName.Version,
+            //    ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
         }
         public PdfConfig GetDefaultPdfConfig()
         {
@@ -276,9 +280,6 @@ namespace Scorer
                 MarginTop = 1.5f * PdfHelper.cm2pt,
                 MarginBottom = 1.5f * PdfHelper.cm2pt,
 
-                HeaderCenter = LocationDates,
-                HeaderRight = "Event director: " + Director,
-                FooterLeft = string.Format("Printed on {0}", DateTime.Now),
                 FooterRight = Event.Instance.GetProgramInfo()
             };
         }
