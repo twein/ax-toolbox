@@ -147,7 +147,6 @@ namespace Scorer
         {
             var fileName = Path.Combine(folder, ShortName + " total score.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
-            config.HeaderLeft = Name;
 
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
@@ -165,11 +164,11 @@ namespace Scorer
                              orderby t.Number
                              select t;
 
-            var headers = new List<string>() { "Rank", "#", "Name", "TOTAL", "Average" };
-            var relWidths = new List<float>() { 2, 2, 6, 3, 3 };
+            var headers = new List<string>() { "Rank", "Pilot", "TOTAL", "Average" };
+            var relWidths = new List<float>() { 2, 8, 3, 3 };
             foreach (var task in validTasks)
             {
-                headers.Add("Task " + task.UltraShortDescription);
+                headers.Add("T " + task.UltraShortDescription);
                 relWidths.Add(3);
             }
             var table = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
@@ -183,8 +182,7 @@ namespace Scorer
             foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total).ThenByDescending(s => s.Average).ThenBy(s => s.Pilot.Number))
             {
                 table.AddCell(helper.NewRCell(rank.ToString()));
-                table.AddCell(helper.NewRCell(pts.Pilot.Number.ToString()));
-                table.AddCell(helper.NewLCell(pts.Pilot.Name));
+                table.AddCell(helper.NewLCell(pts.Pilot.Info));
                 table.AddCell(new PdfPCell(new Paragraph(pts.Total.ToString(), config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
                 table.AddCell(helper.NewRCell(pts.Average.ToString()));
 
@@ -215,7 +213,6 @@ namespace Scorer
         {
             var fileName = Path.Combine(folder, ShortName + " task scores.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
-            config.HeaderLeft = Name;
 
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;

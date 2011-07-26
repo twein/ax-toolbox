@@ -73,6 +73,10 @@ namespace AXToolbox.PdfHelpers
         {
             return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
         }
+        public PdfPCell NewRCellBold(string cellContent, int colSpan = 1)
+        {
+            return new PdfPCell(new Phrase(cellContent, Config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
+        }
         public PdfPCell NewCCell(string cellContent, int colSpan = 1)
         {
             return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE, Colspan = colSpan };

@@ -239,7 +239,6 @@ namespace Scorer
             var fileName = Path.Combine(folder, string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
                        competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
             var config = Event.Instance.GetDefaultPdfConfig();
-            config.HeaderLeft = competition.Name;
 
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
@@ -272,21 +271,20 @@ namespace Scorer
 
             //table
             var headers = new string[] { 
-                "Rank", "#", "Name", 
-                "Measure", "Measure penalty", "Result",
+                "Rank", "Pilot", 
+                "Performance", "Measure penalty", "Result",
                 "Score", 
                 "Task penalty", "Comp. penalty", 
                 "Final score",
-                "Infringed rules"
+                "Notes/Rule"
             };
-            var relWidths = new float[] { 2, 2, 6, 3, 3, 3, 3, 3, 3, 3, 10 };
+            var relWidths = new float[] { 2, 8, 3, 3, 3, 3, 3, 3, 3, 10 };
             var table = helper.NewTable(headers, relWidths, title);
 
             foreach (var ps in PilotScores)
             {
                 table.AddCell(helper.NewRCell(ps.Rank.ToString()));
-                table.AddCell(helper.NewRCell(ps.Pilot.Number.ToString()));
-                table.AddCell(helper.NewLCell(ps.Pilot.Name));
+                table.AddCell(helper.NewLCell(ps.Pilot.Info));
 
                 table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Measure)));
                 table.AddCell(helper.NewRCell(ps.ResultInfo.MeasurePenalty.ToString("0.00")));
@@ -294,7 +292,7 @@ namespace Scorer
                 table.AddCell(helper.NewRCell(ps.Score.ToString("0")));
                 table.AddCell(helper.NewRCell(ps.ResultInfo.TaskScorePenalty.ToString("0")));
                 table.AddCell(helper.NewRCell(ps.ResultInfo.CompetitionScorePenalty.ToString("0")));
-                table.AddCell(helper.NewRCell(ps.FinalScore.ToString("0")));
+                table.AddCell(helper.NewRCellBold(ps.FinalScore.ToString("0")));
                 table.AddCell(helper.NewLCell(ps.ResultInfo.InfringedRules));
             }
             document.Add(table);
