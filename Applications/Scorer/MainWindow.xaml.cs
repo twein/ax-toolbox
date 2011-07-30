@@ -284,7 +284,7 @@ namespace Scorer
 
             // locate the TabControl that the tab will be added to
             var itemsTab = this.FindName("ItemsTab") as TabControl;
-            Debug.Assert(itemsTab != null, "can'task find ItemsTab");
+            Debug.Assert(itemsTab != null, "can't find ItemsTab");
 
             //recycle if already open
             //find a tab with the same header

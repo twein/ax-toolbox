@@ -158,17 +158,17 @@ namespace Scorer
             document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = config.SubtitleFont.Size });
 
             //table
-            var validTasks = from t in Tasks
-                             where (t.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
-                             && !t.IsCancelled
-                             orderby t.Number
-                             select t;
+            var validTaskScores = from ts in TaskScores
+                             where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
+                             && !ts.Task.IsCancelled
+                             orderby ts.Task.Number
+                             select ts;
 
             var headers = new List<string>() { "Rank", "Pilot", "TOTAL", "Average" };
             var relWidths = new List<float>() { 2, 8, 3, 3 };
-            foreach (var task in validTasks)
+            foreach (var ts in validTaskScores)
             {
-                headers.Add("T " + task.UltraShortDescription);
+                headers.Add("T" + ts.UltraShortDescriptionStatus);
                 relWidths.Add(3);
             }
             var table = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
@@ -195,11 +195,10 @@ namespace Scorer
 
             //checksums
             table.AddCell(helper.NewLCell(""));
-            table.AddCell(helper.NewLCell(""));
             table.AddCell(new PdfPCell(new Paragraph("Checksum", config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_LEFT });
             table.AddCell(helper.NewLCell(""));
             table.AddCell(helper.NewLCell(""));
-            foreach (var taskScore in TaskScores)
+            foreach (var taskScore in validTaskScores)
                 table.AddCell(new PdfPCell(new Paragraph(taskScore.CheckSum, config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
 
             document.Add(table);

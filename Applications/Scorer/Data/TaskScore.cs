@@ -35,6 +35,14 @@ namespace Scorer
                     P, A, M, ResultInfo.ToString(RM), SM, ResultInfo.ToString(W), CheckSum);
             }
         }
+        public string UltraShortDescriptionStatus
+        {
+            get
+            {
+                return Task.UltraShortDescription + string.Format(" ({0})", Status.ToString().Substring(0, 1));
+            }
+        }
+
 
         protected TaskScore() { }
         public TaskScore(Competition competition, Task task)
