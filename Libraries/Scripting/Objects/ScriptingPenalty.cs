@@ -129,10 +129,12 @@ namespace AXToolbox.Scripting
                         A.Layer |= (uint)OverlayLayers.Reference_Points;
                         B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
-                        if (calcDistance < distance)
+                        if ((ObjectType == "DMIN" && calcDistance < distance) ||
+                            (ObjectType == "DMAX" && calcDistance > distance))
                         {
-                            //   Penalty = new Penalty();
-                            throw new NotImplementedException();
+                            Engine.LogLine(string.Format("{0}: Distance infraction = {1}", ObjectName, calcDistance));
+                            Penalty = new Penalty(PenaltyType.GroupB, 0, "R13.3.4.1: distance limit abuse");
+                            task.Penalties.Add(Penalty);
                         }
                     }
                     break;
@@ -154,9 +156,8 @@ namespace AXToolbox.Scripting
                             }
                         }
                         penalty = 10 * Math.Ceiling(penalty / 10);
-                        //if (penalty>0)
-                        //    Penalty = new Penalty();
-                        throw new NotImplementedException();
+                        Penalty = new Penalty(PenaltyType.CompetitionPoints, penalty, "R10.14: BPZ (*check this*)");
+                        task.Penalties.Add(Penalty);
                     }
                     break;
 
@@ -176,9 +177,9 @@ namespace AXToolbox.Scripting
                                 last = p;
                             }
                         }
-                        //if (penalty>0)
-                        //    Penalty = new Penalty();
-                        throw new NotImplementedException();
+                        penalty = 10 * Math.Ceiling(penalty / 10);
+                        Penalty = new Penalty(PenaltyType.CompetitionPoints, penalty, "R10.14: RPZ (*check this*)");
+                        task.Penalties.Add(Penalty);
                     }
                     break;
             }

@@ -44,7 +44,8 @@ namespace FlightAnalyzer
             listLayers.SelectedItems.Add(OverlayLayers.Pilot_Points);
             listLayers.SelectedItems.Add(OverlayLayers.Launch_And_Landing);
             listLayers.SelectedItems.Add(OverlayLayers.Reference_Points);
-            listLayers.SelectedItems.Add(OverlayLayers.Results);
+            listLayers.SelectedItems.Add(OverlayLayers.Results); 
+            listLayers.SelectedItems.Add(OverlayLayers.Penalties);
         }
         private void Window_Closing(object sender, CancelEventArgs e)
         {
