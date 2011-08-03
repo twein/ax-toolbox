@@ -15,11 +15,12 @@ namespace Scorer
         {
             get
             {
-                Debug.Assert(Type != ResultType.Not_Set, "The measure should not be Not_Set");
+                var type = ResultInfo.GetType(Result);
+                Debug.Assert(type != ResultType.Not_Set, "The measure should not be Not_Set");
 
-                if (Pilot.IsDisqualified || Type == ResultType.No_Flight)
+                if (Pilot.IsDisqualified || type == ResultType.No_Flight)
                     return 3;
-                else if (Type == ResultType.No_Result)
+                else if (type == ResultType.No_Result)
                     return 2;
                 else
                     return 1;
@@ -40,48 +41,37 @@ namespace Scorer
             return base.ToString();
         }
 
-        public ResultType Type
-        {
-            get
-            {
-                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set || AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
-
-                if (ManualResultInfo.Type != ResultType.Not_Set)
-                    return ManualResultInfo.Type;
-                else
-                    return AutoResultInfo.Type;
-            }
-        }
         public decimal Measure
         {
             get
             {
-                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set || AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
+                var measure = ResultInfo.MergeMeasure(ManualResultInfo.Measure, AutoResultInfo.Measure, 0);
+                Debug.Assert(ResultInfo.GetType(measure) != ResultType.Not_Set, "Neither manual nor auto results are set");
 
-                if (ManualResultInfo.Type != ResultType.Not_Set)
-                    return ManualResultInfo.Measure;
-                else
-                    return AutoResultInfo.Measure;
+                return measure;
             }
         }
         public decimal MeasurePenalty
         {
             get
             {
-                return ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty;
+                return ResultInfo.MergeMeasure(ManualResultInfo.MeasurePenalty, AutoResultInfo.MeasurePenalty);
             }
         }
         public decimal Result
         {
             get
             {
-                Debug.Assert(ManualResultInfo.Type != ResultType.Not_Set || AutoResultInfo.Type != ResultType.Not_Set, "Neither manual nor auto results are set");
+                var measure = ResultInfo.MergeMeasure(ManualResultInfo.Measure, AutoResultInfo.Measure, 0);
+                Debug.Assert(ResultInfo.GetType(measure) != ResultType.Not_Set, "Neither manual nor auto results are set");
 
-                //TODO: 'this' should have a Task property (ManualResultInfo.Task.MeasurePenaltySign!!!)
-                if (ManualResultInfo.Type != ResultType.Not_Set)
-                    return ManualResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
-                else
-                    return AutoResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
+                var penalty = ResultInfo.MergeMeasure(ManualResultInfo.MeasurePenalty, AutoResultInfo.MeasurePenalty);
+
+                return ResultInfo.MergeMeasure(measure, penalty, ManualResultInfo.Task.MeasurePenaltySign);
+                //if (ManualResultInfo.Type != ResultType.Not_Set)
+                //    return ManualResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
+                //else
+                //    return AutoResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
             }
         }
         public int TaskScorePenalty

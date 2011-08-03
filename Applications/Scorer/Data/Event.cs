@@ -426,7 +426,7 @@ namespace Scorer
             var result = auto ? pilotResult.AutoResultInfo : pilotResult.ManualResultInfo;
 
             var measure = ResultInfo.ParseMeasure(record[4]);
-            var measurePenalty = decimal.Parse(record[5]);
+            var measurePenalty = ResultInfo.ParseMeasure(record[5]);
             var taskScorePenalty = int.Parse(record[6]);
             var competitionScorePenalty = int.Parse(record[7]);
 

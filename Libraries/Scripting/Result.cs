@@ -89,5 +89,26 @@ namespace AXToolbox.Scripting
 
             return str;
         }
+
+        public static Result Merge(Result a, Result b)
+        {
+            //TODO: convert to (+) operator
+            if (a == null)
+                return b;
+            else if (b == null)
+                return a;
+            else if (a.Type == ResultType.No_Flight)
+                return a;
+            else if (b.Type == ResultType.No_Flight)
+                return b;
+            else if (a.Type == ResultType.No_Result)
+                return a;
+            else if (b.Type == ResultType.No_Result)
+                return b;
+            else if (a.Unit == b.Unit)
+                return Result.NewResult(a.Value + b.Value, a.Unit);
+            else
+                throw (new InvalidOperationException("Cannot merge results with different units"));
+        }
     }
 }

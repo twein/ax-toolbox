@@ -132,9 +132,7 @@ namespace AXToolbox.Scripting
                         if ((ObjectType == "DMIN" && calcDistance < distance) ||
                             (ObjectType == "DMAX" && calcDistance > distance))
                         {
-                            Engine.LogLine(string.Format("{0}: Distance infraction = {1}", ObjectName, calcDistance));
-                            Penalty = new Penalty(PenaltyType.GroupB, 0, "R13.3.4.1: distance limit abuse");
-                            task.Penalties.Add(Penalty);
+                            Penalty = new Penalty("R13.3.4.1 distance limit abuse", Result.NewNoResult());
                         }
                     }
                     break;
@@ -156,8 +154,7 @@ namespace AXToolbox.Scripting
                             }
                         }
                         penalty = 10 * Math.Ceiling(penalty / 10);
-                        Penalty = new Penalty(PenaltyType.CompetitionPoints, penalty, "R10.14: BPZ (*check this*)");
-                        task.Penalties.Add(Penalty);
+                        Penalty = new Penalty("R10.14 BPZ (*check this*)", PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
 
@@ -178,14 +175,16 @@ namespace AXToolbox.Scripting
                             }
                         }
                         penalty = 10 * Math.Ceiling(penalty / 10);
-                        Penalty = new Penalty(PenaltyType.CompetitionPoints, penalty, "R10.14: RPZ (*check this*)");
-                        task.Penalties.Add(Penalty);
+                        Penalty = new Penalty("R10.14 RPZ (*check this*)", PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
             }
 
             if (Penalty != null)
+            {
+                task.Penalties.Add(Penalty); 
                 Engine.LogLine(string.Format("{0}: penalty is {1}", ObjectName, Penalty));
+            }
         }
 
         public override void Display()
