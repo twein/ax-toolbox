@@ -18,15 +18,19 @@ namespace AXToolbox.Scripting
             {
                 case PenaltyType.Measure:
                     Measure = value;
-                    InfringedRules = string.Format("{0}:{1:0.00}m. ", infringedRule, Measure);
+                    InfringedRules = string.Format("{0}: {1:0.00}m. ", infringedRule, Measure);
                     break;
                 case PenaltyType.TaskPoints:
                     TaskPoints = (int)value;
-                    InfringedRules = string.Format("{0}:{1:0} task points. ", infringedRule, TaskPoints);
+                    InfringedRules = string.Format("{0} :{1:0} task points. ", infringedRule, TaskPoints);
                     break;
                 case PenaltyType.CompetitionPoints:
                     CompetitionPoints = (int)value;
-                    InfringedRules = string.Format("{0}:{1:0} comp. points. ", infringedRule, CompetitionPoints);
+                    InfringedRules = string.Format("{0}: {1:0} comp. points. ", infringedRule, CompetitionPoints);
+                    break;
+                case PenaltyType.GroupB:
+                    CompetitionPoints = (int)value;
+                    InfringedRules = string.Format("{0}: group B. ", infringedRule, CompetitionPoints);
                     break;
             }
         }
