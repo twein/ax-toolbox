@@ -17,3 +17,5 @@
 
 - Check visibility of all menus and buttons
 - PdfHelper: change all fixed spacing to relative (Ex: 10pt=>HeaderFont.size)
+
+- Unify Result in analyzer and scorer. Rename to Performance

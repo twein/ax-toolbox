@@ -179,6 +179,22 @@ namespace Scorer
             }
 
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="sign">1: a+b, -1: a-b, 0: a then b</param>
+        /// <returns></returns>
+        public static decimal MergeMeasure(decimal a, decimal b, int sign = 1)
+        {
+            if (GetType(a) == ResultType.No_Flight || GetType(a) == ResultType.No_Result || GetType(b) == ResultType.Not_Set)
+                return a;
+            else if (GetType(b) == ResultType.No_Flight || GetType(b) == ResultType.No_Result || GetType(a) == ResultType.Not_Set)
+                return b;
+            else
+                return a + sign * b;
+        }
 
         #region IEditableObject Members
         protected ResultInfo buffer = null;

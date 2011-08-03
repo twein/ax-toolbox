@@ -256,8 +256,8 @@ namespace Scorer
                 table.AddCell(helper.NewLCell(pilotResult.Pilot.Info));
                 table.AddCell(helper.NewRCell(ResultInfo.ToString(mr.Measure)));
                 table.AddCell(helper.NewRCell(ResultInfo.ToString(ar.Measure)));
-                table.AddCell(helper.NewRCell(mr.MeasurePenalty.ToString("0.00")));
-                table.AddCell(helper.NewRCell(ar.MeasurePenalty.ToString("0.00")));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(mr.MeasurePenalty)));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ar.MeasurePenalty)));
                 table.AddCell(helper.NewRCell(mr.TaskScorePenalty.ToString("0")));
                 table.AddCell(helper.NewRCell(ar.TaskScorePenalty.ToString("0")));
                 table.AddCell(helper.NewRCell(mr.CompetitionScorePenalty.ToString("0")));

@@ -129,21 +129,21 @@ namespace AXToolbox.Scripting
 
         public string ToCsvString()
         {
-            double measurePenalty = 0;
+            Result measurePenalty = null;
             int taskPoints = 0;
             int competitionPoints = 0;
             string infringedRules = "";
 
             foreach (var p in Penalties)
             {
-                measurePenalty += p.Measure;
+                measurePenalty = Result.Merge(measurePenalty, p.Measure);
                 taskPoints += p.TaskPoints;
                 competitionPoints += p.CompetitionPoints;
                 infringedRules += p.InfringedRules;
             }
 
             return string.Format("result;auto;{0};{1};{2:0.00};{3:0.00};{4:0};{5:0};{6}",
-                Number, Engine.Report.PilotId, Result.ValueToString(), measurePenalty, taskPoints, competitionPoints, infringedRules);
+                Number, Engine.Report.PilotId, Result.ValueToString(), measurePenalty.ValueToString(), taskPoints, competitionPoints, infringedRules);
         }
     }
 }
