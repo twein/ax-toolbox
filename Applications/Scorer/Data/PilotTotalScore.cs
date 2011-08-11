@@ -24,13 +24,18 @@ namespace Scorer
                                orderby ts.Task.Number
                                select ts;
             var taskScores = new List<int>();
-            foreach (var ts in validTScores)
+
+            if (validTScores.Count() > 0)
             {
-                var ps = ts.PilotScores.First(s => s.Pilot.Number == pilot.Number);
-                Total += ps.FinalScore;
-                taskScores.Add(ps.FinalScore);
+                foreach (var ts in validTScores)
+                {
+                    var ps = ts.PilotScores.First(s => s.Pilot.Number == pilot.Number);
+                    Total += ps.FinalScore;
+                    taskScores.Add(ps.FinalScore);
+                }
+                Average = Total / taskScores.Count;
             }
-            Average = Total / taskScores.Count;
+
             TaskScores = taskScores.ToArray();
         }
     }
