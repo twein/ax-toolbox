@@ -72,10 +72,10 @@ namespace AXToolbox.GpsLoggers
         /// </summary>
         public static Angle Normalize180(Angle angle)
         {
-            var normalized = Normalize360(angle);
-            if (normalized.Degrees > 180)
-                normalized = Angle360 - normalized;
-            return normalized;
+            var deg = angle.Degrees;
+            while (deg > 180) deg -= 360;
+            while (deg < -180) deg += 360;
+            return new Angle(deg);
         }
 
         
