@@ -77,7 +77,7 @@ namespace AXToolbox.GpsLoggers
             var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             var number = int.Parse(fields[0]);
-            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToLocalTime();
+            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo);
             var definition = fields[3];
             var altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 

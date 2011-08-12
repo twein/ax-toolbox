@@ -190,10 +190,20 @@ namespace Scorer
         {
             if (GetType(a) == ResultType.No_Flight || GetType(a) == ResultType.No_Result || GetType(b) == ResultType.Not_Set)
                 return a;
-            else if (GetType(b) == ResultType.No_Flight || GetType(b) == ResultType.No_Result || GetType(a) == ResultType.Not_Set)
+            else if (GetType(a) == ResultType.Not_Set)
                 return b;
             else
                 return a + sign * b;
+        }
+
+        public static decimal MergePenalty(decimal measure, decimal penalty, int sign = 1)
+        {
+            if (GetType(measure) == ResultType.No_Flight || GetType(measure) == ResultType.No_Result || GetType(penalty) == ResultType.Not_Set)
+                return measure;
+            else if (GetType(penalty) == ResultType.No_Flight || GetType(penalty) == ResultType.No_Result || GetType(measure) == ResultType.Not_Set)
+                return penalty;
+            else
+                return measure + sign * penalty;
         }
 
         #region IEditableObject Members

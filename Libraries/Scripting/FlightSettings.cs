@@ -116,7 +116,7 @@ namespace AXToolbox.Scripting
             if (!easting.IsBetween(TopLeft.Easting, BottomRight.Easting))
                 easting += 1e5;
 
-            var northing = BottomRight.Northing + BottomRight.Northing % 1e5 + goal.Northing4Digits * 10;
+            var northing = BottomRight.Northing - BottomRight.Northing % 1e5 + goal.Northing4Digits * 10;
             //check for major tick change (hundreds of km)
             if (!northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
                 northing += 1e5;

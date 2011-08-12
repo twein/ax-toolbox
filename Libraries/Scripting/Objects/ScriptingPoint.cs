@@ -90,7 +90,7 @@ namespace AXToolbox.Scripting
                     number = ParseOrDie<int>(0, int.Parse);
                     minTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, ParseTimeSpan);
                     maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
-                    Point = TryResolveGoalDeclaration();
+                    //Point = TryResolveGoalDeclaration();
 
                     break;
 
@@ -303,7 +303,8 @@ namespace AXToolbox.Scripting
                     try
                     {
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
-                        Point = Engine.ValidTrackPoints.First(p => p.Time == marker.Time);
+                        var nearestPoint = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
+                        Point = marker;
                     }
                     catch (InvalidOperationException)
                     {

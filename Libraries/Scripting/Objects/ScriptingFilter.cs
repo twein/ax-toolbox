@@ -77,11 +77,11 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "BEFORETIME":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time <= time);
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time.ToLocalTime() <= time);
                     break;
 
                 case "AFTERTIME":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time >= time);
+                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time.ToLocalTime() >= time);
                     break;
 
                 case "BEFOREPOINT":
@@ -107,8 +107,8 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            if (Engine.ValidTrackPoints.Length != initialCount)
-                Engine.LogLine(string.Format("{0}: track filtered to {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
+            //if (Engine.ValidTrackPoints.Length != initialCount)
+            Engine.LogLine(string.Format("{0}: track filtered from {1} to {2} valid points", ObjectName, initialCount, Engine.ValidTrackPoints.Length));
         }
 
         /// <summary>Return a filtered array of trackpoints with subtrack control
