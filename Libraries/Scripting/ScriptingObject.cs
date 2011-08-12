@@ -364,15 +364,6 @@ namespace AXToolbox.Scripting
                     default:
                         throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
                 }
-
-                if (units == "ft")
-                {
-                    length *= 0.3048;
-                }
-                else if (units != "m" /*&& units != ""*/)
-                {
-                    throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
-                }
             }
 
             return length;

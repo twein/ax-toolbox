@@ -129,7 +129,7 @@ namespace AXToolbox.Scripting
 
         public string ToCsvString()
         {
-            Result measurePenalty = null;
+            Result measurePenalty = Result.NewResult(0, resultUnit);
             int taskPoints = 0;
             int competitionPoints = 0;
             string infringedRules = "";

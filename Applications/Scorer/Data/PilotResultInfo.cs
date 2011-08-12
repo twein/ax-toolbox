@@ -18,7 +18,7 @@ namespace Scorer
                 var type = ResultInfo.GetType(Result);
                 Debug.Assert(type != ResultType.Not_Set, "The measure should not be Not_Set");
 
-                if (Pilot.IsDisqualified || type == ResultType.No_Flight)
+                if (Pilot.IsDisqualified || type == ResultType.No_Flight || type == ResultType.Not_Set)
                     return 3;
                 else if (type == ResultType.No_Result)
                     return 2;
@@ -33,7 +33,7 @@ namespace Scorer
             Pilot = pilot;
 
             ManualResultInfo = new ResultInfo(task, pilot, ResultType.Not_Set);
-            AutoResultInfo = new ResultInfo(task, pilot, ResultType.No_Flight);
+            AutoResultInfo = new ResultInfo(task, pilot, ResultType.Not_Set);
         }
 
         public override string ToString()
@@ -46,7 +46,7 @@ namespace Scorer
             get
             {
                 var measure = ResultInfo.MergeMeasure(ManualResultInfo.Measure, AutoResultInfo.Measure, 0);
-                Debug.Assert(ResultInfo.GetType(measure) != ResultType.Not_Set, "Neither manual nor auto results are set");
+                //Debug.Assert(ResultInfo.GetType(measure) != ResultType.Not_Set, "Neither manual nor auto results are set");
 
                 return measure;
             }
@@ -63,11 +63,11 @@ namespace Scorer
             get
             {
                 var measure = ResultInfo.MergeMeasure(ManualResultInfo.Measure, AutoResultInfo.Measure, 0);
-                Debug.Assert(ResultInfo.GetType(measure) != ResultType.Not_Set, "Neither manual nor auto results are set");
+                //Debug.Assert(ResultInfo.GetType(measure) != ResultType.Not_Set, "Neither manual nor auto results are set");
 
-                var penalty = ResultInfo.MergeMeasure(ManualResultInfo.MeasurePenalty, AutoResultInfo.MeasurePenalty);
+                var penalty = ResultInfo.MergePenalty(ManualResultInfo.MeasurePenalty, AutoResultInfo.MeasurePenalty);
 
-                return ResultInfo.MergeMeasure(measure, penalty, ManualResultInfo.Task.MeasurePenaltySign);
+                return ResultInfo.MergePenalty(measure, penalty, ManualResultInfo.Task.MeasurePenaltySign);
                 //if (ManualResultInfo.Type != ResultType.Not_Set)
                 //    return ManualResultInfo.Measure + ManualResultInfo.Task.MeasurePenaltySign * (ManualResultInfo.MeasurePenalty + AutoResultInfo.MeasurePenalty);
                 //else
