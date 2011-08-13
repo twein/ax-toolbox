@@ -314,15 +314,19 @@ namespace AXToolbox.Scripting
                         break;
 
                     case "ANG3P":
-                    //ANG3P: angle between 3 points
-                    //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
+                        //ANG3P: angle between 3 points
+                        //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
+                        overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(),
+                            string.Format("{0} = {1}", ObjectType, Result));
+                        break;
+
                     case "ANGN":
                     //ANGN: angle to the north
                     //ANGN(<pointNameA>, <pointNameB>)
                     case "ANGSD":
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
-                        overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(),
+                        overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
                             string.Format("{0} = {1}", ObjectType, Result));
                         break;
                 }

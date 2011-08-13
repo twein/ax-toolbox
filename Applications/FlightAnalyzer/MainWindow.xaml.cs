@@ -167,6 +167,10 @@ namespace FlightAnalyzer
             {
                 MessageBox.Show(args.Error.Message);
             }
+            else if (args.Cancelled)
+            {
+                MessageBox.Show("Cancelled");
+            }
             else
             {
                 var result = (string)args.Result;
@@ -182,7 +186,10 @@ namespace FlightAnalyzer
                     case "report":
                         Report = Engine.Report;
                         if (Report.PilotId <= 0)
-                            throw new InvalidOperationException("The pilot number cannot be zero");
+                        {
+                            MessageBox.Show("The pilot number cannot be zero");
+                            return;
+                        }
                         TrackPointer = null;
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Report");

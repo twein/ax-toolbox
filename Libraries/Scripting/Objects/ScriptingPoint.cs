@@ -78,20 +78,29 @@ namespace AXToolbox.Scripting
                     ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length);
                     break;
 
-                case "MVMD": //MVMD: virtual marker drop
+                case "MVMD":
+                    //MVMD: virtual marker drop
                     //MVMD(<number>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     number = ParseOrDie<int>(0, int.Parse);
                     break;
 
-                case "MPDG": //pilot declared goal
+                case "MPDG":
+                    //MPDG: pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
+                    //TODO: remove mintime and maxtime. Can be programmed with TMAXR and TMINR penalties
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                     number = ParseOrDie<int>(0, int.Parse);
                     minTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, ParseTimeSpan);
                     maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
                     //Point = TryResolveGoalDeclaration();
+                    break;
 
+                case "MPDGP":
+                    //MPDGP: virtual marker drop point of declaration
+                    //MPDGP(<number>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    number = ParseOrDie<int>(0, int.Parse);
                     break;
 
                 case "TLCH": //TLCH: launch
@@ -322,6 +331,16 @@ namespace AXToolbox.Scripting
                     catch (InvalidOperationException) { } //none found
                     break;
 
+                case "MPDGP":
+                    //pilot declared goal point of declaration
+                    try
+                    {
+                        var declaredGoal = TryResolveGoalDeclaration();
+                        Point = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - declaredGoal.Time).TotalSeconds) <= 2);
+                    }
+                    catch (InvalidOperationException) { } //none found
+                    break;
+
                 case "TLCH":
                     //TLCH: launch
                     //TLCH()
@@ -478,7 +497,7 @@ namespace AXToolbox.Scripting
 
         private AXPoint TryResolveGoalDeclaration()
         {
-            AXPoint point;
+            AXPoint point = null;
 
             var goal = Engine.Report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
 
@@ -490,7 +509,10 @@ namespace AXToolbox.Scripting
             }
             else // competition coordinates
             {
-                point = Engine.Settings.ResolveDeclaredGoal(goal);
+                var tmpPoint = Engine.Settings.ResolveDeclaredGoal(goal);
+                if (!(tmpPoint.Easting < Engine.Settings.TopLeft.Easting || tmpPoint.Easting > Engine.Settings.BottomRight.Easting ||
+                    tmpPoint.Northing > Engine.Settings.TopLeft.Northing || tmpPoint.Northing < Engine.Settings.BottomRight.Northing))
+                    point = tmpPoint;
             }
 
             return point;
