@@ -16,6 +16,8 @@ namespace AXToolbox.Scripting
         protected ScriptingPoint A, B;
         protected ScriptingArea area;
         protected double distance = 0;
+        protected double altitudeDifference = 0;
+        protected int time = 0;
         protected double scale = 0;
         protected double maxSpeed = 0;
 
@@ -45,15 +47,40 @@ namespace AXToolbox.Scripting
 
                 case "DMAX":
                 case "DMIN":
+                //TODO: implement this
+                //case "ADMAX":
+                //case "ADMIN":
+                //case "ADMAXABS":
+                case "DVMAX":
+                case "DVMIN":
                     //DMAX: maximum distance
                     //DMAX(<pointNameA>, <pointNameB>, <distance>)
                     //DMIN: minimum distance
                     //DMIN(<pointNameA>, <pointNameB>, <distance>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
-                    A = ResolveOrDie<ScriptingPoint>(0);
-                    B = ResolveOrDie<ScriptingPoint>(1);
-                    distance = ParseOrDie<double>(2, ParseLength);
-                    unit = "m";
+                    //ADMAX: maximum altitude difference between two points (B is assumed to be higher than A)
+                    //ADMAX(<pointNameA>, <pointNameB>, <altitude>)
+                    //ADMAX: maximum altitude difference between two points (B is assumed to be higher than A)
+                    //ADMAX(<pointNameA>, <pointNameB>, <altitude>)
+                    {
+                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        A = ResolveOrDie<ScriptingPoint>(0);
+                        B = ResolveOrDie<ScriptingPoint>(1);
+                        distance = ParseOrDie<double>(2, ParseLength);
+                        unit = "m";
+                    }
+                    break;
+
+                case "TMAXR":
+                case "TMINR":
+                    //TMAXR: maximum time between two points
+                    //TMAXR(<pointNameA>, <pointNameB>, <time in minutes>)
+                    {
+                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        A = ResolveOrDie<ScriptingPoint>(0);
+                        B = ResolveOrDie<ScriptingPoint>(1);
+                        time = ParseOrDie<int>(2, ParseInt);
+                        unit = "min";
+                    }
                     break;
 
                 case "BPZ":
@@ -119,6 +146,22 @@ namespace AXToolbox.Scripting
                     throw new ArgumentException("Unknown penaty type '" + ObjectType + "'");
 
                 case "DMAX":
+                    if (A.Point == null || B.Point == null)
+                    {
+                        Engine.LogLine(ObjectName + ": reference point is null");
+                    }
+                    else
+                    {
+                        A.Layer |= (uint)OverlayLayers.Reference_Points;
+                        B.Layer |= (uint)OverlayLayers.Reference_Points;
+                        var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
+                        if (calcDistance > distance)
+                        {
+                            Penalty = new Penalty("R13.3.4.1 distance limit abuse", Result.NewNoResult());
+                        }
+                    }
+                    break;
+
                 case "DMIN":
                     if (A.Point == null || B.Point == null)
                     {
@@ -129,14 +172,80 @@ namespace AXToolbox.Scripting
                         A.Layer |= (uint)OverlayLayers.Reference_Points;
                         B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
-                        if ((ObjectType == "DMIN" && calcDistance < distance) ||
-                            (ObjectType == "DMAX" && calcDistance > distance))
+                        if (calcDistance < distance)
                         {
                             Penalty = new Penalty("R13.3.4.1 distance limit abuse", Result.NewNoResult());
                         }
                     }
                     break;
 
+                case "DVMAX":
+                    if (A.Point == null || B.Point == null)
+                    {
+                        Engine.LogLine(ObjectName + ": reference point is null");
+                    }
+                    else
+                    {
+                        A.Layer |= (uint)OverlayLayers.Reference_Points;
+                        B.Layer |= (uint)OverlayLayers.Reference_Points;
+                        var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
+                        if (calcDifference > altitudeDifference)
+                        {
+                            Penalty = new Penalty("Rxx.xx altitude limit abuse", Result.NewNoResult());
+                        }
+                    }
+                    break;
+
+                case "DVMIN":
+                    if (A.Point == null || B.Point == null)
+                    {
+                        Engine.LogLine(ObjectName + ": reference point is null");
+                    }
+                    else
+                    {
+                        A.Layer |= (uint)OverlayLayers.Reference_Points;
+                        B.Layer |= (uint)OverlayLayers.Reference_Points;
+                        var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
+                        if (calcDifference < altitudeDifference)
+                        {
+                            Penalty = new Penalty("Rxx.xx altitude limit abuse", Result.NewNoResult());
+                        }
+                    }
+                    break;
+
+                case "TMAXR":
+                    if (A.Point == null || B.Point == null)
+                    {
+                        Engine.LogLine(ObjectName + ": reference point is null");
+                    }
+                    else
+                    {
+                        A.Layer |= (uint)OverlayLayers.Reference_Points;
+                        B.Layer |= (uint)OverlayLayers.Reference_Points;
+                        var calcTime = Math.Abs((B.Point.Time - A.Point.Time).TotalMinutes);
+                        if (calcTime > time)
+                        {
+                            Penalty = new Penalty("Time infraction", Result.NewNoResult());
+                        }
+                    }
+                    break;
+
+                case "TMINR":
+                    if (A.Point == null || B.Point == null)
+                    {
+                        Engine.LogLine(ObjectName + ": reference point is null");
+                    }
+                    else
+                    {
+                        A.Layer |= (uint)OverlayLayers.Reference_Points;
+                        B.Layer |= (uint)OverlayLayers.Reference_Points;
+                        var calcTime = Math.Abs((B.Point.Time - A.Point.Time).TotalMinutes);
+                        if (calcTime < time)
+                        {
+                            Penalty = new Penalty("Time infraction", Result.NewNoResult());
+                        }
+                    }
+                    break;
                 case "BPZ":
                     {
                         double penalty = 0;
@@ -154,7 +263,7 @@ namespace AXToolbox.Scripting
                             }
                         }
                         penalty = 10 * Math.Ceiling(penalty / 10);
-                        Penalty = new Penalty("R10.14 BPZ (*check this*)", PenaltyType.CompetitionPoints, (int)penalty);
+                        Penalty = new Penalty("Rxx.xx BPZ", PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
 
@@ -175,14 +284,14 @@ namespace AXToolbox.Scripting
                             }
                         }
                         penalty = 10 * Math.Ceiling(penalty / 10);
-                        Penalty = new Penalty("R10.14 RPZ (*check this*)", PenaltyType.CompetitionPoints, (int)penalty);
+                        Penalty = new Penalty("Rxx.xx RPZ", PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
             }
 
             if (Penalty != null)
             {
-                task.Penalties.Add(Penalty); 
+                task.Penalties.Add(Penalty);
                 Engine.LogLine(string.Format("{0}: penalty is {1}", ObjectName, Penalty));
             }
         }

@@ -139,7 +139,11 @@ namespace AXToolbox.GpsLoggers
             //parse altitude
             var altitude = double.NaN;
             var strAltitude = line.Substring(12).Split(',')[1];
-            if (strAltitude.EndsWith("ft")) //altitude in feet
+            if (strAltitude == "")
+            {
+                altitude = 0;
+            }
+            else if (strAltitude.EndsWith("ft")) //altitude in feet
             {
                 altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
             }

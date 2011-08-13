@@ -64,13 +64,13 @@
         "Entry"
         {
         "MsmKey" = "8:_BF8EE8A17D62F5577CCCB72B3973F9E6"
-        "OwnerKey" = "8:_9E554D20F5BBF601E9917C1D9FA9BDB0"
+        "OwnerKey" = "8:_033D7716AAE4046FFFD0500D68FC97A8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_BF8EE8A17D62F5577CCCB72B3973F9E6"
-        "OwnerKey" = "8:_033D7716AAE4046FFFD0500D68FC97A8"
+        "OwnerKey" = "8:_9E554D20F5BBF601E9917C1D9FA9BDB0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -100,25 +100,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9E554D20F5BBF601E9917C1D9FA9BDB0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_033D7716AAE4046FFFD0500D68FC97A8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_08F1402306A7BF87AD9E1E68EBA11BED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BF8EE8A17D62F5577CCCB72B3973F9E6"
+        "OwnerKey" = "8:_E19EC4DBC1DA97AF4D66D95C36C15F6F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -130,7 +112,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E19EC4DBC1DA97AF4D66D95C36C15F6F"
+        "OwnerKey" = "8:_BF8EE8A17D62F5577CCCB72B3973F9E6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_08F1402306A7BF87AD9E1E68EBA11BED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_033D7716AAE4046FFFD0500D68FC97A8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9E554D20F5BBF601E9917C1D9FA9BDB0"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -245,11 +245,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Model, Version=1.0.4196.22992, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_033D7716AAE4046FFFD0500D68FC97A8"
-                    {
-                    "Name" = "8:AXToolbox.Model.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Model.dll"
             "TargetName" = "8:"
@@ -276,11 +271,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_08F1402306A7BF87AD9E1E68EBA11BED"
-                    {
-                    "Name" = "8:AXToolbox.MapViewer.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.MapViewer.dll"
             "TargetName" = "8:"
@@ -327,11 +317,6 @@
             "AssemblyAsmDisplayName" = "8:BalloonLoggerSignature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5DCE15010C1514DE3ED4FF5D62F7745A"
-                    {
-                    "Name" = "8:BalloonLoggerSignature.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:BalloonLoggerSignature.dll"
             "TargetName" = "8:"
@@ -358,11 +343,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4196.22992, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_9E554D20F5BBF601E9917C1D9FA9BDB0"
-                    {
-                    "Name" = "8:AXToolbox.Scripting.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Scripting.dll"
             "TargetName" = "8:"
@@ -389,11 +369,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.GpsLoggers, Version=1.0.4196.22991, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_BF8EE8A17D62F5577CCCB72B3973F9E6"
-                    {
-                    "Name" = "8:AXToolbox.GpsLoggers.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.GpsLoggers.dll"
             "TargetName" = "8:"
@@ -420,11 +395,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4195.21768, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_E19EC4DBC1DA97AF4D66D95C36C15F6F"
-                    {
-                    "Name" = "8:AXToolbox.Common.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Common.dll"
             "TargetName" = "8:"
@@ -544,15 +514,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox FlightAnalyzer"
-        "ProductCode" = "8:{879BC35B-6C45-411F-B57D-279866476A27}"
-        "PackageCode" = "8:{AFC8FE05-B1C7-43FA-891C-2C1E683A3354}"
+        "ProductCode" = "8:{C9F386E6-7547-4911-8761-F968606215B5}"
+        "PackageCode" = "8:{500280E3-584B-43C8-9F43-F25B366AC299}"
         "UpgradeCode" = "8:{3BE0DD8B-B888-4311-8429-CA5F241E07A7}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.3"
+        "ProductVersion" = "8:0.1.4"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1108,7 +1078,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F6AEA6275E714981B2D7CCE3DA23DE71"
             {
-            "SourcePath" = "8:..\\..\\Applications\\FlightAnalyzer\\obj\\Debug\\FlightAnalyzer.exe"
+            "SourcePath" = "8:..\\..\\Applications\\FlightAnalyzer\\obj\\Release\\FlightAnalyzer.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9C304CB0788F41B890681001E23D215A"

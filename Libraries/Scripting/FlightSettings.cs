@@ -111,7 +111,10 @@ namespace AXToolbox.Scripting
         {
             //1e5 = 100km
 
+
             var easting = TopLeft.Easting - TopLeft.Easting % 1e5 + goal.Easting4Digits * 10;
+
+
             //check for major tick change (hundreds of km)
             if (!easting.IsBetween(TopLeft.Easting, BottomRight.Easting))
                 easting += 1e5;
