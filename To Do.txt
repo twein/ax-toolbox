@@ -1,6 +1,7 @@
 BUGS
 Goal declaration / logger marker edition: local and UTC time confusion
 Vertical distance infraction: check CICR2011, task 9, pilot 2
+It never resolves MPDGP
 
 PENDING
 Display correctly AXTrackpoint.StartSubtrack
@@ -8,7 +9,7 @@ Check the workflow of BindableObject.IsDirty
 
 
 TO DO
-?Add fake penalties with infringed rule/note explaining reason for all NR results 
+?Add fake penalties with infringed rule/note explaining reason for all NR results (think about measure/result/contstraint thing)
 Add logger altitude correction file support
 Add notes for every user action.
 Keep track of debriefer identity. Assign pilot ranges to each debriefer?
