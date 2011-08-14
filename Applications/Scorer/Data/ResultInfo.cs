@@ -10,9 +10,9 @@ namespace Scorer
 {
     public enum ResultType
     {
-        Not_Set = 0,
-        No_Flight,
-        No_Result,
+        Not_Set = -3,
+        No_Flight = -2,
+        No_Result = -1,
         Result
     }
 
@@ -92,13 +92,9 @@ namespace Scorer
             switch (type)
             {
                 case ResultType.Not_Set:
-                    Measure = -3;
-                    break;
                 case ResultType.No_Flight:
-                    Measure = -2;
-                    break;
                 case ResultType.No_Result:
-                    Measure = -1;
+                    Measure = (decimal)type;
                     break;
                 default:
                     Debug.Assert(false, "A measure result should not be initialized with this constructor");
@@ -132,15 +128,19 @@ namespace Scorer
             switch (value.Trim().ToUpper())
             {
                 case "-":
-                    measure = -3;
+                case "P":
+                case "PENDING":
+                    measure = (decimal)ResultType.Not_Set;
                     break;
                 case "NF":
                 case "C":
-                    measure = -2;
+                case "NO FLIGHT":
+                    measure = (decimal)ResultType.No_Flight;
                     break;
                 case "NR":
                 case "B":
-                    measure = -1;
+                case "NO RESULT":
+                    measure = (decimal)ResultType.No_Result;
                     break;
                 default:
                     measure = decimal.Parse(value);
@@ -154,6 +154,7 @@ namespace Scorer
         {
             switch ((int)measure)
             {
+                //TODO: fix this
                 case -3:
                     return ResultType.Not_Set;
                 case -2:
@@ -169,11 +170,11 @@ namespace Scorer
             switch (GetType(measure))
             {
                 case ResultType.Not_Set:
-                    return "-";
+                    return "Pending";
                 case ResultType.No_Flight:
-                    return "NF";
+                    return "No Flight";
                 case ResultType.No_Result:
-                    return "NR";
+                    return "No Result";
                 default:
                     return string.Format("{0:0.00}", measure);
             }
@@ -198,9 +199,9 @@ namespace Scorer
 
         public static decimal MergePenalty(decimal measure, decimal penalty, int sign = 1)
         {
-            if (GetType(measure) == ResultType.No_Flight || GetType(measure) == ResultType.No_Result || GetType(penalty) == ResultType.Not_Set)
+            if (GetType(measure) != ResultType.Result || GetType(penalty) == ResultType.Not_Set)
                 return measure;
-            else if (GetType(penalty) == ResultType.No_Flight || GetType(penalty) == ResultType.No_Result || GetType(measure) == ResultType.Not_Set)
+            else if (GetType(penalty) == ResultType.No_Flight || GetType(penalty) == ResultType.No_Result)
                 return penalty;
             else
                 return measure + sign * penalty;
