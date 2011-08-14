@@ -149,7 +149,12 @@ namespace AXToolbox.Scripting
             // syntax is already checked
             if (A.Point == null || B.Point == null)
             {
-                Engine.LogLine(ObjectName + ": reference point is null");
+                if (A.Point == null)
+                    Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, A.ObjectName));
+                if (B.Point == null)
+                    Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, B.ObjectName));
+
+                Result = task.NewNoResult("no valid point");
             }
             else
             {
@@ -215,7 +220,10 @@ namespace AXToolbox.Scripting
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                            Engine.LogLine(ObjectName + ": reference point is null");
+                        {
+                            Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, C.ObjectName));
+                            Result = task.NewNoResult("no valid point");
+                        }
                         else
                         {
                             Result = task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point), 2));
@@ -230,7 +238,10 @@ namespace AXToolbox.Scripting
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
-                            Engine.LogLine(ObjectName + ": reference point is null");
+                        {
+                            Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, C.ObjectName));
+                            Result = task.NewNoResult("no valid point");
+                        }
                         else
                         {
                             var nab = Physics.Direction2D(A.Point, B.Point); //north-A-B
@@ -272,7 +283,7 @@ namespace AXToolbox.Scripting
             }
 
             if (Result == null)
-                Result = task.NewNoResult();
+                Result = task.NewNoResult("this should never happen");
 
             Engine.LogLine(string.Format("{0}: result is {1}", ObjectName, Result));
         }
