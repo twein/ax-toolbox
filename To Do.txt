@@ -1,5 +1,5 @@
 BUGS
-Vertical distance infraction: check CICR2011, task 9, pilot 2
+Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 PENDING
 Display correctly AXTrackpoint.StartSubtrack
