@@ -89,9 +89,7 @@ namespace Scorer
                 M =   lowest ranking competitor in group A.
             */
 
-            int B;
-
-            A = B = P = 0;
+            A = B = P = M = SM = 0;
             var N = PilotScores.Length;
 
             //compute counters and add pilotscores
@@ -118,8 +116,8 @@ namespace Scorer
                                    orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result descending
                                    select ps).ToArray();
 
-                if (A >= (P / 2))
-                    M = (int)Math.Ceiling(P / 2m); //rule 14.5.5: more than half the competitors scored
+                if (A >= ((decimal)P / 2))
+                    M = (int)Math.Ceiling((decimal)P / 2); //rule 14.5.5: more than half the competitors scored
                 else
                     M = A; //rule 14.5.6: fewer than half the competitors scored
 

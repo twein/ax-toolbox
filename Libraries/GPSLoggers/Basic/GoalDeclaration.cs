@@ -31,12 +31,13 @@ namespace AXToolbox.GpsLoggers
                 Type = DeclarationType.GoalName;
                 Name = definition;
             }
-            else if (definition.Length == 9)
+            else if (definition.Contains("/"))
             {
                 // type 0000/0000
                 Type = DeclarationType.CompetitionCoordinates;
-                Easting4Digits = double.Parse(definition.Substring(0, 4));
-                Northing4Digits = double.Parse(definition.Substring(5, 4));
+                var coords = definition.Split(new char[] { '/' });
+                Easting4Digits = double.Parse(coords[0]);
+                Northing4Digits = double.Parse(coords[1]);
             }
             else
                 throw new InvalidOperationException("Invalid goal declaration");
