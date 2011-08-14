@@ -44,10 +44,10 @@ namespace Scorer
                 {
                     case ScoreStatus.Provisional:
                     case ScoreStatus.Final:
-                        s = string.Format("({0})", Status.ToString().Substring(0, 1)); ;
+                        s = string.Format("{0}", Status.ToString().Substring(0, 1)); ;
                         break;
                     case ScoreStatus.Official:
-                        s = string.Format("({0}{1:00})", Status.ToString().Substring(0, 1), Version);
+                        s = string.Format("{0}{1:00}", Status.ToString().Substring(0, 1), Version);
                         break;
                 }
 
