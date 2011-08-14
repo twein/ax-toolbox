@@ -118,11 +118,14 @@ namespace FlightAnalyzer
                         Engine.Display();
                         break;
                     case "PointerIndex":
-                        TrackPointer = Engine.VisibleTrack[Tools.PointerIndex];
-                        Engine.TrackPointer.Position = TrackPointer.ToWindowsPoint();
-                        if (Tools.KeepPointerCentered)
-                            MapViewer.PanTo(Engine.TrackPointer.Position);
-                        RaisePropertyChanged("TrackPointer");
+                        if (Report != null)
+                        {
+                            TrackPointer = Engine.VisibleTrack[Tools.PointerIndex];
+                            Engine.TrackPointer.Position = TrackPointer.ToWindowsPoint();
+                            if (Tools.KeepPointerCentered)
+                                MapViewer.PanTo(Engine.TrackPointer.Position);
+                            RaisePropertyChanged("TrackPointer");
+                        }
                         break;
                     case "KeepPointerCentered":
                         Engine.KeepPointerCentered = Tools.KeepPointerCentered;

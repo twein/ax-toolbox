@@ -96,18 +96,17 @@ namespace AXToolbox.Scripting
                     //Point = TryResolveGoalDeclaration();
                     break;
 
-                case "MPDGP":
-                    //MPDGP: virtual marker drop point of declaration
-                    //MPDGP(<number>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    number = ParseOrDie<int>(0, int.Parse);
-                    break;
-
                 case "TLCH": //TLCH: launch
                 case "TLND": //TLND: landing
                     //XXXX()
                     //TODO: check if they are really needed or should be automatic
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
+                    break;
+
+                case "TPT": //TPT at point time
+                    //TPT(<pointName>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    ResolveOrDie<ScriptingPoint>(0);
                     break;
 
                 case "TNP": //nearest to point
@@ -317,7 +316,7 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Engine.LogLine(ObjectName + ": No trackpoint corresponds to marker drop");
+                        Engine.LogLine(ObjectName + ": marker drop from invalid track point");
                     } //none found
                     break;
 
@@ -328,17 +327,10 @@ namespace AXToolbox.Scripting
                     {
                         Point = TryResolveGoalDeclaration();
                     }
-                    catch (InvalidOperationException) { } //none found
-                    break;
-
-                case "MPDGP":
-                    //pilot declared goal point of declaration
-                    try
+                    catch (InvalidOperationException)
                     {
-                        var declaredGoal = TryResolveGoalDeclaration();
-                        Point = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - declaredGoal.Time).TotalSeconds) <= 2);
-                    }
-                    catch (InvalidOperationException) { } //none found
+                        Engine.LogLine(ObjectName + ": invalid goal declaration");
+                    } //none found
                     break;
 
                 case "TLCH":
@@ -353,6 +345,26 @@ namespace AXToolbox.Scripting
                     //TLND()
                     if (Engine.Report != null)
                         Point = Engine.Report.LandingPoint;
+                    break;
+
+
+                case "TPT":
+                    //TPT at point time
+                    //TPT(<pointName>)
+                    try
+                    {
+                        var referencePoint = Resolve<ScriptingPoint>(0).Point;
+                        if (referencePoint == null)
+                            Point = null;
+                        else
+                        {
+                            Point = Engine.Report.CleanTrack.First(p => p.Time == referencePoint.Time);
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        Engine.LogLine(ObjectName + ": goal declaration from invalid track point");
+                    } //none found
                     break;
 
                 case "TNP":
@@ -489,10 +501,10 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            if (Point == null)
-                Engine.LogLine(ObjectName + ": could not be resolved");
-            else
+            if (Point != null)
                 Engine.LogLine(ObjectName + ": resolved to " + Point.ToString());
+            else
+                Engine.LogLine(ObjectName + ": could not be resolved");
         }
 
         private AXPoint TryResolveGoalDeclaration()

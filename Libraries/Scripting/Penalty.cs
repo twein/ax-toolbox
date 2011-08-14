@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace AXToolbox.Scripting
 {
     public enum PenaltyType { Measure, TaskPoints, CompetitionPoints }
@@ -15,13 +16,18 @@ namespace AXToolbox.Scripting
         {
             Type = PenaltyType.Measure;
             Measure = measure;
-            InfringedRules = string.Format("{0}: {1} ", infringedRule, measure);
+            if (measure.Value == 0)
+                InfringedRules = string.Format("{0} ", infringedRule);
+            else
+                InfringedRules = string.Format("{0}: {1} ", infringedRule, measure);
         }
         public Penalty(string infringedRule, PenaltyType type, int value)
         {
             Type = type;
             switch (type)
             {
+                case PenaltyType.Measure:
+                    throw new InvalidOperationException("Penalty(string infringedRule, Result measure) instead");
                 case PenaltyType.TaskPoints:
                     TaskPoints = value;
                     InfringedRules = string.Format("{0} :{1:0} task points. ", infringedRule, TaskPoints);

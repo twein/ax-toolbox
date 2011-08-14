@@ -93,7 +93,8 @@
                                         <Button Click="buttonAddDeclaredGoal_Click">Add</Button>
                                         <Button Click="buttonDeleteDeclaredGoal_Click">Delete</Button>
                                     </StackPanel>
-                                    <ListBox Name="listBoxDeclaredGoals" ItemsSource="{Binding Path=Report.DeclaredGoals}"/>
+                                    <ListBox Name="listBoxDeclaredGoals" ItemsSource="{Binding Path=Report.DeclaredGoals}"
+                                             ToolTip="{Binding RelativeSource={RelativeSource Self},Path=SelectedItem.Description}"/>
                                 </StackPanel>
                             </Border>
                             <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">

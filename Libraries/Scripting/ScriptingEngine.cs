@@ -227,6 +227,7 @@ namespace AXToolbox.Scripting
             {
                 Report.Save(folder);
                 Report.ExportTrackLog(folder);
+                SaveLog(folder);
                 if (Results.Count() > 0)
                     ExportResults(folder);
             }
@@ -247,6 +248,15 @@ namespace AXToolbox.Scripting
                     contents.Add(t.ToCsvString());
 
                 File.WriteAllLines(Path.Combine(folder, Report.ToShortString() + ".csv"), contents);
+            }
+            else
+                throw new InvalidOperationException("The pilot id can not be zero");
+        }
+        public void SaveLog(string folder)
+        {
+            if (Report.PilotId > 0)
+            {
+                File.WriteAllLines(Path.Combine(folder, Report.ToShortString() + ".log"), Log.ToList());
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");

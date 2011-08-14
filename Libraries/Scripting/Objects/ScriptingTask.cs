@@ -118,9 +118,11 @@ namespace AXToolbox.Scripting
         {
             return Result = Result.NewResult(value, resultUnit);
         }
-        public Result NewNoResult()
+        public Result NewNoResult(string reason)
         {
-            return Result = Result.NewNoResult();
+            Result = Result.NewNoResult();
+            Penalties.Add(new Penalty(reason, Result.NewResult(0, resultUnit)));
+            return Result;
         }
         public Result NewNoFlight()
         {
