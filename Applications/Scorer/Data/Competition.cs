@@ -165,11 +165,11 @@ namespace Scorer
                              select ts;
 
             var headers = new List<string>() { "Rank", "Pilot", "TOTAL", "Average" };
-            var relWidths = new List<float>() { 2, 8, 3, 3 };
+            var relWidths = new List<float>() { 2, 8, 2, 2 };
             foreach (var ts in validTaskScores)
             {
                 headers.Add("T" + ts.UltraShortDescriptionStatus);
-                relWidths.Add(3);
+                relWidths.Add(2);
             }
             var table = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
 
