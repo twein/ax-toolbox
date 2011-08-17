@@ -18,9 +18,9 @@ namespace Scorer
                 var type = ResultInfo.GetType(Result);
                 //Debug.Assert(type != ResultType.Not_Set, "The measure should not be Not_Set");
 
-                if (Pilot.IsDisqualified || type == ResultType.No_Flight || type == ResultType.Not_Set)
+                if (Pilot.IsDisqualified || type == ResultType.No_Flight)
                     return 3;
-                else if (type == ResultType.No_Result)
+                else if (type == ResultType.No_Result || type == ResultType.Not_Set)
                     return 2;
                 else
                     return 1;
