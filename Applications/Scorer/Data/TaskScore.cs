@@ -284,7 +284,7 @@ namespace Scorer
             //status
             string statusMsg = Status.ToString() + " score";
             if (Version > 0)
-                statusMsg += string.Format(" version {0} - {1}", Version, RevisionDate);
+                statusMsg += string.Format(" version {0} - Published on {1}", Version, RevisionDate);
             document.Add(helper.NewParagraph(statusMsg));
 
             //table
@@ -316,6 +316,14 @@ namespace Scorer
             document.Add(table);
 
             document.Add(helper.NewParagraph(Constants));
+
+            if (Status != ScoreStatus.Provisional)
+            {
+                var pg = helper.NewParagraph("The competition director:");
+                pg.SpacingBefore = 2 * config.NormalFont.Size;
+                document.Add(pg);
+                document.Add(helper.NewParagraph(Event.Instance.Director));
+            }
         }
     }
 }

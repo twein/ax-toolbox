@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Balloonerds.com")]
 [assembly: AssemblyProduct("AXToolbox")]
-[assembly: AssemblyCopyright("(c) 2009-2011 Balloonerds.com")]
+[assembly: AssemblyCopyright("© 2009-2011 balloonerds.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

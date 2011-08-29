@@ -138,6 +138,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="license.txt" />
     <Content Include="To Do.txt" />
     <Content Include="world_file.txt" />
   </ItemGroup>

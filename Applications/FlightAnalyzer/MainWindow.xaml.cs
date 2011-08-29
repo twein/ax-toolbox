@@ -168,11 +168,11 @@ namespace FlightAnalyzer
         {
             if (args.Error != null)
             {
-                MessageBox.Show(args.Error.Message);
+                MessageBox.Show(this, args.Error.Message);
             }
             else if (args.Cancelled)
             {
-                MessageBox.Show("Cancelled");
+                MessageBox.Show(this, "Cancelled");
             }
             else
             {
@@ -190,7 +190,7 @@ namespace FlightAnalyzer
                         Report = Engine.Report;
                         if (Report.PilotId <= 0)
                         {
-                            MessageBox.Show("The pilot number cannot be zero");
+                            MessageBox.Show(this, "The pilot number cannot be zero");
                             return;
                         }
                         TrackPointer = null;

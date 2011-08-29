@@ -9,6 +9,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{63D336CD-8579-4479-8DD7-11CC2B6F0AE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{22C909AE-5A04-4249-B2E8-46250FF39E49}"
+	ProjectSection(SolutionItems) = preProject
+		Applications\FlightAnalyzer\license.txt = Applications\FlightAnalyzer\license.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{C1A54428-1B3A-4D9D-A0F3-42F78587EE57}"
 EndProject

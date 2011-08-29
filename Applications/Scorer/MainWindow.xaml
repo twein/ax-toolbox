@@ -13,7 +13,7 @@
                 <MenuItem Header="Edit" Click="menuEventEdit_Click"/>
                 <Separator />
                 <MenuItem Header="Load" Click="menuEventLoad_Click"/>
-                <MenuItem Header="Load data exchange file" Click="menuEventLoadDef_Click"/>
+                <MenuItem Header="Load CSV file" Click="menuEventLoadDef_Click"/>
                 <MenuItem Header="Save" Visibility="{Binding Path=SaveVisibility}" Click="menuEventSave_Click"/>
                 <MenuItem Header="Save XML" Visibility="{Binding Path=SaveVisibility}" Click="menuEventSaveXml_Click"/>
                 <Separator/>
