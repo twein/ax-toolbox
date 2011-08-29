@@ -19,16 +19,20 @@ namespace Scorer
             string strValue = value as string;
             var fields = strValue.Split(new[] { ' ' });
 
-            DateTime resultDateTime;
-            if (DateTime.TryParse(fields[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal, out resultDateTime))
+            try
             {
+                DateTime resultDateTime = DateTime.Parse(fields[0], DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
                 if (fields[1].ToUpper() == "AM")
                     return resultDateTime;
                 else if (fields[1].ToUpper() == "PM")
                     return resultDateTime + new TimeSpan(12, 0, 0);
+                else
+                    return value;
             }
-
-            return value;
+            catch
+            {
+                return value;
+            }
         }
     }
 }

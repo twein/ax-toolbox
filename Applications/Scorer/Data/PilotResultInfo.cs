@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Scorer
 {
@@ -10,6 +12,23 @@ namespace Scorer
 
         public ResultInfo ManualResultInfo { get; set; }
         public ResultInfo AutoResultInfo { get; set; }
+
+        protected string previousSavedHash = "";
+        protected string savedHash = "";
+
+        protected PilotResultInfo() { }
+        public PilotResultInfo(Task task, Pilot pilot)
+        {
+            Pilot = pilot;
+
+            ManualResultInfo = new ResultInfo(task, pilot, ResultType.Not_Set);
+            AutoResultInfo = new ResultInfo(task, pilot, ResultType.Not_Set);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
 
         public int Group
         {
@@ -26,21 +45,6 @@ namespace Scorer
                     return 1;
             }
         }
-
-        protected PilotResultInfo() { }
-        public PilotResultInfo(Task task, Pilot pilot)
-        {
-            Pilot = pilot;
-
-            ManualResultInfo = new ResultInfo(task, pilot, ResultType.Not_Set);
-            AutoResultInfo = new ResultInfo(task, pilot, ResultType.Not_Set);
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-
         public decimal Measure
         {
             get
@@ -94,6 +98,31 @@ namespace Scorer
             {
                 return (ManualResultInfo.InfringedRules + ", " + AutoResultInfo.InfringedRules).Trim(new char[] { ' ', ',' });
             }
+        }
+        public bool Highlight
+        {
+            get
+            {
+                //TODO: compact this
+                if (previousSavedHash != "" && savedHash != previousSavedHash)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        public void SaveHash()
+        {
+            previousSavedHash = savedHash;
+            savedHash = GetHash();
+        }
+
+
+        protected string GetHash()
+        {
+            var serialized = string.Format(NumberFormatInfo.InvariantInfo, "{0}¦{1}¦{2}¦{3}¦{4}", Measure, MeasurePenalty, TaskScorePenalty, CompetitionScorePenalty, InfringedRules);
+            var hash = new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(serialized));
+            return Convert.ToBase64String(hash);
         }
     }
 }
