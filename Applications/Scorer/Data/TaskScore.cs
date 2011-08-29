@@ -301,17 +301,21 @@ namespace Scorer
 
             foreach (var ps in PilotScores)
             {
-                table.AddCell(helper.NewRCell(ps.Rank.ToString()));
-                table.AddCell(helper.NewLCell(ps.Pilot.Info));
+                BaseColor bgcolor = null;
+                if (Status != ScoreStatus.Provisional && ps.ResultInfo.Highlight)
+                    bgcolor = BaseColor.YELLOW;
 
-                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Measure)));
-                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.MeasurePenalty)));
-                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Result)));
-                table.AddCell(helper.NewRCell(ps.Score.ToString("0")));
-                table.AddCell(helper.NewRCell(ps.ResultInfo.TaskScorePenalty.ToString("0")));
-                table.AddCell(helper.NewRCell(ps.ResultInfo.CompetitionScorePenalty.ToString("0")));
-                table.AddCell(helper.NewRCellBold(ps.FinalScore.ToString("0")));
-                table.AddCell(helper.NewLCell(ps.ResultInfo.InfringedRules));
+                table.AddCell(helper.NewRCell(ps.Rank.ToString(), 1, bgcolor));
+                table.AddCell(helper.NewLCell(ps.Pilot.Info, 1, bgcolor));
+
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Measure), 1, bgcolor));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.MeasurePenalty), 1, bgcolor));
+                table.AddCell(helper.NewRCell(ResultInfo.ToString(ps.ResultInfo.Result), 1, bgcolor));
+                table.AddCell(helper.NewRCell(ps.Score.ToString("0"), 1, bgcolor));
+                table.AddCell(helper.NewRCell(ps.ResultInfo.TaskScorePenalty.ToString("0"), 1, bgcolor));
+                table.AddCell(helper.NewRCell(ps.ResultInfo.CompetitionScorePenalty.ToString("0"), 1, bgcolor));
+                table.AddCell(helper.NewRCellBold(ps.FinalScore.ToString("0"), 1, bgcolor));
+                table.AddCell(helper.NewLCell(ps.ResultInfo.InfringedRules, 1, bgcolor));
             }
             document.Add(table);
 

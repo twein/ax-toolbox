@@ -38,7 +38,7 @@ namespace Scorer
             }
             set
             {
-                measure = value;
+                measure = Math.Round(value, 2);
                 RaisePropertyChanged("Measure");
                 RaisePropertyChanged("Type");
             }
@@ -49,7 +49,7 @@ namespace Scorer
             get { return measurePenalty; }
             set
             {
-                measurePenalty = value;
+                measurePenalty = Math.Round(value, 2);
                 RaisePropertyChanged("MeasurePenalty");
             }
         }

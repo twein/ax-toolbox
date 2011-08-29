@@ -65,21 +65,29 @@ namespace AXToolbox.PdfHelpers
             return new Paragraph(content, Config.NormalFont);
         }
 
-        public PdfPCell NewLCell(string cellContent, int colSpan = 1)
+        public PdfPCell NewLCell(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT, Colspan = colSpan };
+            if (bgColor == null)
+                bgColor = BaseColor.WHITE;
+            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT, Colspan = colSpan, BackgroundColor = bgColor };
         }
-        public PdfPCell NewRCell(string cellContent, int colSpan = 1)
+        public PdfPCell NewRCell(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
+            if (bgColor == null)
+                bgColor = BaseColor.WHITE;
+            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan, BackgroundColor = bgColor };
         }
-        public PdfPCell NewRCellBold(string cellContent, int colSpan = 1)
+        public PdfPCell NewRCellBold(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            return new PdfPCell(new Phrase(cellContent, Config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
+            if (bgColor == null)
+                bgColor = BaseColor.WHITE;
+            return new PdfPCell(new Phrase(cellContent, Config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan, BackgroundColor = bgColor };
         }
-        public PdfPCell NewCCell(string cellContent, int colSpan = 1)
+        public PdfPCell NewCCell(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE, Colspan = colSpan };
+            if (bgColor == null)
+                bgColor = BaseColor.WHITE;
+            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE, Colspan = colSpan, BackgroundColor = bgColor };
         }
 
         public static void OpenPdf(string pdfFileName)

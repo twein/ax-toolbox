@@ -245,6 +245,10 @@ namespace Scorer
         private void menuTaskComputeScores_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
+
+            foreach (var pr in task.PilotResults)
+                pr.SaveHash();
+
             foreach (var c in Event.Instance.Competitions)
             {
                 var ts = c.TaskScores.First(s => s.Task == task);
