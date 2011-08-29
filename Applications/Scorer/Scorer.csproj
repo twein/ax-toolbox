@@ -185,6 +185,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="license.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -196,8 +197,10 @@
     <Content Include="Demo\Pre-Europeans-event.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Howto.odt" />
-    <None Include="Data Exchange File Format.odt" />
+    <None Include="Data Exchange File Format.pdf" />
+    <None Include="Documentation\Getting Started.odt" />
+    <None Include="Documentation\Data Exchange File Format.odt" />
+    <None Include="Getting Started.pdf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -243,10 +246,7 @@
     <Resource Include="balloon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="To Do.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="GettingStarted.txt" />
+    <None Include="Documentation\To Do.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -33,7 +33,7 @@ namespace Scorer
         {
             if (Event.Instance.IsDirty)
             {
-                var response = MessageBox.Show(
+                var response = MessageBox.Show(this,
                     "The event database has not been saved. Are you sure you want to close the application?",
                     "Warning!",
                     MessageBoxButton.YesNo,
@@ -47,10 +47,17 @@ namespace Scorer
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            try
             {
-                foreach (var fileName in e.Data.GetData(DataFormats.FileDrop, true) as string[])
-                    Event.Instance.ImportFile(fileName);
+                if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
+                    foreach (var fileName in e.Data.GetData(DataFormats.FileDrop, true) as string[])
+                        Event.Instance.ImportFile(fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message);
             }
         }
 
@@ -67,7 +74,7 @@ namespace Scorer
         {
             if (Event.Instance.IsDirty)
             {
-                var response = MessageBox.Show(
+                var response = MessageBox.Show(this,
                     "The event database has not been saved. Are you sure you want to load other data?",
                     "Warning!",
                     MessageBoxButton.YesNo,
@@ -86,7 +93,16 @@ namespace Scorer
         {
             var fileName = GetOpenFileName(".csv files (*.csv)|*.csv");
             if (!string.IsNullOrEmpty(fileName))
-                Event.Instance.ImportFile(fileName);
+            {
+                try
+                {
+                    Event.Instance.ImportFile(fileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.Message);
+                }
+            }
         }
         private void menuEventSave_Click(object sender, RoutedEventArgs e)
         {

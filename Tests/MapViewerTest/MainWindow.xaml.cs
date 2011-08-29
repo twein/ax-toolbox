@@ -65,7 +65,7 @@ namespace MapViewerTest
         private void btnLoadTrack_Click(object sender, RoutedEventArgs e)
         {
             if (!map.IsMapLoaded)
-                MessageBox.Show("You must load a map before loading a track");
+                MessageBox.Show(this, "You must load a map before loading a track");
             else
             {
 

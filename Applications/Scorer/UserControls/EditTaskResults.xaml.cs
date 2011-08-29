@@ -13,6 +13,10 @@ namespace Scorer
             : base(results, editOptions, true)
         {
             InitializeComponent();
+
+#if DEBUG
+            buttonRandom.Visibility = System.Windows.Visibility.Visible;
+#endif
         }
 
         private void buttonRandom_Click(object sender, System.Windows.RoutedEventArgs e)

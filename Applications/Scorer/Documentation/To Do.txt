@@ -8,9 +8,9 @@
 - use only one column for penalty points specifying T or C
 * use Notes/Rule instead of infringed rule
 * use Performance instead of Measure
-- use result pending instead of NF when no result is entered
+* use result pending instead of NF when no result is entered
 - put a big task number in a corner of task result sheet for easy recognition
-+ use "Published on" instead "Printed on"
+* use "Published on" instead "Printed on"
 - Auto highlighting
 (* = done, + = review)
 

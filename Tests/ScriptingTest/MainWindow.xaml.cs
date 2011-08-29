@@ -41,7 +41,7 @@ namespace ScriptingTest
             }
             catch (ArgumentException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(this, ex.Message);
                 Close();
             }
         }
