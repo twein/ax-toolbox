@@ -59,14 +59,15 @@ namespace Scorer
             {
                 if (isDisqualified != value)
                 {
-                    if (MessageBox.Show("This action will void all current scores." + Environment.NewLine + "Are you sure?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("This action will change all current scores." + Environment.NewLine + "Are you sure?", "Alert", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
                     {
                         isDisqualified = value;
                         Event.Instance.IsDirty = true;
 
-                        // void all scores
+                        //recompute all the scores
                         foreach (var t in Event.Instance.Tasks)
-                            t.Phases |= CompletedPhases.Dirty;
+                            t.ComputeScores();
+
                         RaisePropertyChanged("IsDisqualified");
                     }
                 }

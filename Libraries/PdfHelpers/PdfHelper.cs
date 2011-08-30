@@ -47,9 +47,7 @@ namespace AXToolbox.PdfHelpers
                 HeaderRows = string.IsNullOrEmpty(title) ? 1 : 2
             };
 
-            //table.DefaultCell.BackgroundColor = new BaseColor(192, 192, 192);
-
-            var headerColor = new BaseColor(192, 192, 192);
+            var headerColor = new BaseColor(0xc0, 0xc0, 0xc0);
 
             if (!string.IsNullOrEmpty(title))
                 table.AddCell(new PdfPCell(new Paragraph(title, Config.BoldFont)) { Colspan = columnHeaders.Length, BackgroundColor = headerColor });

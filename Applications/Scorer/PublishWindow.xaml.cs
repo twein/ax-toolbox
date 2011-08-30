@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace Scorer
 {
-    public partial class ScoreStatusWindow : Window, INotifyPropertyChanged
+    public partial class PublishWindow : Window, INotifyPropertyChanged
     {
         private ScoreStatus status;
         public ScoreStatus Status
@@ -37,6 +37,7 @@ namespace Scorer
                 RaisePropertyChanged("RevisionDate");
             }
         }
+
         private DialogResult response;
         public DialogResult Response
         {
@@ -48,7 +49,7 @@ namespace Scorer
             }
         }
 
-        public ScoreStatusWindow()
+        public PublishWindow()
         {
             InitializeComponent();
             DataContext = this;

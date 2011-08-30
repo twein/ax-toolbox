@@ -223,6 +223,7 @@ namespace Scorer
         {
             textDescription.Text = "";
         }
+
         private void menuTaskEditResults_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
@@ -232,7 +233,7 @@ namespace Scorer
             foreach (var pr in task.PilotResults)
                 results.Add(pr.ManualResultInfo);
 
-            AddTab(new EditTaskResults(results, editOptions), string.Format("Task {0}", task.ShortDescription));
+            AddTab(new EditTaskResults(task, results, editOptions), string.Format("Task {0}", task.ShortDescription));
         }
         private void menuTaskResultsToPdf_Click(object sender, RoutedEventArgs e)
         {
@@ -242,42 +243,36 @@ namespace Scorer
             if (!string.IsNullOrEmpty(folder))
                 task.ResultsToPdf(folder, true);
         }
-        private void menuTaskComputeScores_Click(object sender, RoutedEventArgs e)
-        {
-            var task = ((MenuItem)sender).Tag as Task;
-
-            foreach (var pr in task.PilotResults)
-                pr.SaveHash();
-
-            foreach (var c in Event.Instance.Competitions)
-            {
-                var ts = c.TaskScores.First(s => s.Task == task);
-                ts.ComputeScores();
-            }
-        }
-        private void menuTaskSetStatus_Click(object sender, RoutedEventArgs e)
+        private void menuTaskPublishScore_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
 
             //TODO: fix [0]
             var ts = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == task);
-            var dlg = new ScoreStatusWindow()
+            var dlg = new PublishWindow()
             {
                 Title = "Task " + task.Description,
                 Status = ts.Status,
-                Version = ts.Version,
+                Version = ts.Status == ScoreStatus.Official ? ts.Version + 1 : ts.Version,
                 RevisionDate = ts.RevisionDate,
                 WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
             };
             dlg.ShowDialog();
             if (dlg.Response == System.Windows.Forms.DialogResult.OK)
-                foreach (var c in Event.Instance.Competitions)
+            {
+                if (dlg.Status != ScoreStatus.Provisional)
                 {
-                    var taskScore = c.TaskScores.First(s => s.Task == task);
-                    taskScore.Status = dlg.Status;
-                    taskScore.Version = dlg.Version;
-                    taskScore.RevisionDate = dlg.RevisionDate;
+                    foreach (var c in Event.Instance.Competitions)
+                    {
+                        var taskScore = c.TaskScores.First(s => s.Task == task);
+                        taskScore.Status = dlg.Status;
+                        taskScore.Version = dlg.Version;
+                        taskScore.RevisionDate = dlg.RevisionDate;
+                    }
+
+                    task.Phases |= CompletedPhases.Published;
                 }
+            }
         }
         private void menuTaskScoresToPdf_Click(object sender, RoutedEventArgs e)
         {

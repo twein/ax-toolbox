@@ -51,6 +51,9 @@ namespace Scorer
                         break;
                 }
 
+                if ((Task.Phases & CompletedPhases.Published) == 0)
+                    s += " DRAFT";
+
                 return Task.UltraShortDescription + " " + s;
             }
         }
@@ -245,11 +248,8 @@ namespace Scorer
 
             //update revision
             RevisionDate = DateTime.Now;
-            if (Status != ScoreStatus.Provisional)
-                Version++;
-
-            Task.Phases |= CompletedPhases.Computed;
-            Task.Phases &= ~CompletedPhases.Dirty;
+            //if (Status != ScoreStatus.Provisional)
+            //    Version++;
         }
 
         public void ScoresToPdf(string folder, bool openAfterCreation)
@@ -272,19 +272,20 @@ namespace Scorer
         {
             var document = helper.Document;
             var config = helper.Config;
+            var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
 
             //title
-            document.Add(new Paragraph(competition.Name, config.TitleFont) { SpacingAfter = 10 });
+            document.Add(new Paragraph(competition.Name, config.TitleFont) { SpacingAfter = config.TitleFont.Size });
             //subtitle
-            var title = "Task " + Task.Description + " score";
+            var title = "Task " + Task.Description + " score" + (published ? "" : " ***** DRAFT - NOT YET PUBLISHED *****");
             document.Add(new Paragraph(title, config.SubtitleFont));
             var date = string.Format("{0:d} {1}", Task.Date, Task.Date.Hour < 12 ? "AM" : "PM");
-            document.Add(new Paragraph(date, config.BoldFont) { SpacingAfter = 10 });
+            document.Add(new Paragraph(date, config.BoldFont) { SpacingAfter = config.BoldFont.Size });
 
             //status
             string statusMsg = Status.ToString() + " score";
             if (Version > 0)
-                statusMsg += string.Format(" version {0} - Published on {1}", Version, RevisionDate);
+                statusMsg += string.Format(" - Version {0} - Published on {1}", Version, RevisionDate);
             document.Add(helper.NewParagraph(statusMsg));
 
             //table
@@ -299,10 +300,12 @@ namespace Scorer
             var relWidths = new float[] { 2, 8, 3, 3, 3, 3, 3, 3, 3, 10 };
             var table = helper.NewTable(headers, relWidths, title);
 
+            BaseColor defaultbg = published ? BaseColor.WHITE : new BaseColor(0xd0, 0xd0, 0xd0);
             foreach (var ps in PilotScores)
             {
-                BaseColor bgcolor = null;
-                if (Status != ScoreStatus.Provisional && ps.ResultInfo.Highlight)
+                var bgcolor = defaultbg;
+                //mark changes for official versions greater than 1
+                if (Status == ScoreStatus.Official && Version > 1 && ps.ResultInfo.HasChanged)
                     bgcolor = BaseColor.YELLOW;
 
                 table.AddCell(helper.NewRCell(ps.Rank.ToString(), 1, bgcolor));
@@ -321,10 +324,10 @@ namespace Scorer
 
             document.Add(helper.NewParagraph(Constants));
 
-            if (Status != ScoreStatus.Provisional)
+            if (published && Status != ScoreStatus.Provisional)
             {
                 var pg = helper.NewParagraph("The competition director:");
-                pg.SpacingBefore = 2 * config.NormalFont.Size;
+                pg.SpacingBefore = 5 * config.NormalFont.Size;
                 document.Add(pg);
                 document.Add(helper.NewParagraph(Event.Instance.Director));
             }

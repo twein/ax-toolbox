@@ -429,18 +429,22 @@ namespace Scorer
             var measurePenalty = ResultInfo.ParseMeasure(record[5]);
             var taskScorePenalty = int.Parse(record[6]);
             var competitionScorePenalty = int.Parse(record[7]);
+            var infringedRules = record[8].Trim();
 
             if (result.Measure != measure || result.MeasurePenalty != measurePenalty
-                || result.TaskScorePenalty != taskScorePenalty || result.CompetitionScorePenalty != competitionScorePenalty)
+                || result.TaskScorePenalty != taskScorePenalty || result.CompetitionScorePenalty != competitionScorePenalty
+                || result.InfringedRules != infringedRules)
             {
                 result.Measure = measure;
                 result.MeasurePenalty = measurePenalty;
                 result.TaskScorePenalty = taskScorePenalty;
                 result.CompetitionScorePenalty = competitionScorePenalty;
+                result.InfringedRules = infringedRules;
 
-                task.Phases |= CompletedPhases.Dirty | (auto ? CompletedPhases.AutoResults : CompletedPhases.ManualResults);
+                task.Phases |= (auto ? CompletedPhases.AutoResults : CompletedPhases.ManualResults);
+
+                task.ComputeScores();
             }
-            result.InfringedRules = record[8].Trim();
         }
     }
 }

@@ -128,8 +128,7 @@
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Tag="{Binding}" Header="Compute scores" Visibility="{Binding Path=ComputeVisibility}" Click="menuTaskComputeScores_Click"/>
-                                                <MenuItem Tag="{Binding}" Header="Change status" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskSetStatus_Click" />
+                                                <MenuItem Tag="{Binding}" Header="Publish score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskPublishScore_Click" />
                                                 <MenuItem Tag="{Binding}" Header="Score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScoresToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />

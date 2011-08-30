@@ -159,10 +159,9 @@ namespace Scorer
 
             //table
             var validTaskScores = from ts in TaskScores
-                             where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed
-                             && !ts.Task.IsCancelled
-                             orderby ts.Task.Number
-                             select ts;
+                                  where !ts.Task.IsCancelled
+                                  orderby ts.Task.Number
+                                  select ts;
 
             var headers = new List<string>() { "Rank", "Pilot", "TOTAL", "Average" };
             var relWidths = new List<float>() { 2, 8, 2, 2 };
@@ -217,7 +216,7 @@ namespace Scorer
             var document = helper.Document;
 
             var validTScores = from ts in TaskScores
-                               where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed && !ts.Task.IsCancelled
+                               where !ts.Task.IsCancelled
                                orderby ts.Task.Number
                                select ts;
             var isFirstTask = true;
@@ -238,7 +237,7 @@ namespace Scorer
         public void TaskScoresToNPdf(string folder)
         {
             var validTScores = from ts in TaskScores
-                               where (ts.Task.Phases & (CompletedPhases.Computed | CompletedPhases.Dirty)) == CompletedPhases.Computed && !ts.Task.IsCancelled
+                               where !ts.Task.IsCancelled
                                orderby ts.Task.Number
                                select ts;
             foreach (var ts in validTScores)

@@ -15,8 +15,9 @@ namespace Scorer
         AutoResults = 0x1,
         ManualResults = 0x2,
         Results = 0x3,
-        Dirty = 0x4,
-        Computed = 0x8
+        //Dirty = 0x4,
+        Computed = 0x8,
+        Published = 0x10
     }
 
 
@@ -83,7 +84,6 @@ namespace Scorer
                 RaisePropertyChanged("Phases");
                 RaisePropertyChanged("Status");
                 RaisePropertyChanged("ResultsVisibility");
-                RaisePropertyChanged("ComputeVisibility");
                 RaisePropertyChanged("ScoresVisibility");
             }
         }
@@ -121,13 +121,8 @@ namespace Scorer
                     status += "A ";
                 if ((Phases & CompletedPhases.ManualResults) > 0)
                     status += "M ";
-                if ((Phases & CompletedPhases.Computed) > 0)
-                {
-                    if ((Phases & CompletedPhases.Dirty) > 0)
-                        status += "C* ";
-                    else
-                        status += "C ";
-                }
+                if ((Phases & CompletedPhases.Published) > 0)
+                    status += "P ";
                 if (isCancelled)
                     status += "Cancelled";
                 status = status.Trim();
@@ -196,28 +191,37 @@ namespace Scorer
                     return Visibility.Collapsed;
             }
         }
-        public Visibility ComputeVisibility
-        {
-            get
-            {
-                //Show compute menu if there are results
-                if ((Phases & CompletedPhases.Dirty) > 0)
-                    return Visibility.Visible;
-                else
-                    return Visibility.Collapsed;
-            }
-        }
         public Visibility ScoresVisibility
         {
             get
             {
                 //show scores menu if the task is computed and clean
-                if ((Phases & CompletedPhases.Computed) > 0
-                    && (Phases & CompletedPhases.Dirty) == 0)
+                if ((Phases & CompletedPhases.Computed) > 0)
                     return Visibility.Visible;
                 else
                     return Visibility.Collapsed;
             }
+        }
+
+        public void ComputeScores()
+        {
+            //preserve old change marks if the task was not previously published
+            //i.e. keep track of all changes between publications
+            var preserveChanges = (Phases & CompletedPhases.Published) == 0;
+
+            //compute the scores
+            foreach (var c in Event.Instance.Competitions)
+            {
+                var ts = c.TaskScores.First(s => s.Task == this);
+                ts.ComputeScores();
+            }
+
+            Phases |= CompletedPhases.Computed;
+            Phases &= ~CompletedPhases.Published;
+
+            //mark changes
+            foreach (var pr in PilotResults)
+                pr.MarkChanges(preserveChanges);
         }
 
         public void ResultsToPdf(string folder, bool openAfterCreation)

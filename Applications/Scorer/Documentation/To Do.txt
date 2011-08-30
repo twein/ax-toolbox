@@ -12,6 +12,7 @@
 - put a big task number in a corner of task result sheet for easy recognition
 * use "Published on" instead "Printed on"
 * Auto highlighting
+- Save all the published pdfs for future reference
 (* = done, + = review)
 
 

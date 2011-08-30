@@ -9,7 +9,9 @@ namespace Scorer
 {
     public partial class EditTaskResults : EditCollection<ResultInfo>
     {
-        public EditTaskResults(ObservableCollection<ResultInfo> results, EditOptions editOptions)
+        protected Task task;
+
+        public EditTaskResults(Task task, ObservableCollection<ResultInfo> results, EditOptions editOptions)
             : base(results, editOptions, true)
         {
             InitializeComponent();
@@ -17,6 +19,8 @@ namespace Scorer
 #if DEBUG
             buttonRandom.Visibility = System.Windows.Visibility.Visible;
 #endif
+
+            this.task = task;
         }
 
         private void buttonRandom_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -60,8 +64,11 @@ namespace Scorer
         private void buttonSave_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             //TODO: Hide the save button if validation fails
-            SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults | CompletedPhases.Dirty;
+            SaveCollection[0].Task.Phases |= CompletedPhases.ManualResults;
             Save();
+
+            //compute the scores
+            task.ComputeScores();
         }
     }
 }
