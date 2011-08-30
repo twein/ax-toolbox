@@ -1,9 +1,9 @@
-﻿<Window x:Class="Scorer.ScoreStatusWindow"
+﻿<Window x:Class="Scorer.PublishWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Scorer"
-        Title="ScoreStatusWindow" Height="150" Width="400">
+        Title="Publish scores" Height="143" Width="400">
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}"

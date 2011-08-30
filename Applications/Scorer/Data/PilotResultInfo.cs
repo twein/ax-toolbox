@@ -99,7 +99,7 @@ namespace Scorer
                 return (ManualResultInfo.InfringedRules + ", " + AutoResultInfo.InfringedRules).Trim(new char[] { ' ', ',' });
             }
         }
-        public bool Highlight
+        public bool HasChanged
         {
             get
             {
@@ -111,12 +111,17 @@ namespace Scorer
             }
         }
 
-        public void SaveHash()
+        public void MarkChanges(bool preserveOldChanges)
         {
-            previousSavedHash = savedHash;
+            if (!preserveOldChanges)
+                ClearChangeMark();
+
             savedHash = GetHash();
         }
-
+        public void ClearChangeMark()
+        {
+            previousSavedHash = savedHash;
+        }
 
         protected string GetHash()
         {

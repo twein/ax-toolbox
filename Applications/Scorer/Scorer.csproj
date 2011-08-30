@@ -107,8 +107,8 @@
     <Compile Include="Data\TaskType.cs" />
     <Compile Include="Data\PilotScore.cs" />
     <Compile Include="Data\PilotTotalScore.cs" />
-    <Compile Include="ScoreStatusWindow.xaml.cs">
-      <DependentUpon>ScoreStatusWindow.xaml</DependentUpon>
+    <Compile Include="PublishWindow.xaml.cs">
+      <DependentUpon>PublishWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\EditEvent.xaml.cs">
       <DependentUpon>EditEvent.xaml</DependentUpon>
@@ -130,7 +130,7 @@
     <Compile Include="Data\PilotResultInfo.cs" />
     <Compile Include="Data\ResultInfo.cs" />
     <Compile Include="Data\Task.cs" />
-    <Page Include="ScoreStatusWindow.xaml">
+    <Page Include="PublishWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -197,10 +197,10 @@
     <Content Include="Demo\Pre-Europeans-event.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Data Exchange File Format.pdf" />
+    <None Include="Documentation\Data Exchange File Format.pdf" />
     <None Include="Documentation\Getting Started.odt" />
     <None Include="Documentation\Data Exchange File Format.odt" />
-    <None Include="Getting Started.pdf" />
+    <None Include="Documentation\Getting Started.pdf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
