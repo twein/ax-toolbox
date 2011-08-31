@@ -185,18 +185,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Demo\Europeans 2011 Test event.csv" />
     <None Include="license.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="ClassDiagram.cd" />
-    <Content Include="Demo\Pre-Europeans-tasks.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Demo\Pre-Europeans-event.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Documentation\Data Exchange File Format.pdf" />
     <None Include="Documentation\Getting Started.odt" />
     <None Include="Documentation\Data Exchange File Format.odt" />
