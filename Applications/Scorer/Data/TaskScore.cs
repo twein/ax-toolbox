@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace Scorer
 {
@@ -64,6 +65,7 @@ namespace Scorer
         {
             this.competition = competition;
             Task = task;
+            Version = 1;
 
             PilotScores = (from r in Task.PilotResults
                            where competition.Pilots.Contains(r.Pilot)
@@ -272,19 +274,27 @@ namespace Scorer
         {
             var document = helper.Document;
             var config = helper.Config;
-            var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
 
+            var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
+            
+            //watermark
+            if (!published)
+                config.Watermark = "DRAFT - NOT PUBLISHED";
+
+            //task number
+            config.TaskNumber = string.Format("T{0:00}", Task.Number);
+            
             //title
             document.Add(new Paragraph(competition.Name, config.TitleFont) { SpacingAfter = config.TitleFont.Size });
             //subtitle
-            var title = "Task " + Task.Description + " score" + (published ? "" : " ***** DRAFT - NOT YET PUBLISHED *****");
+            var title = "Task " + Task.Description + " score";
             document.Add(new Paragraph(title, config.SubtitleFont));
             var date = string.Format("{0:d} {1}", Task.Date, Task.Date.Hour < 12 ? "AM" : "PM");
             document.Add(new Paragraph(date, config.BoldFont) { SpacingAfter = config.BoldFont.Size });
 
             //status
             string statusMsg = Status.ToString() + " score";
-            if (Version > 0)
+            if (Status != ScoreStatus.Provisional)
                 statusMsg += string.Format(" - Version {0} - Published on {1}", Version, RevisionDate);
             document.Add(helper.NewParagraph(statusMsg));
 
@@ -300,13 +310,10 @@ namespace Scorer
             var relWidths = new float[] { 2, 8, 3, 3, 3, 3, 3, 3, 3, 10 };
             var table = helper.NewTable(headers, relWidths, title);
 
-            BaseColor defaultbg = published ? BaseColor.WHITE : new BaseColor(0xd0, 0xd0, 0xd0);
             foreach (var ps in PilotScores)
             {
-                var bgcolor = defaultbg;
                 //mark changes for official versions greater than 1
-                if (Status == ScoreStatus.Official && Version > 1 && ps.ResultInfo.HasChanged)
-                    bgcolor = BaseColor.YELLOW;
+                var bgcolor = (Status == ScoreStatus.Official && Version > 1 && ps.ResultInfo.HasChanged) ? BaseColor.YELLOW : null;
 
                 table.AddCell(helper.NewRCell(ps.Rank.ToString(), 1, bgcolor));
                 table.AddCell(helper.NewLCell(ps.Pilot.Info, 1, bgcolor));
