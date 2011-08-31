@@ -253,7 +253,7 @@ namespace Scorer
             {
                 Title = "Task " + task.Description,
                 Status = ts.Status,
-                Version = ts.Status == ScoreStatus.Official ? ts.Version + 1 : ts.Version,
+                Version = ts.Version,
                 RevisionDate = ts.RevisionDate,
                 WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
             };

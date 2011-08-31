@@ -214,6 +214,10 @@ namespace Scorer
             {
                 var ts = c.TaskScores.First(s => s.Task == this);
                 ts.ComputeScores();
+
+                //auto-increment version if needed
+                if (!preserveChanges)
+                    ts.Version++;
             }
 
             Phases |= CompletedPhases.Computed;

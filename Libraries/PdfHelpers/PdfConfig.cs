@@ -1,5 +1,5 @@
 ﻿using iTextSharp.text;
-using System;
+using iTextSharp.text.pdf;
 
 namespace AXToolbox.PdfHelpers
 {
@@ -19,6 +19,8 @@ namespace AXToolbox.PdfHelpers
         public string FooterLeft { get; set; }
         public string FooterCenter { get; set; }
         public string FooterRight { get; set; }
+        public string Watermark { get; set; }
+        public string TaskNumber { get; set; }
 
         public Font TitleFont { get; set; }
         public Font SubtitleFont { get; set; }
@@ -27,6 +29,8 @@ namespace AXToolbox.PdfHelpers
         public Font NormalFont { get; set; }
         public Font HeaderFont { get; set; }
         public Font FooterFont { get; set; }
+        public Font WatermarkFont { get; set; }
+        public Font TaskNumberFont { get; set; }
 
         public PdfConfig()
         {
@@ -45,9 +49,11 @@ namespace AXToolbox.PdfHelpers
             SubtitleFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
             NormalFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
             BoldFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.BOLD);
-            ItalicFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.ITALIC); 
+            ItalicFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.ITALIC);
             HeaderFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
             FooterFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
+            WatermarkFont = new Font(Font.FontFamily.HELVETICA, 64f, Font.BOLD, BaseColor.LIGHT_GRAY);
+            TaskNumberFont = new Font(Font.FontFamily.HELVETICA, 32f, Font.BOLD);
         }
     }
 }

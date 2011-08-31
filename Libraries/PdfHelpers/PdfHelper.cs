@@ -3,6 +3,7 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.draw;
+using System;
 
 namespace AXToolbox.PdfHelpers
 {
@@ -13,6 +14,7 @@ namespace AXToolbox.PdfHelpers
         public PdfConfig Config;
 
         public Document Document { get; protected set; }
+        public PdfWriter Writer { get; protected set; }
 
         public PdfHelper(string pdfFileName, PdfConfig pdfConfig)
         {
@@ -22,7 +24,8 @@ namespace AXToolbox.PdfHelpers
             Document.SetPageSize(pdfConfig.PageLayout);
             Document.SetMargins(Config.MarginLeft, Config.MarginRight, Config.MarginTop, Config.MarginBottom); // in pt
 
-            PdfWriter.GetInstance(Document, new FileStream(pdfFileName, FileMode.Create)).PageEvent = new PageEvents(pdfConfig);
+            Writer = PdfWriter.GetInstance(Document, new FileStream(pdfFileName, FileMode.Create));
+            Writer.PageEvent = new PageEvents(pdfConfig);
 
             Document.Open();
         }
@@ -65,27 +68,31 @@ namespace AXToolbox.PdfHelpers
 
         public PdfPCell NewLCell(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            if (bgColor == null)
-                bgColor = BaseColor.WHITE;
-            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT, Colspan = colSpan, BackgroundColor = bgColor };
+            var cell = new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_LEFT, Colspan = colSpan };
+            if (bgColor != null)
+                cell.BackgroundColor = bgColor;
+            return cell;
         }
         public PdfPCell NewRCell(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            if (bgColor == null)
-                bgColor = BaseColor.WHITE;
-            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan, BackgroundColor = bgColor };
-        }
-        public PdfPCell NewRCellBold(string cellContent, int colSpan = 1, BaseColor bgColor = null)
-        {
-            if (bgColor == null)
-                bgColor = BaseColor.WHITE;
-            return new PdfPCell(new Phrase(cellContent, Config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan, BackgroundColor = bgColor };
+            var cell = new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
+            if (bgColor != null)
+                cell.BackgroundColor = bgColor;
+            return cell;
         }
         public PdfPCell NewCCell(string cellContent, int colSpan = 1, BaseColor bgColor = null)
         {
-            if (bgColor == null)
-                bgColor = BaseColor.WHITE;
-            return new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_MIDDLE, Colspan = colSpan, BackgroundColor = bgColor };
+            var cell = new PdfPCell(new Phrase(cellContent, Config.NormalFont)) { HorizontalAlignment = Element.ALIGN_CENTER, Colspan = colSpan };
+            if (bgColor != null)
+                cell.BackgroundColor = bgColor;
+            return cell;
+        }
+        public PdfPCell NewRCellBold(string cellContent, int colSpan = 1, BaseColor bgColor = null)
+        {
+            var cell = new PdfPCell(new Phrase(cellContent, Config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT, Colspan = colSpan };
+            if (bgColor != null)
+                cell.BackgroundColor = bgColor;
+            return cell;
         }
 
         public static void OpenPdf(string pdfFileName)
@@ -110,18 +117,46 @@ namespace AXToolbox.PdfHelpers
                 config = pdfConfig;
             }
 
+            public void OnStartPage(PdfWriter writer, Document document) { }
             public void OnEndPage(PdfWriter writer, Document document)
             {
-                PdfContentByte cb = writer.DirectContent;
+                PdfContentByte cOver = writer.DirectContent;
+                PdfContentByte cUnder = writer.DirectContentUnder;
 
                 if (document.PageNumber > 0)
                 {
+                    //insert watermark
+                    if (!string.IsNullOrEmpty(config.Watermark))
+                    {
+                        ColumnText.ShowTextAligned(
+                            cUnder,
+                            Element.ALIGN_CENTER,
+                            new Paragraph(config.Watermark, config.WatermarkFont) { },
+                            (document.Left + document.Right) / 2,
+                            (document.Top + document.Bottom) / 2,
+                            (float)(Math.Atan2(document.Top - document.Bottom, document.Right - document.Left) * 180 / Math.PI));
+                    }
+
+
+                    //insert task number
+                    if (!string.IsNullOrEmpty(config.TaskNumber))
+                    {
+                        ColumnText.ShowTextAligned(
+                            cOver,
+                            Element.ALIGN_RIGHT,
+                            new Paragraph(config.TaskNumber, config.TaskNumberFont),
+                            document.Right,
+                            document.Top - config.TaskNumberFont.Size / 2,
+                            0);
+                    }
+
+
                     //insert header
                     //left
                     if (!string.IsNullOrEmpty(config.HeaderLeft))
                     {
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_LEFT,
                             new Paragraph(config.HeaderLeft, config.HeaderFont),
                             document.Left,
@@ -132,7 +167,7 @@ namespace AXToolbox.PdfHelpers
                     if (!string.IsNullOrEmpty(config.HeaderCenter))
                     {
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_CENTER,
                             new Paragraph(config.HeaderCenter, config.HeaderFont),
                             document.PageSize.Width / 2,
@@ -143,23 +178,25 @@ namespace AXToolbox.PdfHelpers
                     if (!string.IsNullOrEmpty(config.HeaderRight))
                     {
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_RIGHT,
                             new Paragraph(config.HeaderRight, config.HeaderFont),
                             document.Right,
                             document.Top + config.MarginHeader + config.HeaderFont.Size / 2,
                             0);
                     }
-                    cb.MoveTo(document.Left, document.Top + config.MarginHeader);
-                    cb.LineTo(document.Right, document.Top + config.MarginHeader);
-                    cb.Stroke();
+
+                    cOver.MoveTo(document.Left, document.Top + config.MarginHeader);
+                    cOver.LineTo(document.Right, document.Top + config.MarginHeader);
+                    cOver.Stroke();
+
 
                     //insert footer
                     //left
                     if (!string.IsNullOrEmpty(config.FooterLeft))
                     {
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_LEFT,
                             new Paragraph(config.FooterLeft, config.FooterFont),
                             document.Left,
@@ -170,7 +207,7 @@ namespace AXToolbox.PdfHelpers
                     if (!string.IsNullOrEmpty(config.FooterCenter))
                     {
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_CENTER,
                             new Paragraph(config.FooterCenter, config.FooterFont),
                             document.PageSize.Width / 2,
@@ -181,7 +218,7 @@ namespace AXToolbox.PdfHelpers
                     {
                         //page number
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_CENTER,
                             new Paragraph(writer.PageNumber.ToString("Page 0"), config.FooterFont),
                             document.PageSize.Width / 2,
@@ -192,7 +229,7 @@ namespace AXToolbox.PdfHelpers
                     if (!string.IsNullOrEmpty(config.FooterRight))
                     {
                         ColumnText.ShowTextAligned(
-                            cb,
+                            cOver,
                             Element.ALIGN_RIGHT,
                             new Paragraph(config.FooterRight, config.FooterFont),
                             document.Right,
@@ -200,9 +237,9 @@ namespace AXToolbox.PdfHelpers
                             0);
                     }
 
-                    cb.MoveTo(document.Left, document.Bottom - config.MarginFooter);
-                    cb.LineTo(document.Right, document.Bottom - config.MarginFooter);
-                    cb.Stroke();
+                    cOver.MoveTo(document.Left, document.Bottom - config.MarginFooter);
+                    cOver.LineTo(document.Right, document.Bottom - config.MarginFooter);
+                    cOver.Stroke();
                 }
             }
             public void OnChapter(PdfWriter writer, Document document, float paragraphPosition, Paragraph title) { }
@@ -214,7 +251,6 @@ namespace AXToolbox.PdfHelpers
             public void OnParagraphEnd(PdfWriter writer, Document document, float paragraphPosition) { }
             public void OnSection(PdfWriter writer, Document document, float paragraphPosition, int depth, Paragraph title) { }
             public void OnSectionEnd(PdfWriter writer, Document document, float paragraphPosition) { }
-            public void OnStartPage(PdfWriter writer, Document document) { }
         }
     }
 }
