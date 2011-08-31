@@ -194,7 +194,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4259.15648, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4260.37232, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1424088AF242C9C4CCD49EEC48DBEDB7"
@@ -225,7 +225,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4259.15647, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4260.37231, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2A8D0F044D0BCFD35EBAA392DA107975"
@@ -443,15 +443,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toobox Scorer"
-        "ProductCode" = "8:{4AE47354-5CCD-4184-AFCA-5A172F074437}"
-        "PackageCode" = "8:{D849898E-EB77-4833-92CD-1E7AFCCBA38B}"
+        "ProductCode" = "8:{EF3F1D86-4391-4567-86B9-50845CA382BF}"
+        "PackageCode" = "8:{E66F2354-8E0C-4396-B389-0567D902B162}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:11.8.2"
+        "ProductVersion" = "8:11.8.4"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -616,7 +616,7 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_157134081F2B460BB09B6D20312032E2"
             "Folder" = "8:_4D116FE90BAA43E2856E97905543DF0C"
-            "WorkingFolder" = "8:_640C2B479E804BADB7B699E23778C5B8"
+            "WorkingFolder" = "8:_753648A71B9743C18C0987B01A284A4F"
             "Icon" = "8:_157134081F2B460BB09B6D20312032E2"
             "Feature" = "8:"
             }
