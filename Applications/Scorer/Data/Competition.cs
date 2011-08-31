@@ -145,6 +145,8 @@ namespace Scorer
         }
         public void TotalScoreToPdf(bool openAfterCreation = false)
         {
+            const int maxTasksPerSheet = 10;
+
             var fileName = Path.Combine(Event.Instance.DraftsFolder, ShortName + " total score.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
 
@@ -152,27 +154,32 @@ namespace Scorer
             var document = helper.Document;
             var title = "Total score";
 
-            //title
-            document.Add(new Paragraph(Name, config.TitleFont));
-            //subtitle
-            document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = config.SubtitleFont.Size });
+            //tables
+            var validTaskScores = (from ts in TaskScores
+                                   where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
+                                   orderby ts.Task.Number
+                                   select ts).ToArray();
 
-            //table
-            var validTaskScores = from ts in TaskScores
-                                  where !ts.Task.IsCancelled
-                                  orderby ts.Task.Number
-                                  select ts;
+            var nTasks = validTaskScores.Count();
+            var nTables = (int)Math.Floor((decimal)(nTasks - 1) / maxTasksPerSheet) + 1;
+            var nTasksTable = (int)Math.Ceiling((decimal)nTasks / nTables);
+            var tables = new PdfPTable[nTables];
 
-            var headers = new List<string>() { "Rank", "Pilot", "TOTAL", "Average" };
-            var relWidths = new List<float>() { 2, 8, 2, 2 };
-            foreach (var ts in validTaskScores)
+            //Create tables with headers
+            for (var iTable = 0; iTable < nTables; iTable++)
             {
-                headers.Add("T" + ts.UltraShortDescriptionStatus);
-                relWidths.Add(2);
+                var headers = new List<string>() { "Rank", "Pilot", "TOTAL", "Average" };
+                var relWidths = new List<float>() { 2, 8, 2, 2 };
+                for (var iTask = iTable * nTasksTable; iTask < (int)Math.Min(nTasks, (iTable + 1) * nTasksTable); iTask++)
+                {
+                    headers.Add("T" + validTaskScores[iTask].UltraShortDescriptionStatus);
+                    relWidths.Add(2);
+                }
+             
+                tables[iTable] = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
             }
-            var table = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
 
-            //scores
+            //insert scores
             var pilotTotalScores = new List<PilotTotalScore>();
             foreach (var p in Pilots)
                 pilotTotalScores.Add(new PilotTotalScore(this, p));
@@ -180,27 +187,56 @@ namespace Scorer
             var rank = 1;
             foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total).ThenByDescending(s => s.Average).ThenBy(s => s.Pilot.Number))
             {
-                table.AddCell(helper.NewRCell(rank.ToString()));
-                table.AddCell(helper.NewLCell(pts.Pilot.Info));
-                table.AddCell(new PdfPCell(new Paragraph(pts.Total.ToString(), config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
-                table.AddCell(helper.NewRCell(pts.Average.ToString()));
+                for (var iTable = 0; iTable < nTables; iTable++)
+                {
+                    tables[iTable].AddCell(helper.NewRCell(rank.ToString()));
+                    tables[iTable].AddCell(helper.NewLCell(pts.Pilot.Info));
+                    tables[iTable].AddCell(new PdfPCell(new Paragraph(pts.Total.ToString(), config.BoldFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
+                    tables[iTable].AddCell(helper.NewRCell(pts.Average.ToString()));
+                }
 
+                var iTask = 0;
                 foreach (var taskScore in pts.TaskScores)
-                    table.AddCell(helper.NewRCell(taskScore.ToString()));
+                {
+                    var iTable = (int)Math.Floor((decimal)iTask / nTasksTable);
+                    tables[iTable].AddCell(helper.NewRCell(taskScore.ToString()));
+                    iTask++;
+                }
 
                 //TODO: fix complete ties in total and average scores
                 rank++;
             }
 
             //checksums
-            table.AddCell(helper.NewLCell(""));
-            table.AddCell(new PdfPCell(new Paragraph("Checksum", config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_LEFT });
-            table.AddCell(helper.NewLCell(""));
-            table.AddCell(helper.NewLCell(""));
-            foreach (var taskScore in validTaskScores)
-                table.AddCell(new PdfPCell(new Paragraph(taskScore.CheckSum, config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
+            for (var iTable = 0; iTable < nTables; iTable++)
+            {
+                tables[iTable].AddCell(helper.NewLCell(""));
+                tables[iTable].AddCell(new PdfPCell(new Paragraph("Checksum", config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_LEFT });
+                tables[iTable].AddCell(helper.NewLCell(""));
+                tables[iTable].AddCell(helper.NewLCell(""));
+            }
 
-            document.Add(table);
+            {
+                var iTask = 0;
+                foreach (var taskScore in validTaskScores)
+                {
+                    var iTable = (int)Math.Floor((decimal)iTask / nTasksTable);
+                    tables[iTable].AddCell(new PdfPCell(new Paragraph(taskScore.CheckSum, config.ItalicFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
+                    iTask++;
+                }
+            }
+
+            foreach (var t in tables)
+            {
+                //title
+                document.Add(new Paragraph(Name, config.TitleFont));
+                //subtitle
+                document.Add(new Paragraph(title, config.SubtitleFont) { SpacingAfter = config.SubtitleFont.Size });
+                //table
+                document.Add(t);
+
+                document.NewPage();
+            }
 
             document.Close();
 
@@ -216,7 +252,7 @@ namespace Scorer
             var document = helper.Document;
 
             var validTScores = from ts in TaskScores
-                               where !ts.Task.IsCancelled
+                               where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
                                orderby ts.Task.Number
                                select ts;
             var isFirstTask = true;
@@ -237,7 +273,7 @@ namespace Scorer
         public void TaskScoresToNPdf()
         {
             var validTScores = from ts in TaskScores
-                               where !ts.Task.IsCancelled
+                               where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
                                orderby ts.Task.Number
                                select ts;
             foreach (var ts in validTScores)
