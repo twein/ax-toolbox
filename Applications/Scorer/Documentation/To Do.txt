@@ -12,11 +12,11 @@
 * put a big task number in a corner of task result sheet for easy recognition
 * use "Published on" instead "Printed on"
 * Auto highlighting
-- Save all the published pdfs for future reference
+* Save all the published pdfs for future reference
 (* = done, + = review)
 
 
-- Split scores in two tables if there are too many tasks.
+* Split scores in two tables if there are too many tasks.
 
 - Check visibility of all menus and buttons
 - PdfHelper: change all fixed spacing to relative (Ex: 10pt=>HeaderFont.size)

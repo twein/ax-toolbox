@@ -19,7 +19,7 @@ namespace Scorer
             Total = 0;
 
             var validTScores = from ts in competition.TaskScores
-                               where !ts.Task.IsCancelled
+                               where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
                                orderby ts.Task.Number
                                select ts;
             var taskScores = new List<int>();
