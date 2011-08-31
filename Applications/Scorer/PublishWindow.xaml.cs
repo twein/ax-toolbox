@@ -1,12 +1,15 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-using System.ComponentModel;
 
 namespace Scorer
 {
     public partial class PublishWindow : Window, INotifyPropertyChanged
     {
+        private Task Task;
+
         private ScoreStatus status;
         public ScoreStatus Status
         {
@@ -49,15 +52,45 @@ namespace Scorer
             }
         }
 
-        public PublishWindow()
+        public PublishWindow(Task task)
         {
             InitializeComponent();
+
+            Task = task;
+
+            //TODO: fix [0]
+            var taskScore = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == Task);
+
+            Title = "Task " + Task.Description;
+            Status = taskScore.Status;
+            Version = taskScore.Version;
+            RevisionDate = taskScore.RevisionDate;
+
             DataContext = this;
         }
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
-            Response = System.Windows.Forms.DialogResult.OK;
+            if (Status != ScoreStatus.Provisional)
+            {
+                Task.Phases |= CompletedPhases.Published;
+
+                foreach (var c in Event.Instance.Competitions)
+                {
+                    var taskScore = c.TaskScores.First(s => s.Task == Task);
+                    taskScore.Status = Status;
+                    taskScore.Version = Version;
+                    taskScore.RevisionDate = RevisionDate;
+
+                    try
+                    {
+                        taskScore.ScoresToPdf(false);
+                    }
+                    catch { }
+                }
+
+            }
+
             Close();
         }
         private void buttonCancel_Click(object sender, RoutedEventArgs e)

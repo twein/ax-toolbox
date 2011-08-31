@@ -254,10 +254,18 @@ namespace Scorer
             //    Version++;
         }
 
-        public void ScoresToPdf(string folder, bool openAfterCreation)
+        public void ScoresToPdf(bool openAfterCreation)
         {
-            var fileName = Path.Combine(folder, string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
-                       competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
+            var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
+
+            string fileName;
+            if (published)
+                fileName = Path.Combine(Event.Instance.PublishedScoresFolder, string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
+                    competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
+            else
+                fileName = Path.Combine(Path.GetTempPath(), string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}-DRAFT.pdf",
+                    competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
+
             var config = Event.Instance.GetDefaultPdfConfig();
 
             var helper = new PdfHelper(fileName, config);
@@ -276,14 +284,14 @@ namespace Scorer
             var config = helper.Config;
 
             var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
-            
+
             //watermark
             if (!published)
                 config.Watermark = "DRAFT - NOT PUBLISHED";
 
             //task number
             config.TaskNumber = string.Format("T{0:00}", Task.Number);
-            
+
             //title
             document.Add(new Paragraph(competition.Name, config.TitleFont) { SpacingAfter = config.TitleFont.Size });
             //subtitle

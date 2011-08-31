@@ -228,9 +228,9 @@ namespace Scorer
                 pr.MarkChanges(preserveChanges);
         }
 
-        public void ResultsToPdf(string folder, bool openAfterCreation)
+        public void ResultsToPdf(bool openAfterCreation)
         {
-            var fileName = Path.Combine(folder, "Task " + UltraShortDescription + " results.pdf");
+            var fileName = Path.Combine(Event.Instance.DraftsFolder, "Task " + UltraShortDescription + " results.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
 
             var helper = new PdfHelper(fileName, config);
