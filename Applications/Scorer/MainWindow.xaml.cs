@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using AXToolbox.PdfHelpers;
+using System.Windows.Input;
 
 namespace Scorer
 {
@@ -31,18 +32,8 @@ namespace Scorer
         }
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (Event.Instance.IsDirty)
-            {
-                var response = MessageBox.Show(this,
-                    "The event database has not been saved. Are you sure you want to close the application?",
-                    "Warning!",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question,
-                    MessageBoxResult.No);
-
-                if (response == MessageBoxResult.No)
-                    e.Cancel = true;
-            }
+            if (!ConfirmPossibleDataLoss())
+                e.Cancel = true;
         }
 
         private void Window_Drop(object sender, DragEventArgs e)
@@ -70,26 +61,7 @@ namespace Scorer
 
             AddTab(new EditEvent(fakeCollection, editOptions), "Event");
         }
-        private void menuEventLoad_Click(object sender, RoutedEventArgs e)
-        {
-            if (Event.Instance.IsDirty)
-            {
-                var response = MessageBox.Show(this,
-                    "The event database has not been saved. Are you sure you want to load other data?",
-                    "Warning!",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question,
-                    MessageBoxResult.No);
-
-                if (response == MessageBoxResult.No)
-                    return;
-            }
-
-            var fileName = GetOpenFileName(".AXevt files (*.AXevt)|*.AXEvt");
-            if (!string.IsNullOrEmpty(fileName))
-                Event.Instance.Load(fileName);
-        }
-        private void menuEventLoadDef_Click(object sender, RoutedEventArgs e)
+        private void menuEventLoadCsv_Click(object sender, RoutedEventArgs e)
         {
             var fileName = GetOpenFileName(".csv files (*.csv)|*.csv");
             if (!string.IsNullOrEmpty(fileName))
@@ -104,21 +76,12 @@ namespace Scorer
                 }
             }
         }
-        private void menuEventSave_Click(object sender, RoutedEventArgs e)
-        {
-            var fileName = GetSaveFileName(".AXevt files (*.AXevt)|*.AXEvt", Event.Instance.ShortName);
-            if (!string.IsNullOrEmpty(fileName))
-                Event.Instance.Save(fileName);
-        }
         private void menuEventSaveXml_Click(object sender, RoutedEventArgs e)
         {
-            var fileName = GetSaveFileName(".xml files (*.xml)|*.xml", Event.Instance.ShortName);
+            var fileName = GetSaveFileName(".xml files (*.xml)|*.xml");
+
             if (!string.IsNullOrEmpty(fileName))
                 Event.Instance.Save(fileName, AXToolbox.Common.IO.SerializationFormat.XML);
-        }
-        private void menuEventExit_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
         }
 
         private void menuCompetitionsEdit_Click(object sender, RoutedEventArgs e)
@@ -150,22 +113,16 @@ namespace Scorer
 
         private void menuOutputPilotsListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                Event.Instance.PilotListToPdf(folder, true);
+            Event.Instance.PilotListToPdf(true);
         }
         private void menuOutputPilotsWorkListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                Event.Instance.WorkListToPdf(folder, true);
+            Event.Instance.WorkListToPdf(true);
         }
         private void menuOutputPilotsListByCompetitionToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                foreach (var competition in Event.Instance.Competitions)
-                    competition.PilotListToPdf(folder, true);
+            foreach (var competition in Event.Instance.Competitions)
+                competition.PilotListToPdf(true);
         }
         private void menuOutputTaskScoresTo1Pdf_Click(object sender, RoutedEventArgs e)
         {
@@ -176,17 +133,13 @@ namespace Scorer
         }
         private void menuOutputTaskScoresToNPdf_Click(object sender, RoutedEventArgs e)
         {
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                foreach (var competition in Event.Instance.Competitions)
-                    competition.TaskScoresToNPdf(folder);
+            foreach (var competition in Event.Instance.Competitions)
+                competition.TaskScoresToNPdf();
         }
         private void menuOutputTotalScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                foreach (var competition in Event.Instance.Competitions)
-                    competition.TotalScoreToPdf(folder, true);
+            foreach (var competition in Event.Instance.Competitions)
+                competition.TotalScoreToPdf(true);
         }
 
         private void menuCompetitionPilotsEdit_Click(object sender, RoutedEventArgs e)
@@ -238,41 +191,13 @@ namespace Scorer
         private void menuTaskResultsToPdf_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
-
-            var folder = GetFolderName();
-            if (!string.IsNullOrEmpty(folder))
-                task.ResultsToPdf(folder, true);
+            task.ResultsToPdf(true);
         }
         private void menuTaskPublishScore_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
-
-            //TODO: fix [0]
-            var ts = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == task);
-            var dlg = new PublishWindow()
-            {
-                Title = "Task " + task.Description,
-                Status = ts.Status,
-                Version = ts.Version,
-                RevisionDate = ts.RevisionDate,
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner
-            };
+            var dlg = new PublishWindow(task);
             dlg.ShowDialog();
-            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
-            {
-                if (dlg.Status != ScoreStatus.Provisional)
-                {
-                    foreach (var c in Event.Instance.Competitions)
-                    {
-                        var taskScore = c.TaskScores.First(s => s.Task == task);
-                        taskScore.Status = dlg.Status;
-                        taskScore.Version = dlg.Version;
-                        taskScore.RevisionDate = dlg.RevisionDate;
-                    }
-
-                    task.Phases |= CompletedPhases.Published;
-                }
-            }
         }
         private void menuTaskScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
@@ -285,7 +210,7 @@ namespace Scorer
                 foreach (var c in Event.Instance.Competitions)
                 {
                     var ts = c.TaskScores.First(s => s.Task == task);
-                    ts.ScoresToPdf(folder, true);
+                    ts.ScoresToPdf(true);
                 }
             }
         }
@@ -340,30 +265,37 @@ namespace Scorer
 
         private string GetOpenFileName(string filter)
         {
-            string fileName = null;
             var dlg = new OpenFileDialog();
             dlg.Filter = filter;
+            dlg.RestoreDirectory = true;
             if (string.IsNullOrEmpty(Event.Instance.FilePath))
                 dlg.InitialDirectory = Environment.CurrentDirectory;
             else
                 dlg.InitialDirectory = Path.GetDirectoryName(Event.Instance.FilePath);
-            dlg.RestoreDirectory = true;
+
+            string fileName = null;
             if (dlg.ShowDialog() == true)
                 fileName = dlg.FileName;
 
             return fileName;
         }
-        private string GetSaveFileName(string filter, string proposedName = null)
+        private string GetSaveFileName(string filter)
         {
-            string fileName = null;
             var dlg = new SaveFileDialog();
             dlg.Filter = filter;
-            dlg.FileName = proposedName;
-            if (string.IsNullOrEmpty(Event.Instance.FilePath))
-                dlg.InitialDirectory = Environment.CurrentDirectory;
-            else
-                dlg.InitialDirectory = Path.GetDirectoryName(Event.Instance.FilePath);
             dlg.RestoreDirectory = true;
+            if (string.IsNullOrEmpty(Event.Instance.FilePath))
+            {
+                dlg.InitialDirectory = Environment.CurrentDirectory;
+                dlg.FileName = Event.Instance.ShortName;
+            }
+            else
+            {
+                dlg.InitialDirectory = Path.GetDirectoryName(Event.Instance.FilePath);
+                dlg.FileName = Event.Instance.FilePath;
+            }
+
+            string fileName = null;
             if (dlg.ShowDialog() == true)
                 fileName = dlg.FileName;
 
@@ -385,6 +317,72 @@ namespace Scorer
             }
 
             return folder;
+        }
+
+        private void CommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            //TODO: add cases
+            e.CanExecute = true;
+        }
+        private void CommandExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command.Equals(ApplicationCommands.Open))
+                OpenEvent();
+            else if (e.Command.Equals(ApplicationCommands.Save))
+                SaveEvent();
+            else if (e.Command.Equals(ApplicationCommands.SaveAs))
+                SaveEventAs();
+            else if (e.Command.Equals(ApplicationCommands.Close))
+                Close();
+            else { }
+        }
+
+        private void OpenEvent()
+        {
+            if (ConfirmPossibleDataLoss())
+            {
+                var fileName = GetOpenFileName("AX-Scorer files (*.sco)|*.sco");
+                if (!string.IsNullOrEmpty(fileName))
+                    Event.Instance.Load(fileName);
+            }
+        }
+        private void SaveEvent()
+        {
+            if (string.IsNullOrEmpty(Event.Instance.FilePath))
+                SaveEventAs();
+            else
+                Event.Instance.Save(Event.Instance.FilePath);
+        }
+        private void SaveEventAs()
+        {
+            var fileName = GetSaveFileName("AX-Scorer files (*.sco)|*.sco");
+
+            if (!string.IsNullOrEmpty(fileName))
+                Event.Instance.Save(fileName);
+        }
+
+        private bool ConfirmPossibleDataLoss()
+        {
+            var confirm = false;
+
+            if (!Event.Instance.IsDirty)
+            {
+                confirm = true;
+            }
+            else
+            {
+                var response = MessageBox.Show(this,
+                    "The event database contains data that has not been saved. Are you sure you want to continue and lose this data?",
+                    "Warning!",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question,
+                    MessageBoxResult.No);
+
+                if (response == MessageBoxResult.Yes)
+                    confirm = true;
+            }
+
+            return confirm;
         }
     }
 }

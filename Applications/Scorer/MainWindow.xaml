@@ -7,26 +7,28 @@
         Title="{Binding Path=Name}" Height="600" Width="1024"
         Loaded="Window_Loaded" Closing="Window_Closing" Drop="Window_Drop" AllowDrop="True"
         Icon="/Scorer;component/balloon.ico">
+    <Window.CommandBindings>
+        <CommandBinding Command="Open" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+        <CommandBinding Command="Save" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+        <CommandBinding Command="SaveAs" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+        <CommandBinding Command="Close" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+    </Window.CommandBindings>
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Event">
-                <MenuItem Header="Edit" Click="menuEventEdit_Click"/>
-                <Separator />
-                <MenuItem Header="Load" Click="menuEventLoad_Click"/>
-                <MenuItem Header="Load CSV file" Click="menuEventLoadDef_Click"/>
-                <MenuItem Header="Save" Visibility="{Binding Path=SaveVisibility}" Click="menuEventSave_Click"/>
-                <MenuItem Header="Save XML" Visibility="{Binding Path=SaveVisibility}" Click="menuEventSaveXml_Click"/>
+            <MenuItem Header="File">
+                <MenuItem Header="Open..." Command="Open"/>
+                <MenuItem Header="Open CSV File..." Click="menuEventLoadCsv_Click"/>
+                <MenuItem Header="Save" Visibility="{Binding Path=SaveVisibility}" Command="Save"/>
+                <MenuItem Header="Save As..." Visibility="{Binding Path=SaveVisibility}" Command="SaveAs"/>
+                <MenuItem Header="Save XML As..." Visibility="{Binding Path=SaveVisibility}" Click="menuEventSaveXml_Click"/>
                 <Separator/>
-                <MenuItem Header="Exit" Click="menuEventExit_Click"/>
+                <MenuItem Header="Close" Command="Close"/>
             </MenuItem>
-            <MenuItem Header="Competitions">
-                <MenuItem Header="Edit" Click="menuCompetitionsEdit_Click"/>
-            </MenuItem>
-            <MenuItem Header="Pilots">
-                <MenuItem Header="Edit" Click="menuPilotsEdit_Click"/>
-            </MenuItem>
-            <MenuItem Header="Tasks">
-                <MenuItem Header="Edit" Click="menuTasksEdit_Click"/>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Modify Event" Click="menuEventEdit_Click"/>
+                <MenuItem Header="Modify Competitions" Click="menuCompetitionsEdit_Click"/>
+                <MenuItem Header="Modify Pilots" Click="menuPilotsEdit_Click"/>
+                <MenuItem Header="Modify Tasks" Click="menuTasksEdit_Click"/>
             </MenuItem>
             <MenuItem Header="Output">
                 <MenuItem Header="Event pilot list to pdf" ToolTip="Pilot list." Click="menuOutputPilotsListToPdf_Click">

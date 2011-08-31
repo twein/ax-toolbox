@@ -115,6 +115,30 @@ namespace Scorer
                 RaisePropertyChanged("FilePath");
             }
         }
+        public string PublishedScoresFolder
+        {
+            get
+            {
+                var path = Path.Combine(Path.GetDirectoryName(FilePath), "Published Scores");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                return path;
+            }
+        }
+        public string DraftsFolder
+        {
+            get
+            {
+                //var path = Path.GetTempPath();
+                var path = Path.Combine(Path.GetDirectoryName(FilePath), "Drafts");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                return path;
+            }
+        }
+
 
         [NonSerialized]
         private bool isNew = true;
@@ -238,17 +262,17 @@ namespace Scorer
             isNew = false;
         }
 
-        public void PilotListToPdf(string folder, bool openAfterCreation = false)
+        public void PilotListToPdf(bool openAfterCreation = false)
         {
-            var fileName = Path.Combine(folder, ShortName + " pilot list.pdf");
+            var fileName = Path.Combine(DraftsFolder, ShortName + " pilot list.pdf");
             Pilot.ListToPdf(fileName, "Pilot list", Pilots);
 
             if (openAfterCreation)
                 PdfHelper.OpenPdf(fileName);
         }
-        public void WorkListToPdf(string folder, bool openAfterCreation = false)
+        public void WorkListToPdf(bool openAfterCreation = false)
         {
-            var fileName = Path.Combine(folder, ShortName + " work list.pdf");
+            var fileName = Path.Combine(DraftsFolder, ShortName + " work list.pdf");
             Pilot.WorkListToPdf(fileName, "Work list", Pilots);
 
             if (openAfterCreation)

@@ -135,17 +135,17 @@ namespace Scorer
             return Name;
         }
 
-        public void PilotListToPdf(string folder, bool openAfterCreation = false)
+        public void PilotListToPdf(bool openAfterCreation = false)
         {
-            var fileName = Path.Combine(folder, ShortName + " pilot list.pdf");
+            var fileName = Path.Combine(Event.Instance.DraftsFolder, ShortName + " pilot list.pdf");
             Pilot.ListToPdf(fileName, "Pilot list", Pilots);
 
             if (openAfterCreation)
                 PdfHelper.OpenPdf(fileName);
         }
-        public void TotalScoreToPdf(string folder, bool openAfterCreation = false)
+        public void TotalScoreToPdf(bool openAfterCreation = false)
         {
-            var fileName = Path.Combine(folder, ShortName + " total score.pdf");
+            var fileName = Path.Combine(Event.Instance.DraftsFolder, ShortName + " total score.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();
 
             var helper = new PdfHelper(fileName, config);
@@ -234,14 +234,14 @@ namespace Scorer
             if (openAfterCreation)
                 PdfHelper.OpenPdf(fileName);
         }
-        public void TaskScoresToNPdf(string folder)
+        public void TaskScoresToNPdf()
         {
             var validTScores = from ts in TaskScores
                                where !ts.Task.IsCancelled
                                orderby ts.Task.Number
                                select ts;
             foreach (var ts in validTScores)
-                ts.ScoresToPdf(folder, false);
+                ts.ScoresToPdf(false);
         }
     }
 }
