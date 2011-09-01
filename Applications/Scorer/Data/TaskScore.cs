@@ -309,11 +309,11 @@ namespace Scorer
             //table
             var headers = new string[] { 
                 "Rank", "Pilot", 
-                "Performance", "Measure penalty", "Result",
+                "Performance", "Performance penalty", "Result",
                 "Score", 
                 "Task penalty", "Comp. penalty", 
                 "Final score",
-                "Notes/Rule"
+                "Notes/Rules"
             };
             var relWidths = new float[] { 2, 8, 3, 3, 3, 3, 3, 3, 3, 10 };
             var table = helper.NewTable(headers, relWidths, title);
