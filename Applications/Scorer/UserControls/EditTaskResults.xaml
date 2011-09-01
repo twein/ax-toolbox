@@ -25,11 +25,11 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="#" Binding="{Binding Path=Pilot.Number}" IsReadOnly="True" />
                 <DataGridTextColumn Header="Name" Binding="{Binding Path=Pilot.Name}" IsReadOnly="True" />
-                <DataGridTextColumn Header="Measure" Binding="{Binding Path=Measure, ValidatesOnExceptions=True, Converter={StaticResource measureConverter}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
-                <DataGridTextColumn Header="Measure penalty" Binding="{Binding Path=MeasurePenalty,StringFormat=\{0:0.00\}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
+                <DataGridTextColumn Header="Performance" Binding="{Binding Path=Measure, ValidatesOnExceptions=True, Converter={StaticResource measureConverter}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
+                <DataGridTextColumn Header="Performance penalty" Binding="{Binding Path=MeasurePenalty,StringFormat=\{0:0.00\}}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
                 <DataGridTextColumn Header="Task score penalty" Binding="{Binding Path=TaskScorePenalty}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
                 <DataGridTextColumn Header="Competition score penalty" Binding="{Binding Path=CompetitionScorePenalty}" CellStyle="{StaticResource RightCellStyle}" Width="120" />
-                <DataGridTextColumn Header="Infringed rules" Binding="{Binding Path=InfringedRules}" Width="*" />
+                <DataGridTextColumn Header="Notes/Rules" Binding="{Binding Path=InfringedRules}" Width="*" />
             </DataGrid.Columns>
             <!--<DataGrid.RowValidationRules>
                 <local:PilotResultValidationRule ValidationStep="UpdatedValue"/>

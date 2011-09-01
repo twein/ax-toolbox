@@ -247,11 +247,11 @@ namespace Scorer
             //table
             var headers = new string[] { 
                 "Pilot", 
-                "Measure (M)", "Measure (A)", 
-                "Measure penalty (M)", "Measure penalty (A)",
+                "Performance (M)", "Performance (A)", 
+                "Performance penalty (M)", "Performance penalty (A)",
                 "Task penalty (M)", "Task penalty (A)",
                 "Comp. penalty (M)", "Comp. penalty (A)",
-                "Infringed rules (M)", "Infringed rules (A)"
+                "Notes/Rules (M)", "Notes/Rules (A)"
             };
             var relWidths = new float[] { 8, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6 };
             var table = helper.NewTable(headers, relWidths, title);
