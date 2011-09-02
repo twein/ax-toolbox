@@ -45,44 +45,6 @@ namespace AXToolbox.Scripting
                 default:
                     throw new ArgumentException("Unknown penaty type '" + ObjectType + "'");
 
-                case "DMAX":
-                case "DMIN":
-                //TODO: implement this
-                //case "ADMAX":
-                //case "ADMIN":
-                //case "ADMAXABS":
-                case "DVMAX":
-                case "DVMIN":
-                    //DMAX: maximum distance
-                    //DMAX(<pointNameA>, <pointNameB>, <distance>)
-                    //DMIN: minimum distance
-                    //DMIN(<pointNameA>, <pointNameB>, <distance>)
-                    //ADMAX: maximum altitude difference between two points (B is assumed to be higher than A)
-                    //ADMAX(<pointNameA>, <pointNameB>, <altitude>)
-                    //ADMAX: maximum altitude difference between two points (B is assumed to be higher than A)
-                    //ADMAX(<pointNameA>, <pointNameB>, <altitude>)
-                    {
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
-                        A = ResolveOrDie<ScriptingPoint>(0);
-                        B = ResolveOrDie<ScriptingPoint>(1);
-                        distance = ParseOrDie<double>(2, ParseLength);
-                        unit = "m";
-                    }
-                    break;
-
-                case "TMAXR":
-                case "TMINR":
-                    //TMAXR: maximum time between two points
-                    //TMAXR(<pointNameA>, <pointNameB>, <time in minutes>)
-                    {
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
-                        A = ResolveOrDie<ScriptingPoint>(0);
-                        B = ResolveOrDie<ScriptingPoint>(1);
-                        time = ParseOrDie<int>(2, ParseInt);
-                        unit = "min";
-                    }
-                    break;
-
                 case "BPZ":
                     //BPZ: blue PZ
                     //BPZ(<scale>)
@@ -145,107 +107,6 @@ namespace AXToolbox.Scripting
                 default:
                     throw new ArgumentException("Unknown penaty type '" + ObjectType + "'");
 
-                case "DMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        Engine.LogLine(ObjectName + ": reference point is null");
-                    }
-                    else
-                    {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
-                        if (calcDistance > distance)
-                        {
-                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 distance limit abuse"));
-                        }
-                    }
-                    break;
-
-                case "DMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        Engine.LogLine(ObjectName + ": reference point is null");
-                    }
-                    else
-                    {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
-                        if (calcDistance < distance)
-                        {
-                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 distance limit abuse"));
-                        }
-                    }
-                    break;
-
-                case "DVMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        Engine.LogLine(ObjectName + ": reference point is null");
-                    }
-                    else
-                    {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
-                        if (calcDifference > altitudeDifference)
-                        {
-                            Penalty = new Penalty(Result.NewNoResult("Rxx.xx altitude limit abuse"));
-                        }
-                    }
-                    break;
-
-                case "DVMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        Engine.LogLine(ObjectName + ": reference point is null");
-                    }
-                    else
-                    {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
-                        if (calcDifference < altitudeDifference)
-                        {
-                            Penalty = new Penalty(Result.NewNoResult("Rxx.xx altitude limit abuse"));
-                        }
-                    }
-                    break;
-
-                case "TMAXR":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        Engine.LogLine(ObjectName + ": reference point is null");
-                    }
-                    else
-                    {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcTime = Math.Abs((B.Point.Time - A.Point.Time).TotalMinutes);
-                        if (calcTime > time)
-                        {
-                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
-                        }
-                    }
-                    break;
-
-                case "TMINR":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        Engine.LogLine(ObjectName + ": reference point is null");
-                    }
-                    else
-                    {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcTime = Math.Abs((B.Point.Time - A.Point.Time).TotalMinutes);
-                        if (calcTime < time)
-                        {
-                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
-                        }
-                    }
-                    break;
                 case "BPZ":
                     {
                         double penalty = 0;
@@ -262,8 +123,8 @@ namespace AXToolbox.Scripting
                                 last = p;
                             }
                         }
-                        penalty = 10 * Math.Ceiling(penalty / 10);
-                        Penalty = new Penalty("Rxx.xx BPZ", PenaltyType.CompetitionPoints, (int)penalty);
+                        penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
+                        Penalty = new Penalty("R7.3.6 BPZ", PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
 
@@ -283,8 +144,8 @@ namespace AXToolbox.Scripting
                                 last = p;
                             }
                         }
-                        penalty = 10 * Math.Ceiling(penalty / 10);
-                        Penalty = new Penalty("Rxx.xx RPZ", PenaltyType.CompetitionPoints, (int)penalty);
+                        penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
+                        Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
             }

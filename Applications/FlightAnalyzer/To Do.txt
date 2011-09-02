@@ -6,6 +6,10 @@ PENDING
 - Check the workflow of BindableObject.IsDirty
 
 TO DO
+! Batch process flight reports.
+! Add/remove penalties.
+- remove mintime and maxtime from MPDG. It can be programmed with restrictions.
+- add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
 - Competition area and exclusion areas
 - Area addition
 - think about measure/result/constraint thing
