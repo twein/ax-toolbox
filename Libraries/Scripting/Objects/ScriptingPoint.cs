@@ -14,6 +14,7 @@ namespace AXToolbox.Scripting
 
         //type fields
         public AXPoint Point { get; protected set; }
+        public string Notes { get; protected set; }
 
         protected int number;
         protected DateTime? minTime, maxTime;
@@ -197,7 +198,10 @@ namespace AXToolbox.Scripting
             SetLayer();
 
             if (!isStatic)
+            {
                 Point = null;
+                Notes = null;
+            }
         }
         public override void Process()
         {
@@ -217,7 +221,10 @@ namespace AXToolbox.Scripting
 
                         var referencePoint = list[0].Point;
                         if (referencePoint == null)
+                        {
                             Point = null;
+                            Notes = "reference point is null";
+                        }
                         else
                         {
                             for (var i = 1; i < list.Length; i++)
@@ -228,6 +235,10 @@ namespace AXToolbox.Scripting
                                 else if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
                                     Point = nextPoint;
+                            }
+                            if (Point == null)
+                            {
+                                Notes = "all the points in the list are null";
                             }
                         }
                     }
@@ -248,6 +259,10 @@ namespace AXToolbox.Scripting
                                 || nextPoint.Time < Point.Time)
                                 Point = nextPoint;
                         }
+                        if (Point == null)
+                        {
+                            Notes = "all the points in the list are null";
+                        }
                     }
                     break;
 
@@ -265,6 +280,10 @@ namespace AXToolbox.Scripting
                             else if (Point == null
                                 || nextPoint.Time > Point.Time)
                                 Point = nextPoint;
+                        }
+                        if (Point == null)
+                        {
+                            Notes = "all the points in the list are null";
                         }
                     }
                     break;
@@ -284,6 +303,10 @@ namespace AXToolbox.Scripting
                                 break;
                             }
                         }
+                        if (Point == null)
+                        {
+                            Notes = "all the points in the list are null";
+                        }
                     }
                     break;
 
@@ -302,6 +325,10 @@ namespace AXToolbox.Scripting
                                 break;
                             }
                         }
+                        if (Point == null)
+                        {
+                            Notes = "all the points in the list are null";
+                        }
                     }
                     break;
 
@@ -311,13 +338,20 @@ namespace AXToolbox.Scripting
                     try
                     {
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
-                        var nearestPoint = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
-                        Point = marker;
+                        try
+                        {
+                            var nearestPoint = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
+                            Point = marker;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            Notes = "marker drop from an invalid point";
+                        }
                     }
                     catch (InvalidOperationException)
                     {
-                        Engine.LogLine(ObjectName + ": marker drop from invalid track point");
-                    } //none found
+                        Notes = "no marker with the specified number";
+                    }
                     break;
 
                 case "MPDG":
@@ -329,7 +363,7 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Engine.LogLine(ObjectName + ": invalid goal declaration");
+                        Notes = "invalid goal declaration";
                     } //none found
                     break;
 
@@ -355,7 +389,10 @@ namespace AXToolbox.Scripting
                     {
                         var referencePoint = Resolve<ScriptingPoint>(0).Point;
                         if (referencePoint == null)
+                        {
                             Point = null;
+                            Notes = "the reference point is null";
+                        }
                         else
                         {
                             Point = Engine.Report.CleanTrack.First(p => p.Time == referencePoint.Time);
@@ -363,7 +400,7 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Engine.LogLine(ObjectName + ": goal declaration from invalid track point");
+                        Notes = "no valid point at specified time";
                     } //none found
                     break;
 
@@ -374,13 +411,20 @@ namespace AXToolbox.Scripting
                     {
                         var referencePoint = Resolve<ScriptingPoint>(0).Point;
                         if (referencePoint == null)
+                        {
                             Point = null;
+                            Notes = "the reference point is null";
+                        }
                         else
                         {
                             foreach (var nextTrackPoint in Engine.ValidTrackPoints)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
                                     Point = nextTrackPoint;
+                            if (Point == null)
+                            {
+                                Notes = "no remaining valid track points";
+                            }
                         }
                     }
                     break;
@@ -392,16 +436,24 @@ namespace AXToolbox.Scripting
                     {
                         var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
 
+                        var nnull = 0;
                         foreach (var p in list)
                         {
                             var referencePoint = p.Point;
                             if (referencePoint == null)
+                            {
+                                nnull++;
                                 continue;
+                            }
                             foreach (var nextTrackPoint in Engine.ValidTrackPoints)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
                                     Point = nextTrackPoint;
                         }
+                        if (nnull == list.Length)
+                            Notes = "all the points in the list are null";
+                        else
+                            Notes = "no remaining valid track points";
                     }
                     break;
 
@@ -411,11 +463,22 @@ namespace AXToolbox.Scripting
                     try
                     {
                         var referencePoint = Resolve<ScriptingPoint>(0).Point;
-                        if (referencePoint != null)
+                        if (referencePoint == null)
+                        {
+                            Notes = "the reference point is null";
+                        }
+                        else
+                        {
                             if (maxTime.HasValue)
                                 Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
                             else
                                 Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay);
+
+                            if (Point == null)
+                            {
+                                Notes = "no valid track point within time limits";
+                            }
+                        }
                     }
                     catch (InvalidOperationException) { } //none found
                     break;
@@ -426,12 +489,22 @@ namespace AXToolbox.Scripting
                     try
                     {
                         var referencePoint = Resolve<ScriptingPoint>(0).Point;
-                        if (referencePoint != null)
-
+                        if (referencePoint == null)
+                        {
+                            Notes = "the reference point is null";
+                        }
+                        else
+                        {
                             if (maxTime.HasValue)
                                 Point = Engine.ValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime);
                             else
                                 Point = Engine.ValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay);
+
+                            if (Point == null)
+                            {
+                                Notes = "no valid track point within distance limits";
+                            }
+                        }
                     }
                     catch (InvalidOperationException) { } //none found
                     break;
@@ -447,6 +520,11 @@ namespace AXToolbox.Scripting
                                 Point = nextTrackPoint;
                                 break;
                             }
+
+                        if (Point == null)
+                        {
+                            Notes = "no valid track point inside the area";
+                        }
                     }
                     break;
 
@@ -464,6 +542,11 @@ namespace AXToolbox.Scripting
                                 break;
                         }
                         Point = lastInside;
+
+                        if (Point == null)
+                        {
+                            Notes = "no valid track point inside the area";
+                        }
                     }
                     break;
 
@@ -482,6 +565,11 @@ namespace AXToolbox.Scripting
                                 break;
                         }
                         Point = lastInside;
+
+                        if (Point == null)
+                        {
+                            Notes = "no valid track point inside the area";
+                        }
                     }
                     break;
 
@@ -497,14 +585,22 @@ namespace AXToolbox.Scripting
                                 Point = nextTrackPoint;
                                 break;
                             }
+
+                        if (Point == null)
+                        {
+                            Notes = "no valid track point inside the area";
+                        }
                     }
                     break;
             }
 
             if (Point != null)
-                Engine.LogLine(ObjectName + ": resolved to " + Point.ToString());
+                Engine.LogLine(ObjectName + " resolved to " + Point.ToString());
             else
-                Engine.LogLine(ObjectName + ": could not be resolved");
+                Engine.LogLine(ObjectName + " could not be resolved: " + Notes);
+
+            //if (!string.IsNullOrEmpty(Notes))
+            //    Notes = ObjectName + ":" + Notes;
         }
 
         private AXPoint TryResolveGoalDeclaration()

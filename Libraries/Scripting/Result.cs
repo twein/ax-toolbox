@@ -19,6 +19,7 @@ namespace AXToolbox.Scripting
         public ResultType Type { get; protected set; }
         public string Unit { get; protected set; }
         public double Value { get; protected set; }
+        public string Reason { get; protected set; }
 
         public List<AXPoint> UsedPoints { get; protected set; }
         public AXPoint LastUsedPoint
@@ -34,9 +35,9 @@ namespace AXToolbox.Scripting
         {
             return new Result() { Type = ResultType.No_Flight };
         }
-        internal static Result NewNoResult()
+        internal static Result NewNoResult(string reason)
         {
-            return new Result() { Type = ResultType.No_Result };
+            return new Result() { Type = ResultType.No_Result, Reason = reason };
         }
         internal static Result NewResult(double value, string unit)
         {
@@ -67,6 +68,11 @@ namespace AXToolbox.Scripting
                 case ResultType.Result:
                     str = string.Format("{0:0.00}{1}", Value, Unit);
                     break;
+            }
+
+            if (!string.IsNullOrEmpty(Reason))
+            {
+                str += ": " + Reason;
             }
 
             return str;

@@ -147,14 +147,13 @@ namespace AXToolbox.Scripting
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
-            if (A.Point == null || B.Point == null)
+            if (A.Point == null)
             {
-                if (A.Point == null)
-                    Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, A.ObjectName));
-                if (B.Point == null)
-                    Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, B.ObjectName));
-
-                Result = task.NewNoResult("no valid point");
+                Result = task.NewNoResult(A.Notes);
+            }
+            else if (B.Point == null)
+            {
+                Result = task.NewNoResult(B.Notes);
             }
             else
             {
@@ -221,8 +220,7 @@ namespace AXToolbox.Scripting
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
                         {
-                            Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, C.ObjectName));
-                            Result = task.NewNoResult("no valid point");
+                            Result = task.NewNoResult(A.Notes);
                         }
                         else
                         {
@@ -239,8 +237,7 @@ namespace AXToolbox.Scripting
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
                         {
-                            Engine.LogLine(string.Format("{0}: {1} is null", ObjectName, C.ObjectName));
-                            Result = task.NewNoResult("no valid point");
+                            Result = task.NewNoResult(A.Notes);
                         }
                         else
                         {
