@@ -120,8 +120,7 @@ namespace AXToolbox.Scripting
         }
         public Result NewNoResult(string reason)
         {
-            Result = Result.NewNoResult();
-            Penalties.Add(new Penalty(reason, Result.NewResult(0, resultUnit)));
+            Result = Result.NewNoResult(reason);
             return Result;
         }
         public Result NewNoFlight()
@@ -138,9 +137,9 @@ namespace AXToolbox.Scripting
 
             foreach (var p in Penalties)
             {
-                measurePenalty = Result.Merge(measurePenalty, p.Measure);
-                taskPoints += p.TaskPoints;
-                competitionPoints += p.CompetitionPoints;
+                measurePenalty = Result.Merge(measurePenalty, p.Performance);
+                taskPoints += p.Type == PenaltyType.TaskPoints ? p.Points : 0;
+                competitionPoints += p.Type == PenaltyType.CompetitionPoints ? p.Points : 0;
                 infringedRules += p.InfringedRules;
             }
 

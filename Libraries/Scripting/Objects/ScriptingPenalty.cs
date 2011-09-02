@@ -157,7 +157,7 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance > distance)
                         {
-                            Penalty = new Penalty("R13.3.4.1 distance limit abuse", Result.NewNoResult());
+                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 distance limit abuse"));
                         }
                     }
                     break;
@@ -174,7 +174,7 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance < distance)
                         {
-                            Penalty = new Penalty("R13.3.4.1 distance limit abuse", Result.NewNoResult());
+                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 distance limit abuse"));
                         }
                     }
                     break;
@@ -191,7 +191,7 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference > altitudeDifference)
                         {
-                            Penalty = new Penalty("Rxx.xx altitude limit abuse", Result.NewNoResult());
+                            Penalty = new Penalty(Result.NewNoResult("Rxx.xx altitude limit abuse"));
                         }
                     }
                     break;
@@ -208,7 +208,7 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference < altitudeDifference)
                         {
-                            Penalty = new Penalty("Rxx.xx altitude limit abuse", Result.NewNoResult());
+                            Penalty = new Penalty(Result.NewNoResult("Rxx.xx altitude limit abuse"));
                         }
                     }
                     break;
@@ -225,7 +225,7 @@ namespace AXToolbox.Scripting
                         var calcTime = Math.Abs((B.Point.Time - A.Point.Time).TotalMinutes);
                         if (calcTime > time)
                         {
-                            Penalty = new Penalty("Time infraction", Result.NewNoResult());
+                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
                         }
                     }
                     break;
@@ -242,7 +242,7 @@ namespace AXToolbox.Scripting
                         var calcTime = Math.Abs((B.Point.Time - A.Point.Time).TotalMinutes);
                         if (calcTime < time)
                         {
-                            Penalty = new Penalty("Time infraction", Result.NewNoResult());
+                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
                         }
                     }
                     break;
