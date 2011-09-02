@@ -33,7 +33,6 @@ namespace AXToolbox.Scripting
 
     public sealed class ScriptingEngine : BindableObject
     {
-
         public string ShortDescription
         {
             get

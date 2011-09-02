@@ -6,40 +6,36 @@ using AXToolbox.GpsLoggers;
 
 namespace FlightAnalyzer
 {
-    public partial class EditGoalDeclarationWindow : Window, INotifyPropertyChanged
+    public partial class InputWindow : Window, INotifyPropertyChanged
     {
+        public string Text { get; set; }
         public DialogResult Response { get; set; }
+        private Func<string, bool> Validate;
+        private Visibility CancelButtonVisibility { get; set; }
 
-        protected GoalDeclaration declaration;
-        public GoalDeclaration Declaration
-        {
-            get { return declaration; }
-            set
-            {
-                declaration = value;
-                RaisePropertyChanged("Declaration");
-            }
-        }
-
-        public EditGoalDeclarationWindow()
+        public InputWindow(Func<string, bool> validateFunction)
         {
             InitializeComponent();
             DataContext = this;
+            Validate = validateFunction;
+
+            Response = System.Windows.Forms.DialogResult.Cancel;
         }
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var x = GoalDeclaration.Parse(textBox.Text);
-                Response = System.Windows.Forms.DialogResult.OK;
-                Close();
+                if (Validate(Text))
+                {
+                    Response = System.Windows.Forms.DialogResult.OK;
+                    Close();
+                }
             }
             catch { }
         }
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
         {
-            Response = System.Windows.Forms.DialogResult.Cancel;
             Close();
         }
 

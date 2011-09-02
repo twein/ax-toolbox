@@ -20,6 +20,7 @@ namespace FlightAnalyzer
 
         public ScriptingEngine Engine { get; private set; }
         public FlightReport Report { get; private set; }
+        public string Debriefer { get; set; }
 
         public AXTrackpoint TrackPointer { get; private set; }
 
@@ -43,6 +44,16 @@ namespace FlightAnalyzer
             Worker.RunWorkerCompleted += WorkCompleted;
 
             //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Launch_And_Landing);
+            var dlg = new InputWindow(s => !string.IsNullOrEmpty(s))
+            {
+                Title = "Enter your name",
+                Text = ""
+            };
+            dlg.ShowDialog();
+            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+                Debriefer = dlg.Text;
+            else
+                Close();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -188,6 +199,8 @@ namespace FlightAnalyzer
                         break;
                     case "report":
                         Report = Engine.Report;
+                        if (string.IsNullOrEmpty(Report.Debriefer))
+                            Report.Debriefer = Debriefer;
                         if (Report.PilotId <= 0)
                         {
                             MessageBox.Show(this, "The pilot number cannot be zero");
@@ -228,16 +241,15 @@ namespace FlightAnalyzer
             else
                 return;
 
-            var dlg = new EditWaypointWindow()
+            var dlg = new InputWindow(s => AXWaypoint.Parse(s) != null)
             {
                 Title = "Enter marker",
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
-                Waypoint = waypoint
+                Text = waypoint.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude)
             };
             dlg.ShowDialog();
             if (dlg.Response == System.Windows.Forms.DialogResult.OK)
             {
-                Report.AddMarker(dlg.Waypoint);
+                Report.AddMarker(AXWaypoint.Parse(dlg.Text));
                 Engine.Display();
             }
         }
@@ -246,43 +258,36 @@ namespace FlightAnalyzer
             Report.RemoveMarker((AXWaypoint)listBoxMarkers.SelectedItem);
             Engine.Display();
         }
-        private void menuAddDeclaredGoal_Click(object sender, RoutedEventArgs e)
-        {
-            var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, Engine.Settings.DefaultAltitude);
-            var declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), Engine.Settings.DefaultAltitude);
-
-            var dlg = new EditGoalDeclarationWindow()
-            {
-                Title = "Enter goal declaration",
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
-                Declaration = declaration
-            };
-            dlg.ShowDialog();
-            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
-            {
-                Report.AddDeclaredGoal(dlg.Declaration);
-                Engine.Display();
-            }
-        }
-        private void buttonAddDeclaredGoal_Click(object sender, RoutedEventArgs e)
+        private void AddDeclaredGoal_Click(object sender, RoutedEventArgs e)
         {
             GoalDeclaration declaration = null;
-            if (listBoxDeclaredGoals.SelectedItem != null)
-                declaration = (GoalDeclaration)listBoxDeclaredGoals.SelectedItem;
-            else
-                declaration = new GoalDeclaration(0, Engine.Settings.Date, "0000/0000", Engine.Settings.DefaultAltitude);
 
-            var dlg = new EditGoalDeclarationWindow()
+            if (sender is Button)
             {
-                Title = "Enter goal declaration",
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner,
-                Declaration = declaration
-            };
-            dlg.ShowDialog();
-            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+                if (listBoxDeclaredGoals.SelectedItem != null)
+                    declaration = (GoalDeclaration)listBoxDeclaredGoals.SelectedItem;
+                else
+                    declaration = new GoalDeclaration(0, Engine.Settings.Date, "0000/0000", Engine.Settings.DefaultAltitude);
+            }
+            else if (sender is MenuItem)
             {
-                Report.AddDeclaredGoal(dlg.Declaration);
-                Engine.Display();
+                var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, Engine.Settings.DefaultAltitude);
+                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), Engine.Settings.DefaultAltitude);
+            }
+
+            if (declaration != null)
+            {
+                var dlg = new InputWindow(s => GoalDeclaration.Parse(s) != null)
+                {
+                    Title = "Enter goal declaration",
+                    Text = declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude)
+                };
+                dlg.ShowDialog();
+                if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+                {
+                    Report.AddDeclaredGoal(GoalDeclaration.Parse(dlg.Text));
+                    Engine.Display();
+                }
             }
         }
         private void buttonDeleteDeclaredGoal_Click(object sender, RoutedEventArgs e)
