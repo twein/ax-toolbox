@@ -90,7 +90,7 @@
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontWeight="Bold" VerticalAlignment="Center">Declared goals</TextBlock>
-                                        <Button Click="buttonAddDeclaredGoal_Click">Add</Button>
+                                        <Button Click="AddDeclaredGoal_Click">Add</Button>
                                         <Button Click="buttonDeleteDeclaredGoal_Click">Delete</Button>
                                     </StackPanel>
                                     <ListBox Name="listBoxDeclaredGoals" ItemsSource="{Binding Path=Report.DeclaredGoals}"
@@ -131,7 +131,7 @@
                 <maps:MapViewerControl Name="MapViewer" >
                     <maps:MapViewerControl.ContextMenu>
                         <ContextMenu Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">
-                            <MenuItem Header="Add declared goal" Click="menuAddDeclaredGoal_Click"/>
+                            <MenuItem Header="Add declared goal" Click="AddDeclaredGoal_Click"/>
                         </ContextMenu>
                     </maps:MapViewerControl.ContextMenu>
                 </maps:MapViewerControl>

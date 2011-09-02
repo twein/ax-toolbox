@@ -23,6 +23,23 @@ namespace AXToolbox.Scripting
         protected FlightSettings Settings { get; set; }
         protected LoggerFile LogFile { get; set; }
 
+        protected string debriefer;
+        public string Debriefer
+        {
+            get
+            {
+                return debriefer;
+            }
+            set
+            {
+                if (value != debriefer)
+                {
+                    Notes.Add(string.Format("Debriefer name set to {0}", value));
+                    debriefer = value;
+                    base.RaisePropertyChanged("Debriefer");
+                }
+            }
+        }
         public SignatureStatus SignatureStatus { get; protected set; }
         public DateTime Date { get { return Settings.Date; } }
         public string Time { get { return Date.GetAmPm(); } }

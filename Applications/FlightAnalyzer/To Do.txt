@@ -6,13 +6,16 @@ PENDING
 - Check the workflow of BindableObject.IsDirty
 
 TO DO
-- think about measure/result/contstraint thing
-- Add logger altitude correction file support
-- Keep track of debriefer identity. Assign pilot ranges to each debriefer?
+- Competition area and exclusion areas
+- Area addition
+- think about measure/result/constraint thing
+* Add logger altitude correction file support
+* Keep track of debriefer identity. 
+- Assign pilot ranges to each debriefer?
 - Don't score counterfeit logs.
 - Mark manually added markers and declarations. Don't allow to delete non-manual ones.
 - List of saved reports.
-* Add distance measure tool (shift-click) to MapViewer.
+- Add distance measure tool (shift-click) to MapViewer.
 - Add metadata to all pdfs
 - Getting started with FlightAnalyzer
 
@@ -40,9 +43,8 @@ Pilot declared goals
 	Road crossing distance
 
 
-
 How to set different tasks:
-3DS: apply a filter for each area. the result is a DACC
+	3DS: apply a filter for each area. the result is a DACC
 
 
 RULES:
