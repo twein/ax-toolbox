@@ -26,7 +26,18 @@ namespace FlightAnalyzer
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
-            Ok();
+            try
+            {
+                if (Validate(Text))
+                {
+                    Response = System.Windows.Forms.DialogResult.OK;
+                    Close();
+                }
+            }
+            catch
+            {
+                textBox.Focus();
+            }
         }
 
         private void buttonCancel_Click(object sender, RoutedEventArgs e)
@@ -45,31 +56,5 @@ namespace FlightAnalyzer
             }
         }
         #endregion
-
-        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            //TODO: fix: it does not fire!
-            switch (e.Key)
-            {
-                case System.Windows.Input.Key.Return:
-                    Ok();
-                    break;
-            }
-        }
-        private void Ok()
-        {
-            try
-            {
-                if (Validate(Text))
-                {
-                    Response = System.Windows.Forms.DialogResult.OK;
-                    Close();
-                }
-            }
-            catch
-            {
-                textBox.Focus();
-            }
-        }
     }
 }

@@ -153,6 +153,9 @@ namespace AXToolbox.Scripting
                         case "RESULT":
                             obj = new ScriptingResult(engine, name, type, parameters, displayMode, displayParameters);
                             break;
+                        case "RESTRICTION":
+                            obj = new ScriptingRestriction(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
                         case "PENALTY":
                             obj = new ScriptingPenalty(engine, name, type, parameters, displayMode, displayParameters);
                             break;

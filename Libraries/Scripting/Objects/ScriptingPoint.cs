@@ -89,7 +89,7 @@ namespace AXToolbox.Scripting
                 case "MPDG":
                     //MPDG: pilot declared goal
                     //MPDG(<number>, <minTime>, <maxTime>)
-                    //TODO: remove mintime and maxtime. Can be programmed with TMAXR and TMINR penalties
+                    //TODO: remove mintime and maxtime. Can be programmed with TMAXR and TMINR restriction
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                     number = ParseOrDie<int>(0, int.Parse);
                     minTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, ParseTimeSpan);
@@ -350,7 +350,9 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Notes = "no marker with the specified number";
+                        Point = Engine.Report.LandingPoint;
+                        Notes = "no marker with the specified number (assuming contest landing).";
+                        Engine.LogLine(ObjectName + ": " + Notes);
                     }
                     break;
 

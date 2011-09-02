@@ -116,7 +116,7 @@
                             <Border BorderBrush="Black" BorderThickness="1" Margin="25,0,0,0">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Penalties</TextBlock>
+                                        <TextBlock FontWeight="Bold" VerticalAlignment="Center">Penalties/restrictions</TextBlock>
                                     </StackPanel>
                                     <ListBox ItemsSource="{Binding Path=Engine.Penalties}"/>
                                 </StackPanel>
