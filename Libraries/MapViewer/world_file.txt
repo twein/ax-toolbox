@@ -13,3 +13,6 @@ Line3: b
 Line4: d
 Line5: deltax
 Line6: deltay
+
+
+BUG: Use only bitmaps @ 96dpi!
