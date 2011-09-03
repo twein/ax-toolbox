@@ -6,15 +6,12 @@ PENDING
 - Check the workflow of BindableObject.IsDirty
 
 TO DO
+- think about measure/result/constraint thing
 ! Batch process flight reports.
 ! Add/remove penalties.
 - remove mintime and maxtime from MPDG. It can be programmed with restrictions.
-- add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
 - Competition area and exclusion areas
 - Area addition
-- think about measure/result/constraint thing
-* Add logger altitude correction file support
-* Keep track of debriefer identity. 
 - Assign pilot ranges to each debriefer?
 - Don't score counterfeit logs.
 - Mark manually added markers and declarations. Don't allow to delete non-manual ones.
@@ -22,6 +19,9 @@ TO DO
 - Add distance measure tool (shift-click) to MapViewer.
 - Add metadata to all pdfs
 - Getting started with FlightAnalyzer
+* Add logger altitude correction file support
+* Keep track of debriefer identity. 
+* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
 
 IDEAS
 - Make an error log to output all recoverable error causes.

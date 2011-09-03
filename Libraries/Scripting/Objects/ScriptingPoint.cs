@@ -335,6 +335,19 @@ namespace AXToolbox.Scripting
                 case "MVMD":
                     //MVMD: virtual marker drop
                     //MVMD(<number>)
+                    /*
+                     * algorithm:
+                     * if exists marker with the same number
+                     *      if the marker is valid
+                     *          point = marker
+                     *      else
+                     *          point = null
+                     * else
+                     *      if the contest landing is valid
+                     *          point = landing
+                     *      else
+                     *          point = null
+                     */
                     try
                     {
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
@@ -350,9 +363,18 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Point = Engine.Report.LandingPoint;
-                        Notes = "no marker with the specified number (assuming contest landing).";
-                        Engine.LogLine(ObjectName + ": " + Notes);
+                        try
+                        {
+                            var landing = Engine.Report.LandingPoint;
+                            var nearestPoint = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
+                            Point = nearestPoint;
+                            Notes = "no marker with the specified number (assuming contest landing)";
+                            Engine.LogLine(ObjectName + ": " + Notes);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            Notes = "no marker with the specified number (couldn't assume contest landing)";
+                        }
                     }
                     break;
 
