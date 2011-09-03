@@ -1,32 +1,22 @@
 ﻿BUGS
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
-PENDING
-- Display correctly AXTrackpoint.StartSubtrack
-- Check the workflow of BindableObject.IsDirty
-
 TO DO
-- think about measure/result/constraint thing
 ! Batch process flight reports.
 ! Add/remove penalties.
-- remove mintime and maxtime from MPDG. It can be programmed with restrictions.
-- Competition area and exclusion areas
-- Area addition
+! IsDirty management.
+- Mark manually added markers and declarations. Don't allow to delete non-manual ones.
+
 - Assign pilot ranges to each debriefer?
 - Don't score counterfeit logs.
-- Mark manually added markers and declarations. Don't allow to delete non-manual ones.
 - List of saved reports.
-- Add distance measure tool (shift-click) to MapViewer.
-- Add metadata to all pdfs
 - Getting started with FlightAnalyzer
-* Add logger altitude correction file support
 * Keep track of debriefer identity. 
-* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
+
 
 IDEAS
 - Make an error log to output all recoverable error causes.
 - Steal ideas from http://boxy.fisch.lu
-- Add a new type of point: TLU Track point last used: Last used point in any task
 
 
 PENALTIES:
@@ -45,10 +35,6 @@ Pilot declared goals
 	Incorrect declaration number
 	Incorrect allowed goal number
 	Road crossing distance
-
-
-How to set different tasks:
-	3DS: apply a filter for each area. the result is a DACC
 
 
 RULES:

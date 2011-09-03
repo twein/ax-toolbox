@@ -1,0 +1,11 @@
+﻿TO DO
+! think about measure/result/constraint thing
+- remove mintime and maxtime from MPDG. It can be programmed with restrictions.
+- Competition area and exclusion areas
+- Area addition
+- Add a new type of point: TLU Track point last used: Last used point in any task
+* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
+
+
+How to set different tasks:
+	3DS: apply a filter for each area. the result is a DACC
