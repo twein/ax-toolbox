@@ -17,6 +17,7 @@ namespace AXToolbox.Scripting
         protected double distance = 0;
         protected int time = 0;
         protected TimeSpan timeOfDay;
+        protected string description;
 
         public Penalty Penalty { get; protected set; }
 
@@ -55,11 +56,12 @@ namespace AXToolbox.Scripting
                 //DVMIN(<pointNameA>, <pointNameB>, <altitude>)
                 case "DVMIN":
                     {
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         B = ResolveOrDie<ScriptingPoint>(1);
                         distance = ParseOrDie<double>(2, ParseLength);
                         unit = "m";
+                        description = ParseOrDie<string>(3, ParseString);
                     }
                     break;
 
@@ -68,11 +70,12 @@ namespace AXToolbox.Scripting
                 case "PBP":
                     {
                         {
-                            AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                            AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
                             A = ResolveOrDie<ScriptingPoint>(0);
                             B = ResolveOrDie<ScriptingPoint>(1);
                             time = ParseOrDie<int>(2, ParseInt);
                             unit = "min";
+                            description = ParseOrDie<string>(3, ParseString);
                         }
                     }
                     break;
@@ -84,11 +87,11 @@ namespace AXToolbox.Scripting
                 //PATOD(<pointNameA>, <time>)
                 case "PATOD":
                     {
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         timeOfDay = ParseOrDie<TimeSpan>(1, ParseTimeSpan);
-
                         unit = "";
+                        description = ParseOrDie<string>(2, ParseString);
                     }
                     break;
             }
@@ -127,7 +130,7 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown penaty type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown restriction type '" + ObjectType + "'");
 
                 case "DMAX":
                     if (A.Point == null || B.Point == null)
@@ -141,7 +144,7 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance > distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 distance limit abuse"));
+                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 " + description));
                         }
                     }
                     break;
@@ -158,7 +161,7 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance < distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 distance limit abuse"));
+                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 " + description));
                         }
                     }
                     break;
@@ -175,7 +178,7 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference > distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("Rxx.xx altitude limit abuse"));
+                            Penalty = new Penalty(Result.NewNoResult(description));
                         }
                     }
                     break;
@@ -192,7 +195,7 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference < distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("Rxx.xx altitude limit abuse"));
+                            Penalty = new Penalty(Result.NewNoResult(description));
                         }
                     }
                     break;
@@ -209,7 +212,7 @@ namespace AXToolbox.Scripting
                         var calcTime = (A.Point.Time - B.Point.Time).TotalMinutes;
                         if (calcTime < time)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
+                            Penalty = new Penalty(Result.NewNoResult(description));
                         }
                     }
                     break;
@@ -225,7 +228,7 @@ namespace AXToolbox.Scripting
                         var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
                         if (A.Point.Time > refTime)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
+                            Penalty = new Penalty(Result.NewNoResult(description));
                         }
                     }
                     break;
@@ -241,7 +244,7 @@ namespace AXToolbox.Scripting
                         var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
                         if (A.Point.Time < refTime)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("Time infraction"));
+                            Penalty = new Penalty(Result.NewNoResult(description));
                         }
                     }
                     break;
@@ -250,7 +253,7 @@ namespace AXToolbox.Scripting
             if (Penalty != null)
             {
                 task.Penalties.Add(Penalty);
-                Engine.LogLine(string.Format("{0}: penalty is {1}", ObjectName, Penalty));
+                Engine.LogLine(string.Format("{0}: {1}", ObjectName, Penalty));
             }
         }
 
