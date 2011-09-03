@@ -139,7 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docs\Quick Help.txt" />
-    <Content Include="Docs\world_file.txt" />
+    <Content Include="Docs\World File.txt" />
     <Content Include="license.txt" />
     <Content Include="To Do.txt" />
   </ItemGroup>

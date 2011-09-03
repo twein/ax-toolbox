@@ -12,13 +12,7 @@ namespace AXToolbox.Scripting
     class ScriptingPenalty : ScriptingObject
     {
         protected ScriptingTask task;
-        protected string unit;
-        protected ScriptingPoint A, B;
         protected ScriptingArea area;
-        protected double distance = 0;
-        protected double altitudeDifference = 0;
-        protected int time = 0;
-        protected double scale = 0;
         protected double maxSpeed = 0;
 
         public Penalty Penalty { get; protected set; }
@@ -164,15 +158,6 @@ namespace AXToolbox.Scripting
             {
                 switch (ObjectType)
                 {
-                    case "DMAX":
-                    case "DMIN":
-                        //DMAX: maximum distance
-                        //DMAX(<pointNameA>, <pointNameB>, <distance>)
-                        //DMIN: minimum distance
-                        //DMIN(<pointNameA>, <pointNameB>, <distance>)
-                        overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Penalty));
-                        break;
                 }
             }
 

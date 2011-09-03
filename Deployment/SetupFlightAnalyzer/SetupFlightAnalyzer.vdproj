@@ -33,8 +33,26 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6C6F935A77EA4FE0871EB0C8E3324BF9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FE8C41723F34F72B268E1D7E059CC70"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8166AD23935678252AAF11C9A6B69338"
         "OwnerKey" = "8:_F6AEA6275E714981B2D7CCE3DA23DE71"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8B1B17ED3C5448788337031E6D618E72"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -269,11 +287,51 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6C6F935A77EA4FE0871EB0C8E3324BF9"
+            {
+            "SourcePath" = "8:..\\..\\Libraries\\MapViewer\\Docs\\World File.txt"
+            "TargetName" = "8:World File.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_9C304CB0788F41B890681001E23D215A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FE8C41723F34F72B268E1D7E059CC70"
+            {
+            "SourcePath" = "8:..\\..\\Libraries\\Scripting\\Docs\\AXS Specification.pdf"
+            "TargetName" = "8:AXS Specification.pdf"
+            "Tag" = "8:"
+            "Folder" = "8:_9C304CB0788F41B890681001E23D215A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8166AD23935678252AAF11C9A6B69338"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4258.20023, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=1.0.4263.20412, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8166AD23935678252AAF11C9A6B69338"
@@ -300,11 +358,31 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8B1B17ED3C5448788337031E6D618E72"
+            {
+            "SourcePath" = "8:..\\..\\Libraries\\MapViewer\\Docs\\Quick Help.txt"
+            "TargetName" = "8:MapViewer Quick Help.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_9C304CB0788F41B890681001E23D215A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_92598E313AEE3E9598F8B421EA8CDC97"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Model, Version=1.0.4258.19619, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Model, Version=1.0.4263.20210, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_92598E313AEE3E9598F8B421EA8CDC97"
@@ -366,7 +444,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4258.19994, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4263.20209, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C16F24F51B2DDD73AF3A599458B16591"
@@ -417,7 +495,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4258.19619, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=1.0.4263.20412, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F36206C2E25C1CE15C5724287AFB4B33"
@@ -544,15 +622,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox FlightAnalyzer"
-        "ProductCode" = "8:{F33FCA84-1C23-4D09-9918-82B23AABFF8E}"
-        "PackageCode" = "8:{53BC61DF-5A71-414F-9DAB-B5BE7734860C}"
+        "ProductCode" = "8:{7D85FC7E-540A-4AB5-B9BF-402561E7B03B}"
+        "PackageCode" = "8:{22DE2B91-FE69-46D0-9757-429E062FEA98}"
         "UpgradeCode" = "8:{3BE0DD8B-B888-4311-8429-CA5F241E07A7}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:11.8.1"
+        "InstallAllUsers" = "11:TRUE"
+        "ProductVersion" = "8:11.09.0301"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -665,6 +743,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_205BB8C8E0294DC0BA5DA92048CD304A"
+            {
+            "Name" = "8:World File"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_6C6F935A77EA4FE0871EB0C8E3324BF9"
+            "Folder" = "8:_DDCF2502EF83446A975FAB9F88C10440"
+            "WorkingFolder" = "8:_9C304CB0788F41B890681001E23D215A"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_5C820646B6C3479CA159E1F72BF52896"
+            {
+            "Name" = "8:MapViewer Quick Help"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_8B1B17ED3C5448788337031E6D618E72"
+            "Folder" = "8:_DDCF2502EF83446A975FAB9F88C10440"
+            "WorkingFolder" = "8:_9C304CB0788F41B890681001E23D215A"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6215B5676E2E48538DB290F90574DB63"
             {
             "Name" = "8:AXToolbox FlightAnalyzer"
@@ -691,6 +797,20 @@
             "Folder" = "8:_EE586DC74BA2406AB5C1AEAF582D48C4"
             "WorkingFolder" = "8:_9C304CB0788F41B890681001E23D215A"
             "Icon" = "8:_F6AEA6275E714981B2D7CCE3DA23DE71"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_728D238C213A4635B3E4721BC1CE916A"
+            {
+            "Name" = "8:AXS Specification"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_6FE8C41723F34F72B268E1D7E059CC70"
+            "Folder" = "8:_DDCF2502EF83446A975FAB9F88C10440"
+            "WorkingFolder" = "8:_9C304CB0788F41B890681001E23D215A"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }

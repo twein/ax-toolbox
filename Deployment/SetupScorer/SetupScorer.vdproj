@@ -194,7 +194,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4260.37232, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4260.37289, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1424088AF242C9C4CCD49EEC48DBEDB7"
@@ -225,7 +225,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4260.37231, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4263.20209, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2A8D0F044D0BCFD35EBAA392DA107975"
@@ -443,15 +443,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toobox Scorer"
-        "ProductCode" = "8:{EF3F1D86-4391-4567-86B9-50845CA382BF}"
-        "PackageCode" = "8:{E66F2354-8E0C-4396-B389-0567D902B162}"
+        "ProductCode" = "8:{9296C2CD-C01B-4327-A0F3-0D9D75598B68}"
+        "PackageCode" = "8:{FCE2DD80-FF62-4325-8CD5-BE9D6D607C6C}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:11.8.4"
+        "InstallAllUsers" = "11:TRUE"
+        "ProductVersion" = "8:11.09.0301"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -580,7 +580,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_768AF44AA4A845DCBF02D7B87C8A2FBB"
             {
-            "Name" = "8:Getting Started with Scorer.pdf"
+            "Name" = "8:Getting Started with Scorer"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -594,7 +594,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_89935A2862DD46C4A265493F739A68FF"
             {
-            "Name" = "8:Data Exchange File Format.pdf"
+            "Name" = "8:Data Exchange File Format"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
