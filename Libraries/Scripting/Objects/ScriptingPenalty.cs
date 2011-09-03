@@ -43,7 +43,7 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown penaty type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown penalty type '" + ObjectType + "'");
 
                 case "BPZ":
                     //BPZ: blue PZ
