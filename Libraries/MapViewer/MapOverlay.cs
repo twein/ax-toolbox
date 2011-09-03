@@ -20,6 +20,7 @@ namespace AXToolbox.MapViewer
                 }
             }
         }
+        public string Tag { get; set; }
 
         private MapViewerControl map;
         internal MapViewerControl Map
@@ -44,8 +45,7 @@ namespace AXToolbox.MapViewer
         {
             set { base.Background = value; }
         }
-
-
+        
         protected MapOverlay()
         {
             Layer = uint.MaxValue;

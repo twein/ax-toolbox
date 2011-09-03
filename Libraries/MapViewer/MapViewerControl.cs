@@ -76,6 +76,8 @@ namespace AXToolbox.MapViewer
         protected Point startPosition;
         protected Point startOffset;
 
+        protected DistanceOverlay lastDistance = null;
+
         public MapViewerControl()
         {
             layerVisibilityMask = uint.MaxValue;
@@ -256,6 +258,19 @@ namespace AXToolbox.MapViewer
                 overlay.Map = null;
             }
             overlays.Clear();
+        }
+        /// <summary>Clears all overlays that match the criteria</summary>
+        public void ClearOverlays(Predicate<MapOverlay> match)
+        {
+            foreach (var overlay in overlays)
+            {
+                if (match(overlay))
+                {
+                    overlaysCanvas.Children.Remove(overlay);
+                    overlay.Map = null;
+                }
+            }
+            overlays.RemoveAll(o => match(o));
         }
 
 
@@ -447,6 +462,10 @@ namespace AXToolbox.MapViewer
                     case Key.Multiply:
                         SaveSnapshot("snapshot.png");
                         break;
+                    case Key.Back:
+                    case Key.Delete:
+                        ClearOverlays(o => o.Tag == "distance");
+                        break;
                 }
             }
             e.Handled = true;
@@ -460,10 +479,20 @@ namespace AXToolbox.MapViewer
 
                 //Save starting point, used later when determining how much to scroll
                 startPosition = e.GetPosition(this);
-
                 startOffset = new Point(translateTransform.X, translateTransform.Y);
-                CaptureMouse();
-                Cursor = Cursors.ScrollAll;
+
+                var shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+                if (!shiftPressed)
+                {
+                    CaptureMouse();
+                    Cursor = Cursors.ScrollAll;
+                }
+                else
+                {
+                    lastDistance = new DistanceOverlay(FromLocalToMap(startPosition), FromLocalToMap(startPosition), "0m") { Tag = "distance" };
+                    AddOverlay(lastDistance);
+                }
             }
         }
         protected void control_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -473,6 +502,15 @@ namespace AXToolbox.MapViewer
                 //Reset the cursor and release the mouse pointer
                 Cursor = Cursors.Arrow;
                 ReleaseMouseCapture();
+            }
+            else
+            {
+                var shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+                if (shiftPressed)
+                {
+                    lastDistance = null;
+                }
             }
         }
         protected void control_MouseMove(object sender, MouseEventArgs e)
@@ -488,15 +526,33 @@ namespace AXToolbox.MapViewer
                     LocalPanTo(displacement);
                 }
                 else
+                {
                     MousePointerPosition = FromLocalToMap(position);
+
+                    var shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+                    if (shiftPressed && lastDistance != null)
+                    {
+                        var a = FromLocalToMap(startPosition);
+                        var b = FromLocalToMap(e.GetPosition(this));
+                        var distance = Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+                        RemoveOverlay(lastDistance);
+                        lastDistance = new DistanceOverlay(a, b, string.Format("{0:0}m", distance)) { Tag = "distance" };
+                        AddOverlay(lastDistance);
+                    }
+                }
             }
             else
+            {
                 MousePointerPosition = ORIGIN;
+            }
         }
 
         protected void control_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (IsMapLoaded && !IsMouseCaptured)
+            var shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+            if (IsMapLoaded && !IsMouseCaptured && !shiftPressed)
             {
                 //Zoom to the mouse pointer position
                 //if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)

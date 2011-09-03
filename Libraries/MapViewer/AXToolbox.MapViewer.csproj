@@ -138,9 +138,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Docs\Quick Help.txt" />
+    <Content Include="Docs\world_file.txt" />
     <Content Include="license.txt" />
     <Content Include="To Do.txt" />
-    <Content Include="world_file.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
