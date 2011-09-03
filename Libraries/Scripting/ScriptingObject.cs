@@ -124,9 +124,9 @@ namespace AXToolbox.Scripting
                     var groups = matches[0].Groups;
 
                     var objectClass = groups["object"].Value.ToUpper();
-                    var name = groups["name"].Value.ToLower();
+                    var name = groups["name"].Value;
                     var type = groups["type"].Value.ToUpper(); ;
-                    var parameters = SplitParameters(groups["parms"].Value.ToLower());
+                    var parameters = SplitParameters(groups["parms"].Value);
                     var displayMode = groups["display"].Value.ToUpper(); ;
                     var displayParameters = SplitParameters(groups["displayparms"].Value);
 

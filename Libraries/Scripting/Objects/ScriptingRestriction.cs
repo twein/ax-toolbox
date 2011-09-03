@@ -12,7 +12,6 @@ namespace AXToolbox.Scripting
     class ScriptingRestriction : ScriptingObject
     {
         protected ScriptingTask task;
-        protected string unit;
         protected ScriptingPoint A, B;
         protected double distance = 0;
         protected int time = 0;
@@ -44,53 +43,53 @@ namespace AXToolbox.Scripting
                     throw new ArgumentException("Unknown restriction type '" + ObjectType + "'");
 
                 //DMAX: maximum distance
-                //DMAX(<pointNameA>, <pointNameB>, <distance>)
+                //DMAX(<pointNameA>, <pointNameB>, <distance>, <description>)
                 case "DMAX":
                 //DMIN: minimum distance
-                //DMIN(<pointNameA>, <pointNameB>, <distance>)
+                //DMIN(<pointNameA>, <pointNameB>, <distance>, <description>)
                 case "DMIN":
                 //DVMAX: maximum vertical distance 
-                //DVMAX(<pointNameA>, <pointNameB>, <altitude>)
+                //DVMAX(<pointNameA>, <pointNameB>, <altitude>, <description>)
                 case "DVMAX":
                 //DVMIN: minimum vertical distance
-                //DVMIN(<pointNameA>, <pointNameB>, <altitude>)
+                //DVMIN(<pointNameA>, <pointNameB>, <altitude>, <description>)
                 case "DVMIN":
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         B = ResolveOrDie<ScriptingPoint>(1);
                         distance = ParseOrDie<double>(2, ParseLength);
-                        unit = "m";
                         description = ParseOrDie<string>(3, ParseString);
                     }
                     break;
 
-                //PBP: point before point
-                //PBP(<pointNameA>, <pointNameB>, <time>)
-                case "PBP":
+                //TMAX: maximum time
+                //TMAX(<pointNameA>, <pointNameB>, <time>, <description>)
+                case "TMAX":
+                //TMIN: minimum time
+                //TMIN(<pointNameA>, <pointNameB>, <time>, <description>)
+                case "TMIN":
                     {
                         {
                             AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
                             A = ResolveOrDie<ScriptingPoint>(0);
                             B = ResolveOrDie<ScriptingPoint>(1);
                             time = ParseOrDie<int>(2, ParseInt);
-                            unit = "min";
                             description = ParseOrDie<string>(3, ParseString);
                         }
                     }
                     break;
 
-                //PBTOD: point before time of day
-                //PBTOD(<pointNameA>, <time>)
-                case "PBTOD":
-                //PATOD: point after time of day
-                //PATOD(<pointNameA>, <time>)
-                case "PATOD":
+                //TBTOD: before time of day
+                //TBTOD(<pointNameA>, <time>, <description>)
+                case "TBTOD":
+                //TATOD: after time of day
+                //TATOD(<pointNameA>, <time>, <description>)
+                case "TATOD":
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         timeOfDay = ParseOrDie<TimeSpan>(1, ParseTimeSpan);
-                        unit = "";
                         description = ParseOrDie<string>(2, ParseString);
                     }
                     break;
@@ -144,7 +143,7 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance > distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 " + description));
+                            Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
                         }
                     }
                     break;
@@ -161,7 +160,7 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance < distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult("R13.3.4.1 " + description));
+                            Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
                         }
                     }
                     break;
@@ -178,7 +177,7 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference > distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(description));
+                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
                         }
                     }
                     break;
@@ -195,12 +194,12 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference < distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(description));
+                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
                         }
                     }
                     break;
 
-                case "PBP":
+                case "TMAX":
                     if (A.Point == null || B.Point == null)
                     {
                         Engine.LogLine(ObjectName + ": reference point is null");
@@ -209,15 +208,34 @@ namespace AXToolbox.Scripting
                     {
                         A.Layer |= (uint)OverlayLayers.Reference_Points;
                         B.Layer |= (uint)OverlayLayers.Reference_Points;
-                        var calcTime = (A.Point.Time - B.Point.Time).TotalMinutes;
-                        if (calcTime < time)
+                        var calcTime = (B.Point.Time - A.Point.Time).TotalMinutes;
+                        if (calcTime > time)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(description));
+                            var min = Math.Floor(calcTime);
+                            var sec = Math.Ceiling((calcTime - min) * 60);
+                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
                         }
                     }
                     break;
 
-                case "PBTOD":
+                case "TMIN":
+                    if (A.Point == null || B.Point == null)
+                    {
+                        Engine.LogLine(ObjectName + ": reference point is null");
+                    }
+                    else
+                    {
+                        A.Layer |= (uint)OverlayLayers.Reference_Points;
+                        B.Layer |= (uint)OverlayLayers.Reference_Points;
+                        var calcTime = Math.Ceiling((B.Point.Time - A.Point.Time).TotalMinutes);
+                        if (calcTime < time)
+                        {
+                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
+                        }
+                    }
+                    break;
+
+                case "TBTOD":
                     if (A.Point == null)
                     {
                         Engine.LogLine(ObjectName + ": reference point is null");
@@ -233,7 +251,7 @@ namespace AXToolbox.Scripting
                     }
                     break;
 
-                case "PATOD":
+                case "TATOD":
                     if (A.Point == null)
                     {
                         Engine.LogLine(ObjectName + ": reference point is null");
@@ -266,12 +284,15 @@ namespace AXToolbox.Scripting
                 {
                     case "DMAX":
                     case "DMIN":
-                        //DMAX: maximum distance
-                        //DMAX(<pointNameA>, <pointNameB>, <distance>)
-                        //DMIN: minimum distance
-                        //DMIN(<pointNameA>, <pointNameB>, <distance>)
-                        overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Penalty));
+                    case "DVMAX":
+                    case "DVMIN":
+                    case "TMAX":
+                    case "TMIN":
+                        if (A.Point != null && B.Point != null)
+                        {
+                            overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
+                                string.Format("{0} = {1}", ObjectType, Penalty));
+                        }
                         break;
                 }
             }
@@ -281,6 +302,26 @@ namespace AXToolbox.Scripting
                 overlay.Layer = Layer;
                 Engine.MapViewer.AddOverlay(overlay);
             }
+        }
+
+        public static string MinToHms(double minutes)
+        {
+            var d = Math.Floor(minutes / 1440);
+            var hr = Math.Floor((minutes - d * 1440) / 60);
+            var min = Math.Floor(minutes - d * 1440 - hr * 60);
+            var sec = Math.Ceiling((minutes - d * 1440 - hr * 60 - min) * 60);
+
+            var str = "";
+            if (d > 0)
+                str += d.ToString("0d");
+            if (hr > 0)
+                str += hr.ToString("0h");
+            if (min > 0)
+                str += min.ToString("0m");
+            if (sec > 0)
+                str += sec.ToString("0s");
+
+            return str;
         }
     }
 }
