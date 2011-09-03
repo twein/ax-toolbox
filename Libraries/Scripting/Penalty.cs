@@ -21,7 +21,7 @@ namespace AXToolbox.Scripting
         {
             Type = type;
             if (type == PenaltyType.Measure)
-                throw new InvalidOperationException("Penalty(string infringedRule, Result measure) instead");
+                throw new InvalidOperationException("Use Penalty(string infringedRule, Result measure) instead");
 
             Points = value;
             InfringedRules = infringedRule;

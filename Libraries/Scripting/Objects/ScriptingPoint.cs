@@ -223,7 +223,7 @@ namespace AXToolbox.Scripting
                         if (referencePoint == null)
                         {
                             Point = null;
-                            Notes = "reference point is null";
+                            Notes = list[0].Notes; //inherit notes from ref point
                         }
                         else
                         {
@@ -238,7 +238,8 @@ namespace AXToolbox.Scripting
                             }
                             if (Point == null)
                             {
-                                Notes = "all the points in the list are null";
+                                //all points are null
+                                Notes = list[1].Notes; //inherit notes from first point
                             }
                         }
                     }
@@ -261,7 +262,8 @@ namespace AXToolbox.Scripting
                         }
                         if (Point == null)
                         {
-                            Notes = "all the points in the list are null";
+                            //all points are null
+                            Notes = list[0].Notes; //inherit notes from first point
                         }
                     }
                     break;
@@ -283,7 +285,8 @@ namespace AXToolbox.Scripting
                         }
                         if (Point == null)
                         {
-                            Notes = "all the points in the list are null";
+                            //all points are null
+                            Notes = list[0].Notes; //inherit notes from first point
                         }
                     }
                     break;
@@ -305,7 +308,8 @@ namespace AXToolbox.Scripting
                         }
                         if (Point == null)
                         {
-                            Notes = "all the points in the list are null";
+                            //all points are null
+                            Notes = list[0].Notes; //inherit notes from first point
                         }
                     }
                     break;
@@ -327,7 +331,8 @@ namespace AXToolbox.Scripting
                         }
                         if (Point == null)
                         {
-                            Notes = "all the points in the list are null";
+                            //all points are null
+                            Notes = list[0].Notes; //inherit notes from first point
                         }
                     }
                     break;
@@ -411,11 +416,12 @@ namespace AXToolbox.Scripting
                     //TPT(<pointName>)
                     try
                     {
-                        var referencePoint = Resolve<ScriptingPoint>(0).Point;
+                        var referenceScriptingPoint = Resolve<ScriptingPoint>(0);
+                        var referencePoint = referenceScriptingPoint.Point;
                         if (referencePoint == null)
                         {
                             Point = null;
-                            Notes = "the reference point is null";
+                            Notes = referenceScriptingPoint.Notes; // inherit ref point notes
                         }
                         else
                         {
@@ -433,11 +439,12 @@ namespace AXToolbox.Scripting
                     //TNP(<pointName>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var referencePoint = Resolve<ScriptingPoint>(0).Point;
+                        var referenceScriptingPoint = Resolve<ScriptingPoint>(0);
+                        var referencePoint = referenceScriptingPoint.Point;
                         if (referencePoint == null)
                         {
                             Point = null;
-                            Notes = "the reference point is null";
+                            Notes = referenceScriptingPoint.Notes; // inherit ref point notes
                         }
                         else
                         {
@@ -475,7 +482,10 @@ namespace AXToolbox.Scripting
                                     Point = nextTrackPoint;
                         }
                         if (nnull == list.Length)
-                            Notes = "all the points in the list are null";
+                        {
+                            //all points are null
+                            Notes = list[0].Notes; //inherit notes from first point
+                        }
                         else
                             Notes = "no remaining valid track points";
                     }
