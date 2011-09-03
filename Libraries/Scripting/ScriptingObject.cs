@@ -379,6 +379,10 @@ namespace AXToolbox.Scripting
         {
             return TimeSpan.Parse(str, DateTimeFormatInfo.InvariantInfo);
         }
+        protected static string ParseString(string str)
+        {
+            return str.Trim(new char[] { '"', '\'' });
+        }
         protected static Brush ParseColor(string str)
         {
             str = str.ToUpper();

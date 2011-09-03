@@ -51,7 +51,10 @@ namespace FlightAnalyzer
             };
             dlg.ShowDialog();
             if (dlg.Response == System.Windows.Forms.DialogResult.OK)
+            {
                 Debriefer = dlg.Text;
+                RaisePropertyChanged("Debriefer");
+            }
             else
                 Close();
         }
