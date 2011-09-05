@@ -153,19 +153,19 @@ namespace AXToolbox.Scripting
 
         public override void Display()
         {
-            MapOverlay overlay = null;
-            if (DisplayMode != "NONE" && Penalty != null)
-            {
-                switch (ObjectType)
-                {
-                }
-            }
+            //MapOverlay overlay = null;
+            //if (DisplayMode != "NONE" && Penalty != null)
+            //{
+            //    switch (ObjectType)
+            //    {
+            //    }
+            //}
 
-            if (overlay != null)
-            {
-                overlay.Layer = Layer;
-                Engine.MapViewer.AddOverlay(overlay);
-            }
+            //if (overlay != null)
+            //{
+            //    overlay.Layer = Layer;
+            //    Engine.MapViewer.AddOverlay(overlay);
+            //}
         }
     }
 }

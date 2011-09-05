@@ -52,21 +52,6 @@ namespace AXToolbox.Scripting
                     Engine.Settings.Qnh = ParseOrDie<double>(0, ParseDouble);
                     break;
 
-                case "DRATHRESHOLD":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.RadThreshold = ParseOrDie<double>(0, ParseLength);
-                    break;
-
-                case "DEFAULTALTITUDE":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.DefaultAltitude = ParseOrDie<double>(0, ParseLength);
-                    break;
-
-                case "MAXDISTTOCROSSING":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.MaxDistToCrossing = ParseOrDie<double>(0, ParseLength);
-                    break;
-
                 case "SMOOTHNESS":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     Engine.Settings.Smoothness = ParseOrDie<int>(0, int.Parse);

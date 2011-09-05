@@ -20,9 +20,11 @@ namespace AXToolbox.Scripting
         protected DateTime? minTime, maxTime;
         protected TimeSpan timeDelay;
         protected double distanceDelay;
+        protected double defaultAltitude;
+        protected double altitudeThreshold;
 
         //display fields
-        protected double radius = 0;
+        protected double radius;
 
         internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -64,12 +66,19 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "LNP": //nearest to point from list
-                    //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
-                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length);
+                    //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 3);
+                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
+                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
                     break;
 
                 case "TNL": //nearest to point list 
+                    //LNP(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
+                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
+                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
+                    break;
+
                 case "LFT": //first in time from list
                 case "LLT": //last in time from list
                 case "LFNN": //LFNN: first not null from list
@@ -88,12 +97,10 @@ namespace AXToolbox.Scripting
 
                 case "MPDG":
                     //MPDG: pilot declared goal
-                    //MPDG(<number>, <minTime>, <maxTime>)
-                    //TODO: remove mintime and maxtime. Can be programmed with TMAXR and TMINR restriction
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                    //MPDG(<number>,<defaultAltitude>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     number = ParseOrDie<int>(0, int.Parse);
-                    minTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, ParseTimeSpan);
-                    maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
+                    defaultAltitude = ParseOrDie<double>(1, ParseLength);
                     //Point = TryResolveGoalDeclaration();
                     break;
 
@@ -111,9 +118,10 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "TNP": //nearest to point
-                    //TNP(<pointName>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    //TNP(<pointName>, <altitudeThreshold>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     ResolveOrDie<ScriptingPoint>(0);
+                    altitudeThreshold = ParseOrDie<double>(1, ParseLength);
                     break;
 
                 case "TDT": //delayed in time
@@ -185,7 +193,7 @@ namespace AXToolbox.Scripting
         {
             if (isStatic)
                 Layer = (uint)OverlayLayers.Static_Points;
-            else if (ObjectType == "PDG" || ObjectType == "VMD")
+            else if (ObjectType == "MPDG" || ObjectType == "MVMD")
                 Layer = (uint)OverlayLayers.Pilot_Points;
             else
                 Layer = (uint)OverlayLayers.Reference_Points;
@@ -214,7 +222,7 @@ namespace AXToolbox.Scripting
             {
                 case "LNP":
                     //nearest to point from list
-                    //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ...)
+                    //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
                         var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
@@ -233,7 +241,7 @@ namespace AXToolbox.Scripting
                                 if (nextPoint == null)
                                     continue;
                                 else if (Point == null
-                                    || Physics.DistanceRad(referencePoint, nextPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                    || Physics.DistanceRad(referencePoint, nextPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = nextPoint;
                             }
                             if (Point == null)
@@ -436,7 +444,7 @@ namespace AXToolbox.Scripting
 
                 case "TNP":
                     //nearest to point
-                    //TNP(<pointName>)
+                    //TNP(<pointName>, <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
                         var referenceScriptingPoint = Resolve<ScriptingPoint>(0);
@@ -450,7 +458,7 @@ namespace AXToolbox.Scripting
                         {
                             foreach (var nextTrackPoint in Engine.ValidTrackPoints)
                                 if (Point == null
-                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = nextTrackPoint;
                             if (Point == null)
                             {
@@ -462,7 +470,7 @@ namespace AXToolbox.Scripting
 
                 case "TNL":
                     //nearest to point list
-                    //TNL(<listPoint1>, <listPoint2>, ...)
+                    //TNL(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
                         var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
@@ -478,7 +486,7 @@ namespace AXToolbox.Scripting
                             }
                             foreach (var nextTrackPoint in Engine.ValidTrackPoints)
                                 if (Point == null
-                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, Engine.Settings.RadThreshold) < Physics.DistanceRad(referencePoint, Point, Engine.Settings.RadThreshold))
+                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = nextTrackPoint;
                         }
                         if (nnull == list.Length)
@@ -656,6 +664,9 @@ namespace AXToolbox.Scripting
                     tmpPoint.Northing > Engine.Settings.TopLeft.Northing || tmpPoint.Northing < Engine.Settings.BottomRight.Northing))
                     point = tmpPoint;
             }
+
+            if (double.IsNaN(goal.Altitude))
+                goal.Altitude = defaultAltitude;
 
             return point;
         }

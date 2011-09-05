@@ -14,7 +14,8 @@ namespace AXToolbox.Scripting
         protected ScriptingTask task;
         protected string unit;
         protected ScriptingPoint A, B, C;
-        protected double setDirection = 0;
+        protected double setDirection;
+        protected double altitudeThreshold;
 
         public Result Result { get; protected set; }
 
@@ -46,15 +47,22 @@ namespace AXToolbox.Scripting
                 case "D3D":
                 //D3D: distance in 3D
                 //D3D(<pointNameA>, <pointNameB>)
-                case "DRAD":
-                //DRAD: relative altitude dependent distance
-                //DRAD(<pointNameA>, <pointNameB>)
                 case "DACC":
                     //DACC: accumulated distance
                     //DACC(<pointNameA>, <pointNameB>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
+                    unit = "m";
+                    break;
+
+                case "DRAD":
+                    //DRAD: relative altitude dependent distance
+                    //DRAD(<pointNameA>, <pointNameB>, <threshold>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                    A = ResolveOrDie<ScriptingPoint>(0);
+                    B = ResolveOrDie<ScriptingPoint>(1);
+                    altitudeThreshold = ParseOrDie<double>(2, ParseLength);
                     unit = "m";
                     break;
 
@@ -179,8 +187,8 @@ namespace AXToolbox.Scripting
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
-                        //DRAD(<pointNameA>, <pointNameB>)
-                        Result = task.NewResult(Math.Round(Physics.DistanceRad(A.Point, B.Point, Engine.Settings.RadThreshold), 0));
+                        //DRAD(<pointNameA>, <pointNameB>, <threshold>)
+                        Result = task.NewResult(Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold), 0));
                         Result.UsedPoints.Add(A.Point);
                         Result.UsedPoints.Add(B.Point);
                         break;

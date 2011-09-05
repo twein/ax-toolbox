@@ -138,8 +138,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance > distance)
                         {
@@ -155,8 +153,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance < distance)
                         {
@@ -172,8 +168,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference > distance)
                         {
@@ -189,8 +183,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference < distance)
                         {
@@ -206,8 +198,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcTime = (B.Point.Time - A.Point.Time).TotalMinutes;
                         if (calcTime > time)
                         {
@@ -225,8 +215,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
-                        B.Layer |= (uint)OverlayLayers.Reference_Points;
                         var calcTime = Math.Ceiling((B.Point.Time - A.Point.Time).TotalMinutes);
                         if (calcTime < time)
                         {
@@ -242,7 +230,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
                         var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
                         if (A.Point.Time > refTime)
                         {
@@ -258,7 +245,6 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        A.Layer |= (uint)OverlayLayers.Reference_Points;
                         var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
                         if (A.Point.Time < refTime)
                         {

@@ -196,6 +196,7 @@ namespace AXToolbox.Scripting
 
                         case "POLY":
                             {
+                                //TODO: implement polygonal RPZ
                                 //var hInfringement = min(distance2D(p, foreach segment in outline));
                                 //var vInfringement = upperLimit - point.Altitude;
                                 //infringement = Math.Sqrt(hInfringement * hInfringement + vInfringement * vInfringement) / 8;
