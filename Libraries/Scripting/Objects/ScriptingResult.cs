@@ -138,14 +138,11 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
                     break;
             }
-
-            Layer = (uint)OverlayLayers.Results;
         }
 
         public override void Reset()
         {
             base.Reset();
-            Layer = (uint)OverlayLayers.Results;
             Result = null;
         }
         public override void Process()
@@ -165,8 +162,6 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                A.Layer |= (uint)OverlayLayers.Reference_Points;
-                B.Layer |= (uint)OverlayLayers.Reference_Points;
                 switch (ObjectType)
                 {
                     case "D2D":
@@ -236,7 +231,6 @@ namespace AXToolbox.Scripting
                             Result.UsedPoints.Add(A.Point);
                             Result.UsedPoints.Add(B.Point);
                             Result.UsedPoints.Add(C.Point);
-                            C.Layer |= (uint)OverlayLayers.Reference_Points;
                         }
                         break;
 
@@ -257,7 +251,6 @@ namespace AXToolbox.Scripting
                             Result.UsedPoints.Add(A.Point);
                             Result.UsedPoints.Add(B.Point);
                             Result.UsedPoints.Add(C.Point);
-                            C.Layer |= (uint)OverlayLayers.Reference_Points;
                         }
                         break;
 
@@ -319,21 +312,21 @@ namespace AXToolbox.Scripting
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Result));
+                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ATRI":
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() },
-                            string.Format("{0} = {1}", ObjectType, Result));
+                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANG3P":
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Result));
+                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANGN":
@@ -343,16 +336,13 @@ namespace AXToolbox.Scripting
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Result));
+                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
                 }
             }
 
             if (overlay != null)
-            {
-                overlay.Layer = Layer;
                 Engine.MapViewer.AddOverlay(overlay);
-            }
         }
     }
 }

@@ -60,6 +60,31 @@ namespace AXToolbox.Scripting
         public MapViewerControl MapViewer { get; private set; }
 
         internal AXTrackpoint[] ValidTrackPoints { get; set; }
+        /// <summary>returns the last used point: last used marker drop or launch</summary>
+        internal AXPoint LastUsedPoint
+        {
+            get
+            {
+                AXPoint lastPoint = null;
+
+                var usedPoints = (from t in Heap.Values
+                                  where t is ScriptingTask
+                                  where ((ScriptingTask)t).Result != null
+                                  where ((ScriptingTask)t).Result.LastUsedPoint != null
+                                  select ((ScriptingTask)t).Result.LastUsedPoint).ToList();
+                usedPoints.Add(Report.LaunchPoint);
+
+                try
+                {
+                    //find last used point
+                    lastPoint = usedPoints.OrderBy(p => p.Time).Last();
+
+                }
+                catch { }
+
+                return lastPoint;
+            }
+        }
         public TrackTypes VisibleTrackType { get; set; }
         public AXTrackpoint[] VisibleTrack
         {

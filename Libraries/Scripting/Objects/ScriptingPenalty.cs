@@ -79,14 +79,11 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
                     break;
             }
-
-            Layer = (uint)OverlayLayers.Penalties;
         }
 
         public override void Reset()
         {
             base.Reset();
-            Layer = (uint)OverlayLayers.Penalties;
             Penalty = null;
         }
         public override void Process()
@@ -153,6 +150,8 @@ namespace AXToolbox.Scripting
 
         public override void Display()
         {
+            //Layer=(uint)OverlayLayers.Penalties;
+
             //MapOverlay overlay = null;
             //if (DisplayMode != "NONE" && Penalty != null)
             //{

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using AXToolbox.Common;
+using System.Linq;
 
 namespace AXToolbox.Scripting
 {
@@ -111,6 +110,19 @@ namespace AXToolbox.Scripting
 
             //removes filter if any
             Engine.ValidTrackPoints = Engine.Report.FlightTrack;
+
+            if (Engine.Settings.TasksInOrder)
+            {
+                //TODO: remove used track portions
+                try
+                {
+                    Engine.ValidTrackPoints = (from p in Engine.Report.FlightTrack
+                                               where p.Time >= Engine.LastUsedPoint.Time
+                                               select p).ToArray();
+                }
+                catch { }
+            }
+
             Engine.LogLine(string.Format("{0}: track contains {1} valid points", ObjectName, Engine.ValidTrackPoints.Length));
         }
 
