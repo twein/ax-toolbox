@@ -16,6 +16,7 @@ namespace AXToolbox.Scripting
         public AXPoint TopLeft { get; set; }
         public AXPoint BottomRight { get; set; }
 
+        public Boolean TasksInOrder { get; set; }
         public double Qnh { get; set; }
 
         //Smoothness factor for speed used in launch and landing detection
@@ -36,6 +37,7 @@ namespace AXToolbox.Scripting
         public FlightSettings()
         {
             Date = new DateTime(1999, 12, 31);
+            TasksInOrder = true;
             Qnh = double.NaN;
 
             Smoothness = 3;

@@ -47,6 +47,11 @@ namespace AXToolbox.Scripting
                     Engine.Settings.UtmZone = ParseOrDie<string>(0, s => s);
                     break;
 
+                case "TASKSINORDER":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    Engine.Settings.TasksInOrder = ParseOrDie<bool>(0, ParseBoolean);
+                    break;
+
                 case "QNH":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     Engine.Settings.Qnh = ParseOrDie<double>(0, ParseDouble);

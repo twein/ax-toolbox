@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AXToolbox.GpsLoggers;
 using System.IO;
+using System.Linq;
 
 namespace AXToolbox.Scripting
 {
@@ -26,7 +27,10 @@ namespace AXToolbox.Scripting
         {
             get
             {
-                return UsedPoints[UsedPoints.Count];
+                if (UsedPoints.Count > 0)
+                    return UsedPoints.OrderBy(p => p.Time).Last();
+                else
+                    return null;
             }
         }
 

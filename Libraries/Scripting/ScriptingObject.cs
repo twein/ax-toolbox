@@ -44,12 +44,8 @@ namespace AXToolbox.Scripting
         protected string[] DisplayParameters { get; set; }
 
         protected Brush Color { get; set; }
-        protected uint layer;
-        internal uint Layer
-        {
-            get { return layer; }
-            set { layer = value; }
-        }
+
+        //TODO: remove layer from scriptingObject. MapOverlay.Layer is enough.
 
         protected string SyntaxErrorMessage
         {
@@ -390,6 +386,23 @@ namespace AXToolbox.Scripting
                 return colors[str];
             else
                 throw new ArgumentException("Unknown color '" + str + "'");
+        }
+        protected static bool ParseBoolean(string str)
+        {
+            bool value = false;
+            switch (str.ToLower())
+            {
+                case "true":
+                    value = true;
+                    break;
+                case "false":
+                    value = false;
+                    break;
+                default:
+                    throw new ArgumentException("Syntax error in boolean definition: " + str);
+            }
+
+            return value;
         }
     }
 }

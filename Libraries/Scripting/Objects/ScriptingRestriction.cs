@@ -109,14 +109,11 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
                     break;
             }
-
-            Layer = (uint)OverlayLayers.Penalties;
         }
 
         public override void Reset()
         {
             base.Reset();
-            Layer = (uint)OverlayLayers.Penalties;
             Penalty = null;
         }
         public override void Process()
@@ -277,17 +274,14 @@ namespace AXToolbox.Scripting
                         if (A.Point != null && B.Point != null)
                         {
                             overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                                string.Format("{0} = {1}", ObjectType, Penalty));
+                                string.Format("{0} = {1}", ObjectType, Penalty)) { Layer = (uint)OverlayLayers.Penalties };
                         }
                         break;
                 }
             }
 
             if (overlay != null)
-            {
-                overlay.Layer = Layer;
                 Engine.MapViewer.AddOverlay(overlay);
-            }
         }
 
         public static string MinToHms(double minutes)

@@ -17,7 +17,7 @@ namespace AXToolbox.Scripting
         public string Notes { get; protected set; }
 
         protected int number;
-        protected DateTime? minTime, maxTime;
+        protected DateTime? maxTime;
         protected TimeSpan timeDelay;
         protected double distanceDelay;
         protected double defaultAltitude;
@@ -95,13 +95,14 @@ namespace AXToolbox.Scripting
                     number = ParseOrDie<int>(0, int.Parse);
                     break;
 
-                case "MPDG":
-                    //MPDG: pilot declared goal
-                    //MPDG(<number>,<defaultAltitude>)
+                case "MPDGL":
+                case "MPDGF":
+                    //MPDGL: pilot declared goal before launch
+                    //MPDGF: pilot declared goal in flight
+                    //XXXX(<number>, <defaultAltitude>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     number = ParseOrDie<int>(0, int.Parse);
                     defaultAltitude = ParseOrDie<double>(1, ParseLength);
-                    //Point = TryResolveGoalDeclaration();
                     break;
 
                 case "TLCH": //TLCH: launch
@@ -185,25 +186,11 @@ namespace AXToolbox.Scripting
                         Color = ParseColor(DisplayParameters[1]);
                     break;
             }
-
-            SetLayer();
-        }
-
-        private void SetLayer()
-        {
-            if (isStatic)
-                Layer = (uint)OverlayLayers.Static_Points;
-            else if (ObjectType == "MPDG" || ObjectType == "MVMD")
-                Layer = (uint)OverlayLayers.Pilot_Points;
-            else
-                Layer = (uint)OverlayLayers.Reference_Points;
         }
 
         public override void Reset()
         {
             base.Reset();
-
-            SetLayer();
 
             if (!isStatic)
             {
@@ -225,7 +212,7 @@ namespace AXToolbox.Scripting
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
+                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length - 1);
 
                         var referencePoint = list[0].Point;
                         if (referencePoint == null)
@@ -391,17 +378,86 @@ namespace AXToolbox.Scripting
                     }
                     break;
 
-                case "MPDG":
-                    //pilot declared goal
-                    //MPDG(<number>, <minTime>, <maxTime>)
-                    try
+                case "MPDGL":
+                    //pilot declared goal before launch
+                    //MPDGL(<number>, <defaultAltitude>)
                     {
-                        Point = TryResolveGoalDeclaration();
+                        // look for declarations
+                        var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
+                        if (goals.Count() == 0)
+                        {
+                            Notes = "no goal definition with the specified number";
+                        }
+                        else
+                        {
+                            try
+                            {
+                                //look for last declaration before launch
+                                var goal = goals.Last(g => g.Time <= Engine.Report.LaunchPoint.Time);
+                                try
+                                {
+                                    Point = TryResolveGoalDeclaration(goal);
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                    Notes = "invalid goal declaration";
+                                }
+
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                Notes = "late goal declaration";
+                            }
+                        }
                     }
-                    catch (InvalidOperationException)
+                    break;
+
+                case "MPDGF":
+                    //pilot declared goal in flight
+                    //MPDGF(<number>, <defaultAltitude>)
                     {
-                        Notes = "invalid goal declaration";
-                    } //none found
+                        // look for declarations
+                        var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
+                        if (goals.Count() == 0)
+                        {
+                            Notes = "no goal definition with the specified number";
+                        }
+                        else
+                        {
+                            GoalDeclaration goal = null;
+
+                            if (!Engine.Settings.TasksInOrder)
+                            {
+                                //tasks are not set in order. Cannot chech for previous valid markers
+                                goal = goals.Last();
+                                //TODO: warn user that the declaration time must be checked.
+                            }
+                            else
+                            {
+                                //tasks are set in order: check that the declaration has been done before the last marker or launch
+
+                                    try
+                                    {
+                                        //look for last declaration before last used point
+                                        goal = goals.Last(g => g.Time <= Engine.LastUsedPoint.Time);
+                                    }
+                                    catch (InvalidOperationException)
+                                    {
+                                        Notes = "late goal declaration";
+                                    }
+                                
+                            }
+
+                            try
+                            {
+                                Point = TryResolveGoalDeclaration(goal);
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                Notes = "invalid goal declaration";
+                            }
+                        }
+                    }
                     break;
 
                 case "TLCH":
@@ -473,7 +529,7 @@ namespace AXToolbox.Scripting
                     //TNL(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
+                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length - 1);
 
                         var nnull = 0;
                         foreach (var p in list)
@@ -645,11 +701,9 @@ namespace AXToolbox.Scripting
             //    Notes = ObjectName + ":" + Notes;
         }
 
-        private AXPoint TryResolveGoalDeclaration()
+        private AXPoint TryResolveGoalDeclaration(GoalDeclaration goal)
         {
             AXPoint point = null;
-
-            var goal = Engine.Report.DeclaredGoals.Last(g => g.Number == number && g.Time >= minTime && g.Time <= maxTime);
 
             if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
             {
@@ -673,7 +727,16 @@ namespace AXToolbox.Scripting
 
         public override void Display()
         {
+            uint layer;
+            if (isStatic)
+                layer = (uint)OverlayLayers.Static_Points;
+            else if (ObjectType == "MPDG" || ObjectType == "MVMD")
+                layer = (uint)OverlayLayers.Pilot_Points;
+            else
+                layer = (uint)OverlayLayers.Reference_Points;
+
             MapOverlay overlay = null;
+
             if (Point != null)
             {
                 switch (DisplayMode)
@@ -684,35 +747,31 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName);
+                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = Color };
                         }
                         break;
 
                     case "TARGET":
                         {
-                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName);
+                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Layer = layer, Color = Color };
                         }
                         break;
 
                     case "MARKER":
                         {
-                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName);
+                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = Color };
                         } break;
 
                     case "CROSSHAIRS":
                         {
-                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint());
+                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint()) { Layer = layer, Color = Color };
                         }
                         break;
                 }
             }
 
             if (overlay != null)
-            {
-                overlay.Color = Color;
-                overlay.Layer = Layer;
                 Engine.MapViewer.AddOverlay(overlay);
-            }
         }
     }
 }

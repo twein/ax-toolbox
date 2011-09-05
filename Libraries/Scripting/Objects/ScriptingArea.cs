@@ -79,8 +79,6 @@ namespace AXToolbox.Scripting
                         Color = ParseColor(DisplayParameters[0]);
                     break;
             }
-
-            Layer = (uint)OverlayLayers.Areas;
         }
 
         public override void Process()
@@ -110,23 +108,19 @@ namespace AXToolbox.Scripting
                     case "CIRCLE":
                     case "DOME":
                         if (center.Point != null)
-                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName);
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = Color };
                         break;
 
                     case "POLY":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
-                        overlay = new PolygonalAreaOverlay(list, ObjectName);
+                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = Color };
                         break;
                 }
 
                 if (overlay != null)
-                {
-                    overlay.Color = Color;
-                    overlay.Layer = Layer;
                     Engine.MapViewer.AddOverlay(overlay);
-                }
             }
         }
 
