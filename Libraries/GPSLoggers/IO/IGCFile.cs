@@ -141,7 +141,7 @@ namespace AXToolbox.GpsLoggers
             var strAltitude = line.Substring(12).Split(',')[1];
             if (strAltitude == "")
             {
-                altitude = 0;
+                altitude = double.NaN;
             }
             else if (strAltitude.EndsWith("ft")) //altitude in feet
             {

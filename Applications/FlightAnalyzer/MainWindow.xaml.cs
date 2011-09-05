@@ -270,12 +270,12 @@ namespace FlightAnalyzer
                 if (listBoxDeclaredGoals.SelectedItem != null)
                     declaration = (GoalDeclaration)listBoxDeclaredGoals.SelectedItem;
                 else
-                    declaration = new GoalDeclaration(0, Engine.Settings.Date, "0000/0000", Engine.Settings.DefaultAltitude);
+                    declaration = new GoalDeclaration(0, Engine.Settings.Date, "0000/0000", 0);
             }
             else if (sender is MenuItem)
             {
-                var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, Engine.Settings.DefaultAltitude);
-                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), Engine.Settings.DefaultAltitude);
+                var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, 0);
+                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), 0);
             }
 
             if (declaration != null)

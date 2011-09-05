@@ -17,11 +17,6 @@ namespace AXToolbox.Scripting
         public AXPoint BottomRight { get; set; }
 
         public double Qnh { get; set; }
-        public double RadThreshold { get; set; }
-
-        //goal declaration settings
-        public double DefaultAltitude { get; set; }
-        public double MaxDistToCrossing { get; set; }
 
         //Smoothness factor for speed used in launch and landing detection
         public double Smoothness { get; set; }
@@ -42,10 +37,7 @@ namespace AXToolbox.Scripting
         {
             Date = new DateTime(1999, 12, 31);
             Qnh = double.NaN;
-            RadThreshold = 0;
 
-            DefaultAltitude = 0;
-            MaxDistToCrossing = 200;
             Smoothness = 3;
             MinSpeed = 0.5;
             MaxAcceleration = 2;

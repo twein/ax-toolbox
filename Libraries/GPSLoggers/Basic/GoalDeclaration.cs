@@ -16,7 +16,7 @@ namespace AXToolbox.GpsLoggers
         public string Name { get; protected set; }
         public double Easting4Digits { get; protected set; }
         public double Northing4Digits { get; protected set; }
-        public double Altitude { get; protected set; }
+        public double Altitude { get; set; }
         public string Description { get; set; }
 
         public GoalDeclaration(int number, DateTime time, string definition, double altitude)
