@@ -1,6 +1,8 @@
 ﻿TO DO
+! PDF report
 ! think about measure/result/constraint thing
 * remove mintime and maxtime from MPDG. It can be programmed with restrictions.
+- global penalties instead of task specific
 - Competition area and exclusion areas
 - Area addition
 - Add a new type of point: TLU Track point last used: Last used point in any task

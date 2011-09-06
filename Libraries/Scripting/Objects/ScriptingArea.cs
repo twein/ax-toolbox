@@ -17,6 +17,9 @@ namespace AXToolbox.Scripting
         protected double upperLimit = double.PositiveInfinity;
         protected List<AXTrackpoint> outline;
 
+        public double MaxHorizontalInfringement { get; protected set; }
+        public double UpperLimit { get { return upperLimit; } }
+
 
         internal ScriptingArea(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -38,12 +41,16 @@ namespace AXToolbox.Scripting
                         lowerLimit = ParseOrDie<double>(2, ParseLength);
                     if (ObjectParameters.Length >= 4)
                         upperLimit = ParseOrDie<double>(3, ParseLength);
+
+                    MaxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "DOME":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, ParseLength);
+
+                    MaxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "POLY":
@@ -55,6 +62,10 @@ namespace AXToolbox.Scripting
                         lowerLimit = ParseOrDie<double>(1, ParseLength);
                     if (ObjectParameters.Length >= 3)
                         upperLimit = ParseOrDie<double>(2, ParseLength);
+
+                    for (var i = 1; i < outline.Count; i++)
+                        for (var j = 0; j < i; j++)
+                            MaxHorizontalInfringement = Math.Max(MaxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
                     break;
             }
         }
@@ -164,6 +175,21 @@ namespace AXToolbox.Scripting
 
             return infringement;
         }
+
+        public double RPZAltitudeInfringement(AXPoint point)
+        {
+            double infringement = 0;
+
+            if (point == null)
+                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+            else //if (Contains(point))
+                infringement = upperLimit - point.Altitude;
+
+            return infringement;
+        }
+
+        /*
+         * new 2011 RPZ penalty draft
         public double ScaledRPZInfringement(AXPoint point)
         {
             double infringement = 0;
@@ -215,6 +241,7 @@ namespace AXToolbox.Scripting
 
             return infringement;
         }
+        */
 
         /// <summary>Check if a given point is inside the polygonal area. 2D only.
         /// Considers that the last point is the same as the first (ie: for a square, only 4 points are needed)

@@ -93,6 +93,7 @@ namespace AXToolbox.Scripting
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
+            //TODO: apply globally instead of a per task basis
             switch (ObjectType)
             {
                 default:
@@ -123,6 +124,35 @@ namespace AXToolbox.Scripting
                     {
                         double penalty = 0;
                         AXPoint last = null;
+                        int n = 0;
+                        double accuHorizontalDist = 0;
+                        double accuVerticalInfringement = 0;
+                        foreach (var p in Engine.ValidTrackPoints)
+                        {
+                            if (area.Contains(p))
+                            {
+                                n++;
+                                if (last != null && !p.StartSubtrack)
+                                {
+                                    accuHorizontalDist += Physics.Distance2D(p, last);
+                                    accuVerticalInfringement += area.RPZAltitudeInfringement(p);
+                                }
+                                last = p;
+                            }
+                        }
+                        if (n > 0)
+                        {
+                            var vertInfringement = (accuVerticalInfringement / n) / area.UpperLimit; ;
+                            var horzInfringement = accuHorizontalDist / area.MaxHorizontalInfringement;
+                            penalty = 500 * vertInfringement * horzInfringement / 2; //COH7.5
+
+                            penalty = Math.Ceiling(10 * (penalty / 10));
+                            Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
+                        }
+                        /*
+                         * new 2011 draft
+                        double penalty = 0;
+                        AXPoint last = null;
                         foreach (var p in Engine.ValidTrackPoints)
                         {
                             if (area.Contains(p))
@@ -137,6 +167,7 @@ namespace AXToolbox.Scripting
                         }
                         penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
                         Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
+                        */
                     }
                     break;
             }
