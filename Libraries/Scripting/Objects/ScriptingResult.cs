@@ -239,7 +239,7 @@ namespace AXToolbox.Scripting
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
                         {
-                            Result = task.NewNoResult(A.Notes);
+                            Result = task.NewNoResult(C.Notes);
                         }
                         else
                         {

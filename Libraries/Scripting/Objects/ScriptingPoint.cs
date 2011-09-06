@@ -435,26 +435,25 @@ namespace AXToolbox.Scripting
                             else
                             {
                                 //tasks are set in order: check that the declaration has been done before the last marker or launch
+                                //TODO: when the previous task is NR, what happen (see CICR2011 T5 P3)
+                                try
+                                {
+                                    //look for last declaration before last used point
+                                    goal = goals.Last(g => g.Time <= Engine.LastUsedPoint.Time);
 
                                     try
                                     {
-                                        //look for last declaration before last used point
-                                        goal = goals.Last(g => g.Time <= Engine.LastUsedPoint.Time);
+                                        Point = TryResolveGoalDeclaration(goal);
                                     }
                                     catch (InvalidOperationException)
                                     {
-                                        Notes = "late goal declaration";
+                                        Notes = "invalid goal declaration";
                                     }
-                                
-                            }
-
-                            try
-                            {
-                                Point = TryResolveGoalDeclaration(goal);
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                Notes = "invalid goal declaration";
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                    Notes = "late goal declaration";
+                                }
                             }
                         }
                     }
