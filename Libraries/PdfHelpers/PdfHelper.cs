@@ -47,7 +47,7 @@ namespace AXToolbox.PdfHelpers
                 WidthPercentage = 100,
                 SpacingBefore = 15,
                 SpacingAfter = 10,
-                HeaderRows = string.IsNullOrEmpty(title) ? 1 : 2
+                HeaderRows = (string.IsNullOrEmpty(title) ? 0 : 1) + (columnHeaders == null ? 0 : 1)
             };
 
             var headerColor = new BaseColor(0xc0, 0xc0, 0xc0);
@@ -55,8 +55,9 @@ namespace AXToolbox.PdfHelpers
             if (!string.IsNullOrEmpty(title))
                 table.AddCell(new PdfPCell(new Paragraph(title, Config.BoldFont)) { Colspan = columnHeaders.Length, BackgroundColor = headerColor });
 
-            foreach (var ch in columnHeaders)
-                table.AddCell(new PdfPCell(new Paragraph(ch, Config.BoldFont)) { BackgroundColor = headerColor });
+            if (columnHeaders != null)
+                foreach (var ch in columnHeaders)
+                    table.AddCell(new PdfPCell(new Paragraph(ch, Config.BoldFont)) { BackgroundColor = headerColor });
 
             return table;
         }

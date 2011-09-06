@@ -75,7 +75,7 @@
     <StartupObject>Scorer.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itextsharp">
+    <Reference Include="itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\..\ThirdParty\iText\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />

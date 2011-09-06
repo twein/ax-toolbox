@@ -4,12 +4,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
+using AXToolbox.PdfHelpers;
+using iTextSharp.text;
 
 namespace AXToolbox.Scripting
 {
@@ -253,7 +256,10 @@ namespace AXToolbox.Scripting
                 Report.ExportTrackLog(folder);
                 SaveLog(folder);
                 if (Results.Count() > 0)
+                {
                     ExportResults(folder);
+                    SavePdfReport(folder);
+                }
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
@@ -284,6 +290,54 @@ namespace AXToolbox.Scripting
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
+        }
+        public void SavePdfReport(string folder)
+        {
+            var assembly = GetType().Assembly;
+            var aName = assembly.GetName();
+            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+
+            var programInfo = string.Format("{0} {2}",
+                ((AssemblyTitleAttribute)aTitle[0]).Title,
+                aName.Version,
+                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+            //return string.Format("{0} v{1} {2}",
+            //    ((AssemblyTitleAttribute)aTitle[0]).Title,
+            //    aName.Version,
+            //    ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+
+
+            var config = new PdfConfig()
+            {
+                PageLayout = PageSize.A4,
+                MarginTop = 1.5f * PdfHelper.cm2pt,
+                MarginBottom = 1.5f * PdfHelper.cm2pt,
+
+                FooterRight = programInfo
+            };
+            var helper = new PdfHelper(Path.Combine(folder, Report.ToShortString() + ".pdf"), config);
+            var document = helper.Document;
+
+            document.Add(new Paragraph("Flight Report Form", config.TitleFont));
+
+            var table = helper.NewTable(null, new float[] { 1, 1 });
+            table.WidthPercentage = 50;
+            table.HorizontalAlignment = Element.ALIGN_LEFT;
+
+            table.AddCell(helper.NewLCell("Flight Date:"));
+            table.AddCell(helper.NewLCell(Settings.Date.GetDateAmPm()));
+            table.AddCell(helper.NewLCell("Pilot number:"));
+            table.AddCell(helper.NewLCell(Report.PilotId.ToString()));
+            table.AddCell(helper.NewLCell("Logger serial number:"));
+            table.AddCell(helper.NewLCell(Report.LoggerSerialNumber));
+            table.AddCell(helper.NewLCell("Debriefer:"));
+            table.AddCell(helper.NewLCell(Report.Debriefer));
+
+            document.Add(table);
+
+            document.Close();
         }
 
         public void Display(bool factoryReset = false)

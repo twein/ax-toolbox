@@ -53,6 +53,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\..\ThirdParty\iText\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -92,6 +95,10 @@
     <ProjectReference Include="..\MapViewer\AXToolbox.MapViewer.csproj">
       <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
       <Name>AXToolbox.MapViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PdfHelpers\AXToolbox.PdfHelpers.csproj">
+      <Project>{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}</Project>
+      <Name>AXToolbox.PdfHelpers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿TO DO
 ! PDF report
+  Add event title to settings
 ! think about measure/result/constraint thing
 * remove mintime and maxtime from MPDG. It can be programmed with restrictions.
 - global penalties instead of task specific
