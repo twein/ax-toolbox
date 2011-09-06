@@ -1,0 +1,16 @@
+﻿TO DO
+! PDF report
+  Add event title to settings
+! think about measure/result/constraint thing
+* remove mintime and maxtime from MPDG. It can be programmed with restrictions.
+- global penalties instead of task specific
+- Competition area and exclusion areas
+- Area addition
+- Add a new type of point: TLU Track point last used: Last used point in any task
+- MPDGF: tasks in any order: think about how to check if the declaration has been done before the last marker drop 
+* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
+- rewrite the examples in the AXS Specification for new syntax
+
+
+How to set different tasks:
+	3DS: apply a filter for each area. the result is a DACC

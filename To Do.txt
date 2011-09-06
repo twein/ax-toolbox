@@ -1,0 +1,2 @@
+TO DO
+- Add metadata to all pdfs

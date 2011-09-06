@@ -1,0 +1,43 @@
+﻿BUGS
+- Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
+
+TO DO
+- Fix the log files thing
+! Batch process flight reports.
+! Add/remove penalties.
+! IsDirty management.
+- Add the possibility of warning the user programmatically.
+- Mark manually added markers and declarations. Don't allow to delete non-manual ones.
+
+- Assign pilot ranges to each debriefer?
+- Don't score counterfeit logs.
+- List of saved reports.
+- Getting started with FlightAnalyzer
+* Keep track of debriefer identity. 
+
+
+IDEAS
+- Make an error log to output all recoverable error causes.
+- Steal ideas from http://boxy.fisch.lu
+
+
+PENALTIES:
+- R13
+
+
+
+Checklist:
+Pilot number
+Track log signature
+Max vertical speed
+Launch and landing
+Markers
+	Incorrect marker number
+Pilot declared goals
+	Incorrect declaration number
+	Incorrect allowed goal number
+	Road crossing distance
+
+
+RULES:
+Read all COH!
