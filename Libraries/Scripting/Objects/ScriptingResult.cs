@@ -193,14 +193,14 @@ namespace AXToolbox.Scripting
                         //DACC(<pointNameA>, <pointNameB>)
                         double distance = 0;
                         AXPoint last = null;
-                        foreach (var p in Engine.ValidTrackPoints)
+                        foreach (var p in Engine.TaskValidTrackPoints)
                         {
                             if (!p.StartSubtrack && last != null)
                                 distance += Physics.Distance2D(p, last);
                             last = p;
                         }
                         Result = task.NewResult(Math.Round(distance, 0));
-                        Result.UsedPoints.AddRange(Engine.ValidTrackPoints.ToArray()); //cloned ValidTrackPoints
+                        Result.UsedPoints.AddRange(Engine.TaskValidTrackPoints.ToArray()); //cloned ValidTrackPoints
                         break;
 
                     case "TSEC":

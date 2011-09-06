@@ -33,7 +33,7 @@ namespace AXToolbox.Scripting
                 default:
                     throw new ArgumentException("Unknown area type '" + ObjectType + "'");
 
-                case "CIRCLE":
+                case "CYLINDER":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, ParseLength);
@@ -45,7 +45,7 @@ namespace AXToolbox.Scripting
                     MaxHorizontalInfringement = 2 * radius;
                     break;
 
-                case "DOME":
+                case "SPHERE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, ParseLength);
@@ -53,7 +53,7 @@ namespace AXToolbox.Scripting
                     MaxHorizontalInfringement = 2 * radius;
                     break;
 
-                case "POLY":
+                case "PRISM":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     var fileName = ParseOrDie<string>(0, s => s);
                     var trackLog = LoggerFile.Load(fileName);
@@ -98,12 +98,13 @@ namespace AXToolbox.Scripting
 
             switch (ObjectType)
             {
-                case "CIRCLE":
+                case "CYLINDER":
+                case "SPHERE":
                     //radius is static
                     if (center.Point == null)
                         Engine.LogLine(ObjectName + ": center point is null");
                     break;
-                case "POLY":
+                case "PRISM":
                     //do nothing
                     break;
             }
@@ -116,13 +117,13 @@ namespace AXToolbox.Scripting
             {
                 switch (ObjectType)
                 {
-                    case "CIRCLE":
-                    case "DOME":
+                    case "CYLINDER":
+                    case "SPHERE":
                         if (center.Point != null)
                             overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = Color };
                         break;
 
-                    case "POLY":
+                    case "PRISM":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
@@ -145,17 +146,17 @@ namespace AXToolbox.Scripting
             {
                 switch (ObjectType)
                 {
-                    case "CIRCLE":
+                    case "CYLINDER":
                         if (center.Point != null)
                             isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && Physics.Distance2D(center.Point, point) < radius;
                         break;
 
-                    case "DOME":
+                    case "SPHERE":
                         if (center.Point != null)
                             isInside = Physics.Distance3D(center.Point, point) <= radius;
                         break;
 
-                    case "POLY":
+                    case "PRISM":
                         isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && InPolygon(point);
                         break;
                 }

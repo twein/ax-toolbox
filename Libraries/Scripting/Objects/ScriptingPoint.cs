@@ -353,7 +353,7 @@ namespace AXToolbox.Scripting
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
                         try
                         {
-                            var nearestPoint = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
+                            var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
                             Point = marker;
                         }
                         catch (InvalidOperationException)
@@ -366,7 +366,7 @@ namespace AXToolbox.Scripting
                         try
                         {
                             var landing = Engine.Report.LandingPoint;
-                            var nearestPoint = Engine.ValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
+                            var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
                             Point = nearestPoint;
                             Notes = "no marker with the specified number (assuming contest landing)";
                             Engine.LogLine(ObjectName + ": " + Notes);
@@ -511,7 +511,7 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
-                            foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                            foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = nextTrackPoint;
@@ -539,7 +539,7 @@ namespace AXToolbox.Scripting
                                 nnull++;
                                 continue;
                             }
-                            foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                            foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = nextTrackPoint;
@@ -567,9 +567,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
+                                Point = Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
                             else
-                                Point = Engine.ValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay);
+                                Point = Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay);
 
                             if (Point == null)
                             {
@@ -593,9 +593,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = Engine.ValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime);
+                                Point = Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime);
                             else
-                                Point = Engine.ValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay);
+                                Point = Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay);
 
                             if (Point == null)
                             {
@@ -611,7 +611,7 @@ namespace AXToolbox.Scripting
                     //TAFI(<areaName>)
                     {
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                             if (area.Contains(nextTrackPoint))
                             {
                                 Point = nextTrackPoint;
@@ -631,7 +631,7 @@ namespace AXToolbox.Scripting
                     {
                         AXPoint lastInside = null;
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.ValidTrackPoints)
+                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                         {
                             if (area.Contains(nextTrackPoint))
                                 lastInside = nextTrackPoint;
@@ -654,7 +654,7 @@ namespace AXToolbox.Scripting
                     {
                         AXPoint lastInside = null;
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.ValidTrackPoints.Reverse())
+                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Reverse())
                         {
                             if (area.Contains(nextTrackPoint))
                                 lastInside = nextTrackPoint;
@@ -676,7 +676,7 @@ namespace AXToolbox.Scripting
                     // is the same as TAFI with reversed track
                     {
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.ValidTrackPoints.Reverse())
+                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Reverse())
                             if (area.Contains(nextTrackPoint))
                             {
                                 Point = nextTrackPoint;
