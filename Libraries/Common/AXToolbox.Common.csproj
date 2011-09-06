@@ -78,6 +78,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="General\Hashes.cs" />
     <Compile Include="General\ObjectSerializer.cs" />
     <Compile Include="Extensions\Double.cs" />
     <Compile Include="General\TimeStampTraceListener.cs" />
