@@ -298,11 +298,9 @@ namespace Scorer
         }
         public PdfConfig GetDefaultPdfConfig()
         {
-            return new PdfConfig()
+            return new PdfConfig(PdfConfig.Application.Scorer)
             {
                 PageLayout = PageSize.A4.Rotate(),
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
 
                 FooterRight = Event.Instance.GetProgramInfo()
             };

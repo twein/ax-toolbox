@@ -82,7 +82,6 @@ namespace AXToolbox.Scripting
                 {
                     //find last used point
                     lastPoint = usedPoints.OrderBy(p => p.Time).Last();
-
                 }
                 catch { }
 
@@ -311,18 +310,18 @@ namespace AXToolbox.Scripting
             //    ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
 
 
-            var config = new PdfConfig()
+            var config = new PdfConfig(PdfConfig.Application.FlightAnalyzer)
             {
-                PageLayout = PageSize.A4,
-                MarginTop = 1.5f * PdfHelper.cm2pt,
-                MarginBottom = 1.5f * PdfHelper.cm2pt,
-
                 FooterRight = programInfo
             };
             var helper = new PdfHelper(Path.Combine(folder, Report.ToShortString() + ".pdf"), config);
             var document = helper.Document;
 
-            document.Add(new Paragraph("Flight Report Form", config.TitleFont));
+            config.HeaderLeft = Settings.Title;
+            config.HeaderRight = Settings.Subtitle;
+            //document.Add(new Paragraph(Settings.Title, config.TitleFont));
+            //document.Add(new Paragraph(Settings.Subtitle, config.SubtitleFont));
+            document.Add(new Paragraph("Automatic Flight Report", config.TitleFont));
 
             var table = helper.NewTable(null, new float[] { 1, 1 });
             table.WidthPercentage = 50;

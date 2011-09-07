@@ -17,7 +17,7 @@ namespace PdfTest
 
         public PdfTestClass(string pdfFileName)
         {
-            var config = new PdfConfig()
+            var config = new PdfConfig(PdfConfig.Application.Scorer)
                 {
                     MarginTop = 1.5f * PdfHelper.cm2pt,
                     MarginBottom = 1.5f * PdfHelper.cm2pt,

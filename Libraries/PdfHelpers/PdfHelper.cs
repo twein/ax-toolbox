@@ -40,7 +40,8 @@ namespace AXToolbox.PdfHelpers
 
         public PdfPTable NewTable(string[] columnHeaders, float[] relativeColumnWidths, string title = null)
         {
-            Debug.Assert(columnHeaders.Length == relativeColumnWidths.Length, "columnHeaders and relativeColumnWidths must have the same number of elements");
+            if (columnHeaders != null)
+                Debug.Assert(columnHeaders.Length == relativeColumnWidths.Length, "columnHeaders and relativeColumnWidths must have the same number of elements");
 
             var table = new PdfPTable(relativeColumnWidths)
             {
@@ -187,9 +188,14 @@ namespace AXToolbox.PdfHelpers
                             0);
                     }
 
-                    cOver.MoveTo(document.Left, document.Top + config.MarginHeader);
-                    cOver.LineTo(document.Right, document.Top + config.MarginHeader);
-                    cOver.Stroke();
+                    if (!string.IsNullOrEmpty(config.HeaderLeft)
+                        || !string.IsNullOrEmpty(config.HeaderCenter)
+                        || !string.IsNullOrEmpty(config.HeaderRight))
+                    {
+                        cOver.MoveTo(document.Left, document.Top + config.MarginHeader);
+                        cOver.LineTo(document.Right, document.Top + config.MarginHeader);
+                        cOver.Stroke();
+                    }
 
 
                     //insert footer

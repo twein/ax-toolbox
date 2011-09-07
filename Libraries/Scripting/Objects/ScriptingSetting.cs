@@ -21,6 +21,24 @@ namespace AXToolbox.Scripting
                 default:
                     throw new ArgumentException("Unknown setting '" + ObjectName + "'");
 
+                case "TITLE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    Engine.Settings.Title = ParseOrDie<string>(0, ParseString);
+                    break;
+
+                case "SUBTITLE":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 1);
+                    //subtitles usually contain commas. re-assemble the subtitles.
+                    var st = "";
+                    foreach (var s in ObjectParameters)
+                    {
+                        if(!string.IsNullOrEmpty(st))
+                            st+=", ";
+                        st += s;
+                    }
+                    Engine.Settings.Subtitle = st;
+                    break;
+
                 case "DATETIME":
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);

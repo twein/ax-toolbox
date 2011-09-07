@@ -116,14 +116,14 @@ namespace AXToolbox.Scripting
                 //TODO: remove used track portions
                 try
                 {
-                    Engine.TaskValidTrackPoints = (from p in Engine.Report.FlightTrack
+                    Engine.TaskValidTrackPoints = (from p in Engine.TaskValidTrackPoints
                                                    where p.Time >= Engine.LastUsedPoint.Time
                                                    select p).ToArray();
                 }
                 catch { }
             }
 
-            Engine.LogLine(string.Format("{0}: track contains {1} valid points", ObjectName, Engine.TaskValidTrackPoints.Length));
+            Engine.LogLine(string.Format("{0}: track contains {1} valid points for this task", ObjectName, Engine.TaskValidTrackPoints.Length));
         }
 
         public Result NewResult(double value)
