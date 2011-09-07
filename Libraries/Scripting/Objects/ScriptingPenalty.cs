@@ -146,7 +146,7 @@ namespace AXToolbox.Scripting
                             var horzInfringement = accuHorizontalDist / area.MaxHorizontalInfringement;
                             penalty = 500 * vertInfringement * horzInfringement / 2; //COH7.5
 
-                            penalty = Math.Ceiling(10 * (penalty / 10));
+                            penalty = 10 * Math.Ceiling((penalty / 10));
                             Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
                         }
                         /*

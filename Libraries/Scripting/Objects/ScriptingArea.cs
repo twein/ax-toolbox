@@ -13,8 +13,8 @@ namespace AXToolbox.Scripting
     {
         protected ScriptingPoint center = null;
         protected double radius = 0;
-        protected double lowerLimit = double.NegativeInfinity;
         protected double upperLimit = double.PositiveInfinity;
+        protected double lowerLimit = double.NegativeInfinity;
         protected List<AXTrackpoint> outline;
 
         public double MaxHorizontalInfringement { get; protected set; }
@@ -38,9 +38,9 @@ namespace AXToolbox.Scripting
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, ParseLength);
                     if (ObjectParameters.Length >= 3)
-                        lowerLimit = ParseOrDie<double>(2, ParseLength);
+                        upperLimit = ParseOrDie<double>(2, ParseLength);
                     if (ObjectParameters.Length >= 4)
-                        upperLimit = ParseOrDie<double>(3, ParseLength);
+                        lowerLimit = ParseOrDie<double>(3, ParseLength);
 
                     MaxHorizontalInfringement = 2 * radius;
                     break;
@@ -59,9 +59,9 @@ namespace AXToolbox.Scripting
                     var trackLog = LoggerFile.Load(fileName);
                     outline = Engine.Settings.GetTrack(trackLog);
                     if (ObjectParameters.Length >= 2)
-                        lowerLimit = ParseOrDie<double>(1, ParseLength);
+                        upperLimit = ParseOrDie<double>(1, ParseLength);
                     if (ObjectParameters.Length >= 3)
-                        upperLimit = ParseOrDie<double>(2, ParseLength);
+                        lowerLimit = ParseOrDie<double>(2, ParseLength);
 
                     for (var i = 1; i < outline.Count; i++)
                         for (var j = 0; j < i; j++)
@@ -148,7 +148,7 @@ namespace AXToolbox.Scripting
                 {
                     case "CYLINDER":
                         if (center.Point != null)
-                            isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && Physics.Distance2D(center.Point, point) < radius;
+                            isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && Physics.Distance2D(center.Point, point) <= radius;
                         break;
 
                     case "SPHERE":

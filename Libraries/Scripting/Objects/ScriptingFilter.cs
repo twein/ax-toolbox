@@ -86,7 +86,7 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "NONE":
-                    trackPoints = ApplyFilter(Engine.AllValidTrackPoints, p => true); //erases subtrack flags
+                    trackPoints = ApplyFilter(Engine.AllValidTrackPoints, p => true); //Use always the ApplyFilter function: it sets up subtrack flags
                     break;
 
                 case "INSIDE":
@@ -142,7 +142,7 @@ namespace AXToolbox.Scripting
         /// <param name="list"></param>
         /// <param name="predicate">Membership function. Points with false results will be filtered out</param>
         /// <returns></returns>
-        protected AXTrackpoint[] ApplyFilter(IEnumerable<AXTrackpoint> list, Func<AXTrackpoint, bool> predicate)
+        protected AXTrackpoint[] ApplyFilter(IEnumerable<AXTrackpoint> list, Predicate<AXTrackpoint> predicate)
         {
             var newList = new List<AXTrackpoint>();
 
