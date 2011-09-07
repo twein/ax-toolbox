@@ -62,7 +62,8 @@ namespace AXToolbox.Scripting
         public FlightReport Report { get; private set; }
         public MapViewerControl MapViewer { get; private set; }
 
-        internal AXTrackpoint[] ValidTrackPoints { get; set; }
+        internal AXTrackpoint[] AllValidTrackPoints { get; set; }
+        internal AXTrackpoint[] TaskValidTrackPoints { get; set; }
         /// <summary>returns the last used point: last used marker drop or launch</summary>
         internal AXPoint LastUsedPoint
         {
@@ -240,6 +241,7 @@ namespace AXToolbox.Scripting
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
             ClearLog();
 
+            AllValidTrackPoints = Report.FlightTrack;
             //process all objects
             foreach (var obj in Heap.Values)
                 obj.Process();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
@@ -10,6 +11,7 @@ namespace AXToolbox.Scripting
         private ScriptingPoint point;
         private DateTime time;
         private double altitude;
+        private bool appliesToAllTasks = false;
 
         internal ScriptingFilter(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -17,6 +19,16 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
+            try
+            {
+                var task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
+                appliesToAllTasks = false;
+            }
+            catch
+            {
+                appliesToAllTasks = true;
+            }
+
             //parse static types
             switch (ObjectType)
             {
@@ -25,6 +37,8 @@ namespace AXToolbox.Scripting
 
                 case "NONE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
+                    if (appliesToAllTasks)
+                        throw new InvalidOperationException("Filter NONE is valid only inside tasks");
                     break;
 
                 case "INSIDE":
@@ -61,54 +75,66 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
-            var initialCount = Engine.ValidTrackPoints.Length;
+            AXTrackpoint[] trackPoints;
+            if (appliesToAllTasks)
+                trackPoints = Engine.AllValidTrackPoints;
+            else
+                trackPoints = Engine.TaskValidTrackPoints;
+
+            var initialCount = trackPoints.Length;
+
             switch (ObjectType)
             {
                 case "NONE":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.Report.FlightTrack, p => true); //erases subtrack flags
+                    trackPoints = ApplyFilter(Engine.AllValidTrackPoints, p => true); //erases subtrack flags
                     break;
 
                 case "INSIDE":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => area.Contains(p));
+                    trackPoints = ApplyFilter(trackPoints, p => area.Contains(p));
                     break;
 
                 case "OUTSIDE":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => !area.Contains(p));
+                    trackPoints = ApplyFilter(trackPoints, p => !area.Contains(p));
                     break;
 
                 case "BEFORETIME":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time.ToLocalTime() <= time);
+                    trackPoints = ApplyFilter(trackPoints, p => p.Time.ToLocalTime() <= time);
                     break;
 
                 case "AFTERTIME":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time.ToLocalTime() >= time);
+                    trackPoints = ApplyFilter(trackPoints, p => p.Time.ToLocalTime() >= time);
                     break;
 
                 case "BEFOREPOINT":
                     if (point.Point == null)
                         Engine.LogLine(ObjectName + ": reference point is null");
                     else
-                        Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time <= point.Point.Time);
+                        trackPoints = ApplyFilter(trackPoints, p => p.Time <= point.Point.Time);
                     break;
 
                 case "AFTERPOINT":
                     if (point.Point == null)
                         Engine.LogLine(ObjectName + ": reference point is null");
                     else
-                        Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Time >= point.Point.Time);
+                        trackPoints = ApplyFilter(trackPoints, p => p.Time >= point.Point.Time);
                     break;
 
                 case "ABOVE":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Altitude >= altitude);
+                    trackPoints = ApplyFilter(trackPoints, p => p.Altitude >= altitude);
                     break;
 
                 case "BELOW":
-                    Engine.ValidTrackPoints = ApplyFilter(Engine.ValidTrackPoints, p => p.Altitude <= altitude);
+                    trackPoints = ApplyFilter(trackPoints, p => p.Altitude <= altitude);
                     break;
             }
 
+            if (appliesToAllTasks)
+                Engine.AllValidTrackPoints = trackPoints;
+            else
+                Engine.TaskValidTrackPoints = trackPoints;
+
             //if (Engine.ValidTrackPoints.Length != initialCount)
-            Engine.LogLine(string.Format("{0}: track filtered from {1} to {2} valid points", ObjectName, initialCount, Engine.ValidTrackPoints.Length));
+            Engine.LogLine(string.Format("{0}: track filtered from {1} to {2} valid points", ObjectName, initialCount, trackPoints.Length));
         }
 
         /// <summary>Return a filtered array of trackpoints with subtrack control

@@ -103,7 +103,7 @@ namespace AXToolbox.Scripting
                     {
                         double penalty = 0;
                         AXPoint last = null;
-                        foreach (var p in Engine.ValidTrackPoints)
+                        foreach (var p in Engine.TaskValidTrackPoints)
                         {
                             if (area.Contains(p))
                             {
@@ -127,7 +127,7 @@ namespace AXToolbox.Scripting
                         int n = 0;
                         double accuHorizontalDist = 0;
                         double accuVerticalInfringement = 0;
-                        foreach (var p in Engine.ValidTrackPoints)
+                        foreach (var p in Engine.TaskValidTrackPoints)
                         {
                             if (area.Contains(p))
                             {

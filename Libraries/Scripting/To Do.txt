@@ -2,14 +2,27 @@
 ! PDF report
   Add event title to settings
 ! think about measure/result/constraint thing
-* remove mintime and maxtime from MPDG. It can be programmed with restrictions.
-- global penalties instead of task specific
+(needs to be checked) think about the area/filter for competition area and exclusion areas: when filter is ouside task, it is assumed to filter the competition area
+- global penalties instead of task specific:
+	for each task:
+		if task has no result goto next task
+		filter the flightTrack from first to last used point for that task
+		compute the penalty over the filtered track points
+		assign penalty to task
+		next task
+	if there are remaining points,
+	compute the penalty over the remaining points
+	assign penalty to last task with a result if any or
+	assign penalty to last task
+
 - Competition area and exclusion areas
 - Area addition
 - Add a new type of point: TLU Track point last used: Last used point in any task
 - MPDGF: tasks in any order: think about how to check if the declaration has been done before the last marker drop 
-* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
+- MPDGF: tasks in order: what happens if the previous marker is invalid (too high, out of scoring area...)
 - rewrite the examples in the AXS Specification for new syntax
+* remove mintime and maxtime from MPDG. It can be programmed with restrictions.
+* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
 
 
 How to set different tasks:
