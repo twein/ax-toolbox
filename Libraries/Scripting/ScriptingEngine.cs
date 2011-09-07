@@ -237,15 +237,22 @@ namespace AXToolbox.Scripting
             if (Report.PilotId == 0)
                 throw new InvalidOperationException("The pilot id can not be zero");
 
-            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
             ClearLog();
 
+            Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
+            
             AllValidTrackPoints = Report.FlightTrack;
+
+            //reset all objects
+            foreach (var obj in Heap.Values)
+                obj.Reset();
+
             //process all objects
             foreach (var obj in Heap.Values)
                 obj.Process();
 
             Display();
+
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
         }

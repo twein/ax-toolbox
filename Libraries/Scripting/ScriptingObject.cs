@@ -215,7 +215,6 @@ namespace AXToolbox.Scripting
         /// <param name="report"></param>
         public virtual void Process()
         {
-            Reset();
             Trace.WriteLine("Processing " + ObjectName, ObjectClass);
         }
 
