@@ -253,20 +253,29 @@ namespace AXToolbox.Scripting
 
             Display();
 
+            RaisePropertyChanged("Notes");
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
         }
-        public void SaveAll(string folder)
+        public void SaveAll(string rootFolder)
         {
             if (Report.PilotId > 0)
             {
-                Report.Save(folder);
-                Report.ExportTrackLog(folder);
-                SaveLog(folder);
+                var reportsFolder = Path.Combine(rootFolder, "Flight reports");
+                if (!Directory.Exists(reportsFolder))
+                    Directory.CreateDirectory(reportsFolder);
+
+                var resultsFolder = Path.Combine(rootFolder, "Results");
+                if (!Directory.Exists(resultsFolder))
+                    Directory.CreateDirectory(resultsFolder);
+
+                Report.Save(reportsFolder);
+                Report.ExportTrackLog(reportsFolder);
+                SaveLog(reportsFolder);
                 if (Results.Count() > 0)
                 {
-                    ExportResults(folder);
-                    SavePdfReport(folder);
+                    ExportResults(resultsFolder);
+                    SavePdfReport(reportsFolder);
                 }
             }
             else

@@ -25,7 +25,7 @@ namespace FlightAnalyzer
         public AXTrackpoint TrackPointer { get; private set; }
 
         protected BackgroundWorker Worker = new BackgroundWorker();
-        protected string saveFolder;
+        protected string rootFolder;
 
         public MainWindow()
         {
@@ -116,7 +116,7 @@ namespace FlightAnalyzer
         private void saveReportButton_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(GetFolderName()))
-                Engine.SaveAll(saveFolder);
+                Engine.SaveAll(rootFolder);
         }
 
         //Handles all property changes from the Tools window
@@ -164,6 +164,7 @@ namespace FlightAnalyzer
             {
                 case ".axs":
                     Engine.LoadScript(fileName);
+                    rootFolder = Path.GetDirectoryName(fileName);
                     args.Result = "script";
                     break;
                 case ".axr":
@@ -302,8 +303,8 @@ namespace FlightAnalyzer
         private string GetFolderName()
         {
             string folder = null;
-            if (!string.IsNullOrEmpty(saveFolder))
-                folder = saveFolder;
+            if (!string.IsNullOrEmpty(rootFolder))
+                folder = rootFolder;
             else
             {
                 var dlg = new System.Windows.Forms.FolderBrowserDialog();
@@ -313,7 +314,7 @@ namespace FlightAnalyzer
                 if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     folder = dlg.SelectedPath;
-                    saveFolder = folder;
+                    rootFolder = folder;
                 }
             }
 
