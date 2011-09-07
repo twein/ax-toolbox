@@ -9,6 +9,8 @@ namespace AXToolbox.Scripting
     public class FlightSettings : BindableObject
     {
         //TODO: document all this
+        public string Title { get; set; }
+        public string Subtitle { get; set; }
         public DateTime Date { get; set; }
 
         public string DatumName { get; set; }
