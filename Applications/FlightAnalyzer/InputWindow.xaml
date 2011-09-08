@@ -6,7 +6,7 @@
         WindowStartupLocation="CenterOwner">
     <DockPanel Margin="5">
         <StackPanel DockPanel.Dock="Top">
-            <TextBox Name="textBox" Text="{Binding Text}"/>
+            <TextBox Name="textBox"/>
         </StackPanel>
         <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,0,0">
             <Button Click="buttonOk_Click" IsDefault="True">OK</Button>
