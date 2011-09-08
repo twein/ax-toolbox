@@ -46,6 +46,7 @@ namespace AXToolbox.Scripting
 
         protected Brush Color { get; set; }
         public List<Note> Notes { get; private set; }
+        public ScriptingTask Task { get; private set; }
 
         protected string SyntaxErrorMessage
         {
@@ -197,7 +198,19 @@ namespace AXToolbox.Scripting
 
         /// <summary>Check constructor syntax and parse static definitions or die
         /// </summary>
-        public abstract void CheckConstructorSyntax();
+        public virtual void CheckConstructorSyntax()
+        {
+            if (this is ScriptingTask)
+                Task = this as ScriptingTask;
+            else
+            {
+                try
+                {
+                    Task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
+                }
+                catch { }
+            }
+        }
         /// <summary>Check display mode syntax or die
         /// </summary>
         public abstract void CheckDisplayModeSyntax();

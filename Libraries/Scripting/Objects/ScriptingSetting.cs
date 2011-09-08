@@ -14,6 +14,8 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
+            base.CheckConstructorSyntax();
+
             ObjectName = ObjectName.ToUpper();
 
             switch (ObjectName)

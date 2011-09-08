@@ -11,7 +11,6 @@ namespace AXToolbox.Scripting
 {
     class ScriptingRestriction : ScriptingObject
     {
-        protected ScriptingTask task;
         protected ScriptingPoint A, B;
         protected double distance = 0;
         protected int time = 0;
@@ -27,14 +26,10 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            try
-            {
-                task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
-            }
-            catch
-            {
+            base.CheckConstructorSyntax();
+           
+            if (Task==null)
                 throw new ArgumentException(ObjectName + ": no previous task defined");
-            }
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
             switch (ObjectType)
@@ -253,7 +248,7 @@ namespace AXToolbox.Scripting
 
             if (Penalty != null)
             {
-                task.Penalties.Add(Penalty);
+                Task.Penalties.Add(Penalty);
                 AddNote("restriction outcome is " + Penalty.ToString());
             }
             else

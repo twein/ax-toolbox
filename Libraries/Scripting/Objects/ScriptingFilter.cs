@@ -11,7 +11,6 @@ namespace AXToolbox.Scripting
         private ScriptingPoint point;
         private DateTime time;
         private double altitude;
-        private ScriptingTask task;
 
         internal ScriptingFilter(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -19,11 +18,7 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            try
-            {
-                task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
-            }
-            catch { }
+            base.CheckConstructorSyntax();
 
             //parse static types
             switch (ObjectType)
@@ -33,7 +28,7 @@ namespace AXToolbox.Scripting
 
                 case "NONE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
-                    if (task == null)
+                    if (Task == null)
                         throw new InvalidOperationException("Filter NONE is valid only inside tasks");
                     break;
 
@@ -72,7 +67,7 @@ namespace AXToolbox.Scripting
             base.Process();
 
             AXTrackpoint[] trackPoints;
-            if (task == null)
+            if (Task == null)
                 trackPoints = Engine.AllValidTrackPoints;
             else
                 trackPoints = Engine.TaskValidTrackPoints;
@@ -82,7 +77,7 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "NONE":
-                    task.ResetValidTrackPoints(); //task is never null in NONE filter
+                    Task.ResetValidTrackPoints(); //Task is never null in NONE filter
                     trackPoints = ApplyFilter(Engine.TaskValidTrackPoints, p => true); //Use always the ApplyFilter function: it sets up subtrack flags
                     break;
 
@@ -125,7 +120,7 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            if (task == null)
+            if (Task == null)
                 Engine.AllValidTrackPoints = trackPoints;
             else
                 Engine.TaskValidTrackPoints = trackPoints;
