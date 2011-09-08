@@ -428,8 +428,17 @@ namespace AXToolbox.Scripting
                             {
                                 //tasks are not set in order. Cannot chech for previous valid markers
                                 goal = goals.Last();
-                                //TODO: warn user that the declaration time must be checked.
-                                AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
+
+                                try
+                                {
+                                    Point = TryResolveGoalDeclaration(goal);
+                                    //TODO: warn user that the declaration time must be checked.
+                                    AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                    AddNote("invalid goal declaration #" + number.ToString(), true);
+                                }
                             }
                             else
                             {
