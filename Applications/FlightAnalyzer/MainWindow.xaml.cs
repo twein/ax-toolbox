@@ -115,8 +115,15 @@ namespace FlightAnalyzer
         }
         private void saveReportButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(GetFolderName()))
-                Engine.SaveAll(rootFolder);
+            try
+            {
+                if (!string.IsNullOrEmpty(GetFolderName()))
+                    Engine.SaveAll(rootFolder);
+            }
+            catch (Exception ex)
+            {
+                ShowError("Could not save all the files:" + Environment.NewLine + ex.Message);
+            }
         }
 
         //Handles all property changes from the Tools window
@@ -183,11 +190,11 @@ namespace FlightAnalyzer
         {
             if (args.Error != null)
             {
-                MessageBox.Show(this, args.Error.Message);
+                ShowError(args.Error.Message);
             }
             else if (args.Cancelled)
             {
-                MessageBox.Show(this, "Cancelled");
+                ShowError("Cancelled");
             }
             else
             {
@@ -207,7 +214,7 @@ namespace FlightAnalyzer
                             Report.Debriefer = Debriefer;
                         if (Report.PilotId <= 0)
                         {
-                            MessageBox.Show(this, "The pilot number cannot be zero");
+                            ShowError("The pilot number cannot be zero");
                             return;
                         }
                         TrackPointer = null;
@@ -319,6 +326,11 @@ namespace FlightAnalyzer
             }
 
             return folder;
+        }
+
+        private void ShowError(string message)
+        {
+            MessageBox.Show(this, message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

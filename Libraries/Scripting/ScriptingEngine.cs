@@ -284,6 +284,8 @@ namespace AXToolbox.Scripting
                     Directory.CreateDirectory(resultsFolder);
 
                 Report.Save(reportsFolder);
+                Report.ExportTrackLog(reportsFolder);
+
                 if (Results.Count() > 0)
                 {
                     ExportResults(resultsFolder);
@@ -359,7 +361,7 @@ namespace AXToolbox.Scripting
 
             document.NewPage();
             document.Add(new Paragraph("Execution log", config.SubtitleFont));
-                        
+
             foreach (var line in Report.Notes)
                 document.Add(new Paragraph(line, config.FixedWidthFont));
             foreach (var line in GetLog(false))

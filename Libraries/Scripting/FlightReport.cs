@@ -18,6 +18,7 @@ namespace AXToolbox.Scripting
         public const string SerializedFileExtension = ".axr";
 
         protected FlightSettings Settings { get; set; }
+        protected LoggerFile LogFile { get; set; }
 
         protected string debriefer;
         public string Debriefer
@@ -51,6 +52,7 @@ namespace AXToolbox.Scripting
                     pilotId = value;
                     base.RaisePropertyChanged("PilotId");
                     base.RaisePropertyChanged("Description");
+                    IsDirty = true;
                 }
             }
         }
@@ -157,6 +159,7 @@ namespace AXToolbox.Scripting
                 report = new FlightReport(settings)
                 {
                     IsDirty = true,
+                    LogFile = logFile,
                     SignatureStatus = logFile.SignatureStatus,
                     pilotId = logFile.PilotId,
                     LoggerModel = logFile.LoggerModel,
@@ -204,56 +207,56 @@ namespace AXToolbox.Scripting
         {
             if (pilotId > 0)
             {
-                var filename = Path.Combine(folder, ToShortString() + SerializedFileExtension);
-                ObjectSerializer<FlightReport>.Save(this, filename, serializationFormat);
-                IsDirty = false;
+                if (IsDirty)
+                {
+                    var filename = Path.Combine(folder, ToShortString() + SerializedFileExtension);
+                    ObjectSerializer<FlightReport>.Save(this, filename, serializationFormat);
+                    IsDirty = false;
+                }
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
-        public bool ExportWaypoints(string folder)
+        public void ExportTrackLog(string folder)
         {
-            throw new NotImplementedException();
-            /*
-            var ok = pilotId > 0;
-            if (ok)
+            if (pilotId > 0)
             {
-                var wpts = new List<AXWaypoint>();
-                wpts.Add(new AXWaypoint("Launch", launchPoint));
-                wpts.Add(new AXWaypoint("Landing", landingPoint));
-                wpts.AddRange(Markers);
-                throw new NotImplementedException();
-                //wpts.AddRange(DeclaredGoals);
-                var filename = Path.Combine(folder, toShortString() + ".wpt");
-                WPTFile.Save(wpts, filename);
+                LogFile.Save(Path.Combine(folder, ToShortString()));
             }
-
-            return ok;
-            */
+            else
+                throw new InvalidOperationException("The pilot id can not be zero");
         }
 
         public void AddMarker(AXWaypoint marker)
         {
             InsertIntoCollection(Markers, marker);
             Notes.Add(string.Format("New marker added: {0}", marker));
+            IsDirty = true;
         }
         public bool RemoveMarker(AXWaypoint marker)
         {
             var ok = Markers.Remove(marker);
             if (ok)
+            {
                 Notes.Add(string.Format("Marker removed: {0}", marker));
+                IsDirty = true;
+            }
             return ok;
         }
         public void AddDeclaredGoal(GoalDeclaration declaration)
         {
             InsertIntoCollection(DeclaredGoals, declaration);
             Notes.Add(string.Format("New goal declaration added: {0}", declaration));
+            IsDirty = true;
         }
         public bool RemoveDeclaredGoal(GoalDeclaration declaration)
         {
             var ok = DeclaredGoals.Remove(declaration);
             if (ok)
+            {
                 Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
+                IsDirty = true;
+            }
             return ok;
         }
 
