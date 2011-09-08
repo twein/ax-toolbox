@@ -123,7 +123,7 @@ namespace AXToolbox.Scripting
                 catch { }
             }
 
-            Engine.LogLine(string.Format("{0}: track contains {1} valid points for this task", ObjectName, Engine.TaskValidTrackPoints.Length));
+            AddNote(string.Format("track contains {0} valid points for this task", Engine.TaskValidTrackPoints.Length));
         }
 
         public Result NewResult(double value)

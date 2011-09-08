@@ -131,7 +131,7 @@ namespace AXToolbox.Scripting
                 case "DMAX":
                     if (A.Point == null || B.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -146,7 +146,7 @@ namespace AXToolbox.Scripting
                 case "DMIN":
                     if (A.Point == null || B.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -161,7 +161,7 @@ namespace AXToolbox.Scripting
                 case "DVMAX":
                     if (A.Point == null || B.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -176,7 +176,7 @@ namespace AXToolbox.Scripting
                 case "DVMIN":
                     if (A.Point == null || B.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -191,7 +191,7 @@ namespace AXToolbox.Scripting
                 case "TMAX":
                     if (A.Point == null || B.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -208,7 +208,7 @@ namespace AXToolbox.Scripting
                 case "TMIN":
                     if (A.Point == null || B.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -223,7 +223,7 @@ namespace AXToolbox.Scripting
                 case "TBTOD":
                     if (A.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -238,7 +238,7 @@ namespace AXToolbox.Scripting
                 case "TATOD":
                     if (A.Point == null)
                     {
-                        Engine.LogLine(ObjectName + ": reference point is null");
+                        AddNote("reference point is null");
                     }
                     else
                     {
@@ -254,8 +254,10 @@ namespace AXToolbox.Scripting
             if (Penalty != null)
             {
                 task.Penalties.Add(Penalty);
-                Engine.LogLine(string.Format("{0}: {1}", ObjectName, Penalty));
+                AddNote("restriction outcome is " + Penalty.ToString());
             }
+            else
+                AddNote("not infringed");
         }
 
         public override void Display()
