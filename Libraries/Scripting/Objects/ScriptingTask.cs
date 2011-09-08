@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AXToolbox.PdfHelpers;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace AXToolbox.Scripting
 {
@@ -165,6 +168,37 @@ namespace AXToolbox.Scripting
 
             return string.Format("result;auto;{0};{1};{2:0.00};{3:0.00};{4:0};{5:0};{6}",
                 Number, Engine.Report.PilotId, Result.ValueToString(), measurePenalty.ValueToString(), taskPoints, competitionPoints, infringedRules);
+        }
+
+        internal void ToPdfReport(PdfHelper helper)
+        {
+            var document = helper.Document;
+            var config = helper.Config;
+
+            var title = string.Format("Task {0}: {1}", Number, ObjectType);
+            var table = helper.NewTable(null, new float[] { 1, 4 }, title);
+
+            table.AddCell(new PdfPCell(new Paragraph("Result: ", config.BoldFont)));
+            table.AddCell(new PdfPCell(new Paragraph(Result.ToString(), config.FixedWidthFont)));
+
+            table.AddCell(new PdfPCell(new Paragraph("Coordinates: ", config.BoldFont)));
+            var c = new PdfPCell();
+            foreach (var p in Result.UsedPoints)
+            {
+                c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+            }
+            table.AddCell(c);
+
+
+            table.AddCell(new PdfPCell(new Paragraph("Penalties / restrictions: ", config.BoldFont)));
+            c = new PdfPCell();
+            foreach (var p in Penalties)
+            {
+                c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+            }
+            table.AddCell(c);
+
+            document.Add(table);
         }
     }
 }

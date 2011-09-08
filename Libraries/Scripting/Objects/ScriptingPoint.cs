@@ -60,7 +60,7 @@ namespace AXToolbox.Scripting
                         var easting = ParseOrDie<double>(0, ParseDouble);
                         var northing = ParseOrDie<double>(1, ParseDouble);
                         var alt = ParseOrDie<double>(2, ParseLength);
-                        Point = new AXPoint(DateTime.MinValue, easting, northing, alt);
+                        Point = new AXPoint(Engine.Settings.Date.Date.ToUniversalTime(), easting, northing, alt);
                     }
                     break;
 
@@ -353,7 +353,7 @@ namespace AXToolbox.Scripting
                         try
                         {
                             var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
-                            Point = marker;
+                            Point = new AXWaypoint("M" + marker.Name, marker);
                         }
                         catch (InvalidOperationException)
                         {
@@ -715,16 +715,18 @@ namespace AXToolbox.Scripting
 
             if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
             {
-                point = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
-                if (point != null && goal.Altitude > 0)
-                    point.Altitude = goal.Altitude;
+                var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
+                if (tmpPoint != null && goal.Altitude > 0)
+                    tmpPoint.Altitude = goal.Altitude;
+
+                point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
             }
             else // competition coordinates
             {
                 var tmpPoint = Engine.Settings.ResolveDeclaredGoal(goal);
                 if (!(tmpPoint.Easting < Engine.Settings.TopLeft.Easting || tmpPoint.Easting > Engine.Settings.BottomRight.Easting ||
                     tmpPoint.Northing > Engine.Settings.TopLeft.Northing || tmpPoint.Northing < Engine.Settings.BottomRight.Northing))
-                    point = tmpPoint;
+                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
             }
 
             if (double.IsNaN(goal.Altitude))

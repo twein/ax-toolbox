@@ -33,7 +33,7 @@ namespace AXToolbox.Scripting
             switch (Type)
             {
                 case PenaltyType.Measure:
-                    str = InfringedRules;
+                    str = string.Format("{0}: {1}", InfringedRules, Performance.ValueUnitToString());
                     break;
                 case PenaltyType.TaskPoints:
                     str = string.Format("{0}: {1}TP", InfringedRules, Points);

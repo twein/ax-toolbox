@@ -74,10 +74,10 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            if (!string.IsNullOrEmpty(Reason))
-            {
-                str += ": " + Reason;
-            }
+            //if (!string.IsNullOrEmpty(Reason))
+            //{
+            //    str += ": " + Reason;
+            //}
 
             return str;
         }

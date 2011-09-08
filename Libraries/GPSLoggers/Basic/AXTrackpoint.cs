@@ -20,7 +20,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
         }
         public override string ToString(AXPointInfo info)
         {

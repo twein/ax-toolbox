@@ -53,7 +53,7 @@ namespace AXToolbox.GpsLoggers
             var str = new StringBuilder();
 
             if ((info & AXPointInfo.Name) > 0)
-                str.Append(Number.ToString("00 "));
+                str.Append(string.Format("{0:00} ", Number));
 
             if ((info & AXPointInfo.Date) > 0)
                 str.Append(Time.ToLocalTime().ToString("yyyy/MM/dd "));
