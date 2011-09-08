@@ -18,7 +18,6 @@ namespace AXToolbox.Scripting
         public const string SerializedFileExtension = ".axr";
 
         protected FlightSettings Settings { get; set; }
-        protected LoggerFile LogFile { get; set; }
 
         protected string debriefer;
         public string Debriefer
@@ -158,7 +157,6 @@ namespace AXToolbox.Scripting
                 report = new FlightReport(settings)
                 {
                     IsDirty = true,
-                    LogFile = logFile,
                     SignatureStatus = logFile.SignatureStatus,
                     pilotId = logFile.PilotId,
                     LoggerModel = logFile.LoggerModel,
@@ -209,15 +207,6 @@ namespace AXToolbox.Scripting
                 var filename = Path.Combine(folder, ToShortString() + SerializedFileExtension);
                 ObjectSerializer<FlightReport>.Save(this, filename, serializationFormat);
                 IsDirty = false;
-            }
-            else
-                throw new InvalidOperationException("The pilot id can not be zero");
-        }
-        public void ExportTrackLog(string folder)
-        {
-            if (pilotId > 0)
-            {
-                LogFile.Save(Path.Combine(folder, ToShortString()));
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");

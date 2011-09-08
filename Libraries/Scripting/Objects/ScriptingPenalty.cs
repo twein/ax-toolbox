@@ -175,8 +175,10 @@ namespace AXToolbox.Scripting
             if (Penalty != null)
             {
                 task.Penalties.Add(Penalty);
-                Engine.LogLine(string.Format("{0}: penalty is {1}", ObjectName, Penalty));
+                AddNote("penalty is " + Penalty.ToString());
             }
+            else
+                AddNote("no penalty");
         }
 
         public override void Display()

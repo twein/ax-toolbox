@@ -154,11 +154,11 @@ namespace AXToolbox.Scripting
             // syntax is already checked
             if (A.Point == null)
             {
-                Result = task.NewNoResult(A.Notes);
+                Result = task.NewNoResult(A.GetFirstNoteText());
             }
             else if (B.Point == null)
             {
-                Result = task.NewNoResult(B.Notes);
+                Result = task.NewNoResult(B.GetFirstNoteText());
             }
             else
             {
@@ -223,7 +223,7 @@ namespace AXToolbox.Scripting
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
                         {
-                            Result = task.NewNoResult(A.Notes);
+                            Result = task.NewNoResult(A.GetFirstNoteText());
                         }
                         else
                         {
@@ -239,7 +239,7 @@ namespace AXToolbox.Scripting
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
                         {
-                            Result = task.NewNoResult(C.Notes);
+                            Result = task.NewNoResult(C.GetFirstNoteText());
                         }
                         else
                         {
@@ -283,7 +283,7 @@ namespace AXToolbox.Scripting
             if (Result == null)
                 Result = task.NewNoResult("this should never happen");
 
-            Engine.LogLine(string.Format("{0}: result is {1}", ObjectName, Result));
+            AddNote("result is " + Result.ToString());
         }
 
         public override void Display()

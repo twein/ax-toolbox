@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using AXToolbox.MapViewer;
+using System.Linq;
 
 namespace AXToolbox.Scripting
 {
@@ -44,8 +45,7 @@ namespace AXToolbox.Scripting
         protected string[] DisplayParameters { get; set; }
 
         protected Brush Color { get; set; }
-
-        //TODO: remove layer from scriptingObject. MapOverlay.Layer is enough.
+        public List<Note> Notes { get; private set; }
 
         protected string SyntaxErrorMessage
         {
@@ -86,7 +86,7 @@ namespace AXToolbox.Scripting
 
         private ScriptingObject()
         {
-            Color = Brushes.Blue;
+            throw new InvalidOperationException("This constructor must not be used");
         }
 
         /// <summary>Scripting object factory
@@ -192,6 +192,7 @@ namespace AXToolbox.Scripting
             CheckDisplayModeSyntax();
 
             Trace.WriteLine(this.ToString(), ObjectClass);
+            Notes = new List<Note>();
         }
 
         /// <summary>Check constructor syntax and parse static definitions or die
@@ -209,6 +210,7 @@ namespace AXToolbox.Scripting
         public virtual void Reset()
         {
             Trace.WriteLine("Resetting " + ObjectName, ObjectClass);
+            Notes.Clear();
         }
         /// <summary>Executes the script
         /// </summary>
@@ -402,6 +404,32 @@ namespace AXToolbox.Scripting
             }
 
             return value;
+        }
+
+        public void AddNote(string text, bool isImportant = false)
+        {
+            Notes.Add(new Note() { Text = text, IsImportant = isImportant });
+        }
+
+        public string GetFirstNoteText()
+        {
+            try
+            {
+                var note = Notes.First(n => n.IsImportant);
+                return note.Text;
+            }
+            catch
+            {
+                try
+                {
+                    var note = Notes.First();
+                    return note.Text;
+                }
+                catch
+                {
+                    return "";
+                }
+            }
         }
     }
 }

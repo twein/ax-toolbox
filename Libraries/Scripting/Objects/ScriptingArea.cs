@@ -102,7 +102,7 @@ namespace AXToolbox.Scripting
                 case "SPHERE":
                     //radius is static
                     if (center.Point == null)
-                        Engine.LogLine(ObjectName + ": center point is null");
+                        AddNote("center point is null", true);
                     break;
                 case "PRISM":
                     //do nothing

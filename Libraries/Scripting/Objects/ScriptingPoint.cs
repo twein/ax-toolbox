@@ -14,7 +14,6 @@ namespace AXToolbox.Scripting
 
         //type fields
         public AXPoint Point { get; protected set; }
-        public string Notes { get; protected set; }
 
         protected int number;
         protected DateTime? maxTime;
@@ -195,7 +194,7 @@ namespace AXToolbox.Scripting
             if (!isStatic)
             {
                 Point = null;
-                Notes = null;
+                Notes.Clear();
             }
         }
         public override void Process()
@@ -218,7 +217,7 @@ namespace AXToolbox.Scripting
                         if (referencePoint == null)
                         {
                             Point = null;
-                            Notes = list[0].Notes; //inherit notes from ref point
+                            AddNote(list[0].GetFirstNoteText(), true); //inherit notes from ref point
                         }
                         else
                         {
@@ -234,7 +233,7 @@ namespace AXToolbox.Scripting
                             if (Point == null)
                             {
                                 //all points are null
-                                Notes = list[1].Notes; //inherit notes from first point
+                                AddNote(list[1].GetFirstNoteText(), true); //inherit notes from first point
                             }
                         }
                     }
@@ -258,7 +257,7 @@ namespace AXToolbox.Scripting
                         if (Point == null)
                         {
                             //all points are null
-                            Notes = list[0].Notes; //inherit notes from first point
+                            AddNote(list[0].GetFirstNoteText(), true); //inherit notes from first point
                         }
                     }
                     break;
@@ -281,7 +280,7 @@ namespace AXToolbox.Scripting
                         if (Point == null)
                         {
                             //all points are null
-                            Notes = list[0].Notes; //inherit notes from first point
+                            AddNote(list[0].GetFirstNoteText(), true); ; //inherit notes from first point
                         }
                     }
                     break;
@@ -304,7 +303,7 @@ namespace AXToolbox.Scripting
                         if (Point == null)
                         {
                             //all points are null
-                            Notes = list[0].Notes; //inherit notes from first point
+                            AddNote(list[0].GetFirstNoteText(), true); //inherit notes from first point
                         }
                     }
                     break;
@@ -327,7 +326,7 @@ namespace AXToolbox.Scripting
                         if (Point == null)
                         {
                             //all points are null
-                            Notes = list[0].Notes; //inherit notes from first point
+                            AddNote(list[0].GetFirstNoteText(), true); //inherit notes from first point
                         }
                     }
                     break;
@@ -358,7 +357,7 @@ namespace AXToolbox.Scripting
                         }
                         catch (InvalidOperationException)
                         {
-                            Notes = "marker drop from an invalid point";
+                            AddNote(string.Format("marker drop #{0} from an invalid point", number), true);
                         }
                     }
                     catch (InvalidOperationException)
@@ -368,12 +367,11 @@ namespace AXToolbox.Scripting
                             var landing = Engine.Report.LandingPoint;
                             var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
                             Point = nearestPoint;
-                            Notes = "no marker with the specified number (assuming contest landing)";
-                            Engine.LogLine(ObjectName + ": " + Notes);
+                            AddNote(string.Format("no marker #{0} (assuming contest landing)", number), true);
                         }
                         catch (InvalidOperationException)
                         {
-                            Notes = "no marker with the specified number (couldn't assume contest landing)";
+                            AddNote(string.Format("no marker #{0} (couldn't assume contest landing)", number), true);
                         }
                     }
                     break;
@@ -386,7 +384,7 @@ namespace AXToolbox.Scripting
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
                         {
-                            Notes = "no goal definition with the specified number";
+                            AddNote("no goal definition #" + number.ToString(), true);
                         }
                         else
                         {
@@ -400,13 +398,13 @@ namespace AXToolbox.Scripting
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    Notes = "invalid goal declaration";
+                                    AddNote("invalid goal declaration #" + number.ToString(), true);
                                 }
 
                             }
                             catch (InvalidOperationException)
                             {
-                                Notes = "late goal declaration";
+                                AddNote("late goal declaration #" + number.ToString(), true);
                             }
                         }
                     }
@@ -420,7 +418,7 @@ namespace AXToolbox.Scripting
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
                         {
-                            Notes = "no goal definition with the specified number";
+                            AddNote("no goal definition #" + number.ToString(), true);
                         }
                         else
                         {
@@ -431,6 +429,7 @@ namespace AXToolbox.Scripting
                                 //tasks are not set in order. Cannot chech for previous valid markers
                                 goal = goals.Last();
                                 //TODO: warn user that the declaration time must be checked.
+                                AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
                             }
                             else
                             {
@@ -447,12 +446,13 @@ namespace AXToolbox.Scripting
                                     }
                                     catch (InvalidOperationException)
                                     {
-                                        Notes = "invalid goal declaration";
+                                        AddNote("invalid goal declaration #" + number.ToString(), true);
                                     }
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    Notes = "late goal declaration";
+                                    AddNote("late goal declaration #" + number.ToString(), true);
+                                    AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
                                 }
                             }
                         }
@@ -484,7 +484,7 @@ namespace AXToolbox.Scripting
                         if (referencePoint == null)
                         {
                             Point = null;
-                            Notes = referenceScriptingPoint.Notes; // inherit ref point notes
+                            AddNote(referenceScriptingPoint.GetFirstNoteText(), true); // inherit ref point notes
                         }
                         else
                         {
@@ -493,7 +493,7 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        Notes = "no valid point at specified time";
+                        AddNote("no valid point at specified time", true);
                     } //none found
                     break;
 
@@ -507,7 +507,7 @@ namespace AXToolbox.Scripting
                         if (referencePoint == null)
                         {
                             Point = null;
-                            Notes = referenceScriptingPoint.Notes; // inherit ref point notes
+                            AddNote(referenceScriptingPoint.GetFirstNoteText(), true); // inherit ref point notes
                         }
                         else
                         {
@@ -517,7 +517,7 @@ namespace AXToolbox.Scripting
                                     Point = nextTrackPoint;
                             if (Point == null)
                             {
-                                Notes = "no remaining valid track points";
+                                AddNote("no remaining valid track points", true);
                             }
                         }
                     }
@@ -547,10 +547,10 @@ namespace AXToolbox.Scripting
                         if (nnull == list.Length)
                         {
                             //all points are null
-                            Notes = list[0].Notes; //inherit notes from first point
+                            AddNote(list[0].GetFirstNoteText(), true); //inherit notes from first point
                         }
                         else
-                            Notes = "no remaining valid track points";
+                            AddNote("no remaining valid track points", true);
                     }
                     break;
 
@@ -562,7 +562,7 @@ namespace AXToolbox.Scripting
                         var referencePoint = Resolve<ScriptingPoint>(0).Point;
                         if (referencePoint == null)
                         {
-                            Notes = "the reference point is null";
+                            AddNote("the reference point is null", true);
                         }
                         else
                         {
@@ -573,7 +573,7 @@ namespace AXToolbox.Scripting
 
                             if (Point == null)
                             {
-                                Notes = "no valid track point within time limits";
+                                AddNote("no valid track point within time limits", true);
                             }
                         }
                     }
@@ -588,7 +588,7 @@ namespace AXToolbox.Scripting
                         var referencePoint = Resolve<ScriptingPoint>(0).Point;
                         if (referencePoint == null)
                         {
-                            Notes = "the reference point is null";
+                            AddNote("the reference point is null", true);
                         }
                         else
                         {
@@ -599,7 +599,7 @@ namespace AXToolbox.Scripting
 
                             if (Point == null)
                             {
-                                Notes = "no valid track point within distance limits";
+                                AddNote("no valid track point within distance limits", true);
                             }
                         }
                     }
@@ -620,7 +620,7 @@ namespace AXToolbox.Scripting
 
                         if (Point == null)
                         {
-                            Notes = "no valid track point inside the area";
+                            AddNote("no valid track point inside the area", true);
                         }
                     }
                     break;
@@ -642,7 +642,7 @@ namespace AXToolbox.Scripting
 
                         if (Point == null)
                         {
-                            Notes = "no valid track point inside the area";
+                            AddNote("no valid track point inside the area", true);
                         }
                     }
                     break;
@@ -665,7 +665,7 @@ namespace AXToolbox.Scripting
 
                         if (Point == null)
                         {
-                            Notes = "no valid track point inside the area";
+                            AddNote("no valid track point inside the area", true);
                         }
                     }
                     break;
@@ -685,18 +685,18 @@ namespace AXToolbox.Scripting
 
                         if (Point == null)
                         {
-                            Notes = "no valid track point inside the area";
+                            AddNote("no valid track point inside the area", true);
                         }
                     }
                     break;
             }
 
             if (Point != null)
-                Engine.LogLine(ObjectName + " resolved to " + Point.ToString());
+                AddNote("resolved to " + Point.ToString());
             else
-                Engine.LogLine(ObjectName + " could not be resolved: " + Notes);
+                AddNote("could not be resolved");
 
-            //if (!string.IsNullOrEmpty(Notes))
+            //if (!string.IsNullOrEmpty(Log))
             //    Notes = ObjectName + ":" + Notes;
         }
 

@@ -29,6 +29,7 @@ namespace AXToolbox.PdfHelpers
         public Font BoldFont { get; set; }
         public Font ItalicFont { get; set; }
         public Font NormalFont { get; set; }
+        public Font FixedWidthFont { get; set; }
         public Font HeaderFont { get; set; }
         public Font FooterFont { get; set; }
         public Font WatermarkFont { get; set; }
@@ -51,6 +52,7 @@ namespace AXToolbox.PdfHelpers
                 TitleFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
                 SubtitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
                 NormalFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL);
+                FixedWidthFont = new Font(Font.FontFamily.COURIER, 10f, Font.NORMAL);
                 BoldFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
                 ItalicFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.ITALIC);
                 HeaderFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL);
@@ -58,7 +60,7 @@ namespace AXToolbox.PdfHelpers
                 WatermarkFont = new Font(Font.FontFamily.HELVETICA, 64f, Font.BOLD, BaseColor.LIGHT_GRAY);
                 TaskNumberFont = new Font(Font.FontFamily.HELVETICA, 32f, Font.BOLD);
             }
-            
+
             else
             {
                 PageLayout = PageSize.A4.Rotate(); //A4 landscape
@@ -73,6 +75,7 @@ namespace AXToolbox.PdfHelpers
                 TitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
                 SubtitleFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
                 NormalFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);
+                FixedWidthFont = new Font(Font.FontFamily.COURIER, 10f, Font.NORMAL);
                 BoldFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.BOLD);
                 ItalicFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.ITALIC);
                 HeaderFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.NORMAL);

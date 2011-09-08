@@ -123,8 +123,6 @@ namespace AXToolbox.Scripting
         public MapOverlay TrackPointer { get; private set; }
         public bool KeepPointerCentered { get; set; }
 
-        public ObservableCollection<string> Log { get; private set; }
-
         public IEnumerable<string> Results
         {
             get
@@ -151,13 +149,29 @@ namespace AXToolbox.Scripting
                         yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.ObjectType, p.ToString());
             }
         }
+        public IEnumerable<string> Log
+        {
+            get
+            {
+                return GetLog(true);
+            }
+        }
+
+        public IEnumerable<string> GetLog(bool importantOnly)
+        {
+            var lines = new List<string>();
+            foreach (var obj in Heap.Values)
+                foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
+                    lines.Add(obj.ObjectName + ": " + note.Text);
+
+            return lines;
+        }
 
         public ScriptingEngine(MapViewerControl mapViewer)
         {
             MapViewer = mapViewer;
             Settings = new FlightSettings();
             Heap = new Dictionary<string, ScriptingObject>();
-            Log = new ObservableCollection<string>();
         }
 
         public void LoadScript(string scriptFileName)
@@ -167,7 +181,6 @@ namespace AXToolbox.Scripting
             Settings = new FlightSettings();
             Heap.Clear();
             Report = null;
-            ClearLog();
 
             //TODO: initialize all variables
 
@@ -216,8 +229,12 @@ namespace AXToolbox.Scripting
         {
             Trace.WriteLine("Loading " + loggerFile, "ENGINE");
             Reset();
+
             Report = FlightReport.Load(loggerFile, Settings);
+
             Display();
+
+            RaisePropertyChanged("Log");
             RaisePropertyChanged("Report");
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
@@ -230,17 +247,14 @@ namespace AXToolbox.Scripting
                 obj.Reset();
             Report = null;
             RaisePropertyChanged("Report");
-            ClearLog();
         }
         public void Process()
         {
             if (Report.PilotId == 0)
                 throw new InvalidOperationException("The pilot id can not be zero");
 
-            ClearLog();
-
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
-            
+
             AllValidTrackPoints = Report.FlightTrack;
 
             //reset all objects
@@ -253,7 +267,7 @@ namespace AXToolbox.Scripting
 
             Display();
 
-            RaisePropertyChanged("Notes");
+            RaisePropertyChanged("Log");
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
         }
@@ -270,8 +284,6 @@ namespace AXToolbox.Scripting
                     Directory.CreateDirectory(resultsFolder);
 
                 Report.Save(reportsFolder);
-                Report.ExportTrackLog(reportsFolder);
-                SaveLog(reportsFolder);
                 if (Results.Count() > 0)
                 {
                     ExportResults(resultsFolder);
@@ -295,15 +307,6 @@ namespace AXToolbox.Scripting
                     contents.Add(t.ToCsvString());
 
                 File.WriteAllLines(Path.Combine(folder, Report.ToShortString() + ".csv"), contents);
-            }
-            else
-                throw new InvalidOperationException("The pilot id can not be zero");
-        }
-        public void SaveLog(string folder)
-        {
-            if (Report.PilotId > 0)
-            {
-                File.WriteAllLines(Path.Combine(folder, Report.ToShortString() + ".log"), Log.ToList());
             }
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
@@ -354,6 +357,14 @@ namespace AXToolbox.Scripting
 
             document.Add(table);
 
+            document.NewPage();
+            document.Add(new Paragraph("Execution log", config.SubtitleFont));
+                        
+            foreach (var line in Report.Notes)
+                document.Add(new Paragraph(line, config.FixedWidthFont));
+            foreach (var line in GetLog(false))
+                document.Add(new Paragraph(line, config.FixedWidthFont));
+
             document.Close();
         }
 
@@ -394,21 +405,6 @@ namespace AXToolbox.Scripting
                 }
                 if (KeepPointerCentered)
                     MapViewer.PanTo(TrackPointer.Position);
-            }));
-        }
-
-        private void ClearLog()
-        {
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                Log.Clear();
-            }));
-        }
-        public void LogLine(string line)
-        {
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
-            {
-                Log.Add(line);
             }));
         }
     }
