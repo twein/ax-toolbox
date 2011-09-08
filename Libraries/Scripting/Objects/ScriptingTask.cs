@@ -147,12 +147,15 @@ namespace AXToolbox.Scripting
             int competitionPoints = 0;
             string infringedRules = "";
 
+            if (!string.IsNullOrEmpty(Result.Reason))
+                infringedRules = Result.Reason;
+
             foreach (var p in Penalties)
             {
                 measurePenalty = Result.Merge(measurePenalty, p.Performance);
                 taskPoints += p.Type == PenaltyType.TaskPoints ? p.Points : 0;
                 competitionPoints += p.Type == PenaltyType.CompetitionPoints ? p.Points : 0;
-                infringedRules += p.InfringedRules;
+                infringedRules += p.ToString();
             }
 
             return string.Format("result;auto;{0};{1};{2:0.00};{3:0.00};{4:0};{5:0};{6}",
