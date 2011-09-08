@@ -13,7 +13,7 @@ namespace AXToolbox.Scripting
         protected bool isStatic = false;
 
         //type fields
-        public AXPoint Point { get; protected set; }
+        public AXWaypoint Point { get; protected set; }
 
         protected int number;
         protected DateTime? maxTime;
@@ -32,6 +32,8 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
+            base.CheckConstructorSyntax();
+
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
             switch (ObjectType)
             {
@@ -47,7 +49,7 @@ namespace AXToolbox.Scripting
                         var lat = ParseOrDie<double>(0, ParseDouble);
                         var lng = ParseOrDie<double>(1, ParseDouble);
                         var alt = ParseOrDie<double>(2, ParseLength);
-                        Point = Engine.Settings.FromLatLonToAXPoint(lat, lng, alt);
+                        Point = new AXWaypoint(ObjectName, Engine.Settings.FromLatLonToAXPoint(lat, lng, alt));
                     }
                     break;
 
@@ -60,7 +62,7 @@ namespace AXToolbox.Scripting
                         var easting = ParseOrDie<double>(0, ParseDouble);
                         var northing = ParseOrDie<double>(1, ParseDouble);
                         var alt = ParseOrDie<double>(2, ParseLength);
-                        Point = new AXPoint(Engine.Settings.Date.Date.ToUniversalTime(), easting, northing, alt);
+                        Point = new AXWaypoint(ObjectName, Engine.Settings.Date.Date.ToUniversalTime(), easting, northing, alt);
                     }
                     break;
 
@@ -349,6 +351,11 @@ namespace AXToolbox.Scripting
                      */
                     try
                     {
+                        var marks = from mark in Engine.Report.Markers
+                                    where int.Parse(mark.Name) == number
+                                    select "M" + mark.ToString();
+                        Task.LoggerMarks.AddRange(marks);
+
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
                         try
                         {
@@ -366,7 +373,7 @@ namespace AXToolbox.Scripting
                         {
                             var landing = Engine.Report.LandingPoint;
                             var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
-                            Point = nearestPoint;
+                            Point = new AXWaypoint(ObjectName, nearestPoint);
                             AddNote(string.Format("no marker #{0} (assuming contest landing)", number), true);
                         }
                         catch (InvalidOperationException)
@@ -380,6 +387,11 @@ namespace AXToolbox.Scripting
                     //pilot declared goal before launch
                     //MPDGL(<number>, <defaultAltitude>)
                     {
+                        var marks = from mark in Engine.Report.DeclaredGoals
+                                    where mark.Number == number
+                                    select "D" + mark.ToString();
+                        Task.LoggerMarks.AddRange(marks);
+
                         // look for declarations
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
@@ -414,6 +426,11 @@ namespace AXToolbox.Scripting
                     //pilot declared goal in flight
                     //MPDGF(<number>, <defaultAltitude>)
                     {
+                        var marks = from mark in Engine.Report.DeclaredGoals
+                                    where mark.Number == number
+                                    select "D" + mark.ToString();
+                        Task.LoggerMarks.AddRange(marks);
+
                         // look for declarations
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
@@ -472,14 +489,14 @@ namespace AXToolbox.Scripting
                     //TLCH: launch
                     //TLCH()
                     if (Engine.Report != null)
-                        Point = Engine.Report.LaunchPoint;
+                        Point = new AXWaypoint(ObjectName, Engine.Report.LaunchPoint);
                     break;
 
                 case "TLND":
                     //TLND: landing
                     //TLND()
                     if (Engine.Report != null)
-                        Point = Engine.Report.LandingPoint;
+                        Point = new AXWaypoint(ObjectName, Engine.Report.LandingPoint);
                     break;
 
 
@@ -497,7 +514,7 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
-                            Point = Engine.Report.CleanTrack.First(p => p.Time == referencePoint.Time);
+                            Point = new AXWaypoint(ObjectName, Engine.Report.CleanTrack.First(p => p.Time == referencePoint.Time));
                         }
                     }
                     catch (InvalidOperationException)
@@ -523,7 +540,7 @@ namespace AXToolbox.Scripting
                             foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
-                                    Point = nextTrackPoint;
+                                    Point = new AXWaypoint(ObjectName, nextTrackPoint);
                             if (Point == null)
                             {
                                 AddNote("no remaining valid track points", true);
@@ -551,7 +568,7 @@ namespace AXToolbox.Scripting
                             foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
-                                    Point = nextTrackPoint;
+                                    Point = new AXWaypoint(ObjectName, nextTrackPoint);
                         }
                         if (nnull == list.Length)
                         {
@@ -576,9 +593,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime));
                             else
-                                Point = Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay);
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay));
 
                             if (Point == null)
                             {
@@ -602,9 +619,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime);
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime));
                             else
-                                Point = Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay);
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay));
 
                             if (Point == null)
                             {
@@ -623,7 +640,7 @@ namespace AXToolbox.Scripting
                         foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
                             if (area.Contains(nextTrackPoint))
                             {
-                                Point = nextTrackPoint;
+                                Point = new AXWaypoint(ObjectName, nextTrackPoint);
                                 break;
                             }
 
@@ -647,7 +664,7 @@ namespace AXToolbox.Scripting
                             else if (lastInside != null)
                                 break;
                         }
-                        Point = lastInside;
+                        Point = new AXWaypoint(ObjectName, lastInside);
 
                         if (Point == null)
                         {
@@ -670,7 +687,7 @@ namespace AXToolbox.Scripting
                             else if (lastInside != null)
                                 break;
                         }
-                        Point = lastInside;
+                        Point = new AXWaypoint(ObjectName, lastInside);
 
                         if (Point == null)
                         {
@@ -688,7 +705,7 @@ namespace AXToolbox.Scripting
                         foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Reverse())
                             if (area.Contains(nextTrackPoint))
                             {
-                                Point = nextTrackPoint;
+                                Point = new AXWaypoint(ObjectName, nextTrackPoint);
                                 break;
                             }
 
@@ -709,9 +726,9 @@ namespace AXToolbox.Scripting
             //    Notes = ObjectName + ":" + Notes;
         }
 
-        private AXPoint TryResolveGoalDeclaration(GoalDeclaration goal)
+        private AXWaypoint TryResolveGoalDeclaration(GoalDeclaration goal)
         {
-            AXPoint point = null;
+            AXWaypoint point = null;
 
             if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
             {

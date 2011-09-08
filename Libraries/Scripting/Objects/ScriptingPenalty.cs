@@ -11,7 +11,6 @@ namespace AXToolbox.Scripting
 {
     class ScriptingPenalty : ScriptingObject
     {
-        protected ScriptingTask task;
         protected ScriptingArea area;
         protected double maxSpeed = 0;
 
@@ -24,14 +23,10 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
-            try
-            {
-                task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
-            }
-            catch
-            {
+            base.CheckConstructorSyntax();
+
+            if (Task == null)
                 throw new ArgumentException(ObjectName + ": no previous task defined");
-            }
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
             switch (ObjectType)
@@ -174,7 +169,7 @@ namespace AXToolbox.Scripting
 
             if (Penalty != null)
             {
-                task.Penalties.Add(Penalty);
+                Task.Penalties.Add(Penalty);
                 AddNote("penalty is " + Penalty.ToString());
             }
             else

@@ -28,6 +28,8 @@ namespace AXToolbox.Scripting
 
         public override void CheckConstructorSyntax()
         {
+            base.CheckConstructorSyntax();
+
             switch (ObjectType)
             {
                 default:

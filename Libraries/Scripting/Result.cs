@@ -55,7 +55,12 @@ namespace AXToolbox.Scripting
 
         public override string ToString()
         {
-            return ValueUnitToString();
+            var str = ValueUnitToString();
+
+            if (!string.IsNullOrEmpty(Reason))
+                str += ": " + Reason;
+
+            return str;
         }
 
         public string ValueUnitToString()

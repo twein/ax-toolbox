@@ -14,16 +14,20 @@ namespace AXToolbox.Scripting
         protected int resultPrecission;
         public Result Result { get; protected set; }
         public List<Penalty> Penalties { get; protected set; }
+        public List<string> LoggerMarks { get; protected set; }
 
 
         internal ScriptingTask(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
         {
             Penalties = new List<Penalty>();
+            LoggerMarks = new List<string>();
         }
 
         public override void CheckConstructorSyntax()
         {
+            base.CheckConstructorSyntax();
+
             AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
             Number = ParseOrDie<int>(0, ParseInt);
 
@@ -106,6 +110,7 @@ namespace AXToolbox.Scripting
             base.Reset();
             Result = null;
             Penalties.Clear();
+            LoggerMarks.Clear();
         }
         public override void Process()
         {
@@ -174,28 +179,43 @@ namespace AXToolbox.Scripting
         {
             var document = helper.Document;
             var config = helper.Config;
+            PdfPCell c = null;
 
             var title = string.Format("Task {0}: {1}", Number, ObjectType);
             var table = helper.NewTable(null, new float[] { 1, 4 }, title);
 
-            table.AddCell(new PdfPCell(new Paragraph("Result: ", config.BoldFont)));
-            table.AddCell(new PdfPCell(new Paragraph(Result.ToString(), config.FixedWidthFont)));
-
-            table.AddCell(new PdfPCell(new Paragraph("Coordinates: ", config.BoldFont)));
-            var c = new PdfPCell();
+            table.AddCell(new PdfPCell(new Paragraph("Result:", config.BoldFont)));
+            c = new PdfPCell();
+            c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.FixedWidthFont));
             foreach (var p in Result.UsedPoints)
             {
                 c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
             }
             table.AddCell(c);
 
-
-            table.AddCell(new PdfPCell(new Paragraph("Penalties / restrictions: ", config.BoldFont)));
+            table.AddCell(new PdfPCell(new Paragraph("Penalties / restrictions:", config.BoldFont)));
             c = new PdfPCell();
             foreach (var p in Penalties)
             {
                 c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
             }
+            table.AddCell(c);
+
+            table.AddCell(new PdfPCell(new Paragraph("Logger marks:", config.BoldFont)));
+            c = new PdfPCell();
+            foreach (var m in LoggerMarks)
+            {
+                c.AddElement(new Paragraph(m, config.FixedWidthFont) { SpacingBefore = 0 });
+            }
+            table.AddCell(c);
+
+            table.AddCell(new PdfPCell(new Paragraph("Remarks:", config.BoldFont)));
+            c = new PdfPCell();
+            foreach (var obj in Engine.Heap.Values.Where(o => o.Task == this))
+                foreach (var note in obj.Notes.Where(n => n.IsImportant))
+                {
+                    c.AddElement(new Paragraph(obj.ObjectName + ": " + note.Text, config.FixedWidthFont) { SpacingBefore = 0 });
+                }
             table.AddCell(c);
 
             document.Add(table);
