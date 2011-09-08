@@ -69,7 +69,7 @@ namespace AXToolbox.Scripting
         {
             var llc = new LatLonCoordinates(Datum.GetInstance("WGS84"), latitude, longitude, altitude);
             var utmc = llc.ToUtm(Datum.GetInstance(DatumName), UtmZone);
-            return new AXPoint(DateTime.MinValue, utmc);
+            return new AXPoint(Date.Date.ToUniversalTime(), utmc);
         }
         public AXPoint FromGeoToAXPoint(GeoPoint geoPoint, bool isBarometricAltitude)
         {
@@ -120,7 +120,7 @@ namespace AXToolbox.Scripting
             if (!northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
                 northing += 1e5;
 
-            return new AXPoint(goal.Time, easting, northing, goal.Altitude);
+            return new AXWaypoint(goal.Number.ToString("00"), goal.Time, easting, northing, goal.Altitude);
         }
         public List<AXTrackpoint> GetTrack(LoggerFile trackLog)
         {

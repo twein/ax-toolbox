@@ -44,17 +44,26 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
         }
         public virtual string ToString(AXPointInfo info)
         {
             var str = new StringBuilder();
 
             if ((info & AXPointInfo.Date) > 0)
-                str.Append(Time.ToLocalTime().ToString("yyyy/MM/dd "));
+            {
+                if (Time > new DateTime(2000, 01, 01))
+                    str.Append(Time.ToLocalTime().ToString("yyyy/MM/dd "));
+                else
+                    str.Append("----/--/-- ");
+            }
 
             if ((info & AXPointInfo.Time) > 0)
-                str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
+                if (Time > new DateTime(2000, 01, 01))
+                    str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
+                else
+                    str.Append("--:--:-- ");
+
 
             if ((info & AXPointInfo.Coords) > 0)
                 str.Append(string.Format("{0:000000},{1:0000000} ", Easting, Northing));

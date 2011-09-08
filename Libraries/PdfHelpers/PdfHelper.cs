@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.draw;
-using System;
 
 namespace AXToolbox.PdfHelpers
 {
@@ -54,7 +54,7 @@ namespace AXToolbox.PdfHelpers
             var headerColor = new BaseColor(0xc0, 0xc0, 0xc0);
 
             if (!string.IsNullOrEmpty(title))
-                table.AddCell(new PdfPCell(new Paragraph(title, Config.BoldFont)) { Colspan = columnHeaders.Length, BackgroundColor = headerColor });
+                table.AddCell(new PdfPCell(new Paragraph(title, Config.BoldFont)) { Colspan = relativeColumnWidths.Length, BackgroundColor = headerColor });
 
             if (columnHeaders != null)
                 foreach (var ch in columnHeaders)
@@ -108,7 +108,6 @@ namespace AXToolbox.PdfHelpers
             }
             catch { }
         }
-
 
         internal class PageEvents : IPdfPageEvent
         {

@@ -359,8 +359,14 @@ namespace AXToolbox.Scripting
 
             document.Add(table);
 
+            var taskQuery = from t in Heap.Values
+                            where t is ScriptingTask
+                            select t as ScriptingTask;
+            foreach (var task in taskQuery)
+                task.ToPdfReport(helper);
+
             document.NewPage();
-            document.Add(new Paragraph("Execution log", config.SubtitleFont));
+            document.Add(new Paragraph("Measurement process log", config.SubtitleFont));
 
             foreach (var line in Report.Notes)
                 document.Add(new Paragraph(line, config.FixedWidthFont));
