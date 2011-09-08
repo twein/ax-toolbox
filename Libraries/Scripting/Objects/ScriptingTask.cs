@@ -108,12 +108,19 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
-            //removes filter if any
+            ResetValidTrackPoints();
+
+            AddNote(string.Format("track contains {0} valid points for this task", Engine.TaskValidTrackPoints.Length));
+        }
+
+        public void ResetValidTrackPoints()
+        {
+            //remove task filter if any
             Engine.TaskValidTrackPoints = Engine.AllValidTrackPoints;
 
             if (Engine.Settings.TasksInOrder)
             {
-                //TODO: remove used track portions
+                //remove track portions used by previous tasks
                 try
                 {
                     Engine.TaskValidTrackPoints = (from p in Engine.TaskValidTrackPoints
@@ -122,8 +129,6 @@ namespace AXToolbox.Scripting
                 }
                 catch { }
             }
-
-            AddNote(string.Format("track contains {0} valid points for this task", Engine.TaskValidTrackPoints.Length));
         }
 
         public Result NewResult(double value)

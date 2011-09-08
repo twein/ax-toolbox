@@ -11,7 +11,7 @@ namespace AXToolbox.Scripting
         private ScriptingPoint point;
         private DateTime time;
         private double altitude;
-        private bool appliesToAllTasks = false;
+        private ScriptingTask task;
 
         internal ScriptingFilter(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -21,13 +21,9 @@ namespace AXToolbox.Scripting
         {
             try
             {
-                var task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
-                appliesToAllTasks = false;
+                task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
             }
-            catch
-            {
-                appliesToAllTasks = true;
-            }
+            catch { }
 
             //parse static types
             switch (ObjectType)
@@ -37,7 +33,7 @@ namespace AXToolbox.Scripting
 
                 case "NONE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
-                    if (appliesToAllTasks)
+                    if (task == null)
                         throw new InvalidOperationException("Filter NONE is valid only inside tasks");
                     break;
 
@@ -76,7 +72,7 @@ namespace AXToolbox.Scripting
             base.Process();
 
             AXTrackpoint[] trackPoints;
-            if (appliesToAllTasks)
+            if (task == null)
                 trackPoints = Engine.AllValidTrackPoints;
             else
                 trackPoints = Engine.TaskValidTrackPoints;
@@ -86,7 +82,8 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 case "NONE":
-                    trackPoints = ApplyFilter(Engine.AllValidTrackPoints, p => true); //Use always the ApplyFilter function: it sets up subtrack flags
+                    task.ResetValidTrackPoints(); //task is never null in NONE filter
+                    trackPoints = ApplyFilter(Engine.TaskValidTrackPoints, p => true); //Use always the ApplyFilter function: it sets up subtrack flags
                     break;
 
                 case "INSIDE":
@@ -128,7 +125,7 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            if (appliesToAllTasks)
+            if (task == null)
                 Engine.AllValidTrackPoints = trackPoints;
             else
                 Engine.TaskValidTrackPoints = trackPoints;

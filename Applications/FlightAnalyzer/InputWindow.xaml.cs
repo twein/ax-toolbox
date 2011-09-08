@@ -21,6 +21,7 @@ namespace FlightAnalyzer
 
             Response = System.Windows.Forms.DialogResult.Cancel;
 
+            textBox.Text = Text;
             textBox.Focus();
         }
 
@@ -28,8 +29,9 @@ namespace FlightAnalyzer
         {
             try
             {
-                if (Validate(Text))
+                if (Validate(textBox.Text))
                 {
+                    Text = textBox.Text;
                     Response = System.Windows.Forms.DialogResult.OK;
                     Close();
                 }
