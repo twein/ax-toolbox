@@ -4,6 +4,9 @@ namespace AXToolbox.GpsLoggers
 {
     public static class Physics
     {
+        public const double FEET2METERS = 0.3048;
+        public const double METERS2FEET = 1 / FEET2METERS;
+
         public static TimeSpan TimeDiff(AXPoint point1, AXPoint point2)
         {
             return point2.Time - point1.Time;

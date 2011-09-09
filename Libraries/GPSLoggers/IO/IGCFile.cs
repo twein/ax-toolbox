@@ -145,7 +145,7 @@ namespace AXToolbox.GpsLoggers
             }
             else if (strAltitude.EndsWith("ft")) //altitude in feet
             {
-                altitude = double.Parse(strAltitude.Replace("ft", "")) * 0.3048;
+                altitude = double.Parse(strAltitude.Replace("ft", "")) * Physics.FEET2METERS;
             }
             else if (strAltitude.EndsWith("m")) //altitude in meters
             {

@@ -13,6 +13,7 @@ namespace AXToolbox.Scripting
     {
         protected ScriptingArea area;
         protected double maxSpeed = 0;
+        protected double sensitivity = 0;
         protected string description = "";
 
         public Penalty Penalty { get; protected set; }
@@ -53,9 +54,10 @@ namespace AXToolbox.Scripting
 
                 case "VSMAX":
                     //VSMAX: maximum vertical speed
-                    //VSMAX(<verticaSpeed>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    maxSpeed = ParseOrDie<double>(0, ParseLength);
+                    //VSMAX(<verticalSpeed>,<sensitivity>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    maxSpeed = ParseOrDie<double>(0, ParseDouble) * Physics.FEET2METERS / 60;
+                    sensitivity = ParseOrDie<double>(1, ParseDouble);
                     break;
 
             }
@@ -240,26 +242,35 @@ namespace AXToolbox.Scripting
                             AXPoint last = null;
                             foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
                             {
-                                if (Math.Abs(Physics.VerticalVelocity(last, p)) > maxSpeed)
+                                if (last == null)
+                                {
+                                    //do nothing
+                                }
+                                else if (Math.Abs(Physics.VerticalVelocity(last, p)) > maxSpeed)
                                 {
                                     if (first == null)
                                         first = p;
-                                    last = p;
                                 }
-                                else if (first != null && last != null )
+                                else if (first != null)
                                 {
-                                    first = last = null;
-                                    if                            (         (last.Time - first.Time).TotalSeconds >= 15){
-                                        var performance=new Result( )
-                                        var penalty=new Penalty();
+                                    if ((last.Time - first.Time).TotalSeconds >= 15)
+                                    {
+                                        task.AddNote(
+                                            string.Format("Max ascent/descent rate exceeded from {0} to {1}: {2:0} ft/min for {3} sec",
+                                            first.ToString(AXPointInfo.Time).TrimEnd(),
+                                            last.ToString(AXPointInfo.Time).TrimEnd(),
+                                            Physics.VerticalVelocity(first, last) * Physics.METERS2FEET * 60,
+                                            (last.Time - first.Time).TotalSeconds), true);
                                     }
+                                    first = null;
                                 }
+
+                                last = p;
                             }
 
                             firstPoint = lastPoint;
                         }
                     }
-                    throw new NotImplementedException();
                     break;
             }
         }

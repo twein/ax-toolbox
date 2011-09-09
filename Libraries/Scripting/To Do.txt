@@ -1,7 +1,5 @@
 ﻿TO DO
-! PDF report
 ! think about measure/result/constraint thing
-! implement VSMAX
 - Area addition
 - Add a new type of point: TLU Track point last used: Last used point in any task
 - MPDGF: tasks in any order: think about how to check if the declaration has been done before the last marker drop 
@@ -15,6 +13,8 @@
 * Competition area and exclusion areas
 * think about the area/filter for competition area and exclusion areas: when filter is ouside task, it is assumed to filter the competition area
 * global penalties instead of task specific
+* implement VSMAX
+* Finish PDF report
 
 How to set different tasks:
 	3DS: apply a filter for each area. the result is a DACC

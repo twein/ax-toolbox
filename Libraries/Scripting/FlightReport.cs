@@ -66,8 +66,10 @@ namespace AXToolbox.Scripting
             {
                 if (value != launchPoint)
                 {
-                    Notes.Add(string.Format("Launch point set to {0}", value));
                     launchPoint = value;
+                    if (!string.IsNullOrEmpty(Debriefer))
+                        launchPoint.Remarks = "Launch point set manually by " + Debriefer;
+                    Notes.Add(string.Format("Launch point set to {0}", value));
                     Notes.Add(string.Format("Ignoring {0} points before launch", CleanTrack.Where(p => p.IsValid && p.Time < launchPoint.Time).Count()));
                     RaisePropertyChanged("LaunchPoint");
 
@@ -84,8 +86,10 @@ namespace AXToolbox.Scripting
             {
                 if (value != landingPoint)
                 {
-                    Notes.Add(string.Format("Landing point set to {0}", value));
                     landingPoint = value;
+                    if (!string.IsNullOrEmpty(Debriefer))
+                        landingPoint.Remarks = "Landing point set manually by " + Debriefer;
+                    Notes.Add(string.Format("Landing point set to {0}", value));
                     Notes.Add(string.Format("Ignoring {0} points after landing", CleanTrack.Where(p => p.IsValid && p.Time > LandingPoint.Time).Count()));
                     RaisePropertyChanged("LandingPoint");
 
@@ -341,7 +345,8 @@ namespace AXToolbox.Scripting
                 if (LaunchPoint == null)
                 {
                     LaunchPoint = CleanTrack.First();
-                    Notes.Add("Launch point not found. Using first valid track point.");
+                    LaunchPoint.Remarks = "Launch point not found. Using first track point";
+                    Notes.Add(LaunchPoint.Remarks);
                 }
 
                 // find landing point
@@ -349,7 +354,8 @@ namespace AXToolbox.Scripting
                 if (LandingPoint == null)
                 {
                     LandingPoint = CleanTrack.Last();
-                    Notes.Add("Landing point not found. Using last valid track point.");
+                    LandingPoint.Remarks = "Landing point not found. Using last track point.";
+                    Notes.Add(LandingPoint.Remarks);
                 }
             }
         }

@@ -165,24 +165,18 @@ namespace AXToolbox.Scripting
                         //D2D: distance in 2D
                         //D2D(<pointNameA>, <pointNameB>)
                         Result = Task.NewResult(Math.Round(Physics.Distance2D(A.Point, B.Point), 0));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "D3D":
                         //D3D: distance in 3D
                         //D3D(<pointNameA>, <pointNameB>)
                         Result = Task.NewResult(Math.Round(Physics.Distance3D(A.Point, B.Point), 0));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
                         //DRAD(<pointNameA>, <pointNameB>, <threshold>)
                         Result = Task.NewResult(Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold), 0));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "DACC":
@@ -204,15 +198,12 @@ namespace AXToolbox.Scripting
                         //TSEC: time in seconds
                         //TSEC(<pointNameA>, <pointNameB>)
                         Result = Task.NewResult(Math.Round((B.Point.Time - A.Point.Time).TotalSeconds, 0));
-                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "TMIN":
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
                         Result = Task.NewResult(Math.Round((B.Point.Time - A.Point.Time).TotalMinutes, 2));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "ATRI":
@@ -225,9 +216,6 @@ namespace AXToolbox.Scripting
                         else
                         {
                             Result = Task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point), 2));
-                            Result.UsedPoints.Add(A.Point);
-                            Result.UsedPoints.Add(B.Point);
-                            Result.UsedPoints.Add(C.Point);
                         }
                         break;
 
@@ -245,9 +233,6 @@ namespace AXToolbox.Scripting
                             var ang = Physics.Substract(nab, nbc);
 
                             Result = Task.NewResult(Math.Round(Math.Abs(ang), 2));
-                            Result.UsedPoints.Add(A.Point);
-                            Result.UsedPoints.Add(B.Point);
-                            Result.UsedPoints.Add(C.Point);
                         }
                         break;
 
@@ -258,8 +243,6 @@ namespace AXToolbox.Scripting
                             var ang = Physics.Substract(Physics.Direction2D(A.Point, B.Point), 0);
 
                             Result = Task.NewResult(Math.Round(Math.Abs(ang), 2));
-                            Result.UsedPoints.Add(A.Point);
-                            Result.UsedPoints.Add(B.Point);
                         }
                         break;
 
@@ -270,8 +253,6 @@ namespace AXToolbox.Scripting
                             var ang = Physics.Substract(Physics.Direction2D(A.Point, B.Point), setDirection);
 
                             Result = Task.NewResult(Math.Round(Math.Abs(ang), 2));
-                            Result.UsedPoints.Add(A.Point);
-                            Result.UsedPoints.Add(B.Point);
                         }
                         break;
                 }
@@ -279,6 +260,13 @@ namespace AXToolbox.Scripting
 
             if (Result == null)
                 Result = Task.NewNoResult("this should never happen");
+
+            if (A.Point != null)
+                Result.UsedPoints.Add(A.Point);
+            if (B.Point != null)
+                Result.UsedPoints.Add(B.Point);
+            if (C != null && C.Point != null)
+                Result.UsedPoints.Add(C.Point);
 
             AddNote("result is " + Result.ToString());
         }

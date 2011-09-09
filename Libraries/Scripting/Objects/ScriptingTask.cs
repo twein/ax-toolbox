@@ -186,7 +186,7 @@ namespace AXToolbox.Scripting
 
             table.AddCell(new PdfPCell(new Paragraph("Result:", config.BoldFont)));
             c = new PdfPCell();
-            c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.FixedWidthFont));
+            c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.BoldFont));
             foreach (var p in Result.UsedPoints)
             {
                 c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
