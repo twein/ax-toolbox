@@ -121,7 +121,7 @@ namespace AXToolbox.Scripting
                             {
                                 if (area.Contains(p))
                                 {
-                                    if (last != null && !p.StartSubtrack)
+                                    if (last != null)
                                     {
                                         var deltaT = (p.Time - last.Time).TotalSeconds;
                                         penalty += area.ScaledBPZInfringement(p) * deltaT;
@@ -172,7 +172,7 @@ namespace AXToolbox.Scripting
                                 if (area.Contains(p))
                                 {
                                     n++;
-                                    if (last != null && !p.StartSubtrack)
+                                    if (last != null)
                                     {
                                         accuHorizontalDist += Physics.Distance2D(p, last);
                                         accuVerticalInfringement += area.RPZAltitudeInfringement(p);
@@ -216,6 +216,49 @@ namespace AXToolbox.Scripting
                     break;
                 case "VSMAX":
                     //TODO: implement VSMAX
+                    {
+                        var sortedTasks = from obj in Engine.Heap.Values
+                                          where obj is ScriptingTask
+                                          orderby ((ScriptingTask)obj).TaskOrder
+                                          select obj as ScriptingTask;
+
+                        var firstPoint = Engine.Report.LaunchPoint;
+                        var done = false;
+                        foreach (var task in sortedTasks)
+                        {
+                            if (done)
+                                break;
+
+                            var lastPoint = task.Result.LastUsedPoint;
+                            if (lastPoint == null)
+                            {
+                                lastPoint = Engine.Report.LandingPoint;
+                                done = true;
+                            }
+
+                            AXPoint first = null;
+                            AXPoint last = null;
+                            foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
+                            {
+                                if (Math.Abs(Physics.VerticalVelocity(last, p)) > maxSpeed)
+                                {
+                                    if (first == null)
+                                        first = p;
+                                    last = p;
+                                }
+                                else if (first != null && last != null )
+                                {
+                                    first = last = null;
+                                    if                            (         (last.Time - first.Time).TotalSeconds >= 15){
+                                        var performance=new Result( )
+                                        var penalty=new Penalty();
+                                    }
+                                }
+                            }
+
+                            firstPoint = lastPoint;
+                        }
+                    }
                     throw new NotImplementedException();
                     break;
             }
