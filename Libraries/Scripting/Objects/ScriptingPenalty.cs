@@ -92,63 +92,112 @@ namespace AXToolbox.Scripting
             switch (ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown penaty type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown penalty type '" + ObjectType + "'");
 
                 case "BPZ":
                     {
-                        double penalty = 0;
-                        AXPoint last = null;
-                        foreach (var p in Engine.TaskValidTrackPoints)
+                        var sortedTasks = from obj in Engine.Heap.Values
+                                          where obj is ScriptingTask
+                                          orderby ((ScriptingTask)obj).TaskOrder
+                                          select obj as ScriptingTask;
+
+                        var firstPoint = Engine.Report.LaunchPoint;
+                        var done = false;
+                        foreach (var task in sortedTasks)
                         {
-                            if (area.Contains(p))
+                            if (done)
+                                break;
+
+                            var lastPoint = task.Result.LastUsedPoint;
+                            if (lastPoint == null)
                             {
-                                if (last != null && !p.StartSubtrack)
-                                {
-                                    var deltaT = (p.Time - last.Time).TotalSeconds;
-                                    penalty += area.ScaledBPZInfringement(p) * deltaT;
-                                }
-                                last = p;
+                                lastPoint = Engine.Report.LandingPoint;
+                                done = true;
                             }
+
+                            double penalty = 0;
+                            AXPoint last = null;
+                            foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
+                            {
+                                if (area.Contains(p))
+                                {
+                                    if (last != null && !p.StartSubtrack)
+                                    {
+                                        var deltaT = (p.Time - last.Time).TotalSeconds;
+                                        penalty += area.ScaledBPZInfringement(p) * deltaT;
+                                    }
+                                    last = p;
+                                }
+                            }
+                            if (penalty > 0)
+                            {
+                                penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
+                                Penalty = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penalty);
+                                Task.Penalties.Add(Penalty);
+                            }
+
+                            firstPoint = lastPoint;
                         }
-                        penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
-                        Penalty = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
 
                 case "RPZ":
                     {
-                        double penalty = 0;
-                        AXPoint last = null;
-                        int n = 0;
-                        double accuHorizontalDist = 0;
-                        double accuVerticalInfringement = 0;
-                        foreach (var p in Engine.TaskValidTrackPoints)
-                        {
-                            if (area.Contains(p))
-                            {
-                                n++;
-                                if (last != null && !p.StartSubtrack)
-                                {
-                                    accuHorizontalDist += Physics.Distance2D(p, last);
-                                    accuVerticalInfringement += area.RPZAltitudeInfringement(p);
-                                }
-                                last = p;
-                            }
-                        }
-                        if (n > 0)
-                        {
-                            var vertInfringement = (accuVerticalInfringement / n) / area.UpperLimit; ;
-                            var horzInfringement = accuHorizontalDist / area.MaxHorizontalInfringement;
-                            penalty = 500 * vertInfringement * horzInfringement / 2; //COH7.5
+                        var sortedTasks = from obj in Engine.Heap.Values
+                                          where obj is ScriptingTask
+                                          orderby ((ScriptingTask)obj).TaskOrder
+                                          select obj as ScriptingTask;
 
-                            penalty = 10 * Math.Ceiling((penalty / 10));
-                            Penalty = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
+                        var firstPoint = Engine.Report.LaunchPoint;
+                        var done = false;
+                        foreach (var task in sortedTasks)
+                        {
+                            if (done)
+                                break;
+
+                            var lastPoint = task.Result.LastUsedPoint;
+                            if (lastPoint == null)
+                            {
+                                lastPoint = Engine.Report.LandingPoint;
+                                done = true;
+                            }
+
+                            double penalty = 0;
+                            AXPoint last = null;
+                            int n = 0;
+                            double accuHorizontalDist = 0;
+                            double accuVerticalInfringement = 0;
+                            foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
+                            {
+                                if (area.Contains(p))
+                                {
+                                    n++;
+                                    if (last != null && !p.StartSubtrack)
+                                    {
+                                        accuHorizontalDist += Physics.Distance2D(p, last);
+                                        accuVerticalInfringement += area.RPZAltitudeInfringement(p);
+                                    }
+                                    last = p;
+                                }
+                            }
+                            if (n > 0)
+                            {
+                                var vertInfringement = (accuVerticalInfringement / n) / area.UpperLimit; ;
+                                var horzInfringement = accuHorizontalDist / area.MaxHorizontalInfringement;
+                                penalty = 500 * vertInfringement * horzInfringement / 2; //COH7.5
+
+                                penalty = 10 * Math.Ceiling((penalty / 10));
+                                Penalty = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
+                                task.Penalties.Add(Penalty);
+                            }
+
+                            firstPoint = lastPoint;
                         }
                         /*
                          * new 2011 draft
                         double penalty = 0;
                         AXPoint last = null;
-                        foreach (var p in Engine.ValidTrackPoints)
+                        foreach (var p in Engine.Report.FlightTrack)
                         {
                             if (area.Contains(p))
                             {
@@ -170,14 +219,6 @@ namespace AXToolbox.Scripting
                     throw new NotImplementedException();
                     break;
             }
-
-            if (Penalty != null)
-            {
-                Task.Penalties.Add(Penalty);
-                AddNote("penalty is " + Penalty.ToString());
-            }
-            else
-                AddNote("no penalty");
         }
 
         public override void Display()

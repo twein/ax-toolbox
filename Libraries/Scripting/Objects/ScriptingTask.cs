@@ -220,5 +220,17 @@ namespace AXToolbox.Scripting
 
             document.Add(table);
         }
+
+        public DateTime TaskOrder
+        {
+            get
+            {
+                var lastUsedPoint = Result.LastUsedPoint;
+                if (lastUsedPoint == null)
+                    return Engine.Settings.Date + new TimeSpan(12, 0, 0); //ensure that will be the last
+                else
+                    return lastUsedPoint.Time;
+            }
+        }
     }
 }
