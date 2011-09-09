@@ -2,17 +2,6 @@
 ! PDF report
 ! think about measure/result/constraint thing
 ! implement VSMAX
-- global penalties instead of task specific:
-	for each task:
-		if task has no result goto next task
-		filter the flightTrack from first to last used point for that task
-		compute the penalty over the filtered track points
-		assign penalty to task
-		next task
-	if there are remaining points,
-	compute the penalty over the remaining points
-	assign penalty to last task with a result if any or
-	assign penalty to last task
 - Area addition
 - Add a new type of point: TLU Track point last used: Last used point in any task
 - MPDGF: tasks in any order: think about how to check if the declaration has been done before the last marker drop 
@@ -25,6 +14,7 @@
 * Add event title to settings
 * Competition area and exclusion areas
 * think about the area/filter for competition area and exclusion areas: when filter is ouside task, it is assumed to filter the competition area
+* global penalties instead of task specific
 
 How to set different tasks:
 	3DS: apply a filter for each area. the result is a DACC
