@@ -36,6 +36,10 @@ namespace AXToolbox.GpsLoggers
         {
             return Distance3D(point1, point2) / TimeDiff(point1, point2).TotalSeconds;
         }
+        public static double VerticalVelocity(AXPoint point1, AXPoint point2)
+        {
+            return (point2.Altitude - point1.Altitude) / TimeDiff(point1, point2).TotalSeconds;
+        }
 
         public static double Acceleration2D(AXPoint point1, AXPoint point2, AXPoint point3)
         {
