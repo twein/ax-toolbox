@@ -161,8 +161,12 @@ namespace AXToolbox.Scripting
         {
             var lines = new List<string>();
             foreach (var obj in Heap.Values)
+            {
+                if (!importantOnly)
+                    lines.Add(obj.ToString());
                 foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
                     lines.Add(obj.ObjectName + ": " + note.Text);
+            }
 
             return lines;
         }
