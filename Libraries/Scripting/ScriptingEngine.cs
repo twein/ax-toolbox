@@ -13,6 +13,7 @@ using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace AXToolbox.Scripting
 {
@@ -351,7 +352,6 @@ namespace AXToolbox.Scripting
             var table = helper.NewTable(null, new float[] { 1, 1 });
             table.WidthPercentage = 50;
             table.HorizontalAlignment = Element.ALIGN_LEFT;
-
             table.AddCell(helper.NewLCell("Flight Date:"));
             table.AddCell(helper.NewLCell(Settings.Date.GetDateAmPm()));
             table.AddCell(helper.NewLCell("Pilot number:"));
@@ -360,8 +360,21 @@ namespace AXToolbox.Scripting
             table.AddCell(helper.NewLCell(Report.LoggerSerialNumber));
             table.AddCell(helper.NewLCell("Debriefer:"));
             table.AddCell(helper.NewLCell(Report.Debriefer));
-
             document.Add(table);
+
+
+            table = helper.NewTable(null, new float[] { 1, 4 }, null);
+            table.AddCell(new PdfPCell(new Paragraph("Launch and landing:", config.BoldFont)));
+            var c = new PdfPCell();
+            c.AddElement(new Paragraph("Launch " + Report.LaunchPoint, config.FixedWidthFont));
+            if (!string.IsNullOrEmpty(Report.LaunchPoint.Remarks))
+                c.AddElement(new Paragraph(Report.LaunchPoint.Remarks, config.FixedWidthFont));
+            c.AddElement(new Paragraph("Landing " + Report.LandingPoint, config.FixedWidthFont));
+            if (!string.IsNullOrEmpty(Report.LandingPoint.Remarks))
+                c.AddElement(new Paragraph(Report.LandingPoint.Remarks, config.FixedWidthFont));
+            table.AddCell(c);
+            document.Add(table);
+
 
             var taskQuery = from t in Heap.Values
                             where t is ScriptingTask

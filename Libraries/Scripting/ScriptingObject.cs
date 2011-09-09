@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Media;
 using AXToolbox.MapViewer;
 using System.Linq;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {
@@ -366,7 +367,7 @@ namespace AXToolbox.Scripting
                         length *= 1000;
                         break;
                     case "ft":
-                        length *= 0.3048;
+                        length *= Physics.FEET2METERS;// 0.3048;
                         break;
                     case "mi":
                         length *= 1609.344;

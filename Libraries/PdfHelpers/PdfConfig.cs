@@ -52,7 +52,7 @@ namespace AXToolbox.PdfHelpers
                 TitleFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
                 SubtitleFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
                 NormalFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL);
-                FixedWidthFont = new Font(Font.FontFamily.COURIER, 10f, Font.NORMAL);
+                FixedWidthFont = new Font(Font.FontFamily.COURIER, 8f, Font.NORMAL);
                 BoldFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
                 ItalicFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.ITALIC);
                 HeaderFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.NORMAL);

@@ -31,6 +31,7 @@ namespace AXToolbox.GpsLoggers
         public Double Easting { get; protected set; }
         public double Northing { get; protected set; }
         public double Altitude { get; set; }
+        public string Remarks { get; set; }
 
 
         public AXPoint(DateTime time, double easting, double northing, double altitude)
