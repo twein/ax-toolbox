@@ -13,6 +13,7 @@ namespace AXToolbox.Scripting
     {
         protected ScriptingArea area;
         protected double maxSpeed = 0;
+        protected string description = "";
 
         public Penalty Penalty { get; protected set; }
 
@@ -36,18 +37,18 @@ namespace AXToolbox.Scripting
 
                 case "BPZ":
                     //BPZ: blue PZ
-                    //BPZ(<scale>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    //BPZ(<area>,<description>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     area = ResolveOrDie<ScriptingArea>(0);
-                    //unit = "s";
+                    description = ParseOrDie<string>(1, ParseString);
                     break;
 
                 case "RPZ":
                     //BPZ: blue PZ
-                    //BPZ(<scale>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    //BPZ(<area>,<description>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     area = ResolveOrDie<ScriptingArea>(0);
-                    //unit = "s";
+                    description = ParseOrDie<string>(1, ParseString);
                     break;
 
                 case "VSMAX":
@@ -55,7 +56,6 @@ namespace AXToolbox.Scripting
                     //VSMAX(<verticaSpeed>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     maxSpeed = ParseOrDie<double>(0, ParseLength);
-                    //unit = "s";
                     break;
 
             }
@@ -111,7 +111,7 @@ namespace AXToolbox.Scripting
                             }
                         }
                         penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
-                        Penalty = new Penalty("R7.3.6 BPZ", PenaltyType.CompetitionPoints, (int)penalty);
+                        Penalty = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penalty);
                     }
                     break;
 
@@ -142,7 +142,7 @@ namespace AXToolbox.Scripting
                             penalty = 500 * vertInfringement * horzInfringement / 2; //COH7.5
 
                             penalty = 10 * Math.Ceiling((penalty / 10));
-                            Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
+                            Penalty = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
                         }
                         /*
                          * new 2011 draft
@@ -164,6 +164,10 @@ namespace AXToolbox.Scripting
                         Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
                         */
                     }
+                    break;
+                case "VSMAX":
+                    //TODO: implement VSMAX
+                    throw new NotImplementedException();
                     break;
             }
 

@@ -27,8 +27,8 @@ namespace AXToolbox.Scripting
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
-           
-            if (Task==null)
+
+            if (Task == null)
                 throw new ArgumentException(ObjectName + ": no previous task defined");
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
@@ -127,6 +127,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null || B.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -142,6 +143,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null || B.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -157,6 +159,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null || B.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -172,6 +175,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null || B.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -187,6 +191,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null || B.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -204,6 +209,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null || B.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -219,6 +225,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {
@@ -234,6 +241,7 @@ namespace AXToolbox.Scripting
                     if (A.Point == null)
                     {
                         AddNote("reference point is null");
+                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                     }
                     else
                     {

@@ -1,6 +1,7 @@
 ﻿TO DO
 ! PDF report
 ! think about measure/result/constraint thing
+! implement VSMAX
 - global penalties instead of task specific:
 	for each task:
 		if task has no result goto next task
