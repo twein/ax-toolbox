@@ -190,8 +190,13 @@ namespace Scorer
         }
         private void menuTaskResultsToPdf_Click(object sender, RoutedEventArgs e)
         {
-            var task = ((MenuItem)sender).Tag as Task;
-            task.ResultsToPdf(true);
+            if (string.IsNullOrEmpty(Event.Instance.FilePath))
+                MessageBox.Show("Please, save event before!");
+            else
+            {
+                var task = ((MenuItem)sender).Tag as Task;
+                task.ResultsToPdf(true);
+            }
         }
         private void menuTaskPublishScore_Click(object sender, RoutedEventArgs e)
         {
@@ -201,16 +206,21 @@ namespace Scorer
         }
         private void menuTaskScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
-            var task = ((MenuItem)sender).Tag as Task;
-
-            var folder = GetFolderName();
-
-            if (!string.IsNullOrEmpty(folder))
+            if (string.IsNullOrEmpty(Event.Instance.FilePath))
+                MessageBox.Show("Please, save event before!");
+            else
             {
-                foreach (var c in Event.Instance.Competitions)
+                var task = ((MenuItem)sender).Tag as Task;
+
+                var folder = GetFolderName();
+
+                if (!string.IsNullOrEmpty(folder))
                 {
-                    var ts = c.TaskScores.First(s => s.Task == task);
-                    ts.ScoresToPdf(true);
+                    foreach (var c in Event.Instance.Competitions)
+                    {
+                        var ts = c.TaskScores.First(s => s.Task == task);
+                        ts.ScoresToPdf(true);
+                    }
                 }
             }
         }

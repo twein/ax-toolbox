@@ -30,7 +30,7 @@
                 <MenuItem Header="Modify Pilots" Click="menuPilotsEdit_Click"/>
                 <MenuItem Header="Modify Tasks" Click="menuTasksEdit_Click"/>
             </MenuItem>
-            <MenuItem Header="Output">
+            <MenuItem Header="Output" Visibility="{Binding Path=OutputVisibility}">
                 <MenuItem Header="Event pilot list to pdf" ToolTip="Pilot list." Click="menuOutputPilotsListToPdf_Click">
                     <MenuItem.Icon>
                         <Image Source="/Scorer;component/pdf.png" Height="16" />
