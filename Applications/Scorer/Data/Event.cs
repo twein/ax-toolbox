@@ -243,6 +243,7 @@ namespace Scorer
 
             IsDirty = false;
             isNew = false;
+            RaisePropertyChanged("OutputVisibility");
         }
         public void Load(string fileName, SerializationFormat serializationFormat = SerializationFormat.DataContract)
         {
@@ -258,8 +259,9 @@ namespace Scorer
 
             FilePath = fileName;
 
-            IsDirty = false;
+            RaisePropertyChanged("OutputVisibility");
             isNew = false;
+            IsDirty = false;
         }
 
         public void PilotListToPdf(bool openAfterCreation = false)
@@ -314,6 +316,16 @@ namespace Scorer
                     return Visibility.Visible;
                 else
                     return Visibility.Collapsed;
+            }
+        }
+        public Visibility OutputVisibility
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(filePath))
+                    return Visibility.Collapsed;
+                else
+                    return Visibility.Visible;
             }
         }
 
