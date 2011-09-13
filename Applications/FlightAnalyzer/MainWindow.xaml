@@ -94,7 +94,9 @@
                                 </StackPanel>
                                 <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="Auto">
                                     <Button ToolTip="Load gps log file or a flight report" Click="loadReportButton_Click"
-                                    Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}">Load</Button>
+                                            Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}">Load</Button>
+                                    <Button ToolTip="Batch process all flights" Click="batchProcessButton_Click" 
+                                            Visibility="{Binding Path=Engine, Converter={StaticResource isNullVisibilityConverter}}">Batch</Button>
                                     <Button Name="setLaunchButton" ToolTip="Sets the launch point to the current pointer position" Click="setLaunchLandingButton_Click"
                                     Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">Set launch</Button>
                                     <Button Name="setLandingButton" ToolTip="Sets the landing point to the current pointer position" Click="setLaunchLandingButton_Click"
