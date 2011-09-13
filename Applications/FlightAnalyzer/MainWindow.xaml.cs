@@ -8,6 +8,7 @@ using System.Windows.Interop;
 using AXToolbox.GpsLoggers;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
+using System.Collections.Generic;
 
 namespace FlightAnalyzer
 {
@@ -78,6 +79,17 @@ namespace FlightAnalyzer
                 Worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
             }
         }
+        private void batchProcessButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            var dlgResult = MessageBox.Show(this, "This will process all saved flight reports. Are you sure?", "WARNING", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.Cancel);
+
+            if (dlgResult == MessageBoxResult.OK)
+            {
+                Cursor = Cursors.Wait;
+                Worker.RunWorkerAsync(rootFolder); // look Work() and WorkCompleted()
+            }
+        }
         private void toolsButton_Click(object sender, RoutedEventArgs e)
         {
             Tools.Show();
@@ -111,7 +123,7 @@ namespace FlightAnalyzer
         private void processReportButton_Click(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            Worker.RunWorkerAsync(""); // look Work() and WorkCompleted()
+            Worker.RunWorkerAsync(null); // look Work() and WorkCompleted()
         }
         private void saveReportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -165,26 +177,36 @@ namespace FlightAnalyzer
         // Run lengthy processes asyncronously to improve UI responsiveness
         protected void Work(object s, DoWorkEventArgs args)
         {
-            var fileName = (string)args.Argument;
-
-            switch (Path.GetExtension(fileName).ToLower())
+            if (string.IsNullOrEmpty((string)args.Argument))
             {
-                case ".axs":
-                    Engine.LoadScript(fileName);
-                    rootFolder = Path.GetDirectoryName(fileName);
-                    args.Result = "script";
-                    break;
-                case ".axr":
-                case ".igc":
-                case ".trk":
-                    Engine.LoadFlightReport(fileName);
-                    args.Result = "report";
-                    break;
-                case "":
-                    Engine.Process();
-                    args.Result = "process";
-                    break;
+                Engine.Process();
+                args.Result = "process";
             }
+            else
+            {
+                var fileName = (string)args.Argument;
+
+                switch (Path.GetExtension(fileName).ToLower())
+                {
+                    case ".axs":
+                        Engine.LoadScript(fileName);
+                        rootFolder = Path.GetDirectoryName(fileName);
+                        args.Result = "script";
+                        break;
+                    case ".axr":
+                    case ".igc":
+                    case ".trk":
+                        Engine.LoadFlightReport(fileName);
+                        args.Result = "report";
+                        break;
+                    case "":
+                        Engine.BatchProcess(fileName);
+                        args.Result = "batchProcess";
+                        break;
+                }
+            }
+
+
         }
         protected void WorkCompleted(object s, RunWorkerCompletedEventArgs args)
         {
@@ -222,6 +244,7 @@ namespace FlightAnalyzer
                         RaisePropertyChanged("Report");
                         break;
                     case "process":
+                    case "batchProcess":
                         break;
                 }
             }

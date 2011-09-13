@@ -276,6 +276,31 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
         }
+        public void BatchProcess(string rootFolder)
+        {
+            Trace.WriteLine("Batch processing " + rootFolder, "ENGINE");
+
+            var reportsFolder = Path.Combine(rootFolder, "Flight reports");
+            if (!Directory.Exists(reportsFolder))
+                Directory.CreateDirectory(reportsFolder);
+
+            var resultsFolder = Path.Combine(rootFolder, "Results");
+            if (!Directory.Exists(resultsFolder))
+                Directory.CreateDirectory(resultsFolder);
+
+            Reset();
+            foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
+            {
+                Report = FlightReport.Load(report, Settings);
+                RaisePropertyChanged("Report");
+
+                Process();
+
+                ExportResults(resultsFolder);
+                SavePdfReport(reportsFolder);
+                Reset();
+            }
+        }
         public void SaveAll(string rootFolder)
         {
             if (Report.PilotId > 0)
