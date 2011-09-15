@@ -15,6 +15,7 @@ namespace AXToolbox.Scripting
         protected ScriptingPoint A, B, C;
         protected double setDirection;
         protected double altitudeThreshold;
+        protected double bestPerformance = 0;
 
         public Result Result { get; protected set; }
 
@@ -40,26 +41,36 @@ namespace AXToolbox.Scripting
 
                 case "D2D":
                 //D2D: distance in 2D
-                //D2D(<pointNameA>, <pointNameB>)
+                //D2D(<pointNameA>, <pointNameB> [,<bestPerformance>])
                 case "D3D":
-                //D3D: distance in 3D
-                //D3D(<pointNameA>, <pointNameB>)
+                    //D3D: distance in 3D
+                    //D3D(<pointNameA>, <pointNameB> [,<bestPerformance>])
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    A = ResolveOrDie<ScriptingPoint>(0);
+                    B = ResolveOrDie<ScriptingPoint>(1);
+                    if (ObjectParameters.Length == 3)
+                        bestPerformance = ParseOrDie<double>(2, ParseLength);
+                    unit = "m";
+                    break;
+
+                case "DRAD":
+                    //DRAD: relative altitude dependent distance
+                    //DRAD(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
+                    A = ResolveOrDie<ScriptingPoint>(0);
+                    B = ResolveOrDie<ScriptingPoint>(1);
+                    altitudeThreshold = ParseOrDie<double>(2, ParseLength);
+                    if (ObjectParameters.Length == 4)
+                        bestPerformance = ParseOrDie<double>(3, ParseLength);
+                    unit = "m";
+                    break;
+
                 case "DACC":
                     //DACC: accumulated distance
                     //DACC(<pointNameA>, <pointNameB>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    unit = "m";
-                    break;
-
-                case "DRAD":
-                    //DRAD: relative altitude dependent distance
-                    //DRAD(<pointNameA>, <pointNameB>, <threshold>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
-                    A = ResolveOrDie<ScriptingPoint>(0);
-                    B = ResolveOrDie<ScriptingPoint>(1);
-                    altitudeThreshold = ParseOrDie<double>(2, ParseLength);
                     unit = "m";
                     break;
 
@@ -163,20 +174,20 @@ namespace AXToolbox.Scripting
                 {
                     case "D2D":
                         //D2D: distance in 2D
-                        //D2D(<pointNameA>, <pointNameB>)
-                        Result = Task.NewResult(Math.Round(Physics.Distance2D(A.Point, B.Point), 0));
+                        //D2D(<pointNameA>, <pointNameB> [,<bestPerformance>])
+                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance2D(A.Point, B.Point), 0)));
                         break;
 
                     case "D3D":
                         //D3D: distance in 3D
-                        //D3D(<pointNameA>, <pointNameB>)
-                        Result = Task.NewResult(Math.Round(Physics.Distance3D(A.Point, B.Point), 0));
+                        //D3D(<pointNameA>, <pointNameB> [,<bestPerformance>])
+                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance3D(A.Point, B.Point), 0)));
                         break;
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
-                        //DRAD(<pointNameA>, <pointNameB>, <threshold>)
-                        Result = Task.NewResult(Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold), 0));
+                        //DRAD(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
+                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold), 0)));
                         break;
 
                     case "DACC":
