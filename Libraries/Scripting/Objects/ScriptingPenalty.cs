@@ -165,28 +165,23 @@ namespace AXToolbox.Scripting
                             }
 
                             double penalty = 0;
+                            AXPoint first = null;
                             AXPoint last = null;
-                            int n = 0;
-                            double accuHorizontalDist = 0;
-                            double accuVerticalInfringement = 0;
+                            //TODO: replace by .First(p=>area.Contains(p)) and .Last(...)
                             foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
                             {
                                 if (area.Contains(p))
                                 {
-                                    n++;
-                                    if (last != null)
-                                    {
-                                        accuHorizontalDist += Physics.Distance2D(p, last);
-                                        accuVerticalInfringement += area.RPZAltitudeInfringement(p);
-                                    }
+                                    if (first == null)
+                                        first = p;
                                     last = p;
                                 }
                             }
-                            if (n > 0)
+                            if (first != null)
                             {
-                                var vertInfringement = (accuVerticalInfringement / n) / area.UpperLimit; ;
-                                var horzInfringement = accuHorizontalDist / area.MaxHorizontalInfringement;
-                                penalty = 500 * vertInfringement * horzInfringement / 2; //COH7.5
+                                var vertInfringement = 1 - (first.Altitude + last.Altitude) / (2 * area.UpperLimit);
+                                var horzInfringement = Physics.Distance2D(first, last) / area.MaxHorizontalInfringement;
+                                penalty = 500 * (vertInfringement + horzInfringement) / 2; //COH7.5
 
                                 penalty = 10 * Math.Ceiling((penalty / 10));
                                 Penalty = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);

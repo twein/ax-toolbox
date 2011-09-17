@@ -230,7 +230,7 @@ namespace AXToolbox.Scripting
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         if (C.Point == null)
                         {
-                            Result = Task.NewNoResult(A.GetFirstNoteText());
+                            Result = Task.NewNoResult(C.GetFirstNoteText());
                         }
                         else
                         {

@@ -115,6 +115,8 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
+            var reason = "";
+
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
@@ -134,7 +136,9 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance > distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
+                            //Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
+                            reason = string.Format("R13.3.4.1 {0}", description, calcDistance);
+                            AddNote(string.Format("distance infringement: {0}m", calcDistance), true);
                         }
                     }
                     break;
@@ -150,7 +154,9 @@ namespace AXToolbox.Scripting
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance < distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
+                            //Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
+                            reason = string.Format("R13.3.4.1 {0}", description, calcDistance);
+                            AddNote(string.Format("distance infringement: {0}m", calcDistance), true);
                         }
                     }
                     break;
@@ -166,7 +172,9 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference > distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
+                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
+                            reason = string.Format("{0}", description, calcDifference);
+                            AddNote(string.Format("distance infringement: {0}m", calcDifference), true);
                         }
                     }
                     break;
@@ -182,7 +190,9 @@ namespace AXToolbox.Scripting
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference < distance)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
+                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
+                            reason = string.Format("{0}", description, calcDifference);
+                            AddNote(string.Format("distance infringement: {0}m", calcDifference), true);
                         }
                     }
                     break;
@@ -200,7 +210,9 @@ namespace AXToolbox.Scripting
                         {
                             var min = Math.Floor(calcTime);
                             var sec = Math.Ceiling((calcTime - min) * 60);
-                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
+                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
+                            reason = string.Format("{0}", description, MinToHms(calcTime));
+                            AddNote(string.Format("time infringement: {0}min", MinToHms(calcTime)), true);
                         }
                     }
                     break;
@@ -216,7 +228,9 @@ namespace AXToolbox.Scripting
                         var calcTime = Math.Ceiling((B.Point.Time - A.Point.Time).TotalMinutes);
                         if (calcTime < time)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
+                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
+                            reason = string.Format("{0}", description, MinToHms(calcTime));
+                            AddNote(string.Format("time infringement: {0}min", MinToHms(calcTime)), true);
                         }
                     }
                     break;
@@ -232,7 +246,9 @@ namespace AXToolbox.Scripting
                         var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
                         if (A.Point.Time > refTime)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(description));
+                            //Penalty = new Penalty(Result.NewNoResult(description));
+                            reason = description;
+                            AddNote(string.Format("time infringement: {0}min", MinToHms((A.Point.Time - refTime).TotalMinutes)), true);
                         }
                     }
                     break;
@@ -248,16 +264,26 @@ namespace AXToolbox.Scripting
                         var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
                         if (A.Point.Time < refTime)
                         {
-                            Penalty = new Penalty(Result.NewNoResult(description));
+                            //Penalty = new Penalty(Result.NewNoResult(description));
+                            reason = description;
+                            AddNote(string.Format("time infringement: {0}min", MinToHms((refTime - A.Point.Time).TotalMinutes)), true);
                         }
                     }
                     break;
             }
 
-            if (Penalty != null)
+            //if (Penalty != null)
+            //{
+            //    Task.Penalties.Add(Penalty);
+            //    AddNote("restriction outcome is " + Penalty.ToString());
+            //}
+            //else
+            //    AddNote("not infringed");
+
+            if (!string.IsNullOrEmpty(reason))
             {
-                Task.Penalties.Add(Penalty);
-                AddNote("restriction outcome is " + Penalty.ToString());
+                Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
+                AddNote("No Result (group B): " + reason, true);
             }
             else
                 AddNote("not infringed");

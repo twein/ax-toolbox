@@ -21,7 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_53C09CD378064DCCD8FD7FD01B645845"
+        "MsmKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
         "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -34,12 +34,18 @@
         "Entry"
         {
         "MsmKey" = "8:_AF556DEB7B640EA83A1218E11ED5EACB"
-        "OwnerKey" = "8:_F2F84FA7E037B22FEABDE8EAE675920A"
+        "OwnerKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_AF556DEB7B640EA83A1218E11ED5EACB"
+        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B5D81A9C908D3E3090956365D68DEECA"
         "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -57,12 +63,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F2F84FA7E037B22FEABDE8EAE675920A"
-        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "MsmSig" = "8:_UNDEFINED"
@@ -70,7 +70,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F2F84FA7E037B22FEABDE8EAE675920A"
+        "OwnerKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -82,7 +82,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_53C09CD378064DCCD8FD7FD01B645845"
+        "OwnerKey" = "8:_B5D81A9C908D3E3090956365D68DEECA"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -190,20 +190,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_53C09CD378064DCCD8FD7FD01B645845"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6443CBBED0DFCBCC437C3B61A18A6516"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4273.19627, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4277.35959, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_53C09CD378064DCCD8FD7FD01B645845"
+                    "_6443CBBED0DFCBCC437C3B61A18A6516"
                     {
-                    "Name" = "8:AXToolbox.Common.dll"
+                    "Name" = "8:AXToolbox.PdfHelpers.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:AXToolbox.Common.dll"
+            "SourcePath" = "8:AXToolbox.PdfHelpers.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
@@ -272,6 +272,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B5D81A9C908D3E3090956365D68DEECA"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4277.35959, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_B5D81A9C908D3E3090956365D68DEECA"
+                    {
+                    "Name" = "8:AXToolbox.Common.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:AXToolbox.Common.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF14C7E4C0674FEC929938C5D8C0BF24"
             {
             "SourcePath" = "8:..\\..\\Applications\\Scorer\\Documentation\\Getting Started.pdf"
@@ -310,37 +341,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F2F84FA7E037B22FEABDE8EAE675920A"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4273.19625, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F2F84FA7E037B22FEABDE8EAE675920A"
-                    {
-                    "Name" = "8:AXToolbox.PdfHelpers.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:AXToolbox.PdfHelpers.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -443,15 +443,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toobox Scorer"
-        "ProductCode" = "8:{07AA6AA0-4D9D-4CEB-B886-C832733563BA}"
-        "PackageCode" = "8:{606D2DF9-51E3-4C29-AB7C-F98570043996}"
+        "ProductCode" = "8:{9A92C3D3-93BE-4C3E-9A23-FFBD665AFDF3}"
+        "PackageCode" = "8:{8216DBE8-EAAE-4E68-9F67-C048159DC1C9}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:11.09.1701"
+        "ProductVersion" = "8:11.09.1702"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1021,7 +1021,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_157134081F2B460BB09B6D20312032E2"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\..\\Applications\\Scorer\\obj\\Release\\Scorer.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
