@@ -96,7 +96,10 @@ namespace Scorer
         {
             get
             {
-                return (ManualResultInfo.InfringedRules + ", " + AutoResultInfo.InfringedRules).Trim(new char[] { ' ', ',' });
+                if (Result < 0 || TaskScorePenalty > 0 || CompetitionScorePenalty > 0)
+                    return (ManualResultInfo.InfringedRules + ", " + AutoResultInfo.InfringedRules).Trim(new char[] { ' ', ',' });
+                else 
+                    return (ManualResultInfo.InfringedRules);
             }
         }
         public bool HasChanged

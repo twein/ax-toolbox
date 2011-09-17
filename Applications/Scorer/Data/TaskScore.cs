@@ -256,15 +256,16 @@ namespace Scorer
 
         public void ScoresToPdf(bool openAfterCreation)
         {
-            var published = (Task.Phases & CompletedPhases.Published) > 0; // don't show the draft message if status is Provisional
-
             string fileName;
-            if (published)
-                fileName = Path.Combine(Event.Instance.PublishedScoresFolder, string.Format("{0}-Task{1}score-v{3:00}{4}-{2:MMdd_HHmmss}.pdf",
-                    competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
+            if (Status == ScoreStatus.Provisional)
+                fileName = Path.Combine(Event.Instance.PublishedScoresFolder, string.Format("{0}-Task{1}_score-{2:MMdd_HHmmss}-PROVISIONAL.pdf",
+                    competition.ShortName, Task.UltraShortDescription.Replace(" ", "_"), RevisionDate));
+            else if ((Task.Phases & CompletedPhases.Published) > 0)
+                fileName = Path.Combine(Event.Instance.PublishedScoresFolder, string.Format("{0}-Task{1}_score-v{3:00}{4}-{2:MMdd_HHmmss}.pdf",
+                    competition.ShortName, Task.UltraShortDescription.Replace(" ", "_"), RevisionDate, Version, Status.ToString().Substring(0, 1)));
             else
-                fileName = Path.Combine(Path.GetTempPath(), string.Format("{0}-Task{1}score-v{3:00}{4}-{2:MMdd_HHmmss}-DRAFT.pdf",
-                    competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
+                fileName = Path.Combine(Event.Instance.DraftsFolder, string.Format("{0}-Task{1}_score-v{3:00}{4}-{2:MMdd_HHmmss}-DRAFT.pdf",
+                    competition.ShortName, Task.UltraShortDescription.Replace(" ", "_"), RevisionDate, Version, Status.ToString().Substring(0, 1)));
 
             var config = Event.Instance.GetDefaultPdfConfig();
 
