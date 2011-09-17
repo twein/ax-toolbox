@@ -251,6 +251,7 @@ namespace AXToolbox.Scripting
             foreach (var obj in Heap.Values)
                 obj.Reset();
             Report = null;
+
             RaisePropertyChanged("Report");
         }
         public void Process()
@@ -288,18 +289,16 @@ namespace AXToolbox.Scripting
             if (!Directory.Exists(resultsFolder))
                 Directory.CreateDirectory(resultsFolder);
 
-            Reset();
             foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
             {
-                Report = FlightReport.Load(report, Settings);
-                RaisePropertyChanged("Report");
-
+                LoadFlightReport(report);
                 Process();
 
                 ExportResults(resultsFolder);
                 SavePdfReport(reportsFolder);
-                Reset();
             }
+            Reset();
+            Display();
         }
         public void SaveAll(string rootFolder)
         {

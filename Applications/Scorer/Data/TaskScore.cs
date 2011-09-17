@@ -260,10 +260,10 @@ namespace Scorer
 
             string fileName;
             if (published)
-                fileName = Path.Combine(Event.Instance.PublishedScoresFolder, string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}.pdf",
+                fileName = Path.Combine(Event.Instance.PublishedScoresFolder, string.Format("{0}-Task{1}score-v{3:00}{4}-{2:MMdd_HHmmss}.pdf",
                     competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
             else
-                fileName = Path.Combine(Path.GetTempPath(), string.Format("{0}-Task {1} score-v{3:00}{4}-{2:MMdd HHmmss}-DRAFT.pdf",
+                fileName = Path.Combine(Path.GetTempPath(), string.Format("{0}-Task{1}score-v{3:00}{4}-{2:MMdd_HHmmss}-DRAFT.pdf",
                     competition.ShortName, Task.UltraShortDescription, RevisionDate, Version, Status.ToString().Substring(0, 1)));
 
             var config = Event.Instance.GetDefaultPdfConfig();
