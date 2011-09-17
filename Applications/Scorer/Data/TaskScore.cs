@@ -256,7 +256,7 @@ namespace Scorer
 
         public void ScoresToPdf(bool openAfterCreation)
         {
-            var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
+            var published = (Task.Phases & CompletedPhases.Published) > 0; // don't show the draft message if status is Provisional
 
             string fileName;
             if (published)

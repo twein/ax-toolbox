@@ -25,13 +25,7 @@ namespace AXToolbox.GpsLoggers
             Time = time;
             Altitude = altitude;
 
-            if (definition.Length == 3)
-            {
-                //Type 000
-                Type = DeclarationType.GoalName;
-                Name = definition;
-            }
-            else if (definition.Contains("/"))
+            if (definition.Contains("/"))
             {
                 // type 0000/0000
                 Type = DeclarationType.CompetitionCoordinates;
@@ -40,7 +34,11 @@ namespace AXToolbox.GpsLoggers
                 Northing4Digits = double.Parse(coords[1]);
             }
             else
-                throw new InvalidOperationException("Invalid goal declaration");
+            {
+                //Type 000
+                Type = DeclarationType.GoalName;
+                Name = definition;
+            }
 
         }
 
@@ -68,7 +66,10 @@ namespace AXToolbox.GpsLoggers
                     str.Append(string.Format("{0:0000}/{1:0000} ", Easting4Digits, Northing4Digits));
 
             if ((info & AXPointInfo.Altitude) > 0)
-                str.Append(Altitude.ToString("0 "));
+                if (double.IsNaN(Altitude))
+                    str.Append("- ");
+                else
+                    str.Append(Altitude.ToString("0 "));
 
             return str.ToString();
         }
