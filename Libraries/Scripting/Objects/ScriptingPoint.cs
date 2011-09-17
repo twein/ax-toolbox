@@ -369,17 +369,20 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        try
-                        {
-                            var landing = Engine.Report.LandingPoint;
-                            var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
-                            Point = new AXWaypoint(ObjectName, nearestPoint);
-                            AddNote(string.Format("no marker #{0} (assuming contest landing)", number), true);
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            AddNote(string.Format("no marker #{0} (couldn't assume contest landing)", number), true);
-                        }
+                        //TODO: enable all this if contest landing is substitute for not dropped marker
+                        //try
+                        //{
+                        //    var landing = Engine.Report.LandingPoint;
+                        //    var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
+                        //    Point = new AXWaypoint(ObjectName, nearestPoint);
+                        //    AddNote(string.Format("no marker #{0} (assuming contest landing)", number), true);
+                        //}
+                        //catch (InvalidOperationException)
+                        //{
+                        //    AddNote(string.Format("no marker #{0} (couldn't assume contest landing)", number), true);
+                        //}
+                        //TODO: enable if no contest landing option
+                        AddNote(string.Format("no marker drop #{0}", number), true);
                     }
                     break;
 
@@ -730,13 +733,26 @@ namespace AXToolbox.Scripting
         {
             AXWaypoint point = null;
 
+            if (double.IsNaN(goal.Altitude))
+            {
+                goal.Altitude = defaultAltitude;
+                AddNote(string.Format("using default altitude in goal declaration #{0}", goal.Number), true);
+            }
+
             if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
             {
-                var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
-                if (tmpPoint != null && goal.Altitude > 0)
-                    tmpPoint.Altitude = goal.Altitude;
+                try
+                {
+                    var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
+                    if (tmpPoint != null && goal.Altitude > 0)
+                        tmpPoint.Altitude = goal.Altitude;
 
-                point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
+                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
+                }
+                catch
+                {
+                    AddNote(string.Format("undefined goal name '{1}' in declaration #{0}", goal.Number, goal.Name), true);
+                }
             }
             else // competition coordinates
             {
@@ -746,8 +762,7 @@ namespace AXToolbox.Scripting
                     point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
             }
 
-            if (double.IsNaN(goal.Altitude))
-                goal.Altitude = defaultAltitude;
+
 
             return point;
         }

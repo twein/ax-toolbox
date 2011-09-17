@@ -241,9 +241,10 @@ namespace Scorer
             FilePath = fileName;
             ObjectSerializer<Event>.Save(this, fileName, serializationFormat);
 
+            RaisePropertyChanged("OutputVisibility");
+
             IsDirty = false;
             isNew = false;
-            RaisePropertyChanged("OutputVisibility");
         }
         public void Load(string fileName, SerializationFormat serializationFormat = SerializationFormat.DataContract)
         {

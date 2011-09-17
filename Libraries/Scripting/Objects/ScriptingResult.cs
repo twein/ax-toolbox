@@ -226,7 +226,7 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
-                            Result = Task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point), 2));
+                            Result = Task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point) / 1e6, 2));
                         }
                         break;
 
