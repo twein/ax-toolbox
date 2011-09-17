@@ -54,8 +54,10 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "DRAD":
+                case "DRAD10":
                     //DRAD: relative altitude dependent distance
-                    //DRAD(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
+                    //DRAD10: relative altitude dependent distance rounded to decameter
+                    //XXXX(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
@@ -188,6 +190,12 @@ namespace AXToolbox.Scripting
                         //DRAD: relative altitude dependent distance
                         //DRAD(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
                         Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold), 0)));
+                        break;
+
+                    case "DRAD10":
+                        //DRAD10: relative altitude dependent distance rounded to decameter
+                        //DRAD10(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
+                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold) / 10, 0) * 10));
                         break;
 
                     case "DACC":
