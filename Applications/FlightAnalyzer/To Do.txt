@@ -3,7 +3,8 @@
 
 TO DO
 * Fix the log files thing
-! Batch process flight reports.
+* Batch process flight reports.
+! Fix add/remove goal declarations. Support null altitude
 ! Add/remove penalties.
 * IsDirty management.
 - Add the possibility of warning the user programmatically.

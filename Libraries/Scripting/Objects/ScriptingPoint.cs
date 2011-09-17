@@ -369,7 +369,7 @@ namespace AXToolbox.Scripting
                         }
                         catch (InvalidOperationException)
                         {
-                            AddNote(string.Format("marker drop #{0} from an invalid point", number), true);
+                            AddNote(string.Format("R12.21.1: invalid marker drop #{0}", number), true);
                         }
                     }
                     catch (InvalidOperationException)
@@ -387,7 +387,7 @@ namespace AXToolbox.Scripting
                         //    AddNote(string.Format("no marker #{0} (couldn't assume contest landing)", number), true);
                         //}
                         //TODO: enable if no contest landing option
-                        AddNote(string.Format("no marker drop #{0}", number), true);
+                        AddNote(string.Format("RII.17: no marker drop #{0}", number), true);
                     }
                     break;
 
@@ -404,7 +404,7 @@ namespace AXToolbox.Scripting
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
                         {
-                            AddNote("no goal definition #" + number.ToString(), true);
+                            AddNote("R15.1: no goal declaration #" + number.ToString(), true);
                         }
                         else
                         {
@@ -418,13 +418,13 @@ namespace AXToolbox.Scripting
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    AddNote("invalid goal declaration #" + number.ToString(), true);
+                                    AddNote("R15.1: invalid goal declaration #" + number.ToString(), true);
                                 }
 
                             }
                             catch (InvalidOperationException)
                             {
-                                AddNote("late goal declaration #" + number.ToString(), true);
+                                AddNote("R15.1: late goal declaration #" + number.ToString(), true);
                             }
                         }
                     }
@@ -443,7 +443,7 @@ namespace AXToolbox.Scripting
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
                         {
-                            AddNote("no goal definition #" + number.ToString(), true);
+                            AddNote("R15.1: no goal declaration #" + number.ToString(), true);
                         }
                         else
                         {
@@ -462,7 +462,7 @@ namespace AXToolbox.Scripting
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    AddNote("invalid goal declaration #" + number.ToString(), true);
+                                    AddNote("R15.1: invalid goal declaration #" + number.ToString(), true);
                                 }
                             }
                             else
@@ -480,12 +480,12 @@ namespace AXToolbox.Scripting
                                     }
                                     catch (InvalidOperationException)
                                     {
-                                        AddNote("invalid goal declaration #" + number.ToString(), true);
+                                        AddNote("R15.1: invalid goal declaration #" + number.ToString(), true);
                                     }
                                 }
                                 catch (InvalidOperationException)
                                 {
-                                    AddNote("late goal declaration #" + number.ToString(), true);
+                                    AddNote("R15.1: late goal declaration #" + number.ToString(), true);
                                     AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
                                 }
                             }
@@ -754,7 +754,7 @@ namespace AXToolbox.Scripting
                 }
                 catch
                 {
-                    AddNote(string.Format("undefined goal name '{1}' in declaration #{0}", goal.Number, goal.Name), true);
+                    AddNote(string.Format("R15.1: invalid goal declaration #{0}", goal.Number), true);
                 }
             }
             else // competition coordinates

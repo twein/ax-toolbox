@@ -98,7 +98,7 @@ namespace Scorer
             {
                 if (Result < 0 || TaskScorePenalty > 0 || CompetitionScorePenalty > 0)
                     return (ManualResultInfo.InfringedRules + ", " + AutoResultInfo.InfringedRules).Trim(new char[] { ' ', ',' });
-                else 
+                else
                     return (ManualResultInfo.InfringedRules);
             }
         }

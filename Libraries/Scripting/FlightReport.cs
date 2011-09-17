@@ -277,8 +277,8 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                minTime = Date.ToUniversalTime() + new TimeSpan(16, 0, 0);
-                maxTime = Date.ToUniversalTime() + new TimeSpan(22, 0, 0);
+                minTime = Date.ToUniversalTime() + new TimeSpan(4, 0, 0);
+                maxTime = Date.ToUniversalTime() + new TimeSpan(10, 0, 0);
             }
 
             foreach (var point in OriginalTrack.Where(p => p.Time < minTime || p.Time > maxTime))
