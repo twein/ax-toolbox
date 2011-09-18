@@ -117,24 +117,27 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            double penalty = 0;
+                            double penaltyPoints = 0;
                             AXPoint last = null;
+                            var pointsInside = new List<AXPoint>();
                             foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
                             {
                                 if (area.Contains(p))
                                 {
+                                    pointsInside.Add(p);
                                     if (last != null)
                                     {
                                         var deltaT = (p.Time - last.Time).TotalSeconds;
-                                        penalty += area.ScaledBPZInfringement(p) * deltaT;
+                                        penaltyPoints += area.ScaledBPZInfringement(p) * deltaT;
                                     }
                                     last = p;
                                 }
                             }
-                            if (penalty > 0)
+                            if (penaltyPoints > 0)
                             {
-                                penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
-                                Penalty = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penalty);
+                                penaltyPoints = Math.Min(1000, 10 * Math.Ceiling(penaltyPoints / 10)); //Rule 7.5
+                                Penalty = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
+                                Penalty.UsedPoints.AddRange(pointsInside);
                                 Task.Penalties.Add(Penalty);
                             }
 
@@ -167,11 +170,13 @@ namespace AXToolbox.Scripting
                             double penalty = 0;
                             AXPoint first = null;
                             AXPoint last = null;
+                            var pointsInside = new List<AXPoint>();
                             //TODO: replace by .First(p=>area.Contains(p)) and .Last(...)
                             foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
                             {
                                 if (area.Contains(p))
                                 {
+                                    pointsInside.Add(p);
                                     if (first == null)
                                         first = p;
                                     last = p;
@@ -185,6 +190,7 @@ namespace AXToolbox.Scripting
 
                                 penalty = 10 * Math.Ceiling((penalty / 10));
                                 Penalty = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
+                                Penalty.UsedPoints.AddRange(pointsInside);
                                 task.Penalties.Add(Penalty);
                             }
 

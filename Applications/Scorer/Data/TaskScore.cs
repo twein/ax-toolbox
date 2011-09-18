@@ -191,6 +191,8 @@ namespace Scorer
                         break;
 
                     //look for ties
+                    //TODO: ties at the median: options: share points, lower the median or raise the median
+                    //ties: sharing process: round points, add, average, round and assign
                     var lastTieMember = i;
                     var tieScoreSum = psi.Score;
                     for (int j = i + 1; j < N; j++)

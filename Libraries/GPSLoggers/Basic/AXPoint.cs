@@ -70,7 +70,7 @@ namespace AXToolbox.GpsLoggers
                 str.Append(string.Format("{0:000000},{1:0000000} ", Easting, Northing));
 
             if ((info & AXPointInfo.CompetitionCoords) > 0)
-                str.Append(string.Format("{0:0000}/{1:0000} ", Easting % 1e5 / 10, Northing % 1e5 / 10));
+                str.Append(string.Format("{0:00000}/{1:00000} ", Easting % 1e5, Northing % 1e5));
 
             if ((info & AXPointInfo.Altitude) > 0)
                 str.Append(Altitude.ToString("0 "));

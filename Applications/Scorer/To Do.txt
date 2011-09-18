@@ -1,4 +1,9 @@
-﻿Marc André homework:
+﻿! Ties at the median
+! ties: sharing process: round points, add, average, round and assign
+
+
+
+Marc André homework:
 * show country next to the pilot name 
 + substitute the header by a logo
 * put the director name in the signature space
