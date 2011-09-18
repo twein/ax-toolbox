@@ -185,6 +185,7 @@ namespace AXToolbox.Scripting
             var title = string.Format("Task {0}: {1}", Number, ObjectType);
             var table = helper.NewTable(null, new float[] { 1, 4 }, title);
 
+            //results
             table.AddCell(new PdfPCell(new Paragraph("Result:", config.BoldFont)));
             c = new PdfPCell();
             c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.BoldFont));
@@ -194,11 +195,18 @@ namespace AXToolbox.Scripting
             }
             table.AddCell(c);
 
+            //penalties
             table.AddCell(new PdfPCell(new Paragraph("Penalties / restrictions:", config.BoldFont)));
             c = new PdfPCell();
-            foreach (var p in Penalties)
+            foreach (var pen in Penalties)
             {
-                c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+                c.AddElement(new Paragraph(pen.ToString(), config.BoldFont) { SpacingBefore = 0 });
+
+                if (pen.UsedPoints.Count > 0)
+                {
+                    c.AddElement(new Paragraph("Entry: " + pen.UsedPoints[0].ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+                    c.AddElement(new Paragraph("Exit:  " + pen.UsedPoints[pen.UsedPoints.Count - 1].ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+                }
             }
             table.AddCell(c);
 
