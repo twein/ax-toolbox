@@ -4,6 +4,7 @@ using System.Linq;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using System.Globalization;
 
 namespace AXToolbox.Scripting
 {
@@ -171,7 +172,7 @@ namespace AXToolbox.Scripting
                 infringedRules += p.ToString();
             }
 
-            return string.Format("result;auto;{0};{1};{2:0.00};{3:0.00};{4:0};{5:0};{6}",
+            return string.Format(NumberFormatInfo.InvariantInfo, "result;auto;{0};{1};{2:0.00};{3:0.00};{4:0};{5:0};{6}",
                 Number, Engine.Report.PilotId, Result.ValueToString(), measurePenalty.ValueToString(), taskPoints, competitionPoints, infringedRules);
         }
 

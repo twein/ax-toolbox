@@ -24,7 +24,7 @@ namespace AXToolbox.Scripting
         protected DateTime? maxTime;
         protected TimeSpan timeDelay;
         protected double distanceDelay;
-        protected double defaultAltitude;
+        protected double defaultAltitude = double.NaN;
         protected double altitudeThreshold;
 
         //display fields
@@ -33,8 +33,7 @@ namespace AXToolbox.Scripting
         internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
-
-
+        
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
@@ -105,10 +104,11 @@ namespace AXToolbox.Scripting
                 case "MPDGF":
                     //MPDGL: pilot declared goal before launch
                     //MPDGF: pilot declared goal in flight
-                    //XXXX(<number>, <defaultAltitude>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    //XXXX(<number>[, <defaultAltitude>])
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2);
                     number = ParseOrDie<int>(0, int.Parse);
-                    defaultAltitude = ParseOrDie<double>(1, ParseLength);
+                    if (ObjectParameters.Length == 2)
+                        defaultAltitude = ParseOrDie<double>(1, ParseLength);
                     break;
 
                 case "TLCH": //TLCH: launch
@@ -193,7 +193,6 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
-
         public override void Reset()
         {
             base.Reset();
@@ -733,51 +732,6 @@ namespace AXToolbox.Scripting
             //if (!string.IsNullOrEmpty(Log))
             //    Notes = ObjectName + ":" + Notes;
         }
-
-        private AXWaypoint TryResolveGoalDeclaration(GoalDeclaration goal)
-        {
-            AXWaypoint point = null;
-
-
-            if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
-            {
-                try
-                {
-                    var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
-                    if (tmpPoint != null)
-                        if (!double.IsNaN(goal.Altitude))
-                            tmpPoint.Altitude = goal.Altitude;
-                        else
-                            tmpPoint.Altitude = GetAltitudeAtPosition(tmpPoint);
-
-                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
-                }
-                catch
-                {
-                    AddNote(string.Format("R15.1: invalid goal declaration #{0}", goal.Number), true);
-                }
-            }
-            else // competition coordinates
-            {
-                var tmpPoint = Engine.Settings.ResolveDeclaredGoal(goal);
-
-                if (!(tmpPoint.Easting < Engine.Settings.TopLeft.Easting || tmpPoint.Easting > Engine.Settings.BottomRight.Easting ||
-                  tmpPoint.Northing > Engine.Settings.TopLeft.Northing || tmpPoint.Northing < Engine.Settings.BottomRight.Northing))
-                {
-                    if (!double.IsNaN(goal.Altitude))
-                        tmpPoint.Altitude = goal.Altitude;
-                    else
-                        tmpPoint.Altitude = GetAltitudeAtPosition(tmpPoint);
-
-                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
-                }
-            }
-
-
-
-            return point;
-        }
-
         public override void Display()
         {
             uint layer;
@@ -827,9 +781,56 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(overlay);
         }
 
-        private double GetAltitudeAtPosition(AXPoint point)
+        private AXWaypoint TryResolveGoalDeclaration(GoalDeclaration goal)
         {
-            var altitude = defaultAltitude;
+            AXWaypoint point = null;
+
+
+            if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
+            {
+                try
+                {
+                    var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
+                    if (tmpPoint != null)
+                        if (!double.IsNaN(goal.Altitude))
+                            tmpPoint.Altitude = goal.Altitude;
+                        else if (!double.IsNaN(defaultAltitude))
+                            tmpPoint.Altitude = defaultAltitude;
+                        else
+                            tmpPoint.Altitude = QueryElevationAtPosition(tmpPoint);
+
+                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
+                }
+                catch
+                {
+                    AddNote(string.Format("R15.1: invalid goal declaration #{0}", goal.Number), true);
+                }
+            }
+            else // competition coordinates
+            {
+                var tmpPoint = Engine.Settings.ResolveDeclaredGoal(goal);
+
+                if (!(tmpPoint.Easting < Engine.Settings.TopLeft.Easting || tmpPoint.Easting > Engine.Settings.BottomRight.Easting ||
+                  tmpPoint.Northing > Engine.Settings.TopLeft.Northing || tmpPoint.Northing < Engine.Settings.BottomRight.Northing))
+                {
+                    if (!double.IsNaN(goal.Altitude))
+                        tmpPoint.Altitude = goal.Altitude;
+                    else if (!double.IsNaN(defaultAltitude))
+                        tmpPoint.Altitude = defaultAltitude;
+                    else
+                        tmpPoint.Altitude = QueryElevationAtPosition(tmpPoint);
+
+                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
+                }
+            }
+
+
+
+            return point;
+        }
+        private double QueryElevationAtPosition(AXPoint point)
+        {
+            var altitude = 0.0;
             var template = "http://www.earthtools.org/height/{0}/{1}";
 
             var llPos = new UtmCoordinates(Datum.WGS84, Engine.Settings.UtmZone, point.Easting, point.Northing, 0).ToLatLon(Datum.WGS84);
@@ -837,20 +838,17 @@ namespace AXToolbox.Scripting
 
             try
             {
-                var wCli = new WebClient();
-                wCli.Encoding = Encoding.UTF8;
-
+                var wCli = new WebClient() { Encoding = Encoding.UTF8, };
                 var XMLstr = wCli.DownloadString(url);
-
                 var xDoc = new XmlDocument();
                 xDoc.LoadXml(XMLstr);
 
                 altitude = double.Parse(xDoc.SelectSingleNode("/height/meters").FirstChild.Value);
-                AddNote(string.Format("declaration ground altitude set to {0}m", altitude));
+                AddNote(string.Format("declaration ground elevation set to {0}m", altitude));
             }
             catch
             {
-                AddNote(string.Format("could not retrieve declaration ground altitude, using default"), true);
+                AddNote(string.Format("could not retrieve declaration ground elevation, using 0m MSL"), true);
             }
 
             return altitude;
