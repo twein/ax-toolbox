@@ -20,9 +20,6 @@ namespace FlightAnalyzer
             Validate = validateFunction;
 
             Response = System.Windows.Forms.DialogResult.Cancel;
-
-            textBox.Text = Text;
-            textBox.Focus();
         }
 
         private void buttonOk_Click(object sender, RoutedEventArgs e)
@@ -58,5 +55,11 @@ namespace FlightAnalyzer
             }
         }
         #endregion
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            textBox.Text = Text;
+            textBox.Focus();
+        }
     }
 }

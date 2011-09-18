@@ -4,9 +4,9 @@
 TO DO
 * Fix the log files thing
 * Batch process flight reports.
-! Fix add/remove goal declarations. Support null altitude
+* Fix add/remove goal declarations. Support null altitude
 ! Add/remove penalties.
-* IsDirty management.
+- full IsDirty management.
 - Add the possibility of warning the user programmatically.
 - Mark manually added markers and declarations. Don't allow to delete non-manual ones.
 

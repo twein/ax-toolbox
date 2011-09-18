@@ -81,7 +81,11 @@ namespace AXToolbox.GpsLoggers
             var number = int.Parse(fields[0]);
             var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToUniversalTime();
             var definition = fields[3];
-            var altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
+            double altitude = 0;
+            if (fields[4] == "-")
+                altitude = double.NaN;
+            else
+                altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 
             return new GoalDeclaration(number, time, definition, altitude);
         }

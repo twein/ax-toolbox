@@ -307,6 +307,7 @@ namespace AXToolbox.Scripting
 
                 ExportResults(resultsFolder);
                 SavePdfReport(reportsFolder);
+                SavePdfLog(reportsFolder);
             }
             Reset();
             Display();
@@ -329,7 +330,8 @@ namespace AXToolbox.Scripting
                 if (Results.Count() > 0)
                 {
                     ExportResults(resultsFolder);
-                    SavePdfReport(reportsFolder);
+                    SavePdfReport(reportsFolder,true);
+                    SavePdfLog(reportsFolder);
                 }
             }
             else
@@ -353,7 +355,7 @@ namespace AXToolbox.Scripting
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
-        public void SavePdfReport(string folder)
+        public void SavePdfReport(string folder, bool shouldOpenPdf = false)
         {
             var assembly = GetType().Assembly;
             var aName = assembly.GetName();
@@ -375,7 +377,8 @@ namespace AXToolbox.Scripting
             {
                 FooterRight = programInfo
             };
-            var helper = new PdfHelper(Path.Combine(folder, Report.ToShortString() + ".pdf"), config);
+            var pdfFileName = Path.Combine(folder, Report.ToShortString() + ".pdf");
+            var helper = new PdfHelper(pdfFileName, config);
             var document = helper.Document;
 
             config.HeaderLeft = Settings.Title;
@@ -417,7 +420,56 @@ namespace AXToolbox.Scripting
             foreach (var task in taskQuery)
                 task.ToPdfReport(helper);
 
-            document.NewPage();
+            document.Close();
+
+            if (shouldOpenPdf)
+                PdfHelper.OpenPdf(pdfFileName);
+        }
+        public void SavePdfLog(string folder, bool shouldOpenPdf = false)
+        {
+            var assembly = GetType().Assembly;
+            var aName = assembly.GetName();
+            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+
+            var programInfo = string.Format("{0} {2}",
+                ((AssemblyTitleAttribute)aTitle[0]).Title,
+                aName.Version,
+                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+            //return string.Format("{0} v{1} {2}",
+            //    ((AssemblyTitleAttribute)aTitle[0]).Title,
+            //    aName.Version,
+            //    ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+
+
+            var config = new PdfConfig(PdfConfig.Application.FlightAnalyzer)
+            {
+                FooterRight = programInfo
+            };
+            var pdfFileName = Path.Combine(folder, Report.ToShortString() + "_log.pdf");
+            var helper = new PdfHelper(pdfFileName, config);
+            var document = helper.Document;
+
+            config.HeaderLeft = Settings.Title;
+            config.HeaderRight = Settings.Subtitle;
+            //document.Add(new Paragraph(Settings.Title, config.TitleFont));
+            //document.Add(new Paragraph(Settings.Subtitle, config.SubtitleFont));
+            document.Add(new Paragraph("Automatic Flight Report", config.TitleFont));
+
+            var table = helper.NewTable(null, new float[] { 1, 1 });
+            table.WidthPercentage = 50;
+            table.HorizontalAlignment = Element.ALIGN_LEFT;
+            table.AddCell(helper.NewLCell("Flight Date:"));
+            table.AddCell(helper.NewLCell(Settings.Date.GetDateAmPm()));
+            table.AddCell(helper.NewLCell("Pilot number:"));
+            table.AddCell(helper.NewLCell(Report.PilotId.ToString()));
+            table.AddCell(helper.NewLCell("Logger serial number:"));
+            table.AddCell(helper.NewLCell(Report.LoggerSerialNumber));
+            table.AddCell(helper.NewLCell("Debriefer:"));
+            table.AddCell(helper.NewLCell(Report.Debriefer));
+            document.Add(table);
+
             document.Add(new Paragraph("Measurement process log", config.SubtitleFont));
 
             foreach (var line in Report.Notes)
