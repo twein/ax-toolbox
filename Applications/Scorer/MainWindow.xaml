@@ -124,7 +124,8 @@
                                     <TextBlock Tag="{Binding}" Text="{Binding Path=Status}" MouseEnter="listBoxTask_MouseEnter" MouseLeave="listBoxTask_MouseLeave">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Tag="{Binding}" Header="Edit results" Click="menuTaskEditResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit manual results" Click="menuTaskEditResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit auto results" Click="menuTaskEditAutoResults_Click"/>
                                                 <MenuItem Tag="{Binding}" Header="Results" Visibility="{Binding Path=ResultsVisibility}" Click="menuTaskResultsToPdf_Click">
                                                     <MenuItem.Icon>
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />

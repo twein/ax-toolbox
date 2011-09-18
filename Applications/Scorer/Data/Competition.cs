@@ -145,7 +145,7 @@ namespace Scorer
         }
         public void TotalScoreToPdf(bool openAfterCreation = false)
         {
-            const int maxTasksPerSheet = 10;
+            const int maxTasksPerSheet = 15;
 
             var fileName = Path.Combine(Event.Instance.DraftsFolder, ShortName + " total score.pdf");
             var config = Event.Instance.GetDefaultPdfConfig();

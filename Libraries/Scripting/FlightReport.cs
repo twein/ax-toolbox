@@ -106,7 +106,7 @@ namespace AXToolbox.Scripting
         /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
         /// </summary>
         public AXTrackpoint[] OriginalTrack { get; protected set; }
-        protected AXTrackpoint[] originalTrack;
+
         /// <summary>Track without spikes and dupes. May contain points before launch and after landing
         /// </summary>
         public AXTrackpoint[] CleanTrack { get { return cleanTrack; } }
@@ -139,6 +139,7 @@ namespace AXToolbox.Scripting
             {
                 //deserialize report
                 report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+
                 report.cleanTrack = report.OriginalTrack.Where(p => p.IsValid).ToArray();
                 report.flightTrack = report.CleanTrack.Where(p => p.Time >= report.LaunchPoint.Time && p.Time <= report.LandingPoint.Time).ToArray();
             }
@@ -423,6 +424,33 @@ namespace AXToolbox.Scripting
                 var inext = collection.IndexOf(next);
                 collection.Insert(inext, point);
             }
+        }
+
+        public void CorrectAltitudes(string altitudeCorrectionsFilePath)
+        {
+            //WARNING: this should be used only in special occasions. The correction is already done in igc processing
+
+            //load altitude correction
+            double altitudeCorrection = 0;
+            try
+            {
+                var strCorrection = File.ReadAllLines(altitudeCorrectionsFilePath).First(l => l.Trim().StartsWith(LoggerSerialNumber)).Split(new char[] { '=' })[1];
+                altitudeCorrection = double.Parse(strCorrection) / 10; //altitude correction in file is in dm, convert to m
+            }
+            catch { }
+
+            //correct altitudes
+            foreach (var p in OriginalTrack)
+                p.Altitude -= altitudeCorrection;
+
+            foreach (var p in Markers)
+                p.Altitude -= altitudeCorrection;
+
+            foreach (var p in DeclaredGoals)
+                p.Altitude -= altitudeCorrection;
+
+            launchPoint.Altitude -= altitudeCorrection;
+            landingPoint.Altitude -= altitudeCorrection;
         }
     }
 }

@@ -231,7 +231,7 @@ namespace Scorer
 
             //sort
             PilotScores = (from ps in PilotScores
-                           orderby ps.FinalScore descending, ps.Pilot.IsDisqualified, ps.Pilot.Number
+                           orderby ps.FinalScore descending, ps.Pilot.IsDisqualified, ps.ResultInfo.Result, ps.Pilot.Number
                            select ps).ToArray();
 
             //set rank and compute checksum
