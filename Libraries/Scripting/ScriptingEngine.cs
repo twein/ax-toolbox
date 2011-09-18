@@ -237,12 +237,21 @@ namespace AXToolbox.Scripting
 
             Report = FlightReport.Load(loggerFile, Settings);
 
-            Display();
+            if (Report.OriginalTrack.Count() > 0)
+            {
 
-            RaisePropertyChanged("Log");
-            RaisePropertyChanged("Report");
-            RaisePropertyChanged("Results");
-            RaisePropertyChanged("Penalties");
+                Display();
+
+                RaisePropertyChanged("Log");
+                RaisePropertyChanged("Report");
+                RaisePropertyChanged("Results");
+                RaisePropertyChanged("Penalties");
+            }
+            else
+            {
+                Report = null;
+                throw new InvalidOperationException("No valid points in track");
+            }
         }
 
         public void Reset()
@@ -289,7 +298,9 @@ namespace AXToolbox.Scripting
             if (!Directory.Exists(resultsFolder))
                 Directory.CreateDirectory(resultsFolder);
 
-            foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
+            //foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
+            //foreach (var report in Directory.EnumerateFiles(rootFolder, "*.igc"))
+            foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.igc"))
             {
                 LoadFlightReport(report);
                 Process();

@@ -190,7 +190,7 @@ namespace AXToolbox.GpsLoggers
                 var longitude = (double.Parse(line.Substring(pos + 8, 3)) +
                     double.Parse(line.Substring(pos + 11, 5)) / 60000)
                     * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
-                var altitude = double.Parse(line.Substring(pos + 18, 5)) - altitudeCorrection;
+                var altitude = double.Parse(line.Substring(pos + 18, 5)) + altitudeCorrection;
                 //var gpsAltitude = double.Parse(line.Substring(pos + 23, 5));
                 //var accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //var satellites = int.Parse(line.Substring(pos + 32, 2));

@@ -186,7 +186,18 @@ namespace Scorer
             foreach (var pr in task.PilotResults)
                 results.Add(pr.ManualResultInfo);
 
-            AddTab(new EditTaskResults(task, results, editOptions), string.Format("Task {0}", task.ShortDescription));
+            AddTab(new EditTaskResults(task, results, editOptions), string.Format("Task {0} Manual", task.ShortDescription));
+        }
+        private void menuTaskEditAutoResults_Click(object sender, RoutedEventArgs e)
+        {
+            var task = ((MenuItem)sender).Tag as Task;
+            var editOptions = EditOptions.CanEdit;
+
+            var results = new ObservableCollection<ResultInfo>();
+            foreach (var pr in task.PilotResults)
+                results.Add(pr.AutoResultInfo);
+
+            AddTab(new EditTaskResults(task, results, editOptions), string.Format("Task {0} Auto", task.ShortDescription));
         }
         private void menuTaskResultsToPdf_Click(object sender, RoutedEventArgs e)
         {

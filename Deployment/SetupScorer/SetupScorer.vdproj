@@ -70,7 +70,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
+        "OwnerKey" = "8:_B5D81A9C908D3E3090956365D68DEECA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -82,7 +82,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B5D81A9C908D3E3090956365D68DEECA"
+        "OwnerKey" = "8:_6443CBBED0DFCBCC437C3B61A18A6516"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -197,11 +197,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4277.35959, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6443CBBED0DFCBCC437C3B61A18A6516"
-                    {
-                    "Name" = "8:AXToolbox.PdfHelpers.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.PdfHelpers.dll"
             "TargetName" = "8:"
@@ -248,11 +243,6 @@
             "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_AF556DEB7B640EA83A1218E11ED5EACB"
-                    {
-                    "Name" = "8:itextsharp.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:itextsharp.dll"
             "TargetName" = "8:"
@@ -279,11 +269,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4277.35959, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B5D81A9C908D3E3090956365D68DEECA"
-                    {
-                    "Name" = "8:AXToolbox.Common.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Common.dll"
             "TargetName" = "8:"
@@ -443,15 +428,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toobox Scorer"
-        "ProductCode" = "8:{9A92C3D3-93BE-4C3E-9A23-FFBD665AFDF3}"
-        "PackageCode" = "8:{8216DBE8-EAAE-4E68-9F67-C048159DC1C9}"
+        "ProductCode" = "8:{0178E4EB-35F3-4B18-9AAD-880E0AEDA2A3}"
+        "PackageCode" = "8:{3C0E46EA-BE4C-44BF-90BB-9460458624F7}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:11.09.1702"
+        "ProductVersion" = "8:11.09.1801"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
