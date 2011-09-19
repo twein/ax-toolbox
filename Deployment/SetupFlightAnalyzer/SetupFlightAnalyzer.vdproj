@@ -82,13 +82,13 @@
         "Entry"
         {
         "MsmKey" = "8:_7DB4D0125A35314BB9FD3AE50CA30AEE"
-        "OwnerKey" = "8:_772B29D3803E886A00014DE703D7C7F1"
+        "OwnerKey" = "8:_5899224D219C53E7A589445EDB40C73C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_7DB4D0125A35314BB9FD3AE50CA30AEE"
-        "OwnerKey" = "8:_5899224D219C53E7A589445EDB40C73C"
+        "OwnerKey" = "8:_772B29D3803E886A00014DE703D7C7F1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -124,13 +124,13 @@
         "Entry"
         {
         "MsmKey" = "8:_E27DB4CB40483502E1B90BFFF96533C1"
-        "OwnerKey" = "8:_5899224D219C53E7A589445EDB40C73C"
+        "OwnerKey" = "8:_F6AEA6275E714981B2D7CCE3DA23DE71"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_E27DB4CB40483502E1B90BFFF96533C1"
-        "OwnerKey" = "8:_F6AEA6275E714981B2D7CCE3DA23DE71"
+        "OwnerKey" = "8:_5899224D219C53E7A589445EDB40C73C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -148,37 +148,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0CCFD2E0C009C84449E56B4832D6F2FB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A7FD10F4D43CF80F37652835B9F24728"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7DB4D0125A35314BB9FD3AE50CA30AEE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1B7EBDE826DC0DBBB2185FD52D2285B9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_772B29D3803E886A00014DE703D7C7F1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E27DB4CB40483502E1B90BFFF96533C1"
+        "OwnerKey" = "8:_5899224D219C53E7A589445EDB40C73C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -190,7 +160,37 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5899224D219C53E7A589445EDB40C73C"
+        "OwnerKey" = "8:_E27DB4CB40483502E1B90BFFF96533C1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_772B29D3803E886A00014DE703D7C7F1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_1B7EBDE826DC0DBBB2185FD52D2285B9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_7DB4D0125A35314BB9FD3AE50CA30AEE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A7FD10F4D43CF80F37652835B9F24728"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0CCFD2E0C009C84449E56B4832D6F2FB"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -686,15 +686,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox FlightAnalyzer"
-        "ProductCode" = "8:{FF96CF5F-4074-4B2B-8546-6B22013F925C}"
-        "PackageCode" = "8:{FB1C427E-5E47-472F-AC7F-E47C9C4D383B}"
+        "ProductCode" = "8:{EB58B6D3-1569-470D-8898-3CBE8E1C8E92}"
+        "PackageCode" = "8:{935503F8-E313-4A6A-9A11-019AAFF3FC1E}"
         "UpgradeCode" = "8:{3BE0DD8B-B888-4311-8429-CA5F241E07A7}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:11.09.1801"
+        "ProductVersion" = "8:11.09.1901"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1306,7 +1306,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F6AEA6275E714981B2D7CCE3DA23DE71"
             {
-            "SourcePath" = "8:..\\..\\Applications\\FlightAnalyzer\\obj\\Release\\FlightAnalyzer.exe"
+            "SourcePath" = "8:..\\..\\Applications\\FlightAnalyzer\\obj\\Debug\\FlightAnalyzer.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9C304CB0788F41B890681001E23D215A"
