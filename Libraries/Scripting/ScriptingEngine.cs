@@ -20,18 +20,17 @@ namespace AXToolbox.Scripting
     [Flags]
     public enum OverlayLayers : uint
     {
-        All = 0xFFFFFFFF,
-
         Grid = 0x1,
-        Areas = 0x2,
-        Static_Points = 0x4,
-        Track = 0x8,
-        Pointer = 0x10,
-        Pilot_Points = 0x20,
-        Launch_And_Landing = 0x40,
-        Reference_Points = 0x80,
-        Results = 0x100,
-        Penalties = 0x200
+        Track = 0x2,
+        Pointer = 0x4,
+        Areas = 0x8,
+        Launch_And_Landing = 0x10,
+        Static_Points = 0x20,
+        Pilot_Points = 0x40,
+        Results = 0x80,
+        Penalties = 0x100,
+
+        All = 0xFFFFFFFF
     }
     public enum TrackTypes { OriginalTrack, CleanTrack, FligthTrack }
 
@@ -330,7 +329,7 @@ namespace AXToolbox.Scripting
                 if (Results.Count() > 0)
                 {
                     ExportResults(resultsFolder);
-                    SavePdfReport(reportsFolder,true);
+                    SavePdfReport(reportsFolder, true);
                     SavePdfLog(reportsFolder);
                 }
             }

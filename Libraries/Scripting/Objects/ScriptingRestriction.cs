@@ -272,14 +272,6 @@ namespace AXToolbox.Scripting
                     break;
             }
 
-            //if (Penalty != null)
-            //{
-            //    Task.Penalties.Add(Penalty);
-            //    AddNote("restriction outcome is " + Penalty.ToString());
-            //}
-            //else
-            //    AddNote("not infringed");
-
             if (!string.IsNullOrEmpty(reason))
             {
                 Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
@@ -288,7 +280,6 @@ namespace AXToolbox.Scripting
             else
                 AddNote("not infringed");
         }
-
         public override void Display()
         {
             MapOverlay overlay = null;

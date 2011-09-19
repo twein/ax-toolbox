@@ -28,6 +28,41 @@ namespace FlightAnalyzer
             InitializeComponent();
         }
 
+        public void SelectStatic()
+        {
+            listLayers.SelectedItems.Clear();
+
+            listLayers.SelectedItems.Add(OverlayLayers.Grid);
+            listLayers.SelectedItems.Add(OverlayLayers.Areas);
+            listLayers.SelectedItems.Add(OverlayLayers.Track);
+            listLayers.SelectedItems.Add(OverlayLayers.Pointer);
+            listLayers.SelectedItems.Add(OverlayLayers.Launch_And_Landing);
+            listLayers.SelectedItems.Add(OverlayLayers.Static_Points);
+        }
+
+        public void SelectPilotDependent()
+        {
+            listLayers.SelectedItems.Clear();
+            listLayers.SelectedItems.Add(OverlayLayers.Grid);
+            listLayers.SelectedItems.Add(OverlayLayers.Areas);
+            listLayers.SelectedItems.Add(OverlayLayers.Track);
+            listLayers.SelectedItems.Add(OverlayLayers.Pointer);
+            listLayers.SelectedItems.Add(OverlayLayers.Launch_And_Landing);
+            listLayers.SelectedItems.Add(OverlayLayers.Static_Points);
+            listLayers.SelectedItems.Add(OverlayLayers.Pilot_Points);
+        }
+
+        public void SelectProcessed()
+        {
+            listLayers.SelectedItems.Clear();
+            listLayers.SelectedItems.Add(OverlayLayers.Grid);
+            listLayers.SelectedItems.Add(OverlayLayers.Areas);
+            listLayers.SelectedItems.Add(OverlayLayers.Track);
+            listLayers.SelectedItems.Add(OverlayLayers.Pointer);
+            listLayers.SelectedItems.Add(OverlayLayers.Launch_And_Landing);
+            listLayers.SelectedItems.Add(OverlayLayers.Results);
+            listLayers.SelectedItems.Add(OverlayLayers.Penalties);
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Left -= Width;
@@ -36,16 +71,7 @@ namespace FlightAnalyzer
 
             KeepPointerCentered = false;
 
-            listLayers.SelectedItems.Add(OverlayLayers.Grid);
-            listLayers.SelectedItems.Add(OverlayLayers.Areas);
-            listLayers.SelectedItems.Add(OverlayLayers.Static_Points);
-            listLayers.SelectedItems.Add(OverlayLayers.Track);
-            listLayers.SelectedItems.Add(OverlayLayers.Pointer);
-            listLayers.SelectedItems.Add(OverlayLayers.Pilot_Points);
-            listLayers.SelectedItems.Add(OverlayLayers.Launch_And_Landing);
-            listLayers.SelectedItems.Add(OverlayLayers.Reference_Points);
-            listLayers.SelectedItems.Add(OverlayLayers.Results); 
-            listLayers.SelectedItems.Add(OverlayLayers.Penalties);
+
         }
         private void Window_Closing(object sender, CancelEventArgs e)
         {
@@ -90,7 +116,7 @@ namespace FlightAnalyzer
             RaisePropertyChanged("PointerIndex");
         }
 
-        #region "INotifyPropertyCahnged implementation"
+        #region "INotifyPropertyChanged implementation"
         private void RaisePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

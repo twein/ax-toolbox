@@ -229,6 +229,7 @@ namespace FlightAnalyzer
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Engine");
                         RaisePropertyChanged("Report");
+                        Tools.SelectStatic();
                         break;
                     case "report":
                         Report = Engine.Report;
@@ -242,9 +243,11 @@ namespace FlightAnalyzer
                         TrackPointer = null;
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Report");
+                        Tools.SelectPilotDependent();
                         break;
                     case "process":
                     case "batchProcess":
+                        Tools.SelectProcessed();
                         break;
                 }
             }

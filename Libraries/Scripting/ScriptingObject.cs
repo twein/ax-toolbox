@@ -45,7 +45,7 @@ namespace AXToolbox.Scripting
         protected string DisplayMode { get; set; }
         protected string[] DisplayParameters { get; set; }
 
-        protected Brush Color { get; set; }
+        public Brush Color { get; protected set; }
         public List<Note> Notes { get; private set; }
         public ScriptingTask Task { get; private set; }
 

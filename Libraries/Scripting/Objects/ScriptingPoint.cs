@@ -737,10 +737,10 @@ namespace AXToolbox.Scripting
             uint layer;
             if (isStatic)
                 layer = (uint)OverlayLayers.Static_Points;
-            else if (ObjectType == "MPDG" || ObjectType == "MVMD")
+            else// if (ObjectType == "MPDG" || ObjectType == "MVMD")
                 layer = (uint)OverlayLayers.Pilot_Points;
-            else
-                layer = (uint)OverlayLayers.Reference_Points;
+            //else
+            //    layer = (uint)OverlayLayers.Reference_Points;
 
             MapOverlay overlay = null;
 
