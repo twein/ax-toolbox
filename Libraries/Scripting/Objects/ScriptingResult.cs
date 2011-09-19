@@ -178,34 +178,58 @@ namespace AXToolbox.Scripting
                     case "D2D":
                         //D2D: distance in 2D
                         //D2D(<pointNameA>, <pointNameB> [,<bestPerformance>])
-                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance2D(A.Point, B.Point), 0)));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
+                        {
+                            var distance = Physics.Distance2D(A.Point, B.Point);
+                            if (distance < bestPerformance)
+                            {
+                                distance = bestPerformance;
+                                AddNote("forcing distance to be MMA radius", true);
+                            }
+                            Result = Task.NewResult(Math.Round(distance, 0));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                        }
                         break;
 
                     case "D3D":
                         //D3D: distance in 3D
                         //D3D(<pointNameA>, <pointNameB> [,<bestPerformance>])
-                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance3D(A.Point, B.Point), 0)));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.Add(B.Point);
+                        {
+                            var distance = Physics.Distance3D(A.Point, B.Point);
+                            if (distance < bestPerformance)
+                            {
+                                distance = bestPerformance;
+                                AddNote("forcing distance to be MMA radius", true);
+                            }
+                            Result = Task.NewResult(Math.Round(distance, 0));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                        }
                         break;
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
                         //DRAD(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
                         {
+                            var distance = 0.0;
                             var vDist = Math.Abs(A.Point.Altitude - B.Point.Altitude);
                             if (vDist <= altitudeThreshold)
                             {
-                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance2D(A.Point, B.Point), 0)));
+                                distance = Physics.Distance2D(A.Point, B.Point);
                                 AddNote("using 2D distance", true);
                             }
                             else
                             {
-                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance3D(A.Point, B.Point), 0)));
+                                distance = Physics.Distance3D(A.Point, B.Point);
                                 AddNote("using 3D distance", true);
                             }
+
+                            if (distance < bestPerformance)
+                            {
+                                distance = bestPerformance;
+                                AddNote("forcing distance to be MMA radius", true);
+                            }
+                            Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
                             Result.UsedPoints.Add(B.Point);
                         }
@@ -215,17 +239,25 @@ namespace AXToolbox.Scripting
                         //DRAD10: relative altitude dependent distance rounded down to decameter
                         //DRAD10(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
                         {
+                            var distance = 0.0;
                             var vDist = Math.Abs(A.Point.Altitude - B.Point.Altitude);
                             if (vDist <= altitudeThreshold)
                             {
-                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Floor(Physics.Distance2D(A.Point, B.Point) / 10) * 10));
+                                distance = Physics.Distance2D(A.Point, B.Point);
                                 AddNote("using 2D distance", true);
                             }
                             else
                             {
-                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Floor(Physics.Distance3D(A.Point, B.Point) / 10) * 10));
+                                distance = Physics.Distance3D(A.Point, B.Point);
                                 AddNote("using 3D distance", true);
                             }
+
+                            if (distance < bestPerformance)
+                            {
+                                distance = bestPerformance;
+                                AddNote("forcing distance to be MMA radius", true);
+                            }
+                            Result = Task.NewResult(Math.Floor(distance / 10) * 10);
                             Result.UsedPoints.Add(A.Point);
                             Result.UsedPoints.Add(B.Point);
                         }
@@ -234,19 +266,21 @@ namespace AXToolbox.Scripting
                     case "DACC":
                         //DACC: accumulated distance
                         //DACC(<pointNameA>, <pointNameB>)
-                        double distance = 0;
-                        AXPoint last = null;
-                        var points = Engine.TaskValidTrackPoints.Where(p => p.Time >= A.Point.Time && p.Time <= B.Point.Time).ToArray();
-                        foreach (var p in points)
                         {
-                            if (!p.StartSubtrack && last != null)
-                                distance += Physics.Distance2D(p, last);
-                            last = p;
+                            double distance = 0;
+                            AXPoint last = null;
+                            var points = Engine.TaskValidTrackPoints.Where(p => p.Time >= A.Point.Time && p.Time <= B.Point.Time).ToArray();
+                            foreach (var p in points)
+                            {
+                                if (!p.StartSubtrack && last != null)
+                                    distance += Physics.Distance2D(p, last);
+                                last = p;
+                            }
+                            Result = Task.NewResult(Math.Round(distance, 0));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.AddRange(points); //cloned ValidTrackPoints
+                            Result.UsedPoints.Add(B.Point);
                         }
-                        Result = Task.NewResult(Math.Round(distance, 0));
-                        Result.UsedPoints.Add(A.Point);
-                        Result.UsedPoints.AddRange(points); //cloned ValidTrackPoints
-                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "TSEC":
