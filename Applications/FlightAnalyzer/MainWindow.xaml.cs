@@ -9,6 +9,8 @@ using AXToolbox.GpsLoggers;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace FlightAnalyzer
 {
@@ -79,20 +81,24 @@ namespace FlightAnalyzer
                 Worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
             }
         }
-        private void batchProcessButton_Click(object sender, RoutedEventArgs e)
-        {
-
-            var dlgResult = MessageBox.Show(this, "This will process all saved flight reports. Are you sure?", "WARNING", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.Cancel);
-
-            if (dlgResult == MessageBoxResult.OK)
-            {
-                Cursor = Cursors.Wait;
-                Worker.RunWorkerAsync(rootFolder); // look Work() and WorkCompleted()
-            }
-        }
         private void toolsButton_Click(object sender, RoutedEventArgs e)
         {
             Tools.Show();
+        }
+        private void aboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var assembly = GetType().Assembly;
+            var aName = assembly.GetName();
+            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+
+            var programInfo = string.Format("{0} v{1} {2}",
+                ((AssemblyTitleAttribute)aTitle[0]).Title,
+                aName.Version,
+                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+
+            MessageBox.Show(this, programInfo, "About", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         private void loadReportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -124,6 +130,17 @@ namespace FlightAnalyzer
         {
             Cursor = Cursors.Wait;
             Worker.RunWorkerAsync(null); // look Work() and WorkCompleted()
+        }
+        private void batchProcessButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            var dlgResult = MessageBox.Show(this, "This will process all saved flight reports. Are you sure?", "WARNING", MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.Cancel);
+
+            if (dlgResult == MessageBoxResult.OK)
+            {
+                Cursor = Cursors.Wait;
+                Worker.RunWorkerAsync(rootFolder); // look Work() and WorkCompleted()
+            }
         }
         private void saveReportButton_Click(object sender, RoutedEventArgs e)
         {

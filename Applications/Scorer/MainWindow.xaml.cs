@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
-using AXToolbox.PdfHelpers;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace Scorer
 {
@@ -140,6 +140,22 @@ namespace Scorer
         {
             foreach (var competition in Event.Instance.Competitions)
                 competition.TotalScoreToPdf(true);
+        }
+
+        private void menuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            var assembly = GetType().Assembly;
+            var aName = assembly.GetName();
+            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+
+            var programInfo = string.Format("{0} v{1} {2}",
+                ((AssemblyTitleAttribute)aTitle[0]).Title,
+                aName.Version,
+                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+
+            MessageBox.Show(this, programInfo, "About", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void menuCompetitionPilotsEdit_Click(object sender, RoutedEventArgs e)
