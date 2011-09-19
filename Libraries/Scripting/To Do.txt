@@ -1,5 +1,5 @@
 ﻿TO DO
-! think about measure/result/constraint thing
+! think about measure/result/constraint/filter/restriction thing
 - Area addition
 - Add a new type of point: TLU Track point last used: Last used point in any task
 - MPDGF: tasks in any order: think about how to check if the declaration has been done before the last marker drop 

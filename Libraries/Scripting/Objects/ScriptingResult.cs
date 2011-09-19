@@ -56,7 +56,7 @@ namespace AXToolbox.Scripting
                 case "DRAD":
                 case "DRAD10":
                     //DRAD: relative altitude dependent distance
-                    //DRAD10: relative altitude dependent distance rounded to decameter
+                    //DRAD10: relative altitude dependent distance rounded down to decameter
                     //XXXX(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
                     A = ResolveOrDie<ScriptingPoint>(0);
@@ -169,6 +169,7 @@ namespace AXToolbox.Scripting
             else if (B.Point == null)
             {
                 Result = Task.NewNoResult(B.GetFirstNoteText());
+                Result.UsedPoints.Add(A.Point);
             }
             else
             {
@@ -178,24 +179,56 @@ namespace AXToolbox.Scripting
                         //D2D: distance in 2D
                         //D2D(<pointNameA>, <pointNameB> [,<bestPerformance>])
                         Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance2D(A.Point, B.Point), 0)));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "D3D":
                         //D3D: distance in 3D
                         //D3D(<pointNameA>, <pointNameB> [,<bestPerformance>])
                         Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance3D(A.Point, B.Point), 0)));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "DRAD":
                         //DRAD: relative altitude dependent distance
                         //DRAD(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
-                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold), 0)));
+                        {
+                            var vDist = Math.Abs(A.Point.Altitude - B.Point.Altitude);
+                            if (vDist <= altitudeThreshold)
+                            {
+                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance2D(A.Point, B.Point), 0)));
+                                AddNote("using 2D distance", true);
+                            }
+                            else
+                            {
+                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Round(Physics.Distance3D(A.Point, B.Point), 0)));
+                                AddNote("using 3D distance", true);
+                            }
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                        }
                         break;
 
                     case "DRAD10":
-                        //DRAD10: relative altitude dependent distance rounded to decameter
+                        //DRAD10: relative altitude dependent distance rounded down to decameter
                         //DRAD10(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
-                        Result = Task.NewResult(Math.Max(bestPerformance, Math.Floor(Physics.DistanceRad(A.Point, B.Point, altitudeThreshold) / 10) * 10));
+                        {
+                            var vDist = Math.Abs(A.Point.Altitude - B.Point.Altitude);
+                            if (vDist <= altitudeThreshold)
+                            {
+                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Floor(Physics.Distance2D(A.Point, B.Point) / 10) * 10));
+                                AddNote("using 2D distance", true);
+                            }
+                            else
+                            {
+                                Result = Task.NewResult(Math.Max(bestPerformance, Math.Floor(Physics.Distance3D(A.Point, B.Point) / 10) * 10));
+                                AddNote("using 3D distance", true);
+                            }
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                        }
                         break;
 
                     case "DACC":
@@ -203,26 +236,33 @@ namespace AXToolbox.Scripting
                         //DACC(<pointNameA>, <pointNameB>)
                         double distance = 0;
                         AXPoint last = null;
-                        foreach (var p in Engine.TaskValidTrackPoints)
+                        var points = Engine.TaskValidTrackPoints.Where(p => p.Time >= A.Point.Time && p.Time <= B.Point.Time).ToArray();
+                        foreach (var p in points)
                         {
                             if (!p.StartSubtrack && last != null)
                                 distance += Physics.Distance2D(p, last);
                             last = p;
                         }
                         Result = Task.NewResult(Math.Round(distance, 0));
-                        Result.UsedPoints.AddRange(Engine.TaskValidTrackPoints.ToArray()); //cloned ValidTrackPoints
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.AddRange(points); //cloned ValidTrackPoints
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "TSEC":
                         //TSEC: time in seconds
                         //TSEC(<pointNameA>, <pointNameB>)
                         Result = Task.NewResult(Math.Round((B.Point.Time - A.Point.Time).TotalSeconds, 0));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "TMIN":
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
                         Result = Task.NewResult(Math.Round((B.Point.Time - A.Point.Time).TotalMinutes, 2));
+                        Result.UsedPoints.Add(A.Point);
+                        Result.UsedPoints.Add(B.Point);
                         break;
 
                     case "ATRI":
@@ -231,10 +271,15 @@ namespace AXToolbox.Scripting
                         if (C.Point == null)
                         {
                             Result = Task.NewNoResult(C.GetFirstNoteText());
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
                         }
                         else
                         {
                             Result = Task.NewResult(Math.Round(Physics.Area(A.Point, B.Point, C.Point) / 1e6, 2));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                            Result.UsedPoints.Add(C.Point);
                         }
                         break;
 
@@ -244,6 +289,8 @@ namespace AXToolbox.Scripting
                         if (C.Point == null)
                         {
                             Result = Task.NewNoResult(C.GetFirstNoteText());
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
                         }
                         else
                         {
@@ -252,6 +299,9 @@ namespace AXToolbox.Scripting
                             var ang = Physics.Substract(nab, nbc);
 
                             Result = Task.NewResult(Math.Round(Math.Abs(ang), 2));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
+                            Result.UsedPoints.Add(C.Point);
                         }
                         break;
 
@@ -262,6 +312,8 @@ namespace AXToolbox.Scripting
                             var ang = Physics.Substract(Physics.Direction2D(A.Point, B.Point), 0);
 
                             Result = Task.NewResult(Math.Round(Math.Abs(ang), 2));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
                         }
                         break;
 
@@ -272,6 +324,8 @@ namespace AXToolbox.Scripting
                             var ang = Physics.Substract(Physics.Direction2D(A.Point, B.Point), setDirection);
 
                             Result = Task.NewResult(Math.Round(Math.Abs(ang), 2));
+                            Result.UsedPoints.Add(A.Point);
+                            Result.UsedPoints.Add(B.Point);
                         }
                         break;
                 }
@@ -280,16 +334,8 @@ namespace AXToolbox.Scripting
             if (Result == null)
                 Result = Task.NewNoResult("this should never happen");
 
-            if (A.Point != null)
-                Result.UsedPoints.Add(A.Point);
-            if (B.Point != null)
-                Result.UsedPoints.Add(B.Point);
-            if (C != null && C.Point != null)
-                Result.UsedPoints.Add(C.Point);
-
             AddNote("result is " + Result.ToString());
         }
-
         public override void Display()
         {
             MapOverlay overlay = null;
@@ -350,6 +396,25 @@ namespace AXToolbox.Scripting
 
             if (overlay != null)
                 Engine.MapViewer.AddOverlay(overlay);
+
+            if (A != null && A.Point != null)
+                Engine.MapViewer.AddOverlay(new WaypointOverlay(A.Point.ToWindowsPoint(), A.ObjectName)
+                {
+                    Layer = (uint)OverlayLayers.Results,
+                    Color = A.Color
+                });
+            if (B != null && B.Point != null)
+                Engine.MapViewer.AddOverlay(new WaypointOverlay(B.Point.ToWindowsPoint(), B.ObjectName)
+                {
+                    Layer = (uint)OverlayLayers.Results,
+                    Color = B.Color
+                });
+            if (C != null && C.Point != null)
+                Engine.MapViewer.AddOverlay(new WaypointOverlay(C.Point.ToWindowsPoint(), C.ObjectName)
+                {
+                    Layer = (uint)OverlayLayers.Results,
+                    Color = C.Color
+                });
         }
     }
 }

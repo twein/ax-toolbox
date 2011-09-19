@@ -2,20 +2,18 @@
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 TO DO
-* Fix the log files thing
-* Batch process flight reports.
-* Fix add/remove goal declarations. Support null altitude
 ! Add/remove penalties.
 - full IsDirty management.
 - Add the possibility of warning the user programmatically.
 - Mark manually added markers and declarations. Don't allow to delete non-manual ones.
-
 - Assign pilot ranges to each debriefer?
 - Don't score counterfeit logs.
 - List of saved reports.
 - Getting started with FlightAnalyzer
 * Keep track of debriefer identity. 
-
+* Fix the log files thing
+* Batch process flight reports.
+* Fix add/remove goal declarations. Support null altitude
 
 IDEAS
 - Steal ideas from http://boxy.fisch.lu

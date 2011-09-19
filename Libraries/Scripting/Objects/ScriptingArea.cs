@@ -111,7 +111,6 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
-
         public override void Display()
         {
             MapOverlay overlay = null;
@@ -166,7 +165,6 @@ namespace AXToolbox.Scripting
 
             return isInside;
         }
-
         public double ScaledBPZInfringement(AXPoint point)
         {
             double infringement = 0;
@@ -178,7 +176,6 @@ namespace AXToolbox.Scripting
 
             return infringement;
         }
-
         public double RPZAltitudeInfringement(AXPoint point)
         {
             double infringement = 0;
