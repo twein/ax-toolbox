@@ -6,6 +6,8 @@ using AXToolbox.MapViewer;
 using AXToolbox.Common;
 using System.Windows;
 using AXToolbox.GpsLoggers;
+using System.Windows.Media;
+using System.Threading.Tasks;
 
 namespace AXToolbox.Scripting
 {
@@ -16,11 +18,13 @@ namespace AXToolbox.Scripting
         protected double sensitivity = 0;
         protected string description = "";
 
-        public Penalty Penalty { get; protected set; }
+        public List<Penalty> Infringements { get; protected set; }
 
         internal ScriptingPenalty(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
-        { }
+        {
+            Infringements = new List<Penalty>();
+        }
 
 
         public override void CheckConstructorSyntax()
@@ -81,7 +85,7 @@ namespace AXToolbox.Scripting
         public override void Reset()
         {
             base.Reset();
-            Penalty = null;
+            Infringements.Clear();
         }
         public override void Process()
         {
@@ -136,9 +140,10 @@ namespace AXToolbox.Scripting
                             if (penaltyPoints > 0)
                             {
                                 penaltyPoints = Math.Min(1000, 10 * Math.Ceiling(penaltyPoints / 10)); //Rule 7.5
-                                Penalty = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
-                                Penalty.UsedPoints.AddRange(pointsInside);
-                                Task.Penalties.Add(Penalty);
+                                var infringement = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
+                                infringement.UsedPoints.AddRange(pointsInside);
+                                Infringements.Add(infringement);
+                                task.Penalties.Add(infringement);
                             }
 
                             firstPoint = lastPoint;
@@ -189,9 +194,10 @@ namespace AXToolbox.Scripting
                                 penalty = 500 * (vertInfringement + horzInfringement) / 2; //COH7.5
 
                                 penalty = 10 * Math.Ceiling((penalty / 10));
-                                Penalty = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
-                                Penalty.UsedPoints.AddRange(pointsInside);
-                                task.Penalties.Add(Penalty);
+                                var infringement = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
+                                infringement.UsedPoints.AddRange(pointsInside);
+                                Infringements.Add(infringement);
+                                task.Penalties.Add(infringement);
                             }
 
                             firstPoint = lastPoint;
@@ -278,21 +284,33 @@ namespace AXToolbox.Scripting
 
         public override void Display()
         {
-            //Layer=(uint)OverlayLayers.Penalties;
+            if (DisplayMode != "NONE")
+            {
+                foreach (var inf in Infringements)
+                {
+                    if (inf.UsedPoints.Count > 0)
+                    {
+                        var path = new Point[inf.UsedPoints.Count];
+                        Parallel.For(0, inf.UsedPoints.Count, i =>
+                        {
+                            path[i] = inf.UsedPoints[i].ToWindowsPoint();
+                        });
 
-            //MapOverlay overlay = null;
-            //if (DisplayMode != "NONE" && Penalty != null)
-            //{
-            //    switch (ObjectType)
-            //    {
-            //    }
-            //}
+                        switch (ObjectType)
+                        {
+                            case "RPZ":
+                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Red, Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new DistanceOverlay(path[0], path[path.Length - 1], inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
+                                break;
 
-            //if (overlay != null)
-            //{
-            //    overlay.Layer = Layer;
-            //    Engine.MapViewer.AddOverlay(overlay);
-            //}
+                            case "BPZ":
+                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Blue, Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new DistanceOverlay(path[0], path[path.Length - 1], inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
+                                break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

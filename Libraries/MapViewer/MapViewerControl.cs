@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -194,6 +195,38 @@ namespace AXToolbox.MapViewer
             using (var stream = File.Create(fileName))
             {
                 encoder.Save(stream);
+            }
+        }
+
+        public void PrintSnapshot()
+        {
+
+            PrintDialog printDlg = new System.Windows.Controls.PrintDialog();
+            if (printDlg.ShowDialog() == true)
+            {
+                //get selected printer capabilities
+                PrintCapabilities capabilities = printDlg.PrintQueue.GetPrintCapabilities(printDlg.PrintTicket);
+
+                //Capture the image 
+                RenderTargetBitmap bmp = new RenderTargetBitmap((int)mainGrid.ActualWidth, (int)mainGrid.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                bmp.Render(this);
+
+                //Place on a panel
+                StackPanel myPanel = new StackPanel();
+                myPanel.Margin = new Thickness(25);
+                Image myImage = new Image();
+                myImage.Stretch = Stretch.Uniform;
+                myImage.Source = bmp;
+                myPanel.Children.Add(myImage);
+                //TextBlock myBlock = new TextBlock();
+                //myBlock.Text = "A Great Image.";
+                //myBlock.TextAlignment = TextAlignment.Center;
+                //myPanel.Children.Add(myBlock);
+
+                myPanel.Measure(new Size(printDlg.PrintableAreaWidth, printDlg.PrintableAreaHeight));
+                myPanel.Arrange(new Rect(new Point(0, 0), myPanel.DesiredSize));
+
+                printDlg.PrintVisual(myPanel, "Map capture");
             }
         }
 
@@ -459,8 +492,13 @@ namespace AXToolbox.MapViewer
                     case Key.Right:
                         LocalPan(new Vector(50, 0));
                         break;
-                    case Key.Multiply:
-                        SaveSnapshot("snapshot.png");
+                    case Key.S:
+                        if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+                            SaveSnapshot("snapshot.png");
+                        break;
+                    case Key.P:
+                        if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+                        PrintSnapshot();
                         break;
                     case Key.Back:
                     case Key.Delete:

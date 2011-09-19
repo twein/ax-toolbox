@@ -10,5 +10,6 @@ Hot keys:
     .: set zoom to 1.
     Escape: reset zoom to fit the window.
     Up/down/left/right: pan the map.
-    *: take a snapshot (snapshot.png)
     back/delete: delete all distance measurements.
+    CTRL+S: take a snapshot (snapshot.png)
+    CTRL+P: print snapshot
