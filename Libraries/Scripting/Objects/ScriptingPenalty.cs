@@ -280,8 +280,10 @@ namespace AXToolbox.Scripting
                     }
                     break;
             }
-        }
 
+            if (Infringements.Count == 0)
+                AddNote("not infringed");
+        }
         public override void Display()
         {
             if (DisplayMode != "NONE")

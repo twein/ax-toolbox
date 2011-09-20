@@ -183,7 +183,7 @@ namespace AXToolbox.Scripting
                             if (distance < bestPerformance)
                             {
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA radius", true);
+                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
@@ -199,7 +199,7 @@ namespace AXToolbox.Scripting
                             if (distance < bestPerformance)
                             {
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA radius", true);
+                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
@@ -216,18 +216,18 @@ namespace AXToolbox.Scripting
                             if (vDist <= altitudeThreshold)
                             {
                                 distance = Physics.Distance2D(A.Point, B.Point);
-                                AddNote("using 2D distance", true);
+                                AddNote("measuring 2D distance", true);
                             }
                             else
                             {
                                 distance = Physics.Distance3D(A.Point, B.Point);
-                                AddNote("using 3D distance", true);
+                                AddNote("measuring 3D distance", true);
                             }
 
                             if (distance < bestPerformance)
                             {
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA radius", true);
+                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
@@ -244,7 +244,7 @@ namespace AXToolbox.Scripting
                             if (vDist <= altitudeThreshold)
                             {
                                 distance = Physics.Distance2D(A.Point, B.Point);
-                                AddNote("using 2D distance", true);
+                                AddNote("measuring 2D distance", true);
                             }
                             else
                             {
@@ -255,7 +255,7 @@ namespace AXToolbox.Scripting
                             if (distance < bestPerformance)
                             {
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA radius", true);
+                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Floor(distance / 10) * 10);
                             Result.UsedPoints.Add(A.Point);
@@ -399,21 +399,21 @@ namespace AXToolbox.Scripting
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ATRI":
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() },
-                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANG3P":
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANGN":
@@ -423,7 +423,7 @@ namespace AXToolbox.Scripting
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectType, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
                 }
             }

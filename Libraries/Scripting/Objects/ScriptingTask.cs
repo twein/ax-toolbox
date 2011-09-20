@@ -196,7 +196,7 @@ namespace AXToolbox.Scripting
             table.AddCell(c);
 
             //penalties
-            table.AddCell(new PdfPCell(new Paragraph("Penalties / restrictions:", config.BoldFont)));
+            table.AddCell(new PdfPCell(new Paragraph("Penalties:", config.BoldFont)));
             c = new PdfPCell();
             foreach (var pen in Penalties)
             {
