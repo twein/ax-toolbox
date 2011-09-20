@@ -165,7 +165,7 @@ namespace AXToolbox.Scripting
                 if (!importantOnly)
                     lines.Add(obj.ToString());
                 foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
-                    lines.Add(obj.ObjectName + ": " + note.Text);
+                    lines.Add(obj.ObjectClass + " " + obj.ObjectName + ": " + note.Text);
             }
 
             return lines;

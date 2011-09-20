@@ -30,7 +30,7 @@ namespace AXToolbox.Scripting
 
 
         protected ScriptingEngine Engine { get; private set; }
-        protected string ObjectClass
+        public string ObjectClass
         {
             get
             {

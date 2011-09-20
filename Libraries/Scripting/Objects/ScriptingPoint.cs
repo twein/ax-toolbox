@@ -471,7 +471,7 @@ namespace AXToolbox.Scripting
                                 try
                                 {
                                     //look for last declaration before last used point
-                                    goal = goals.Last(g => g.Time <= Engine.LastUsedPoint.Time);
+                                    goal = goals.Last(g => true/*g.Time <= Engine.LastUsedPoint.Time*/);
 
                                     try
                                     {

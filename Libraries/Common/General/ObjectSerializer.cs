@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace AXToolbox.Common.IO
 {
@@ -87,8 +88,14 @@ namespace AXToolbox.Common.IO
         /// <param name="serializableObject">Serializable object to be saved to file.</param>
         /// <param name="path">Path of the file to save the object to.</param>
         /// <param name="serializedFormat">XML serialized format used to save the object.</param>
-        public static void Save(T serializableObject, string path, SerializationFormat serializedFormat)
+        public static void Save(T serializableObject, string path, SerializationFormat serializedFormat, bool makeBackup = true)
         {
+            if (makeBackup && File.Exists(path))
+            {
+                var backupPath = Path.Combine(Path.GetDirectoryName(path), Path.ChangeExtension(Path.GetFileNameWithoutExtension(path) + string.Format("_{0:yyyyMMddHHmmss}", DateTime.Now), Path.GetExtension(path)));
+                File.Copy(path, backupPath);
+            }
+
             switch (serializedFormat)
             {
                 case SerializationFormat.Binary:

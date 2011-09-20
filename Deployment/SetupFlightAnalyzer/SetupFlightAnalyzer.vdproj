@@ -686,15 +686,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox FlightAnalyzer"
-        "ProductCode" = "8:{EB58B6D3-1569-470D-8898-3CBE8E1C8E92}"
-        "PackageCode" = "8:{935503F8-E313-4A6A-9A11-019AAFF3FC1E}"
+        "ProductCode" = "8:{172B7AB1-73DF-4AF7-9951-FDC8F2303144}"
+        "PackageCode" = "8:{CED2E378-A38F-4E22-B148-F3575758DF23}"
         "UpgradeCode" = "8:{3BE0DD8B-B888-4311-8429-CA5F241E07A7}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:11.09.1901"
+        "ProductVersion" = "8:11.09.2001"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1306,7 +1306,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F6AEA6275E714981B2D7CCE3DA23DE71"
             {
-            "SourcePath" = "8:..\\..\\Applications\\FlightAnalyzer\\obj\\Debug\\FlightAnalyzer.exe"
+            "SourcePath" = "8:..\\..\\Applications\\FlightAnalyzer\\obj\\Release\\FlightAnalyzer.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9C304CB0788F41B890681001E23D215A"

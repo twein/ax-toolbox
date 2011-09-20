@@ -147,7 +147,9 @@ namespace FlightAnalyzer
             try
             {
                 if (!string.IsNullOrEmpty(GetFolderName()))
+                {
                     Engine.SaveAll(rootFolder);
+                }
             }
             catch (Exception ex)
             {
