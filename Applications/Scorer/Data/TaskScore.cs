@@ -271,6 +271,14 @@ namespace Scorer
 
             var config = Event.Instance.GetDefaultPdfConfig();
 
+            //watermark
+            var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional;
+            if (!published)
+                config.Watermark = "DRAFT - NOT PUBLISHED";
+
+            //task number
+            config.TaskNumber = string.Format("T{0:00}", Task.Number);
+
             var helper = new PdfHelper(fileName, config);
             var document = helper.Document;
 
@@ -281,19 +289,35 @@ namespace Scorer
             if (openAfterCreation)
                 PdfHelper.OpenPdf(fileName);
         }
-        public void ScoresToTable(PdfHelper helper)
+        public void BookScoresToPdf(bool openAfterCreation)
+        {
+            var fileName = Path.Combine(Event.Instance.DraftsFolder, string.Format("{0}-Task{1}_book_score-v{3:00}{4}-{2:MMdd_HHmmss}-DRAFT.pdf",
+                                competition.ShortName, Task.UltraShortDescription.Replace(" ", "_"), RevisionDate, Version, Status.ToString().Substring(0, 1)));
+
+            var config = Event.Instance.GetDefaultPdfConfig();
+
+            //watermark
+            config.Watermark = "FOR SCORING TEAM USE";
+
+            //task number
+            config.TaskNumber = string.Format("T{0:00}", Task.Number);
+
+            var helper = new PdfHelper(fileName, config);
+            var document = helper.Document;
+
+            ScoresToTable(helper, true);
+
+            document.Close();
+
+            if (openAfterCreation)
+                PdfHelper.OpenPdf(fileName);
+        }
+        public void ScoresToTable(PdfHelper helper, bool sortByPilotNumber = false)
         {
             var document = helper.Document;
             var config = helper.Config;
 
             var published = (Task.Phases & CompletedPhases.Published) > 0 || Status == ScoreStatus.Provisional; // don't show the draft message if status is Provisional
-
-            //watermark
-            if (!published)
-                config.Watermark = "DRAFT - NOT PUBLISHED";
-
-            //task number
-            config.TaskNumber = string.Format("T{0:00}", Task.Number);
 
             //title
             document.Add(new Paragraph(competition.Name, config.TitleFont) { SpacingAfter = config.TitleFont.Size });
@@ -321,7 +345,12 @@ namespace Scorer
             var relWidths = new float[] { 2, 8, 3, 3, 3, 3, 3, 3, 3, 10 };
             var table = helper.NewTable(headers, relWidths, title);
 
-            foreach (var ps in PilotScores)
+            PilotScore[] sortedPilotScores;
+            if (sortByPilotNumber)
+                sortedPilotScores = PilotScores.OrderBy(ps => ps.Pilot.Number).ToArray();
+            else
+                sortedPilotScores = PilotScores;
+            foreach (var ps in sortedPilotScores)
             {
                 //mark changes for official versions greater than 1
                 var bgcolor = (Status == ScoreStatus.Official && Version > 1 && ps.ResultInfo.HasChanged) ? BaseColor.YELLOW : null;

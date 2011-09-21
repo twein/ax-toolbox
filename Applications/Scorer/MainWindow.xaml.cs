@@ -255,7 +255,26 @@ namespace Scorer
                 }
             }
         }
+        private void menuTaskBookScoresToPdf_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(Event.Instance.FilePath))
+                MessageBox.Show("Please, save event before!");
+            else
+            {
+                var task = ((MenuItem)sender).Tag as Task;
 
+                var folder = GetFolderName();
+
+                if (!string.IsNullOrEmpty(folder))
+                {
+                    foreach (var c in Event.Instance.Competitions)
+                    {
+                        var ts = c.TaskScores.First(s => s.Task == task);
+                        ts.BookScoresToPdf(true);
+                    }
+                }
+            }
+        }
         public void AddTab(UserControl control, string header)
         {
 
