@@ -143,6 +143,11 @@
                                                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                                                     </MenuItem.Icon>
                                                 </MenuItem>
+                                                <MenuItem Tag="{Binding}" Header="Book Score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskBookScoresToPdf_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
