@@ -21,7 +21,10 @@ namespace AXToolbox.GpsLoggers
         Description = 0x80,
         Radius = 0x100,
         Input = 0x200,
-        Declaration = 0x400
+        Declaration = 0x400,
+        AltitudeMeters = 0x800,
+
+        CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Declaration | AXPointInfo.AltitudeMeters
     }
 
     [Serializable]
@@ -74,6 +77,9 @@ namespace AXToolbox.GpsLoggers
 
             if ((info & AXPointInfo.Altitude) > 0)
                 str.Append(Altitude.ToString("0 "));
+
+            if ((info & AXPointInfo.AltitudeMeters) > 0)
+                str.Append(Altitude.ToString("0m "));
 
             return str.ToString();
         }

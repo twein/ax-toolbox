@@ -12,28 +12,33 @@ namespace Scorer
         public int Average { get; protected set; }
         public int[] TaskScores { get; protected set; }
 
-        public PilotTotalScore(Competition competition, Pilot pilot)
+        public PilotTotalScore(Competition competition, Pilot pilot, bool onlyPublished)
         {
             Pilot = pilot;
 
             Total = 0;
 
-            var validTScores = from ts in competition.TaskScores
-                               where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
-                               orderby ts.Task.Number
-                               select ts;
+            TaskScore[] validTaskScores;
+            if (!onlyPublished)
+                validTaskScores = (from ts in competition.TaskScores
+                                   where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
+                                   orderby ts.Task.Number
+                                   select ts).ToArray();
+            else
+                validTaskScores = (from ts in competition.TaskScores
+                                   where !ts.Task.IsCancelled && ((ts.Task.Phases & CompletedPhases.Published) > 0)
+                                   orderby ts.Task.Number
+                                   select ts).ToArray();
+
             var taskScores = new List<int>();
 
-            if (validTScores.Count() > 0)
+            foreach (var ts in validTaskScores)
             {
-                foreach (var ts in validTScores)
-                {
-                    var ps = ts.PilotScores.First(s => s.Pilot.Number == pilot.Number);
-                    Total += ps.FinalScore;
-                    taskScores.Add(ps.FinalScore);
-                }
-                Average = Total / taskScores.Count;
+                var ps = ts.PilotScores.First(s => s.Pilot.Number == pilot.Number);
+                Total += ps.FinalScore;
+                taskScores.Add(ps.FinalScore);
             }
+            Average = Total / taskScores.Count;
 
             TaskScores = taskScores.ToArray();
         }

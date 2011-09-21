@@ -25,7 +25,7 @@ namespace AXToolbox.GpsLoggers
             Time = time;
             Altitude = altitude;
 
-            if (definition.Contains("/"))
+            if (definition.Length == 9 && definition[4] == '/')
             {
                 // type 0000/0000
                 Type = DeclarationType.CompetitionCoordinates;
@@ -35,9 +35,9 @@ namespace AXToolbox.GpsLoggers
             }
             else
             {
-                //Type 000
+                //Type freeform
                 Type = DeclarationType.GoalName;
-                Name = definition;
+                Name = definition.TrimEnd(new char[] { '/' });
             }
 
         }
@@ -70,6 +70,12 @@ namespace AXToolbox.GpsLoggers
                     str.Append("- ");
                 else
                     str.Append(Altitude.ToString("0 "));
+
+            if ((info & AXPointInfo.AltitudeMeters) > 0)
+                if (double.IsNaN(Altitude))
+                    str.Append("- ");
+                else
+                    str.Append(Altitude.ToString("0m "));
 
             return str.ToString();
         }

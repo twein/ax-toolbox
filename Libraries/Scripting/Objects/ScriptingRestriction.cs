@@ -16,8 +16,7 @@ namespace AXToolbox.Scripting
         protected int time = 0;
         protected TimeSpan timeOfDay;
         protected string description;
-
-        public Penalty Penalty { get; protected set; }
+        protected bool infringed = false;
 
         internal ScriptingRestriction(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
@@ -109,7 +108,7 @@ namespace AXToolbox.Scripting
         public override void Reset()
         {
             base.Reset();
-            Penalty = null;
+            infringed = false;
         }
         public override void Process()
         {
@@ -212,7 +211,7 @@ namespace AXToolbox.Scripting
                             var sec = Math.Ceiling((calcTime - min) * 60);
                             //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
                             reason = string.Format("{0}", description, MinToHms(calcTime));
-                            AddNote(string.Format("time infringement: {0}min", MinToHms(calcTime)), true);
+                            AddNote(string.Format("time infringement: {0}", MinToHms(calcTime)), true);
                         }
                     }
                     break;
@@ -230,7 +229,7 @@ namespace AXToolbox.Scripting
                         {
                             //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
                             reason = string.Format("{0}", description, MinToHms(calcTime));
-                            AddNote(string.Format("time infringement: {0}min", MinToHms(calcTime)), true);
+                            AddNote(string.Format("time infringement: {0}", MinToHms(calcTime)), true);
                         }
                     }
                     break;
@@ -248,7 +247,7 @@ namespace AXToolbox.Scripting
                         {
                             //Penalty = new Penalty(Result.NewNoResult(description));
                             reason = description;
-                            AddNote(string.Format("time infringement: {0}min", MinToHms((A.Point.Time - refTime).TotalMinutes)), true);
+                            AddNote(string.Format("time infringement: {0}", MinToHms((A.Point.Time - refTime).TotalMinutes)), true);
                         }
                     }
                     break;
@@ -266,7 +265,7 @@ namespace AXToolbox.Scripting
                         {
                             //Penalty = new Penalty(Result.NewNoResult(description));
                             reason = description;
-                            AddNote(string.Format("time infringement: {0}min", MinToHms((refTime - A.Point.Time).TotalMinutes)), true);
+                            AddNote(string.Format("time infringement: {0}", MinToHms((refTime - A.Point.Time).TotalMinutes)), true);
                         }
                     }
                     break;
@@ -274,6 +273,7 @@ namespace AXToolbox.Scripting
 
             if (!string.IsNullOrEmpty(reason))
             {
+                infringed = true;
                 Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
                 AddNote("No Result (group B): " + reason, true);
             }
@@ -283,7 +283,7 @@ namespace AXToolbox.Scripting
         public override void Display()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE" && Penalty != null)
+            if (DisplayMode != "NONE" && infringed)
             {
                 switch (ObjectType)
                 {
@@ -296,7 +296,7 @@ namespace AXToolbox.Scripting
                         if (A.Point != null && B.Point != null)
                         {
                             overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                                string.Format("{0} = {1}", ObjectType, Penalty)) { Layer = (uint)OverlayLayers.Penalties };
+                                string.Format("{0} = {1}", ObjectType, description)) { Layer = (uint)OverlayLayers.Penalties };
                         }
                         break;
                 }

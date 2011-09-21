@@ -1,7 +1,8 @@
 ﻿TO DO
+! GoalDeclaration coordinates: don't parse at load time?. Don't assume anything: check 1111, 1111/, 111, 1111/1111, etc.
 ! think about measure/result/constraint/filter/restriction thing
 - in result and penalty, use point pairs for different entry/exit pairs instead usedpoints. For single points, use point/null pair
-- Add  SAMEAREA and DIFFERENTAREA restrictions
+- Add SAMEAREA and DIFFERENTAREA restrictions
 - command to update altitude in pdg?
 - altitude units on pdf reports
 - list of all debriefers that worked on a flight report

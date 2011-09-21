@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using AXToolbox.GpsLoggers;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using System.Globalization;
 
 namespace AXToolbox.Scripting
 {
@@ -191,7 +192,7 @@ namespace AXToolbox.Scripting
             c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.BoldFont));
             foreach (var p in Result.UsedPoints)
             {
-                c.AddElement(new Paragraph(p.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+                c.AddElement(new Paragraph(p.ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
             }
             table.AddCell(c);
 
@@ -204,8 +205,8 @@ namespace AXToolbox.Scripting
 
                 if (pen.UsedPoints.Count > 0)
                 {
-                    c.AddElement(new Paragraph("Entry: " + pen.UsedPoints[0].ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
-                    c.AddElement(new Paragraph("Exit:  " + pen.UsedPoints[pen.UsedPoints.Count - 1].ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
+                    c.AddElement(new Paragraph("Entry: " + pen.UsedPoints[0].ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
+                    c.AddElement(new Paragraph("Exit:  " + pen.UsedPoints[pen.UsedPoints.Count - 1].ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
                 }
             }
             table.AddCell(c);
