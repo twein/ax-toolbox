@@ -229,7 +229,7 @@ namespace AXToolbox.Scripting
 
             Display(true);
         }
-        public void LoadFlightReport(string loggerFile)
+        public void LoadFlightReport(string loggerFile, bool noDisplay = false)
         {
             Trace.WriteLine("Loading " + loggerFile, "ENGINE");
             Reset();
@@ -239,7 +239,8 @@ namespace AXToolbox.Scripting
             if (Report.OriginalTrack.Count() > 0)
             {
 
-                Display();
+                if (!noDisplay)
+                    Display();
 
                 RaisePropertyChanged("Log");
                 RaisePropertyChanged("Report");
@@ -262,7 +263,7 @@ namespace AXToolbox.Scripting
 
             RaisePropertyChanged("Report");
         }
-        public void Process()
+        public void Process(bool noDisplay = false)
         {
             if (Report.PilotId == 0)
                 throw new InvalidOperationException("The pilot id can not be zero");
@@ -279,7 +280,8 @@ namespace AXToolbox.Scripting
             foreach (var obj in Heap.Values)
                 obj.Process();
 
-            Display();
+            if (!noDisplay)
+                Display();
 
             RaisePropertyChanged("Log");
             RaisePropertyChanged("Results");
@@ -301,8 +303,8 @@ namespace AXToolbox.Scripting
             //foreach (var report in Directory.EnumerateFiles(rootFolder, "*.igc"))
             //foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.igc"))
             {
-                LoadFlightReport(report);
-                Process();
+                LoadFlightReport(report, true);
+                Process(true);
 
                 ExportResults(resultsFolder);
                 try
@@ -480,7 +482,6 @@ namespace AXToolbox.Scripting
             document.Add(table);
 
             document.Add(new Paragraph("Measurement process log", config.SubtitleFont));
-
             foreach (var line in Report.Notes)
                 document.Add(new Paragraph(line, config.FixedWidthFont));
             foreach (var line in GetLog(false))
