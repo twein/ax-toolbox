@@ -2,6 +2,8 @@
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 TO DO
+- multiple file section in batch processing
+- progressbar in batch processing
 ! Add/remove penalties.
 - full IsDirty management.
 - Add the possibility of warning the user programmatically.
