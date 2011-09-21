@@ -143,11 +143,16 @@ namespace Scorer
             if (openAfterCreation)
                 PdfHelper.OpenPdf(fileName);
         }
-        public void TotalScoreToPdf(bool openAfterCreation = false)
+        public void TotalScoreToPdf(bool onlyPublished, bool openAfterCreation = false)
         {
             const int maxTasksPerSheet = 15;
 
-            var fileName = Path.Combine(Event.Instance.DraftsFolder, ShortName + " total score.pdf");
+            var fileName = "";
+            if (onlyPublished)
+                fileName= Path.Combine(Event.Instance.PublishedScoresFolder, ShortName + " total score.pdf");
+            else
+                fileName = Path.Combine(Event.Instance.DraftsFolder, ShortName + " total score - DRAFT.pdf");
+
             var config = Event.Instance.GetDefaultPdfConfig();
 
             var helper = new PdfHelper(fileName, config);
@@ -155,8 +160,15 @@ namespace Scorer
             var title = "Total score";
 
             //tables
-            var validTaskScores = (from ts in TaskScores
+            TaskScore[] validTaskScores;
+            if (!onlyPublished)
+                validTaskScores = (from ts in TaskScores
                                    where !ts.Task.IsCancelled && (ts.Task.Phases & CompletedPhases.Computed) > 0
+                                   orderby ts.Task.Number
+                                   select ts).ToArray();
+            else
+                validTaskScores = (from ts in TaskScores
+                                   where !ts.Task.IsCancelled && ((ts.Task.Phases & CompletedPhases.Published) > 0)
                                    orderby ts.Task.Number
                                    select ts).ToArray();
 
@@ -175,14 +187,14 @@ namespace Scorer
                     headers.Add("T" + validTaskScores[iTask].UltraShortDescriptionStatus);
                     relWidths.Add(2);
                 }
-             
+
                 tables[iTable] = helper.NewTable(headers.ToArray(), relWidths.ToArray(), title);
             }
 
             //insert scores
             var pilotTotalScores = new List<PilotTotalScore>();
             foreach (var p in Pilots)
-                pilotTotalScores.Add(new PilotTotalScore(this, p));
+                pilotTotalScores.Add(new PilotTotalScore(this, p, onlyPublished));
 
             var rank = 1;
             foreach (var pts in pilotTotalScores.OrderByDescending(s => s.Total).ThenByDescending(s => s.Average).ThenBy(s => s.Pilot.Number))

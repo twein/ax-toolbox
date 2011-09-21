@@ -57,7 +57,12 @@
                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Tag="{Binding}" Header="Total scores" ToolTip="For each competition, make a pdf with the total score." Click="menuOutputTotalScoresToPdf_Click">
+                <MenuItem Tag="{Binding}" Header="Total scores" ToolTip="For each competition, make a pdf with the total score." Click="menuOutputTotalScoresPublicationToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Total scores (with provisionals)" ToolTip="For each competition, make a pdf with the total score, including all provisional scores." Click="menuOutputTotalScoresToPdf_Click">
                     <MenuItem.Icon>
                         <Image Source="/Scorer;component/pdf.png" Height="16" />
                     </MenuItem.Icon>

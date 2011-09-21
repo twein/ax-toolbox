@@ -163,7 +163,7 @@ namespace Scorer
                     else if (ps.ResultInfo.Group == 2)
                     {
                         //rule 14.4.1.B group B
-                        ps.Score = (int)Math.Round(1000m * ((P + 1 - A) / P) - 200); //formula 3
+                        ps.Score = (int)Math.Round(1000m * (P + 1 - A) / P - 200); //formula 3
                         remainingPoints += (int)Math.Round(1000m * (P + 1 - L) / P); //formula 2
                     }
                     else

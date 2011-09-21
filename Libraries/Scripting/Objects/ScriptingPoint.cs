@@ -33,7 +33,7 @@ namespace AXToolbox.Scripting
         internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
             : base(engine, name, type, parameters, displayMode, displayParameters)
         { }
-        
+
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
@@ -357,7 +357,7 @@ namespace AXToolbox.Scripting
                     {
                         var marks = from mark in Engine.Report.Markers
                                     where int.Parse(mark.Name) == number
-                                    select "M" + mark.ToString();
+                                    select "M" + mark.ToString(AXPointInfo.CustomReport);
                         Task.LoggerMarks.AddRange(marks);
 
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
@@ -396,7 +396,7 @@ namespace AXToolbox.Scripting
                     {
                         var marks = from mark in Engine.Report.DeclaredGoals
                                     where mark.Number == number
-                                    select "D" + mark.ToString();
+                                    select "D" + mark.ToString(AXPointInfo.CustomReport);
                         Task.LoggerMarks.AddRange(marks);
 
                         // look for declarations
@@ -435,7 +435,7 @@ namespace AXToolbox.Scripting
                     {
                         var marks = from mark in Engine.Report.DeclaredGoals
                                     where mark.Number == number
-                                    select "D" + mark.ToString();
+                                    select "D" + mark.ToString(AXPointInfo.CustomReport);
                         Task.LoggerMarks.AddRange(marks);
 
                         // look for declarations
@@ -457,7 +457,7 @@ namespace AXToolbox.Scripting
                                 {
                                     Point = TryResolveGoalDeclaration(goal);
                                     //TODO: warn user that the declaration time must be checked.
-                                    AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
+                                    //AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
                                 }
                                 catch (InvalidOperationException)
                                 {
@@ -485,7 +485,7 @@ namespace AXToolbox.Scripting
                                 catch (InvalidOperationException)
                                 {
                                     AddNote("R15.1: late goal declaration #" + number.ToString(), true);
-                                    AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
+                                    //AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
                                 }
                             }
                         }
@@ -785,21 +785,20 @@ namespace AXToolbox.Scripting
         {
             AXWaypoint point = null;
 
-
             if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
             {
                 try
                 {
                     var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
-                    if (tmpPoint != null)
-                        if (!double.IsNaN(goal.Altitude))
-                            tmpPoint.Altitude = goal.Altitude;
-                        else if (!double.IsNaN(defaultAltitude))
-                            tmpPoint.Altitude = defaultAltitude;
-                        else
-                            tmpPoint.Altitude = QueryElevationAtPosition(tmpPoint);
+                    //if (tmpPoint != null)
+                    //    if (!double.IsNaN(goal.Altitude))
+                    //        tmpPoint.Altitude = goal.Altitude;
+                    //    else if (!double.IsNaN(defaultAltitude))
+                    //        tmpPoint.Altitude = defaultAltitude;
+                    //    else
+                    //        tmpPoint.Altitude = QueryElevationAtPosition(tmpPoint);
 
-                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
+                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), goal.Time, tmpPoint.Easting, tmpPoint.Northing, tmpPoint.Altitude);
                 }
                 catch
                 {

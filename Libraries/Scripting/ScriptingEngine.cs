@@ -297,15 +297,19 @@ namespace AXToolbox.Scripting
             if (!Directory.Exists(resultsFolder))
                 Directory.CreateDirectory(resultsFolder);
 
-            //foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
+            foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
             //foreach (var report in Directory.EnumerateFiles(rootFolder, "*.igc"))
-            foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.igc"))
+            //foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.igc"))
             {
                 LoadFlightReport(report);
                 Process();
 
                 ExportResults(resultsFolder);
-                SavePdfReport(reportsFolder);
+                try
+                {
+                    SavePdfReport(reportsFolder);
+                }
+                catch { }
                 SavePdfLog(reportsFolder);
             }
             Reset();
@@ -403,10 +407,10 @@ namespace AXToolbox.Scripting
             table = helper.NewTable(null, new float[] { 1, 4 }, null);
             table.AddCell(new PdfPCell(new Paragraph("Launch and landing:", config.BoldFont)));
             var c = new PdfPCell();
-            c.AddElement(new Paragraph("Launch " + Report.LaunchPoint, config.FixedWidthFont));
+            c.AddElement(new Paragraph("Launch " + Report.LaunchPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
             if (!string.IsNullOrEmpty(Report.LaunchPoint.Remarks))
                 c.AddElement(new Paragraph(Report.LaunchPoint.Remarks, config.FixedWidthFont));
-            c.AddElement(new Paragraph("Landing " + Report.LandingPoint, config.FixedWidthFont));
+            c.AddElement(new Paragraph("Landing " + Report.LandingPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
             if (!string.IsNullOrEmpty(Report.LandingPoint.Remarks))
                 c.AddElement(new Paragraph(Report.LandingPoint.Remarks, config.FixedWidthFont));
             table.AddCell(c);
@@ -418,6 +422,12 @@ namespace AXToolbox.Scripting
                             select t as ScriptingTask;
             foreach (var task in taskQuery)
                 task.ToPdfReport(helper);
+
+
+            document.Add(new Paragraph("Notes", config.SubtitleFont));
+            foreach (var line in Report.Notes)
+                document.Add(new Paragraph(line, config.FixedWidthFont));
+
 
             document.Close();
 

@@ -136,12 +136,16 @@ namespace Scorer
             foreach (var competition in Event.Instance.Competitions)
                 competition.TaskScoresToNPdf();
         }
+        private void menuOutputTotalScoresPublicationToPdf_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var competition in Event.Instance.Competitions)
+                competition.TotalScoreToPdf(true, true);
+        }
         private void menuOutputTotalScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
             foreach (var competition in Event.Instance.Competitions)
-                competition.TotalScoreToPdf(true);
+                competition.TotalScoreToPdf(false, true);
         }
-
         private void menuAbout_Click(object sender, RoutedEventArgs e)
         {
             var assembly = GetType().Assembly;
