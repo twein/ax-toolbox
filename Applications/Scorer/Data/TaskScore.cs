@@ -329,7 +329,7 @@ namespace Scorer
 
             //status
             string statusMsg = Status.ToString() + " score";
-            if (Status != ScoreStatus.Provisional)
+            if (Status == ScoreStatus.Official)
                 statusMsg += string.Format(" - Version {0} - Published on {1}", Version, RevisionDate);
             document.Add(helper.NewParagraph(statusMsg));
 
