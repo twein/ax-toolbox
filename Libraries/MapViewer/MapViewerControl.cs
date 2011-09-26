@@ -502,7 +502,7 @@ namespace AXToolbox.MapViewer
                         break;
                     case Key.Back:
                     case Key.Delete:
-                        ClearOverlays(o => o.Tag == "distance");
+                        ClearOverlays(o => o.Tag as string == "distance");
                         break;
                 }
             }

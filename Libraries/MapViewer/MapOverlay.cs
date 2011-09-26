@@ -20,7 +20,6 @@ namespace AXToolbox.MapViewer
                 }
             }
         }
-        public string Tag { get; set; }
 
         private MapViewerControl map;
         internal MapViewerControl Map

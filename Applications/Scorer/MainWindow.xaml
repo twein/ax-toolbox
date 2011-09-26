@@ -4,7 +4,7 @@
         xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:local="clr-namespace:Scorer"
         DataContext="{Binding Source={x:Static local:Event.Instance}}"
-        Title="{Binding Path=Name}" Height="600" Width="1024"
+        Title="{Binding Path=Name}" Height="600" Width="1024" WindowState="Maximized" 
         Loaded="Window_Loaded" Closing="Window_Closing" Drop="Window_Drop" AllowDrop="True"
         Icon="/Scorer;component/balloon.ico">
     <Window.CommandBindings>
