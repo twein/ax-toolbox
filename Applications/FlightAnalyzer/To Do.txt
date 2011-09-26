@@ -2,6 +2,8 @@
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 TO DO
+- launch and landing helper buttons in tools
+- pilot names in a file defined in settings (like instrument error file)
 - ribbon
 - multiple MMA in HWZ, PDG, FON
 - pdf report: add the same notes in goaldeclarations and markers as in launch and landing (modified by...)
