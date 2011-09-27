@@ -1,4 +1,5 @@
 ﻿TO DO
+- official altitude units in settings
 - restriction: non split tasks: check for no markers in between
 - Fix the text of distance infringement, it's not the infringement, it's the distance
 ! GoalDeclaration coordinates: don't parse at load time?. Don't assume anything: check 1111, 1111/, 111, 1111/1111, etc.
