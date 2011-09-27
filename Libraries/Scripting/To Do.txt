@@ -1,4 +1,5 @@
 ﻿TO DO
+- check if http://code.google.com/apis/maps/documentation/elevation/ is better
 - official altitude units in settings
 - restriction: non split tasks: check for no markers in between
 - Fix the text of distance infringement, it's not the infringement, it's the distance
