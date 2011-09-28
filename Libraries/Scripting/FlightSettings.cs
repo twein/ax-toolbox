@@ -103,13 +103,11 @@ namespace AXToolbox.Scripting
         /// </summary>
         /// <param name="goal"></param>
         /// <returns></returns>
-        public AXPoint ResolveDeclaredGoal(GoalDeclaration goal)
+        public AXWaypoint ResolveDeclaredGoal(GoalDeclaration goal)
         {
             //1e5 = 100km
 
-
             var easting = TopLeft.Easting - TopLeft.Easting % 1e5 + goal.Easting4Digits * 10;
-
 
             //check for major tick change (hundreds of km)
             if (!easting.IsBetween(TopLeft.Easting, BottomRight.Easting))
@@ -120,7 +118,12 @@ namespace AXToolbox.Scripting
             if (!northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
                 northing += 1e5;
 
-            return new AXWaypoint(goal.Number.ToString("00"), goal.Time, easting, northing, goal.Altitude);
+            //check if it's inside the competition map
+            if (easting.IsBetween(TopLeft.Easting, BottomRight.Easting) &&
+                 northing.IsBetween(BottomRight.Northing, TopLeft.Northing))
+                return new AXWaypoint(goal.Number.ToString("00"), goal.Time, easting, northing, goal.Altitude);
+            else
+                return null;
         }
         public List<AXTrackpoint> GetTrack(LoggerFile trackLog)
         {
