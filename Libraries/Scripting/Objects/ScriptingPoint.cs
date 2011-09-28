@@ -74,13 +74,6 @@ namespace AXToolbox.Scripting
                     altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
                     break;
 
-                case "TNL": //nearest to point list 
-                    //LNP(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
-                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
-                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
-                    break;
-
                 case "LFT": //first in time from list
                 case "LLT": //last in time from list
                 case "LFNN": //LFNN: first not null from list
@@ -97,10 +90,10 @@ namespace AXToolbox.Scripting
                     number = ParseOrDie<int>(0, int.Parse);
                     break;
 
-                case "MPDGL":
+                case "MPDGD":
                 case "MPDGF":
-                    //MPDGL: pilot declared goal before launch
-                    //MPDGF: pilot declared goal in flight
+                    //MPDGD: pilot declared goal with default altitude
+                    //MPDGF: pilot declared goal with forced altitude
                     //XXXX(<number>[, <defaultAltitude>])
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2);
                     number = ParseOrDie<int>(0, int.Parse);
@@ -113,6 +106,13 @@ namespace AXToolbox.Scripting
                     //XXXX()
                     //TODO: check if they are really needed or should be automatic
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
+                    break;
+
+                case "TNL": //nearest to point list 
+                    //LNP(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
+                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
+                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
                     break;
 
                 case "TPT": //TPT at point time
@@ -383,13 +383,13 @@ namespace AXToolbox.Scripting
                         //    AddNote(string.Format("no marker #{0} (couldn't assume contest landing)", number), true);
                         //}
                         //TODO: enable if no contest landing option
-                        AddNote(string.Format("RII.17: no marker drop #{0}", number), true);
+                        AddNote(string.Format("RII.17.d: no marker drop #{0}", number), true);
                     }
                     break;
 
-                case "MPDGL":
-                    //pilot declared goal before launch
-                    //MPDGL(<number>, <defaultAltitude>)
+                case "MPDGD":
+                    //pilot declared goal with default altitude
+                    //MPDGD(<number>, <defaultAltitude>)
                     {
                         var marks = from mark in Engine.Report.DeclaredGoals
                                     where mark.Number == number
@@ -400,34 +400,26 @@ namespace AXToolbox.Scripting
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
                         {
-                            AddNote("R15.1: no goal declaration #" + number.ToString(), true);
+                            AddNote("no goal declaration #" + number.ToString(), true);
                         }
                         else
                         {
+                            //look for last declaration
+                            var goal = goals.Last();
                             try
                             {
-                                //look for last declaration before launch
-                                var goal = goals.Last(g => g.Time <= Engine.Report.LaunchPoint.Time);
-                                try
-                                {
-                                    Point = TryResolveGoalDeclaration(goal);
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                    AddNote("R15.1: invalid goal declaration #" + number.ToString(), true);
-                                }
-
+                                Point = TryResolveGoalDeclaration(goal, true);
                             }
                             catch (InvalidOperationException)
                             {
-                                AddNote("R15.1: late goal declaration #" + number.ToString(), true);
+                                AddNote("R12.3: invalid goal declaration #" + number.ToString(), true);
                             }
                         }
                     }
                     break;
 
                 case "MPDGF":
-                    //pilot declared goal in flight
+                    //pilot declared goal with forced altitude
                     //MPDGF(<number>, <defaultAltitude>)
                     {
                         var marks = from mark in Engine.Report.DeclaredGoals
@@ -439,51 +431,19 @@ namespace AXToolbox.Scripting
                         var goals = Engine.Report.DeclaredGoals.Where(g => g.Number == number);
                         if (goals.Count() == 0)
                         {
-                            AddNote("R15.1: no goal declaration #" + number.ToString(), true);
+                            AddNote("no goal declaration #" + number.ToString(), true);
                         }
                         else
                         {
-                            GoalDeclaration goal = null;
-
-                            if (!Engine.Settings.TasksInOrder)
+                            //look for last declaration
+                            var goal = goals.Last();
+                            try
                             {
-                                //tasks are not set in order. Cannot chech for previous valid markers
-                                goal = goals.Last();
-
-                                try
-                                {
-                                    Point = TryResolveGoalDeclaration(goal);
-                                    //TODO: warn user that the declaration time must be checked.
-                                    //AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                    AddNote("R15.1: invalid goal declaration #" + number.ToString(), true);
-                                }
+                                Point = TryResolveGoalDeclaration(goal, false);
                             }
-                            else
+                            catch (InvalidOperationException)
                             {
-                                //tasks are set in order: check that the declaration has been done before the last marker or launch
-                                //TODO: when the previous task is NR, what happen (see CICR2011 T5 P3)
-                                try
-                                {
-                                    //look for last declaration before last used point
-                                    goal = goals.Last(g => true/*g.Time <= Engine.LastUsedPoint.Time*/);
-
-                                    try
-                                    {
-                                        Point = TryResolveGoalDeclaration(goal);
-                                    }
-                                    catch (InvalidOperationException)
-                                    {
-                                        AddNote("R15.1: invalid goal declaration #" + number.ToString(), true);
-                                    }
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                    AddNote("R15.1: late goal declaration #" + number.ToString(), true);
-                                    //AddNote(string.Format("WARNING! GOAL DECLARATION #{0} TIME NEEDS TO BE CHECKED MANUALLY!", number), true);
-                                }
+                                AddNote("R12.3: invalid goal declaration #" + number.ToString(), true);
                             }
                         }
                     }
@@ -523,7 +483,7 @@ namespace AXToolbox.Scripting
                     }
                     catch (InvalidOperationException)
                     {
-                        AddNote("no valid point at specified time", true);
+                        AddNote("no valid track point at specified time", true);
                     } //none found
                     break;
 
@@ -778,51 +738,44 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(overlay);
         }
 
-        private AXWaypoint TryResolveGoalDeclaration(GoalDeclaration goal)
+        private AXWaypoint TryResolveGoalDeclaration(GoalDeclaration goal, bool useDeclaredAltitude)
         {
-            AXWaypoint point = null;
+            AXWaypoint tmpPoint = null;
 
             if (goal.Type == GoalDeclaration.DeclarationType.GoalName)
             {
                 try
                 {
-                    var tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
-                    //if (tmpPoint != null)
-                    //    if (!double.IsNaN(goal.Altitude))
-                    //        tmpPoint.Altitude = goal.Altitude;
-                    //    else if (!double.IsNaN(defaultAltitude))
-                    //        tmpPoint.Altitude = defaultAltitude;
-                    //    else
-                    //        tmpPoint.Altitude = QueryEarthtoolsElevation(tmpPoint);
-
-                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), goal.Time, tmpPoint.Easting, tmpPoint.Northing, tmpPoint.Altitude);
+                    tmpPoint = ((ScriptingPoint)Engine.Heap[goal.Name]).Point;
                 }
-                catch
-                {
-                    AddNote(string.Format("R15.1: invalid goal declaration #{0}", goal.Number), true);
-                }
+                catch { }
             }
             else // competition coordinates
             {
-                var tmpPoint = Engine.Settings.ResolveDeclaredGoal(goal);
-
-                if (!(tmpPoint.Easting < Engine.Settings.TopLeft.Easting || tmpPoint.Easting > Engine.Settings.BottomRight.Easting ||
-                  tmpPoint.Northing > Engine.Settings.TopLeft.Northing || tmpPoint.Northing < Engine.Settings.BottomRight.Northing))
-                {
-                    if (!double.IsNaN(goal.Altitude))
-                        tmpPoint.Altitude = goal.Altitude;
-                    else if (!double.IsNaN(defaultAltitude))
-                        tmpPoint.Altitude = defaultAltitude;
-                    else
-                        tmpPoint.Altitude = QueryEarthtoolsElevation(tmpPoint);
-
-                    point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
-                }
+                tmpPoint = Engine.Settings.ResolveDeclaredGoal(goal);
             }
 
+            if (tmpPoint == null)
+                throw new InvalidOperationException("could not resolve goal declaration");
 
+            var altitude = 0.0;
+            if (useDeclaredAltitude && !double.IsNaN(goal.Altitude))
+            {
+                altitude = goal.Altitude;
+                AddNote(string.Format("using pilot declared altitude: {0}m", altitude));
+            }
+            else if (!double.IsNaN(defaultAltitude))
+            {
+                altitude = defaultAltitude;
+                AddNote(string.Format("using default altitude: {0}m", altitude));
+            }
+            else
+            {
+                altitude = QueryEarthtoolsElevation(tmpPoint);
+                AddNote(string.Format("using web service ground elevation: {0}m", altitude));
+            }
 
-            return point;
+            return new AXWaypoint(string.Format("D{0:00}", goal.Number), goal.Time, tmpPoint.Easting, tmpPoint.Northing, altitude);
         }
         private double QueryEarthtoolsElevation(AXPoint point)
         {
@@ -832,19 +785,16 @@ namespace AXToolbox.Scripting
             var llPos = new UtmCoordinates(Datum.WGS84, Engine.Settings.UtmZone, point.Easting, point.Northing, 0).ToLatLon(Datum.WGS84);
             var url = string.Format(NumberFormatInfo.InvariantInfo, template, llPos.Latitude.Degrees, llPos.Longitude.Degrees);
 
-
             try
             {
                 var wCli = new WebClient() { Encoding = Encoding.UTF8, };
                 var XMLstr = wCli.DownloadString(url);
                 var xml = XElement.Parse(XMLstr);
                 altitude = double.Parse(xml.Descendants(XName.Get("meters")).First().Value, NumberFormatInfo.InvariantInfo);
-
-                AddNote(string.Format("declaration ground elevation set to {0}m", altitude));
             }
             catch
             {
-                AddNote(string.Format("could not retrieve declaration ground elevation, using 0m MSL"), true);
+                AddNote(string.Format("could not retrieve ground elevation, using 0m MSL"), true);
             }
 
             return altitude;
@@ -863,12 +813,10 @@ namespace AXToolbox.Scripting
                 var XMLstr = wCli.DownloadString(url);
                 var xml = XElement.Parse(XMLstr);
                 altitude = double.Parse(xml.Descendants(XName.Get("elevation")).First().Value, NumberFormatInfo.InvariantInfo);
-
-                AddNote(string.Format("declaration ground elevation set to {0}m", altitude));
             }
             catch
             {
-                AddNote(string.Format("could not retrieve declaration ground elevation, using 0m MSL"), true);
+                AddNote(string.Format("could not retrieve ground elevation, using 0m MSL"), true);
             }
 
             return altitude;
