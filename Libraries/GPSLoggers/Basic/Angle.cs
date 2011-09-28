@@ -54,12 +54,6 @@ namespace AXToolbox.GpsLoggers
             get { return Math.Tan(radians); }
         }
 
-        public override string ToString()
-        {
-            return (radians * RAD2DEG).ToString();
-        }
-
-
         /// <summary>
         /// Normalize an angle to [0, 360)
         /// </summary>
@@ -78,7 +72,7 @@ namespace AXToolbox.GpsLoggers
             return new Angle(deg);
         }
 
-        
+
         public static Angle Asin(double radians)
         {
             return new Angle() { Radians = Math.Asin(radians) };
