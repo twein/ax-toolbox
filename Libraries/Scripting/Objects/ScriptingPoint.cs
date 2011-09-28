@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using AXToolbox.Common;
-using AXToolbox.MapViewer;
-using AXToolbox.GpsLoggers;
-using System.Net;
-using System.Xml.Linq;
 using System.Globalization;
-using System.Xml;
+using System.Linq;
+using System.Net;
 using System.Text;
+using System.Windows;
+using System.Xml.Linq;
+using AXToolbox.GpsLoggers;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -796,7 +793,7 @@ namespace AXToolbox.Scripting
                     //    else if (!double.IsNaN(defaultAltitude))
                     //        tmpPoint.Altitude = defaultAltitude;
                     //    else
-                    //        tmpPoint.Altitude = QueryElevationAtPosition(tmpPoint);
+                    //        tmpPoint.Altitude = QueryEarthtoolsElevation(tmpPoint);
 
                     point = new AXWaypoint(string.Format("D{0:00}", goal.Number), goal.Time, tmpPoint.Easting, tmpPoint.Northing, tmpPoint.Altitude);
                 }
@@ -817,7 +814,7 @@ namespace AXToolbox.Scripting
                     else if (!double.IsNaN(defaultAltitude))
                         tmpPoint.Altitude = defaultAltitude;
                     else
-                        tmpPoint.Altitude = QueryElevationAtPosition(tmpPoint);
+                        tmpPoint.Altitude = QueryEarthtoolsElevation(tmpPoint);
 
                     point = new AXWaypoint(string.Format("D{0:00}", goal.Number), tmpPoint);
                 }
@@ -827,22 +824,46 @@ namespace AXToolbox.Scripting
 
             return point;
         }
-        private double QueryElevationAtPosition(AXPoint point)
+        private double QueryEarthtoolsElevation(AXPoint point)
         {
             var altitude = 0.0;
             var template = "http://www.earthtools.org/height/{0}/{1}";
 
             var llPos = new UtmCoordinates(Datum.WGS84, Engine.Settings.UtmZone, point.Easting, point.Northing, 0).ToLatLon(Datum.WGS84);
-            var url = string.Format(NumberFormatInfo.InvariantInfo, template, llPos.Latitude, llPos.Longitude);
+            var url = string.Format(NumberFormatInfo.InvariantInfo, template, llPos.Latitude.Degrees, llPos.Longitude.Degrees);
+
 
             try
             {
                 var wCli = new WebClient() { Encoding = Encoding.UTF8, };
                 var XMLstr = wCli.DownloadString(url);
-                var xDoc = new XmlDocument();
-                xDoc.LoadXml(XMLstr);
+                var xml = XElement.Parse(XMLstr);
+                altitude = double.Parse(xml.Descendants(XName.Get("meters")).First().Value, NumberFormatInfo.InvariantInfo);
 
-                altitude = double.Parse(xDoc.SelectSingleNode("/height/meters").FirstChild.Value);
+                AddNote(string.Format("declaration ground elevation set to {0}m", altitude));
+            }
+            catch
+            {
+                AddNote(string.Format("could not retrieve declaration ground elevation, using 0m MSL"), true);
+            }
+
+            return altitude;
+        }
+        private double QueryGoogleElevation(AXPoint point)
+        {
+            var altitude = 0.0;
+            var template = "http://maps.googleapis.com/maps/api/elevation/xml?locations={0},{1}&sensor=true";
+
+            var llPos = new UtmCoordinates(Datum.WGS84, Engine.Settings.UtmZone, point.Easting, point.Northing, 0).ToLatLon(Datum.WGS84);
+            var url = string.Format(NumberFormatInfo.InvariantInfo, template, llPos.Latitude.Degrees, llPos.Longitude.Degrees);
+
+            try
+            {
+                var wCli = new WebClient() { Encoding = Encoding.UTF8, };
+                var XMLstr = wCli.DownloadString(url);
+                var xml = XElement.Parse(XMLstr);
+                altitude = double.Parse(xml.Descendants(XName.Get("elevation")).First().Value, NumberFormatInfo.InvariantInfo);
+
                 AddNote(string.Format("declaration ground elevation set to {0}m", altitude));
             }
             catch
