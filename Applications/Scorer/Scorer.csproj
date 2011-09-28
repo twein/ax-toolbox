@@ -107,6 +107,8 @@
     <Compile Include="Data\TaskType.cs" />
     <Compile Include="Data\PilotScore.cs" />
     <Compile Include="Data\PilotTotalScore.cs" />
+    <None Include="Properties\VersionInfo.base.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="PublishWindow.xaml.cs">
       <DependentUpon>PublishWindow.xaml</DependentUpon>
     </Compile>
@@ -246,11 +248,11 @@
     <None Include="To Do.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+  <UsingTask TaskName="HgVersionFile" AssemblyFile="..\..\ThirdParty\MSBuildVersioning\MSBuildVersioning.dll" />
   <Target Name="BeforeBuild">
+    <HgVersionFile TemplateFile="Properties\VersionInfo.base.cs"
+        DestinationFile="Properties\VersionInfo.cs" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
 </Project>

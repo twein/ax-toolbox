@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scorer", "Applications\Scor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPSLoggersTest", "Tests\GPSLoggersTest\GPSLoggersTest.csproj", "{7A0C5328-48CA-4B76-93B6-27F36FEEF9F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfTest", "Tests\PdfTest\PdfTest.csproj", "{A140EB34-3998-43DC-8349-5BCE5D8799D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfTest", "Tests\PDFTest\PdfTest.csproj", "{A140EB34-3998-43DC-8349-5BCE5D8799D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapViewerTest", "Tests\MapViewerTest\MapViewerTest.csproj", "{2CB80848-B482-46CA-9973-4125082EE244}"
 EndProject
@@ -211,7 +211,6 @@ Global
 		{3D85FB85-F3A1-4168-9D56-C971DC69244A}.Release|Any CPU.ActiveCfg = Release
 		{3D85FB85-F3A1-4168-9D56-C971DC69244A}.Release|Any CPU.Build.0 = Release
 		{3D85FB85-F3A1-4168-9D56-C971DC69244A}.Release|Mixed Platforms.ActiveCfg = Release
-		{3D85FB85-F3A1-4168-9D56-C971DC69244A}.Release|Mixed Platforms.Build.0 = Release
 		{3D85FB85-F3A1-4168-9D56-C971DC69244A}.Release|x86.ActiveCfg = Release
 		{C9814175-EC54-495A-9D9E-BAF09E03D081}.Debug|Any CPU.ActiveCfg = Debug
 		{C9814175-EC54-495A-9D9E-BAF09E03D081}.Debug|Mixed Platforms.ActiveCfg = Debug
@@ -226,7 +225,6 @@ Global
 		{60752642-238B-4CF6-B4D8-A34929967948}.Debug|x86.ActiveCfg = Debug
 		{60752642-238B-4CF6-B4D8-A34929967948}.Release|Any CPU.ActiveCfg = Release
 		{60752642-238B-4CF6-B4D8-A34929967948}.Release|Mixed Platforms.ActiveCfg = Release
-		{60752642-238B-4CF6-B4D8-A34929967948}.Release|Mixed Platforms.Build.0 = Release
 		{60752642-238B-4CF6-B4D8-A34929967948}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
