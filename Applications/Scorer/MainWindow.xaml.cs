@@ -23,12 +23,11 @@ namespace Scorer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //var fakeCollection = new ObservableCollection<Event>();
-            //fakeCollection.Add(Event.Instance);
-
-            //var editOptions = EditOptions.CanEdit;
-
-            //AddTab(new EditEvent(fakeCollection, editOptions), "Event");
+            if (Application.Current.Properties["FileToOpen"] != null)
+            {
+                var fileName = Application.Current.Properties["FileToOpen"].ToString();
+                Event.Instance.Load(fileName);
+            }
         }
         private void Window_Closing(object sender, CancelEventArgs e)
         {

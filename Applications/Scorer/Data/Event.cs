@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Shell;
 using System.Xml.Serialization;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
@@ -263,6 +264,8 @@ namespace Scorer
             RaisePropertyChanged("OutputVisibility");
             isNew = false;
             IsDirty = false;
+
+            JumpList.AddToRecentCategory(fileName);
         }
 
         public void PilotListToPdf(bool openAfterCreation = false)
