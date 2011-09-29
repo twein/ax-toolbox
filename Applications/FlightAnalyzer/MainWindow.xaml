@@ -76,6 +76,7 @@
                                 <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top">
                                     <Button ToolTip="Load script file" Click="loadScriptButton_Click">Load</Button>
                                     <Button ToolTip="Show the tools window" Click="toolsButton_Click">Tools</Button>
+                                    <Button ToolTip="Show the options window" Click="optionsButton_Click">Options</Button>
                                     <Button Click="aboutButton_Click">About</Button>
                                 </WrapPanel>
                             </StackPanel>

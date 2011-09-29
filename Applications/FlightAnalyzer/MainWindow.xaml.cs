@@ -1,16 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Shell;
 using AXToolbox.GpsLoggers;
 using AXToolbox.Scripting;
 using Microsoft.Win32;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Diagnostics;
 
 namespace FlightAnalyzer
 {
@@ -47,19 +47,22 @@ namespace FlightAnalyzer
             Worker.RunWorkerCompleted += WorkCompleted;
 
             //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Launch_And_Landing);
-            var dlg = new InputWindow(s => !string.IsNullOrEmpty(s))
+
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer))
+                ShowOptions();
+
+            Debriefer = Properties.Settings.Default.Debriefer;
+            RaisePropertyChanged("Debriefer");
+
+            if (Engine == null)
+                Engine = new ScriptingEngine(MapViewer) { VisibleTrackType = Tools.TrackType };
+
+            if (Application.Current.Properties["FileToOpen"] != null)
             {
-                Title = "Enter your name",
-                Text = ""
-            };
-            dlg.ShowDialog();
-            if (dlg.Response == System.Windows.Forms.DialogResult.OK)
-            {
-                Debriefer = dlg.Text;
-                RaisePropertyChanged("Debriefer");
+                var fileName = Application.Current.Properties["FileToOpen"].ToString();
+                Cursor = Cursors.Wait;
+                Worker.RunWorkerAsync(fileName);
             }
-            else
-                Close();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -74,9 +77,6 @@ namespace FlightAnalyzer
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog(this) == true)
             {
-                if (Engine == null)
-                    Engine = new ScriptingEngine(MapViewer) { VisibleTrackType = Tools.TrackType };
-
                 Cursor = Cursors.Wait;
                 Worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
             }
@@ -84,6 +84,10 @@ namespace FlightAnalyzer
         private void toolsButton_Click(object sender, RoutedEventArgs e)
         {
             Tools.Show();
+        }
+        private void optionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShowOptions();
         }
         private void aboutButton_Click(object sender, RoutedEventArgs e)
         {
@@ -193,6 +197,19 @@ namespace FlightAnalyzer
             }
         }
 
+        private void ShowOptions()
+        {
+            var dlg = new OptionsWindow();
+            dlg.ShowDialog();
+            if (dlg.DialogResult == true)
+            {
+                Debriefer = Properties.Settings.Default.Debriefer;
+                RaisePropertyChanged("Debriefer");
+            }
+
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer))
+                Close();
+        }
         // Run lengthy processes asyncronously to improve UI responsiveness
         protected void Work(object s, DoWorkEventArgs args)
         {
@@ -211,6 +228,7 @@ namespace FlightAnalyzer
                         Engine.LoadScript(fileName);
                         rootFolder = Path.GetDirectoryName(fileName);
                         args.Result = "script";
+                        JumpList.AddToRecentCategory(fileName);
                         break;
                     case ".axr":
                     case ".igc":
