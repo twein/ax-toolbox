@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:gps="clr-namespace:AXToolbox.GpsLoggers;assembly=AXToolbox.GpsLoggers"    
         Height="100" Width="400"
-        WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" Loaded="Window_Loaded">
     <DockPanel Margin="5">
         <StackPanel DockPanel.Dock="Top">
             <TextBox Name="textBox"/>
