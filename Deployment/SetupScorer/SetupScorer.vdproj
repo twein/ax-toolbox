@@ -15,38 +15,26 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_1424088AF242C9C4CCD49EEC48DBEDB7"
+        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_2A8D0F044D0BCFD35EBAA392DA107975"
+        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_820C66D1C45B43349ECCAFAA5AF923F6"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B010427CF3B734D81B1A6998FBF3338D"
-        "OwnerKey" = "8:_C5475DFEB075E8D2A6F9C8CA23942325"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B010427CF3B734D81B1A6998FBF3338D"
-        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B6321C10EFCE5B53A9150D56E421687A"
-        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C5475DFEB075E8D2A6F9C8CA23942325"
-        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -63,6 +51,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_FA19953FAC28922E933EF4975348393D"
+        "OwnerKey" = "8:_1424088AF242C9C4CCD49EEC48DBEDB7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FA19953FAC28922E933EF4975348393D"
+        "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_157134081F2B460BB09B6D20312032E2"
         "MsmSig" = "8:_UNDEFINED"
@@ -70,19 +70,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C5475DFEB075E8D2A6F9C8CA23942325"
+        "OwnerKey" = "8:_1424088AF242C9C4CCD49EEC48DBEDB7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B010427CF3B734D81B1A6998FBF3338D"
+        "OwnerKey" = "8:_FA19953FAC28922E933EF4975348393D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B6321C10EFCE5B53A9150D56E421687A"
+        "OwnerKey" = "8:_2A8D0F044D0BCFD35EBAA392DA107975"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -190,40 +190,20 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_820C66D1C45B43349ECCAFAA5AF923F6"
-            {
-            "SourcePath" = "8:..\\..\\Applications\\Scorer\\license.txt"
-            "TargetName" = "8:license.txt"
-            "Tag" = "8:"
-            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B010427CF3B734D81B1A6998FBF3338D"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1424088AF242C9C4CCD49EEC48DBEDB7"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4289.26634, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B010427CF3B734D81B1A6998FBF3338D"
+                    "_1424088AF242C9C4CCD49EEC48DBEDB7"
                     {
-                    "Name" = "8:itextsharp.dll"
+                    "Name" = "8:AXToolbox.PdfHelpers.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:itextsharp.dll"
+            "SourcePath" = "8:AXToolbox.PdfHelpers.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
@@ -241,14 +221,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B6321C10EFCE5B53A9150D56E421687A"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2A8D0F044D0BCFD35EBAA392DA107975"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4289.22615, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4289.26634, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B6321C10EFCE5B53A9150D56E421687A"
+                    "_2A8D0F044D0BCFD35EBAA392DA107975"
                     {
                     "Name" = "8:AXToolbox.Common.dll"
                     "Attributes" = "3:512"
@@ -272,21 +252,10 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C5475DFEB075E8D2A6F9C8CA23942325"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_820C66D1C45B43349ECCAFAA5AF923F6"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4289.22614, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_C5475DFEB075E8D2A6F9C8CA23942325"
-                    {
-                    "Name" = "8:AXToolbox.PdfHelpers.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:AXToolbox.PdfHelpers.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\..\\Applications\\Scorer\\license.txt"
+            "TargetName" = "8:license.txt"
             "Tag" = "8:"
             "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
             "Condition" = "8:"
@@ -300,7 +269,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF14C7E4C0674FEC929938C5D8C0BF24"
@@ -341,6 +310,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FA19953FAC28922E933EF4975348393D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_FA19953FAC28922E933EF4975348393D"
+                    {
+                    "Name" = "8:itextsharp.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:itextsharp.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_640C2B479E804BADB7B699E23778C5B8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -465,20 +465,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:AX-Toobox Scorer"
-        "ProductCode" = "8:{93AE4227-06BB-4F4E-B57B-8B1FB19A929B}"
-        "PackageCode" = "8:{B8D38532-B826-4223-A238-9C18A91F2B1A}"
+        "ProductName" = "8:AX-Toolbox Scorer"
+        "ProductCode" = "8:{5D135FCA-84C5-4863-BB4C-3D2764D93F0B}"
+        "PackageCode" = "8:{F5AC3E23-B417-4A08-820D-C833CDD5C03C}"
         "UpgradeCode" = "8:{C0A66DCC-5FDA-4FE0-B066-855C389D7B30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:11.09.360"
+        "InstallAllUsers" = "11:FALSE"
+        "ProductVersion" = "8:11.09.361"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Scorer"
+        "Title" = "8:AX-Toolbox Scorer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Balloonerds"
         "Keywords" = "8:"

@@ -12,5 +12,12 @@ namespace Scorer
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            if (e.Args != null && e.Args.Count() > 0)
+            {
+                Properties["FileToOpen"] = e.Args[0];
+            }
+        }
     }
 }
