@@ -2,8 +2,8 @@
 ! ties: sharing process: round points, add, average, round and assign CHECK IT!
 ! don't import results if task status is not provisional
 ! make a named backup at each publication.
-! listing like scores ordered by pilot number
-! alternating row background color in listings
+* listing like scores ordered by pilot number
+- alternating row background color in listings
 - index.html for all official pdfs
 
 
@@ -22,7 +22,7 @@ Marc André homework:
 * use "Published on" instead "Printed on"
 * Auto highlighting
 * Save all the published pdfs for future reference
-(* = done, + = review)
+(* = done, + = review, ! = urgent)
 
 
 * Split scores in two tables if there are too many tasks.
