@@ -2,6 +2,7 @@
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 TO DO
+- Update async workflow with .NET 4.5 (async/await instead of BackgroundWorker)
 - checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
 - the debriefer must enter all the physical marker performances before being allowed to save
 - launch and landing helper buttons in tools
