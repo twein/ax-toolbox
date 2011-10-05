@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
 using AXToolbox.GpsLoggers;
-using System.Diagnostics;
 
 namespace AXToolbox.Scripting
 {
@@ -60,34 +61,24 @@ namespace AXToolbox.Scripting
         public string LoggerModel { get; protected set; }
         public string LoggerSerialNumber { get; protected set; }
 
-        protected AXPoint[] GpsTrack { get; set; }
-
         /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
         /// </summary>
-        public Track OriginalTrack
-        {
-            get
-            {
-                var track = new Track();
-                track.AddSegment(GpsTrack);
-                return track;
-            }
-        }
+        public AXPoint[] OriginalTrack { get; protected set; }
 
         [NonSerialized]
-        protected Track cleanTrack;
+        protected AXPoint[] cleanTrack;
         /// <summary>Track without spikes and dupes. May contain points before launch and after landing
         /// </summary>
-        public Track CleanTrack { get { return cleanTrack; } }
+        public AXPoint[] CleanTrack { get { return cleanTrack; } }
 
         /// <summary>Clean track from launch to landing
         /// </summary>
-        public Track FlightTrack
+        public AXPoint[] FlightTrack
         {
             get
             {
                 Debug.Assert(LaunchPoint != null & landingPoint != null, "Launch and landing points must be informed");
-                return CleanTrack.Filter(p => p.Time >= LaunchPoint.Time && p.Time <= LandingPoint.Time);
+                return CleanTrack.Where(p => p.Time >= LaunchPoint.Time && p.Time <= LandingPoint.Time).ToArray();
             }
         }
 
@@ -148,18 +139,19 @@ namespace AXToolbox.Scripting
             {
                 //deserialize report
                 report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
-
-                report.cleanTrack = report.GetCleanTrack();
-                report.flightTrack = report.CleanTrack.Where(p => p.Time >= report.LaunchPoint.Time && p.Time <= report.LandingPoint.Time).ToArray();
+                report.DoTrackCleanUp();
             }
             else
             {
                 var logFile = LoggerFile.Load(filePath, settings.AltitudeCorrectionsFileName);
 
                 //Convert geographical coordinates to AX coordinates
-                var track = new List<AXTrackpoint>();
-                foreach (var p in logFile.GetTrackLog())
-                    track.Add(settings.FromGeoToAXTrackpoint(p, logFile.IsAltitudeBarometric));
+                var tracklog = logFile.GetTrackLog();
+                var track = new AXPoint[tracklog.Length];
+                Parallel.For(0, track.Length, i =>
+                {
+                    track[i] = settings.FromGeoToAXPoint(tracklog[i], logFile.IsAltitudeBarometric);
+                });
 
                 var markers = new ObservableCollection<AXWaypoint>();
                 foreach (var m in logFile.GetMarkers())
@@ -178,7 +170,7 @@ namespace AXToolbox.Scripting
                     pilotId = logFile.PilotId,
                     LoggerModel = logFile.LoggerModel,
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
-                    OriginalTrack = track.ToArray(),
+                    OriginalTrack = track,
                     Markers = markers,
                     DeclaredGoals = declarations,
                     Notes = new ObservableCollection<string>()
@@ -197,7 +189,7 @@ namespace AXToolbox.Scripting
                         break;
                 }
 
-                report.cleanTrack = report.GetCleanTrack();
+                report.DoTrackCleanUp();
                 report.DetectLaunchAndLanding();
             }
 
@@ -211,7 +203,7 @@ namespace AXToolbox.Scripting
             pilotId = 0;
             LoggerModel = "";
             LoggerSerialNumber = "";
-            OriginalTrack = new AXTrackpoint[0];
+            OriginalTrack = new AXPoint[0];
             Markers = new ObservableCollection<AXWaypoint>();
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
             Notes = new ObservableCollection<string>();
@@ -296,7 +288,7 @@ namespace AXToolbox.Scripting
             //TODO: consider removing spikes by change in direction
             AXPoint point_m1 = null;
             AXPoint point_m2 = null;
-            foreach (var point in GpsTrack.Where(p => p.Time < minTime || p.Time > maxTime))
+            foreach (var point in OriginalTrack.Where(p => p.Time >= minTime || p.Time <= maxTime))
             {
                 nTime++;
 
@@ -328,14 +320,13 @@ namespace AXToolbox.Scripting
             if (nSpike > 0)
                 Notes.Add(string.Format("Removed {0} spike points", nSpike));
 
-            cleanTrack = new Track();
-            cleanTrack.AddSegment(validPoints.ToArray());
+            cleanTrack = validPoints.ToArray();
         }
         protected void DetectLaunchAndLanding()
         {
             // find the highest point in flight
             AXPoint highest = null;
-            foreach (var point in CleanTrack.Points)
+            foreach (var point in CleanTrack)
             {
                 if (highest == null || point.Altitude > highest.Altitude)
                     highest = point;
@@ -351,7 +342,7 @@ namespace AXToolbox.Scripting
                 LaunchPoint = FindGroundContact(highest, true);
                 if (LaunchPoint == null)
                 {
-                    LaunchPoint = CleanTrack.Points.First();
+                    LaunchPoint = CleanTrack.First();
                     LaunchPoint.Remarks = "Launch point not found. Using first track point";
                     Notes.Add(LaunchPoint.Remarks);
                 }
@@ -360,7 +351,7 @@ namespace AXToolbox.Scripting
                 LandingPoint = FindGroundContact(highest, false);
                 if (LandingPoint == null)
                 {
-                    LandingPoint = CleanTrack.Points.Last();
+                    LandingPoint = CleanTrack.Last();
                     LandingPoint.Remarks = "Landing point not found. Using last track point.";
                     Notes.Add(LandingPoint.Remarks);
                 }
@@ -368,7 +359,7 @@ namespace AXToolbox.Scripting
         }
         protected AXPoint FindGroundContact(AXPoint reference, bool backwards)
         {
-            var track = CleanTrack.Points;
+            IEnumerable<AXPoint> track = CleanTrack;
 
             if (backwards)
             {

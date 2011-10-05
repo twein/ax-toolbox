@@ -63,7 +63,6 @@
   <ItemGroup>
     <Compile Include="Basic\Angle.cs" />
     <Compile Include="Basic\AXPoint.cs" />
-    <Compile Include="Basic\AXTrackpoint.cs" />
     <Compile Include="Basic\AXWaypoint.cs" />
     <Compile Include="Basic\Coordinates.cs" />
     <Compile Include="Basic\ITime.cs" />

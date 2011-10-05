@@ -15,7 +15,7 @@ namespace AXToolbox.Scripting
         protected double radius = 0;
         protected double upperLimit = double.PositiveInfinity;
         protected double lowerLimit = double.NegativeInfinity;
-        protected List<AXTrackpoint> outline;
+        protected List<AXPoint> outline;
 
         public double MaxHorizontalInfringement { get; protected set; }
         public double UpperLimit { get { return upperLimit; } }

@@ -133,9 +133,7 @@ namespace AXToolbox.Scripting
                 //remove track portions used by previous tasks
                 try
                 {
-                    Engine.TaskValidTrackPoints = (from p in Engine.TaskValidTrackPoints
-                                                   where p.Time >= Engine.LastUsedPoint.Time
-                                                   select p).ToArray();
+                    Engine.TaskValidTrackPoints = Engine.TaskValidTrackPoints.Filter(p => p.Time >= Engine.LastUsedPoint.Time);
                 }
                 catch { }
             }

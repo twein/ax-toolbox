@@ -62,8 +62,8 @@ namespace AXToolbox.Scripting
         public FlightReport Report { get; private set; }
         public MapViewerControl MapViewer { get; private set; }
 
-        internal AXTrackpoint[] AllValidTrackPoints { get; set; }
-        internal AXTrackpoint[] TaskValidTrackPoints { get; set; }
+        internal Track AllValidTrackPoints { get; set; }
+        internal Track TaskValidTrackPoints { get; set; }
         /// <summary>returns the last used point: last used marker drop or launch</summary>
         internal AXPoint LastUsedPoint
         {
@@ -89,14 +89,14 @@ namespace AXToolbox.Scripting
             }
         }
         public TrackTypes VisibleTrackType { get; set; }
-        public AXTrackpoint[] VisibleTrack
+        public AXPoint[] VisibleTrack
         {
             get
             {
-                AXTrackpoint[] track;
+                AXPoint[] track;
                 if (Report == null)
                 {
-                    track = new AXTrackpoint[0];
+                    track = new AXPoint[0];
                 }
                 else
                 {
@@ -236,7 +236,7 @@ namespace AXToolbox.Scripting
 
             Report = FlightReport.Load(loggerFile, Settings);
 
-            if (Report.OriginalTrack.Count() > 0)
+            if (Report.OriginalTrack.Length > 0)
             {
 
                 if (!noDisplay)
@@ -270,7 +270,7 @@ namespace AXToolbox.Scripting
 
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
 
-            AllValidTrackPoints = Report.FlightTrack;
+            AllValidTrackPoints = new Track(Report.FlightTrack);
 
             //reset all objects
             foreach (var obj in Heap.Values)
@@ -504,14 +504,10 @@ namespace AXToolbox.Scripting
 
                 if (Report != null)
                 {
-                    var path = new Point[VisibleTrack.Length];
-                    Parallel.For(0, VisibleTrack.Length, i =>
-                    {
-                        path[i] = VisibleTrack[i].ToWindowsPoint();
-                    });
+                    var path = new Track(VisibleTrack).ToWindowsPointArray();
                     MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
 
-                    var position = path[0];
+                    var position = path[0][0];
                     if (TrackPointer != null)
                         position = TrackPointer.Position;
                     TrackPointer = new CrosshairsOverlay(position) { Layer = (uint)OverlayLayers.Pointer };

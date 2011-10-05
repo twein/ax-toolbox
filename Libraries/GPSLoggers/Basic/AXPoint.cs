@@ -16,12 +16,11 @@ namespace AXToolbox.GpsLoggers
         Altitude = 0x4,
         Coords = 0x8,
         CompetitionCoords = 0x10,
-        Validity = 0x20,
+        Declaration = 0x20,
         Name = 0x40,
         Description = 0x80,
         Radius = 0x100,
         Input = 0x200,
-        Declaration = 0x400,
         AltitudeMeters = 0x800,
 
         CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Declaration | AXPointInfo.AltitudeMeters

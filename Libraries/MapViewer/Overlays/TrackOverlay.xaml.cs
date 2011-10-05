@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 
@@ -44,12 +45,19 @@ namespace AXToolbox.MapViewer
                     foreach (var s in Segments)
                     {
                         //convert the points in map coordinates to local
-                        var localPoints = new Point[s.Length];
-                        for (int i = 0; i < s.Length; i++)
-                        {
-                            var p = Map.FromMapToLocal(s[i]);
-                            localPoints[i] = new Point(p.X - offset.X, p.Y - offset.Y);
-                        }
+                        var localPoints = (
+                            from lp in
+                                (
+                                    from mp in s
+                                    select Map.FromMapToLocal(mp)
+                                )
+                            select new Point(lp.X - offset.X, lp.Y - offset.Y)).ToArray();
+                        //does not work because Map needs a fixed thread
+                        //Parallel.For(0, s.Length, i =>
+                        //{
+                        //    var p = Map.FromMapToLocal(s[i]);
+                        //    localPoints[i] = new Point(p.X - offset.X, p.Y - offset.Y);
+                        //});
 
                         ctx.PolyLineTo(new Point[] { localPoints[0] }, false, false); //skip gap between segments
                         ctx.PolyLineTo(localPoints, true, false); // draw segment
