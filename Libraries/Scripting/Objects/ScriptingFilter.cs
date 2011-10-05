@@ -68,9 +68,9 @@ namespace AXToolbox.Scripting
 
             Track trackPoints;
             if (Task == null)
-                trackPoints = Engine.AllValidTrackPoints;
+                trackPoints = Engine.FlightValidTrack;
             else
-                trackPoints = Engine.TaskValidTrackPoints;
+                trackPoints = Engine.TaskValidTrack;
 
             var initialCount = trackPoints.Length;
 
@@ -78,7 +78,7 @@ namespace AXToolbox.Scripting
             {
                 case "NONE":
                     Task.ResetValidTrackPoints(); //Task is never null in NONE filter
-                    trackPoints = Engine.TaskValidTrackPoints;
+                    trackPoints = Engine.TaskValidTrack;
                     break;
 
                 case "INSIDE":
@@ -121,9 +121,9 @@ namespace AXToolbox.Scripting
             }
 
             if (Task == null)
-                Engine.AllValidTrackPoints = trackPoints;
+                Engine.FlightValidTrack = trackPoints;
             else
-                Engine.TaskValidTrackPoints = trackPoints;
+                Engine.TaskValidTrack = trackPoints;
 
             //if (Engine.ValidTrackPoints.Length != initialCount)
             AddNote(string.Format("track filtered from {0} to {1} valid points", initialCount, trackPoints.Length));

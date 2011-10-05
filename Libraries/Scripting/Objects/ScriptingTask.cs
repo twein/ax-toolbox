@@ -120,20 +120,20 @@ namespace AXToolbox.Scripting
 
             ResetValidTrackPoints();
 
-            AddNote(string.Format("track contains {0} valid points for this task", Engine.TaskValidTrackPoints.Length));
+            AddNote(string.Format("track contains {0} valid points for this task", Engine.TaskValidTrack.Length));
         }
 
         public void ResetValidTrackPoints()
         {
             //remove task filter if any
-            Engine.TaskValidTrackPoints = Engine.AllValidTrackPoints;
+            Engine.TaskValidTrack = Engine.FlightValidTrack;
 
             if (Engine.Settings.TasksInOrder)
             {
                 //remove track portions used by previous tasks
                 try
                 {
-                    Engine.TaskValidTrackPoints = Engine.TaskValidTrackPoints.Filter(p => p.Time >= Engine.LastUsedPoint.Time);
+                    Engine.TaskValidTrack = Engine.TaskValidTrack.Filter(p => p.Time >= Engine.LastUsedPoint.Time);
                 }
                 catch { }
             }
@@ -200,12 +200,8 @@ namespace AXToolbox.Scripting
             foreach (var pen in Penalties)
             {
                 c.AddElement(new Paragraph(pen.ToString(), config.BoldFont) { SpacingBefore = 0 });
-
-                if (pen.UsedPoints.Count > 0)
-                {
-                    c.AddElement(new Paragraph("Entry: " + pen.UsedPoints[0].ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
-                    c.AddElement(new Paragraph("Exit:  " + pen.UsedPoints[pen.UsedPoints.Count - 1].ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
-                }
+                foreach (var str in pen.InfringingTrack.ToStringList())
+                    c.AddElement(new Paragraph(str, config.FixedWidthFont) { SpacingBefore = 0 });
             }
             table.AddCell(c);
 
