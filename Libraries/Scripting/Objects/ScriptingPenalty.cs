@@ -121,27 +121,16 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            double penaltyPoints = 0;
-                            AXPoint last = null;
-                            var pointsInside = new List<AXPoint>();
-                            foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
+                            var infringingTrack = new Track(Engine.Report.FlightTrack).Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                            double penaltyPoints = infringingTrack.ReducePairs((p1, p2) =>
                             {
-                                if (area.Contains(p))
-                                {
-                                    pointsInside.Add(p);
-                                    if (last != null)
-                                    {
-                                        var deltaT = (p.Time - last.Time).TotalSeconds;
-                                        penaltyPoints += area.ScaledBPZInfringement(p) * deltaT;
-                                    }
-                                    last = p;
-                                }
-                            }
+                                return area.ScaledBPZInfringement(p2) * (p2.Time - p1.Time).TotalSeconds;
+                            });
                             if (penaltyPoints > 0)
                             {
                                 penaltyPoints = Math.Min(1000, 10 * Math.Ceiling(penaltyPoints / 10)); //Rule 7.5
                                 var infringement = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
-                                infringement.UsedPoints.AddRange(pointsInside);
+                                infringement.InfringingTrack = infringingTrack;
                                 Infringements.Add(infringement);
                                 task.Penalties.Add(infringement);
                             }
@@ -172,55 +161,22 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            double penalty = 0;
-                            AXPoint first = null;
-                            AXPoint last = null;
-                            var pointsInside = new List<AXPoint>();
-                            //TODO: replace by .First(p=>area.Contains(p)) and .Last(...)
-                            foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
+                            var infringingTrack = new Track(Engine.Report.FlightTrack).Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                            double penaltyPoints = infringingTrack.ReduceSegments((p1, p2) =>
                             {
-                                if (area.Contains(p))
-                                {
-                                    pointsInside.Add(p);
-                                    if (first == null)
-                                        first = p;
-                                    last = p;
-                                }
-                            }
-                            if (first != null)
-                            {
-                                var vertInfringement = 1 - (first.Altitude + last.Altitude) / (2 * area.UpperLimit);
-                                var horzInfringement = Physics.Distance2D(first, last) / area.MaxHorizontalInfringement;
-                                penalty = 500 * (vertInfringement + horzInfringement) / 2; //COH7.5
+                                return 1 - (p1.Altitude + p2.Altitude) / (2 * area.UpperLimit) + Physics.Distance2D(p1, p2) / area.MaxHorizontalInfringement;
+                            });
 
-                                penalty = 10 * Math.Ceiling((penalty / 10));
-                                var infringement = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penalty);
-                                infringement.UsedPoints.AddRange(pointsInside);
+                            if (penaltyPoints > 0)
+                            {
+                                penaltyPoints = 500 * penaltyPoints / 2; //COH7.5
+                                penaltyPoints = Math.Min(1000, 10 * Math.Ceiling(penaltyPoints / 10)); //Rule 7.5
+                                var infringement = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
+                                infringement.InfringingTrack = infringingTrack;
                                 Infringements.Add(infringement);
                                 task.Penalties.Add(infringement);
                             }
-
-                            firstPoint = lastPoint;
                         }
-                        /*
-                         * new 2011 draft
-                        double penalty = 0;
-                        AXPoint last = null;
-                        foreach (var p in Engine.Report.FlightTrack)
-                        {
-                            if (area.Contains(p))
-                            {
-                                if (last != null && !p.StartSubtrack)
-                                {
-                                    var deltaT = (p.Time - last.Time).TotalSeconds;
-                                    penalty += area.ScaledRPZInfringement(p) * deltaT;
-                                }
-                                last = p;
-                            }
-                        }
-                        penalty = Math.Min(1000, 10 * Math.Ceiling(penalty / 10)); //Rule 7.5
-                        Penalty = new Penalty("R7.3.4 RPZ", PenaltyType.CompetitionPoints, (int)penalty);
-                        */
                     }
                     break;
                 case "VSMAX":
@@ -245,37 +201,21 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            AXPoint first = null;
-                            AXPoint last = null;
-                            foreach (var p in Engine.Report.FlightTrack.Where(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time))
-                            {
-                                if (last == null)
-                                {
-                                    //do nothing
-                                }
-                                else if (Math.Abs(Physics.VerticalVelocity(last, p)) > maxSpeed)
-                                {
-                                    if (first == null)
-                                        first = p;
-                                }
-                                else if (first != null)
-                                {
-                                    if ((last.Time - first.Time).TotalSeconds >= 15)
-                                    {
+                            var infringingTrack = new Track(Engine.Report.FlightTrack)
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time)
+                                .FilterPairs((p1, p2) => Math.Abs(Physics.VerticalVelocity(p1, p2)) > maxSpeed)
+                                .FilterSegments((p1, p2) => (p2.Time - p1.Time).TotalSeconds > 15);
+
+                            
+                            foreach (var str in infringingTrack.ToStringList())
+
                                         task.AddNote(
                                             string.Format("Max ascent/descent rate exceeded from {0} to {1}: {2:0} ft/min for {3} sec",
                                             first.ToString(AXPointInfo.Time).TrimEnd(),
                                             last.ToString(AXPointInfo.Time).TrimEnd(),
                                             Physics.VerticalVelocity(first, last) * Physics.METERS2FEET * 60,
                                             (last.Time - first.Time).TotalSeconds), true);
-                                    }
-                                    first = null;
-                                }
-
-                                last = p;
-                            }
-
-                            firstPoint = lastPoint;
+                            
                         }
                     }
                     break;
@@ -290,12 +230,12 @@ namespace AXToolbox.Scripting
             {
                 foreach (var inf in Infringements)
                 {
-                    if (inf.UsedPoints.Count > 0)
+                    if (inf.InfringingTrack.Count > 0)
                     {
-                        var path = new Point[inf.UsedPoints.Count];
-                        Parallel.For(0, inf.UsedPoints.Count, i =>
+                        var path = new Point[inf.InfringingTrack.Count];
+                        Parallel.For(0, inf.InfringingTrack.Count, i =>
                         {
-                            path[i] = inf.UsedPoints[i].ToWindowsPoint();
+                            path[i] = inf.InfringingTrack[i].ToWindowsPoint();
                         });
 
                         switch (ObjectType)

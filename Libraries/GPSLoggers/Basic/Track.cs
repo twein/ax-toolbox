@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
+using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -59,36 +60,6 @@ namespace AXToolbox.GpsLoggers
                 return sec;
             }
         }
-        public Track Filter(Func<AXPoint, bool> predicate)
-        {
-            var track = new Track();
-            var newSegment = new List<AXPoint>();
-
-            foreach (var segment in segments)
-            {
-                //each segment could be split in smaller segments
-                foreach (var point in segment)
-                {
-                    if (predicate(point) == true)
-                        newSegment.Add(point);
-                    else
-                    {
-                        if (newSegment.Count > 0)
-                        {
-                            track.AddSegment(newSegment.ToArray());
-                            newSegment.Clear();
-                        }
-                    }
-                }
-                if (newSegment.Count > 0)
-                {
-                    track.AddSegment(newSegment.ToArray());
-                    newSegment.Clear();
-                }
-            }
-
-            return track;
-        }
         public bool Contains(AXPoint p)
         {
             foreach (var s in segments)
@@ -140,6 +111,124 @@ namespace AXToolbox.GpsLoggers
             });
 
             return array;
+        }
+
+        public IEnumerable<string> ToStringList()
+        {
+            var strl = new List<string>();
+
+            foreach (var s in segments)
+                strl.Add(string.Format("from {0} to {1}",
+                    s[0].ToString(AXPointInfo.CustomReport),
+                    s[s.Length - 1].ToString(AXPointInfo.CustomReport)
+                    ));
+
+            return strl;
+        }
+
+        public Track Filter(Func<AXPoint, bool> predicate)
+        {
+            var track = new Track();
+            var newSegment = new List<AXPoint>();
+
+            foreach (var s in segments)
+            {
+                //each segment could be split in smaller segments
+                foreach (var point in s)
+                {
+                    if (predicate(point) == true)
+                        newSegment.Add(point);
+                    else
+                    {
+                        if (newSegment.Count > 0)
+                        {
+                            track.AddSegment(newSegment.ToArray());
+                            newSegment.Clear();
+                        }
+                    }
+                }
+                if (newSegment.Count > 0)
+                {
+                    track.AddSegment(newSegment.ToArray());
+                    newSegment.Clear();
+                }
+            }
+
+            return track;
+        }
+        public Track FilterPairs(Func<AXPoint, AXPoint, bool> predicate)
+        {
+            var track = new Track();
+            var newSegment = new List<AXPoint>();
+
+            foreach (var s in segments)
+            {
+                //each segment could be split in smaller segments
+                if (s.Length < 2)
+                    continue;
+
+                for (int i = 1; i < s.Length; i++)
+                {
+                    if (predicate(s[i - 1], s[i]) == true)
+                        newSegment.Add(s[i]);
+                    else
+                    {
+                        if (newSegment.Count > 0)
+                        {
+                            track.AddSegment(newSegment.ToArray());
+                            newSegment.Clear();
+                        }
+                    }
+                }
+                if (newSegment.Count > 0)
+                {
+                    track.AddSegment(newSegment.ToArray());
+                    newSegment.Clear();
+                }
+            }
+
+            return track;
+        }
+        public Track FilterSegments(Func<AXPoint, AXPoint, bool> predicate)
+        {
+            var track = new Track();
+            foreach (var s in segments)
+            {
+                if (predicate(s[0], s[s.Length - 1]) == true)
+                    track.AddSegment(s);
+            }
+
+            return track;
+        }
+
+
+        public double ReducePairs(Func<AXPoint, AXPoint, double> func)
+        {
+            double points = 0;
+
+            foreach (var s in segments)
+            {
+                if (s.Length < 2)
+                    continue;
+
+                for (var i = 1; i < s.Length; i++)
+                {
+                    points += func(s[i - 1], s[i]);
+                }
+            }
+
+            return points;
+        }
+        public double ReduceSegments(Func<AXPoint, AXPoint, double> func)
+        {
+            double points = 0;
+
+            foreach (var s in segments)
+            {
+                points += func(s[s.Length - 1], s[0]);
+            }
+
+            return points;
         }
     }
 }

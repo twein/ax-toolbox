@@ -14,13 +14,13 @@ namespace AXToolbox.Scripting
         public int Points { get; protected set; }
         public string InfringedRules { get; protected set; }
 
-        public List<AXPoint> UsedPoints { get; protected set; }
+        public Track InfringingTrack { get; set; }
         public AXPoint LastUsedPoint
         {
             get
             {
-                if (UsedPoints.Count > 0)
-                    return UsedPoints.OrderBy(p => p.Time).Last();
+                if (InfringingTrack.Length > 0)
+                    return InfringingTrack.Points.OrderBy(p => p.Time).Last();
                 else
                     return null;
             }
@@ -31,7 +31,7 @@ namespace AXToolbox.Scripting
             Type = PenaltyType.Measure;
             Performance = performance;
             InfringedRules = performance.Reason;
-            UsedPoints = new List<AXPoint>();
+            InfringingTrack = new Track();
         }
         public Penalty(string infringedRule, PenaltyType type, int value)
         {
@@ -41,7 +41,7 @@ namespace AXToolbox.Scripting
 
             Points = value;
             InfringedRules = infringedRule;
-            UsedPoints = new List<AXPoint>();
+            InfringingTrack = new Track();
         }
 
         public override string ToString()
