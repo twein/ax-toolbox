@@ -80,15 +80,6 @@ namespace AXToolbox.Scripting
 
             return new AXPoint(geoPoint.Time, utmCoords.Easting, utmCoords.Northing, altitude);
         }
-        public AXTrackpoint FromGeoToAXTrackpoint(GeoPoint geoPoint, bool isBarometricAltitude)
-        {
-            var utmCoords = geoPoint.Coordinates.ToUtm(Datum.GetInstance(DatumName), UtmZone);
-            double altitude = utmCoords.Altitude;
-            if (isBarometricAltitude)
-                altitude = CorrectAltitudeQnh(utmCoords.Altitude);
-
-            return new AXTrackpoint(geoPoint.Time, utmCoords.Easting, utmCoords.Northing, altitude);
-        }
         public AXWaypoint FromGeoToAXWaypoint(GeoWaypoint geoWaypoint, bool isBarometricAltitude)
         {
             var utmCoords = geoWaypoint.Coordinates.ToUtm(Datum.GetInstance(DatumName), UtmZone);
@@ -125,12 +116,12 @@ namespace AXToolbox.Scripting
             else
                 return null;
         }
-        public List<AXTrackpoint> GetTrack(LoggerFile trackLog)
+        public List<AXPoint> GetTrack(LoggerFile trackLog)
         {
-            var track = new List<AXTrackpoint>();
+            var track = new List<AXPoint>();
             foreach (var p in trackLog.GetTrackLog())
             {
-                track.Add(FromGeoToAXTrackpoint(p, trackLog.IsAltitudeBarometric));
+                track.Add(FromGeoToAXPoint(p, trackLog.IsAltitudeBarometric));
             }
             return track;
         }

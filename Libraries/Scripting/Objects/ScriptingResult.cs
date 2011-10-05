@@ -267,18 +267,9 @@ namespace AXToolbox.Scripting
                         //DACC: accumulated distance
                         //DACC(<pointNameA>, <pointNameB>)
                         {
-                            double distance = 0;
-                            AXPoint last = null;
-                            var points = Engine.TaskValidTrackPoints.Where(p => p.Time >= A.Point.Time && p.Time <= B.Point.Time).ToArray();
-                            foreach (var p in points)
-                            {
-                                if (!p.StartSubtrack && last != null)
-                                    distance += Physics.Distance2D(p, last);
-                                last = p;
-                            }
-                            Result = Task.NewResult(Math.Round(distance, 0));
+                            Result = Task.NewResult(Math.Round(Engine.TaskValidTrackPoints.Distance2D(), 0));
                             Result.UsedPoints.Add(A.Point);
-                            Result.UsedPoints.AddRange(points); //cloned ValidTrackPoints
+                            Result.UsedPoints.AddRange(Engine.TaskValidTrackPoints.Points); //cloned ValidTrackPoints
                             Result.UsedPoints.Add(B.Point);
                         }
                         break;

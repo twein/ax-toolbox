@@ -25,7 +25,7 @@ namespace FlightAnalyzer
         public FlightReport Report { get; private set; }
         public string Debriefer { get; set; }
 
-        public AXTrackpoint TrackPointer { get; private set; }
+        public AXPoint TrackPointer { get; private set; }
 
         protected BackgroundWorker Worker = new BackgroundWorker();
         protected string rootFolder;
@@ -48,7 +48,7 @@ namespace FlightAnalyzer
 
             //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Launch_And_Landing);
 
-            if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer))
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer) || Properties.Settings.Default.Debriefer == "Debriefer")
                 ShowOptions();
 
             Debriefer = Properties.Settings.Default.Debriefer;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -13,6 +14,11 @@ namespace AXToolbox.GpsLoggers
         public Track()
         {
             segments = new List<AXPoint[]>();
+        }
+        public Track(IEnumerable<AXPoint> points)
+            : this()
+        {
+            segments.Add(points.ToArray());
         }
 
         public IEnumerable<AXPoint> Points
@@ -30,7 +36,29 @@ namespace AXToolbox.GpsLoggers
             //TODO: check order and overlapping
             segments.Add(segment);
         }
-        
+
+        public int Length
+        {
+            get
+            {
+                var len = 0;
+                foreach (var s in segments)
+                    len += s.Length;
+
+                return len;
+            }
+        }
+        public double TotalSeconds
+        {
+            get
+            {
+                var sec = 0.0;
+                foreach (var s in segments)
+                    sec += (s[s.Length - 1].Time - s[0].Time).TotalSeconds;
+
+                return sec;
+            }
+        }
         public Track Filter(Func<AXPoint, bool> predicate)
         {
             var track = new Track();
@@ -38,9 +66,10 @@ namespace AXToolbox.GpsLoggers
 
             foreach (var segment in segments)
             {
+                //each segment could be split in smaller segments
                 foreach (var point in segment)
                 {
-                    if (predicate(point))
+                    if (predicate(point) == true)
                         newSegment.Add(point);
                     else
                     {
@@ -69,48 +98,48 @@ namespace AXToolbox.GpsLoggers
             return false;
         }
 
-        public double Length2D()
+        public double Distance2D()
         {
-            var length = 0.0;
+            var dist = 0.0;
             foreach (var s in segments)
             {
                 AXPoint previous = null;
                 foreach (var p in s)
                 {
                     if (previous != null)
-                        length += Physics.Distance2D(previous, p);
+                        dist += Physics.Distance2D(previous, p);
                     previous = p;
                 }
             }
 
-            return length;
+            return dist;
         }
-        public double Length3D()
+        public double Distance3D()
         {
-            var length = 0.0;
+            var dist = 0.0;
             foreach (var s in segments)
             {
                 AXPoint previous = null;
                 foreach (var p in s)
                 {
                     if (previous != null)
-                        length += Physics.Distance3D(previous, p);
+                        dist += Physics.Distance3D(previous, p);
                     previous = p;
                 }
             }
 
-            return length;
+            return dist;
         }
 
         public Point[][] ToWindowsPointArray()
         {
-            var list = new List<Point[]>();
-            foreach (var s in segments)
+            var array = new Point[segments.Count][];
+            Parallel.For(0, segments.Count(), i =>
             {
-                var points = from p in s select new Point(p.Easting, p.Northing);
-                list.Add(points.ToArray());
-            }
-            return list.ToArray();
+                array[i] = (from p in segments[i] select new Point(p.Easting, p.Northing)).ToArray();
+            });
+
+            return array;
         }
     }
 }

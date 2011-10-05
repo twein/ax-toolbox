@@ -66,7 +66,7 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
-            AXTrackpoint[] trackPoints;
+            Track trackPoints;
             if (Task == null)
                 trackPoints = Engine.AllValidTrackPoints;
             else
@@ -78,45 +78,45 @@ namespace AXToolbox.Scripting
             {
                 case "NONE":
                     Task.ResetValidTrackPoints(); //Task is never null in NONE filter
-                    trackPoints = ApplyFilter(Engine.TaskValidTrackPoints, p => true); //Use always the ApplyFilter function: it sets up subtrack flags
+                    trackPoints = Engine.TaskValidTrackPoints;
                     break;
 
                 case "INSIDE":
-                    trackPoints = ApplyFilter(trackPoints, p => area.Contains(p));
+                    trackPoints = trackPoints.Filter(p => area.Contains(p));
                     break;
 
                 case "OUTSIDE":
-                    trackPoints = ApplyFilter(trackPoints, p => !area.Contains(p));
+                    trackPoints = trackPoints.Filter(p => !area.Contains(p));
                     break;
 
                 case "BEFORETIME":
-                    trackPoints = ApplyFilter(trackPoints, p => p.Time.ToLocalTime() <= time);
+                    trackPoints = trackPoints.Filter(p => p.Time.ToLocalTime() <= time);
                     break;
 
                 case "AFTERTIME":
-                    trackPoints = ApplyFilter(trackPoints, p => p.Time.ToLocalTime() >= time);
+                    trackPoints = trackPoints.Filter(p => p.Time.ToLocalTime() >= time);
                     break;
 
                 case "BEFOREPOINT":
                     if (point.Point == null)
                         AddNote("reference point is null", true);
                     else
-                        trackPoints = ApplyFilter(trackPoints, p => p.Time <= point.Point.Time);
+                        trackPoints = trackPoints.Filter(p => p.Time <= point.Point.Time);
                     break;
 
                 case "AFTERPOINT":
                     if (point.Point == null)
                         AddNote("reference point is null", true);
                     else
-                        trackPoints = ApplyFilter(trackPoints, p => p.Time >= point.Point.Time);
+                        trackPoints = trackPoints.Filter(p => p.Time >= point.Point.Time);
                     break;
 
                 case "ABOVE":
-                    trackPoints = ApplyFilter(trackPoints, p => p.Altitude >= altitude);
+                    trackPoints = trackPoints.Filter(p => p.Altitude >= altitude);
                     break;
 
                 case "BELOW":
-                    trackPoints = ApplyFilter(trackPoints, p => p.Altitude <= altitude);
+                    trackPoints = trackPoints.Filter(p => p.Altitude <= altitude);
                     break;
             }
 
@@ -127,31 +127,6 @@ namespace AXToolbox.Scripting
 
             //if (Engine.ValidTrackPoints.Length != initialCount)
             AddNote(string.Format("track filtered from {0} to {1} valid points", initialCount, trackPoints.Length));
-        }
-
-        /// <summary>Return a filtered array of trackpoints with subtrack control
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="predicate">Membership function. Points with false results will be filtered out</param>
-        /// <returns></returns>
-        protected AXTrackpoint[] ApplyFilter(IEnumerable<AXTrackpoint> list, Predicate<AXTrackpoint> predicate)
-        {
-            var newList = new List<AXTrackpoint>();
-
-            var wasValid = false;
-            foreach (var p in list)
-            {
-                if (predicate(p))
-                {
-                    p.StartSubtrack = !wasValid;
-                    newList.Add(p);
-                    wasValid = true;
-                }
-                else
-                    wasValid = false;
-            }
-
-            return newList.ToArray();
         }
     }
 }

@@ -360,7 +360,7 @@ namespace AXToolbox.Scripting
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
                         try
                         {
-                            var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
+                            var nearestPoint = Engine.TaskValidTrackPoints.Points.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
                             Point = new AXWaypoint("M" + marker.Name, marker);
                         }
                         catch (InvalidOperationException)
@@ -501,7 +501,7 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
-                            foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
+                            foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Points)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = new AXWaypoint(ObjectName, nextTrackPoint);
@@ -529,7 +529,7 @@ namespace AXToolbox.Scripting
                                 nnull++;
                                 continue;
                             }
-                            foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
+                            foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Points)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = new AXWaypoint(ObjectName, nextTrackPoint);
@@ -557,9 +557,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime));
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.Points.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime));
                             else
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => p.Time >= referencePoint.Time + timeDelay));
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.Points.First(p => p.Time >= referencePoint.Time + timeDelay));
 
                             if (Point == null)
                             {
@@ -583,9 +583,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime));
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime));
                             else
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay));
+                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrackPoints.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay));
 
                             if (Point == null)
                             {
@@ -601,14 +601,13 @@ namespace AXToolbox.Scripting
                     //TAFI(<areaName>)
                     {
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
-                            if (area.Contains(nextTrackPoint))
-                            {
-                                Point = new AXWaypoint(ObjectName, nextTrackPoint);
-                                break;
-                            }
 
-                        if (Point == null)
+                        try
+                        {
+                            var tafi = Engine.TaskValidTrackPoints.Points.First(p => area.Contains(p));
+                            Point = new AXWaypoint(ObjectName, tafi);
+                        }
+                        catch
                         {
                             AddNote("no valid track point inside the area", true);
                         }
@@ -619,61 +618,88 @@ namespace AXToolbox.Scripting
                     //area first out
                     //TAFO(<areaName>)
                     {
-                        AXPoint lastInside = null;
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints)
-                        {
-                            if (area.Contains(nextTrackPoint))
-                                lastInside = nextTrackPoint;
-                            else if (lastInside != null)
-                                break;
-                        }
-                        Point = new AXWaypoint(ObjectName, lastInside);
 
-                        if (Point == null)
+                        try
+                        {
+                            var tafi = Engine.TaskValidTrackPoints.Points.First(p => area.Contains(p));
+                            var tafoo = Engine.TaskValidTrackPoints.Points.First(p => p.Time > tafi.Time && !area.Contains(p));
+                            var tafo = Engine.TaskValidTrackPoints.Points.Last(p => p.Time < tafoo.Time && area.Contains(p));
+                            Point = new AXWaypoint(ObjectName, tafi);
+                        }
+                        catch
                         {
                             AddNote("no valid track point inside the area", true);
                         }
                     }
+                    //{
+                    //    AXPoint lastInside = null;
+                    //    var area = Resolve<ScriptingArea>(0);
+                    //    foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Points)
+                    //    {
+                    //        if (area.Contains(nextTrackPoint))
+                    //            lastInside = nextTrackPoint;
+                    //        else if (lastInside != null)
+                    //            break;
+                    //    }
+                    //    Point = new AXWaypoint(ObjectName, lastInside);
+
+                    //    if (Point == null)
+                    //    {
+                    //        AddNote("no valid track point inside the area", true);
+                    //    }
+                    //}
                     break;
 
                 case "TALI":
                     //area last in
                     //TALI(<areaName>)
-                    // is the same as TALO with reversed track
                     {
-                        AXPoint lastInside = null;
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Reverse())
-                        {
-                            if (area.Contains(nextTrackPoint))
-                                lastInside = nextTrackPoint;
-                            else if (lastInside != null)
-                                break;
-                        }
-                        Point = new AXWaypoint(ObjectName, lastInside);
 
-                        if (Point == null)
+                        try
+                        {
+                            var talo = Engine.TaskValidTrackPoints.Points.Last(p => area.Contains(p));
+                            var talio = Engine.TaskValidTrackPoints.Points.Last(p => p.Time < talo.Time && !area.Contains(p));
+                            var tafo = Engine.TaskValidTrackPoints.Points.First(p => p.Time > talio.Time && area.Contains(p));
+                            Point = new AXWaypoint(ObjectName, tafo);
+                        }
+                        catch
                         {
                             AddNote("no valid track point inside the area", true);
                         }
                     }
+                    //{
+                    //    // is the same as TAFO with reversed track
+                    //    AXPoint lastInside = null;
+                    //    var area = Resolve<ScriptingArea>(0);
+                    //    foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Points.Reverse())
+                    //    {
+                    //        if (area.Contains(nextTrackPoint))
+                    //            lastInside = nextTrackPoint;
+                    //        else if (lastInside != null)
+                    //            break;
+                    //    }
+                    //    Point = new AXWaypoint(ObjectName, lastInside);
+
+                    //    if (Point == null)
+                    //    {
+                    //        AddNote("no valid track point inside the area", true);
+                    //    }
+                    //}
                     break;
 
                 case "TALO":
                     //area last out
                     //TALO(<areaName>)
-                    // is the same as TAFI with reversed track
                     {
                         var area = Resolve<ScriptingArea>(0);
-                        foreach (var nextTrackPoint in Engine.TaskValidTrackPoints.Reverse())
-                            if (area.Contains(nextTrackPoint))
-                            {
-                                Point = new AXWaypoint(ObjectName, nextTrackPoint);
-                                break;
-                            }
-
-                        if (Point == null)
+                        try
+                        {
+                            var talo = Engine.TaskValidTrackPoints.Points.Last(p => area.Contains(p));
+                            Point = new AXWaypoint(ObjectName, talo);
+                        }
+                        catch
                         {
                             AddNote("no valid track point inside the area", true);
                         }
