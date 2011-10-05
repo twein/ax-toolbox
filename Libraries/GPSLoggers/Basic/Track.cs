@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System;
 using System.Windows;
+
 namespace AXToolbox.GpsLoggers
 {
+    [Serializable]
     public class Track
     {
         private List<AXPoint[]> segments;
@@ -11,6 +13,16 @@ namespace AXToolbox.GpsLoggers
         public Track()
         {
             segments = new List<AXPoint[]>();
+        }
+
+        public IEnumerable<AXPoint> Points
+        {
+            get
+            {
+                foreach (var s in segments)
+                    foreach (var p in s)
+                        yield return p;
+            }
         }
 
         public void AddSegment(AXPoint[] segment)
@@ -90,12 +102,6 @@ namespace AXToolbox.GpsLoggers
             return length;
         }
 
-        public IEnumerable<AXPoint> Points()
-        {
-            foreach (var s in segments)
-                foreach (var p in s)
-                    yield return p;
-        }
         public Point[][] ToWindowsPointArray()
         {
             var list = new List<Point[]>();
