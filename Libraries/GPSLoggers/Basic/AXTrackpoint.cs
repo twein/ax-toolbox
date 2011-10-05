@@ -6,14 +6,14 @@ namespace AXToolbox.GpsLoggers
     [Serializable]
     public class AXTrackpoint : AXPoint
     {
-        public bool IsValid { get; set; }
-        public bool StartSubtrack { get; set; }
+        //public bool IsValid { get; set; }
+        //public bool StartSubtrack { get; set; }
 
         public AXTrackpoint(DateTime time, double easting, double northing, double altitude) :
             base(time, easting, northing, altitude)
         {
-            IsValid = true;
-            StartSubtrack = false;
+            //IsValid = true;
+            //StartSubtrack = false;
         }
         public AXTrackpoint(AXPoint point)
             : this(point.Time, point.Easting, point.Northing, point.Altitude) { }
@@ -28,8 +28,8 @@ namespace AXToolbox.GpsLoggers
 
             str.Append(base.ToString(info));
 
-            if ((info & AXPointInfo.Validity) > 0)
-                str.Append(IsValid ? "" : "invalid ");
+            //if ((info & AXPointInfo.Validity) > 0)
+            //    str.Append(IsValid ? "" : "invalid ");
 
             return str.ToString();
         }

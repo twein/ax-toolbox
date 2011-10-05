@@ -70,7 +70,7 @@ namespace AXToolbox.Scripting
                     if (!string.IsNullOrEmpty(Debriefer))
                         launchPoint.Remarks = "Launch point set manually by " + Debriefer;
                     Notes.Add(string.Format("Launch point set to {0}", value));
-                    Notes.Add(string.Format("Ignoring {0} points before launch", CleanTrack.Where(p => p.IsValid && p.Time < launchPoint.Time).Count()));
+                    Notes.Add(string.Format("Ignoring {0} points before launch", CleanTrack.Where(p => p.Time < launchPoint.Time).Count()));
                     RaisePropertyChanged("LaunchPoint");
 
                     if (LaunchPoint != null && LandingPoint != null)
@@ -90,7 +90,7 @@ namespace AXToolbox.Scripting
                     if (!string.IsNullOrEmpty(Debriefer))
                         landingPoint.Remarks = "Landing point set manually by " + Debriefer;
                     Notes.Add(string.Format("Landing point set to {0}", value));
-                    Notes.Add(string.Format("Ignoring {0} points after landing", CleanTrack.Where(p => p.IsValid && p.Time > LandingPoint.Time).Count()));
+                    Notes.Add(string.Format("Ignoring {0} points after landing", CleanTrack.Where(p => p.Time > LandingPoint.Time).Count()));
                     RaisePropertyChanged("LandingPoint");
 
                     if (LaunchPoint != null && LandingPoint != null)
@@ -107,16 +107,17 @@ namespace AXToolbox.Scripting
         /// </summary>
         public AXTrackpoint[] OriginalTrack { get; protected set; }
 
+        [NonSerialized]
+        protected AXTrackpoint[] cleanTrack;
         /// <summary>Track without spikes and dupes. May contain points before launch and after landing
         /// </summary>
         public AXTrackpoint[] CleanTrack { get { return cleanTrack; } }
         [NonSerialized]
-        protected AXTrackpoint[] cleanTrack;
+
+        protected AXTrackpoint[] flightTrack;
         /// <summary>Clean track from launch to landing
         /// </summary>
         public AXTrackpoint[] FlightTrack { get { return flightTrack; } }
-        [NonSerialized]
-        protected AXTrackpoint[] flightTrack;
 
 
         public string ShortDescription { get { return this.ToString(); } }
@@ -140,7 +141,7 @@ namespace AXToolbox.Scripting
                 //deserialize report
                 report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
 
-                report.cleanTrack = report.OriginalTrack.Where(p => p.IsValid).ToArray();
+                report.cleanTrack = report.GetCleanTrack();
                 report.flightTrack = report.CleanTrack.Where(p => p.Time >= report.LaunchPoint.Time && p.Time <= report.LandingPoint.Time).ToArray();
             }
             else
@@ -188,7 +189,7 @@ namespace AXToolbox.Scripting
                         break;
                 }
 
-                report.RemoveInvalidPoints();
+                report.cleanTrack = report.GetCleanTrack();
                 report.DetectLaunchAndLanding();
             }
 
@@ -265,9 +266,10 @@ namespace AXToolbox.Scripting
             return ok;
         }
 
-        protected void RemoveInvalidPoints()
+        protected AXTrackpoint[] GetCleanTrack()
         {
             int nTime = 0, nDupe = 0, nSpike = 0;
+            var validPoints = new List<AXTrackpoint>();
 
             // remove points before/after valid times
             DateTime minTime, maxTime;
@@ -282,23 +284,18 @@ namespace AXToolbox.Scripting
                 maxTime = Date.ToUniversalTime() + new TimeSpan(10, 0, 0);
             }
 
-            foreach (var point in OriginalTrack.Where(p => p.Time < minTime || p.Time > maxTime))
-            {
-                nTime++;
-                point.IsValid = false;
-            }
-
             // remove dupes and spikes
             //TODO: consider removing spikes by change in direction
             AXTrackpoint point_m1 = null;
             AXTrackpoint point_m2 = null;
-            foreach (var point in OriginalTrack.Where(p => p.IsValid))
+            foreach (var point in OriginalTrack.Where(p => p.Time < minTime || p.Time > maxTime))
             {
+                nTime++;
+
                 // remove dupe
                 if (point_m1 != null && Physics.TimeDiff(point, point_m1).TotalSeconds == 0)
                 {
                     nDupe++;
-                    point.IsValid = false;
                     continue;
                 }
 
@@ -306,10 +303,10 @@ namespace AXToolbox.Scripting
                 if (point_m2 != null && Physics.Acceleration3D(point, point_m1, point_m2) > Settings.MaxAcceleration)
                 {
                     nSpike++;
-                    point.IsValid = false;
                     continue;
                 }
 
+                validPoints.Add(point);
                 point_m2 = point_m1;
                 point_m1 = point;
             }
@@ -317,19 +314,19 @@ namespace AXToolbox.Scripting
             Notes.Add(string.Format("Original track has {0} points", OriginalTrack.Length));
 
             if (nTime > 0)
-                Notes.Add(string.Format("Removed {0} out-of-time points", nTime));
+                Notes.Add(string.Format("Removed {0} out-of-time points", OriginalTrack.Length - nTime));
             if (nDupe > 0)
                 Notes.Add(string.Format("Removed {0} duplicated points", nDupe));
             if (nSpike > 0)
                 Notes.Add(string.Format("Removed {0} spike points", nSpike));
 
-            cleanTrack = OriginalTrack.Where(p => p.IsValid).ToArray();
+            return validPoints.ToArray();
         }
         protected void DetectLaunchAndLanding()
         {
             // find the highest point in flight
             AXTrackpoint highest = null;
-            foreach (var point in OriginalTrack.Where(p => p.IsValid))
+            foreach (var point in CleanTrack)
             {
                 if (highest == null || point.Altitude > highest.Altitude)
                     highest = point;
@@ -342,7 +339,7 @@ namespace AXToolbox.Scripting
             else
             {
                 // find launch point
-                LaunchPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time <= highest.Time), true);
+                LaunchPoint = FindGroundContact(CleanTrack.Where(p => p.Time <= highest.Time), true);
                 if (LaunchPoint == null)
                 {
                     LaunchPoint = CleanTrack.First();
@@ -351,7 +348,7 @@ namespace AXToolbox.Scripting
                 }
 
                 // find landing point
-                LandingPoint = FindGroundContact(OriginalTrack.Where(p => p.IsValid && p.Time >= highest.Time), false);
+                LandingPoint = FindGroundContact(CleanTrack.Where(p => p.Time >= highest.Time), false);
                 if (LandingPoint == null)
                 {
                     LandingPoint = CleanTrack.Last();

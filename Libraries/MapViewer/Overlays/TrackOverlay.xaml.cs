@@ -6,7 +6,7 @@ namespace AXToolbox.MapViewer
 {
     public partial class TrackOverlay : MapOverlay
     {
-        public Point[] Points;
+        public Point[][] Segments;
 
         public override Brush Color
         {
@@ -14,11 +14,14 @@ namespace AXToolbox.MapViewer
         }
 
         public TrackOverlay(Point[] points, double thickness)
-            : base(points[0])
+            : this(new Point[][] { points }, thickness)
+        { }
+        public TrackOverlay(Point[][] segments, double thickness)
+            : base(segments[0][0])
         {
             InitializeComponent();
 
-            Points = points;
+            Segments = segments;
             track.Effect = new BlurEffect() { KernelType = KernelType.Box, Radius = 0.25 };
             track.StrokeThickness = thickness;
 
@@ -29,21 +32,28 @@ namespace AXToolbox.MapViewer
         {
             if (Map != null)
             {
-                //convert the points in map coordinates to local
-                var localPoints = new Point[Points.Length];
-                var offset = Map.FromMapToLocal(Points[0]);
-                Point p;
-                for (int i = 0; i < Points.Length; i++)
-                {
-                    p = Map.FromMapToLocal(Points[i]);
-                    localPoints[i] = new Point(p.X - offset.X, p.Y - offset.Y);
-                }
+                //compute origin
+                var offset = Map.FromMapToLocal(Segments[0][0]);
 
+                //compute geometry
                 var geometry = new StreamGeometry();
                 using (var ctx = geometry.Open())
                 {
-                    ctx.BeginFigure(localPoints[0], false, false);
-                    ctx.PolyLineTo(localPoints, true, false);
+                    ctx.BeginFigure(offset, false, false);
+
+                    foreach (var s in Segments)
+                    {
+                        //convert the points in map coordinates to local
+                        var localPoints = new Point[s.Length];
+                        for (int i = 0; i < s.Length; i++)
+                        {
+                            var p = Map.FromMapToLocal(s[i]);
+                            localPoints[i] = new Point(p.X - offset.X, p.Y - offset.Y);
+                        }
+
+                        ctx.PolyLineTo(new Point[] { localPoints[0] }, false, false); //skip gap between segments
+                        ctx.PolyLineTo(localPoints, true, false); // draw segment
+                    }
                 }
                 geometry.Freeze(); //for additional performance benefits.
 

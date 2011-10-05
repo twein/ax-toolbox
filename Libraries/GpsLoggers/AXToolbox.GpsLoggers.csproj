@@ -68,6 +68,7 @@
     <Compile Include="Basic\Coordinates.cs" />
     <Compile Include="Basic\ITime.cs" />
     <Compile Include="Basic\Physics.cs" />
+    <Compile Include="Basic\Track.cs" />
     <Compile Include="Geodesy\Datum.cs" />
     <Compile Include="Geodesy\GeodeticCurve.cs" />
     <Compile Include="Basic\GeoPoint.cs" />
