@@ -1,0 +1,8 @@
+relre:\.suo$
+relre:\.user$
+relre:Build\/
+relre:Setup\/
+relre:obj\/
+relre:bin\/
+syntax: glob
+Properties/VersionInfo.cs
