@@ -16,7 +16,7 @@ namespace AXToolbox.Scripting
     public class FlightReport : BindableObject
     {
         /// <summary>Format used in FlightReport serialization</summary>
-        private const SerializationFormat serializationFormat = SerializationFormat.Binary;
+        private const SerializationFormat serializationFormat = SerializationFormat.CompressedBinary;
         public const string SerializedFileExtension = ".axr";
 
         protected FlightSettings Settings { get; set; }
