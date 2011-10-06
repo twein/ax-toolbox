@@ -122,7 +122,8 @@ namespace AXToolbox.Scripting
                             }
 
                             var infringingTrack = new Track(Engine.Report.FlightTrack)
-                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time)
+                                .Filter(p => area.Contains(p));
                             double penaltyPoints = infringingTrack.ReducePairs((p1, p2) =>
                             {
                                 return area.ScaledBPZInfringement(p2) * (p2.Time - p1.Time).TotalSeconds;
@@ -163,7 +164,8 @@ namespace AXToolbox.Scripting
                             }
 
                             var infringingTrack = new Track(Engine.Report.FlightTrack)
-                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time)
+                                .Filter(p => area.Contains(p));
                             double penaltyPoints = infringingTrack.ReduceSegments((p1, p2) =>
                             {
                                 return 1 - (p1.Altitude + p2.Altitude) / (2 * area.UpperLimit) + Physics.Distance2D(p1, p2) / area.MaxHorizontalInfringement;
@@ -178,6 +180,8 @@ namespace AXToolbox.Scripting
                                 Infringements.Add(infringement);
                                 task.Penalties.Add(infringement);
                             }
+
+                            firstPoint = lastPoint;
                         }
                     }
                     break;
@@ -220,6 +224,7 @@ namespace AXToolbox.Scripting
                                 //    (last.Time - first.Time).TotalSeconds), true);
                             }
 
+                            firstPoint = lastPoint;
                         }
                     }
                     break;

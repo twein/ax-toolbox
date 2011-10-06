@@ -119,8 +119,8 @@ namespace AXToolbox.GpsLoggers
 
             foreach (var s in segments)
                 strl.Add(string.Format("from {0} to {1}",
-                    s[0].ToString(AXPointInfo.CustomReport),
-                    s[s.Length - 1].ToString(AXPointInfo.CustomReport)
+                    s[0].ToString(AXPointInfo.CustomReport).Trim(),
+                    s[s.Length - 1].ToString(AXPointInfo.CustomReport).Trim()
                     ));
 
             return strl;
@@ -200,7 +200,6 @@ namespace AXToolbox.GpsLoggers
 
             return track;
         }
-
 
         public double ReducePairs(Func<AXPoint, AXPoint, double> func)
         {
