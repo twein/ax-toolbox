@@ -237,7 +237,7 @@ namespace Scorer
             pilots.CollectionChanged += Pilots_CollectionChanged;
             tasks.CollectionChanged += Tasks_CollectionChanged;
         }
-        public void Save(string fileName, SerializationFormat serializationFormat = SerializationFormat.DataContract)
+        public void Save(string fileName, SerializationFormat serializationFormat = SerializationFormat.CompressedBinary)
         {
             FilePath = fileName;
             ObjectSerializer<Event>.Save(this, fileName, serializationFormat);
@@ -247,7 +247,7 @@ namespace Scorer
             IsDirty = false;
             isNew = false;
         }
-        public void Load(string fileName, SerializationFormat serializationFormat = SerializationFormat.DataContract)
+        public void Load(string fileName, SerializationFormat serializationFormat = SerializationFormat.CompressedBinary)
         {
             var evt = ObjectSerializer<Event>.Load(fileName, serializationFormat);
 
