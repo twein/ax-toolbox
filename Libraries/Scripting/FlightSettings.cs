@@ -21,7 +21,7 @@ namespace AXToolbox.Scripting
         public Boolean TasksInOrder { get; set; }
         public double Qnh { get; set; }
 
-        //Smoothness factor for speed used in launch and landing detection
+        //Smoothness factor for speed used in take off and landing detection
         public double Smoothness { get; set; }
         public double MinSpeed { get; set; }
         public double MaxAcceleration { get; set; }

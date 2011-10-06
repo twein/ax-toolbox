@@ -61,40 +61,40 @@ namespace AXToolbox.Scripting
         public string LoggerModel { get; protected set; }
         public string LoggerSerialNumber { get; protected set; }
 
-        /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before launch and after landing
+        /// <summary>Track as downloaded from logger. May contain dupes, spikes and/or points before take off and after landing
         /// </summary>
         public AXPoint[] OriginalTrack { get; protected set; }
 
         [NonSerialized]
         protected AXPoint[] cleanTrack;
-        /// <summary>Track without spikes and dupes. May contain points before launch and after landing
+        /// <summary>Track without spikes and dupes. May contain points before take off and after landing
         /// </summary>
         public AXPoint[] CleanTrack { get { return cleanTrack; } }
 
-        /// <summary>Clean track from launch to landing
+        /// <summary>Clean track from take off to landing
         /// </summary>
         public AXPoint[] FlightTrack
         {
             get
             {
-                Debug.Assert(LaunchPoint != null & landingPoint != null, "Launch and landing points must be informed");
-                return CleanTrack.Where(p => p.Time >= LaunchPoint.Time && p.Time <= LandingPoint.Time).ToArray();
+                Debug.Assert(takeOffPoint != null & landingPoint != null, "Take off and landing points must be informed");
+                return CleanTrack.Where(p => p.Time >= TakeOffPoint.Time && p.Time <= LandingPoint.Time).ToArray();
             }
         }
 
-        protected AXPoint launchPoint;
-        public AXPoint LaunchPoint
+        protected AXPoint takeOffPoint;
+        public AXPoint TakeOffPoint
         {
-            get { return launchPoint; }
+            get { return takeOffPoint; }
             set
             {
-                if (value != launchPoint)
+                if (value != takeOffPoint)
                 {
-                    launchPoint = value;
+                    takeOffPoint = value;
                     if (!string.IsNullOrEmpty(Debriefer))
-                        launchPoint.Remarks = "Launch point set manually by " + Debriefer;
-                    Notes.Add(string.Format("Launch point set to {0}", value));
-                    RaisePropertyChanged("LaunchPoint");
+                        takeOffPoint.Remarks = "Take off point set manually by " + Debriefer;
+                    Notes.Add(string.Format("Take off point set to {0}", value));
+                    RaisePropertyChanged("TakeOffPoint");
                 }
             }
         }
@@ -190,7 +190,7 @@ namespace AXToolbox.Scripting
                 }
 
                 report.DoTrackCleanUp();
-                report.DetectLaunchAndLanding();
+                report.DetectTakeOffAndLanding();
             }
 
             return report;
@@ -322,7 +322,7 @@ namespace AXToolbox.Scripting
 
             cleanTrack = validPoints.ToArray();
         }
-        protected void DetectLaunchAndLanding()
+        protected void DetectTakeOffAndLanding()
         {
             // find the highest point in flight
             AXPoint highest = null;
@@ -338,13 +338,13 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                // find launch point
-                LaunchPoint = FindGroundContact(highest, true);
-                if (LaunchPoint == null)
+                // find take off point
+                TakeOffPoint = FindGroundContact(highest, true);
+                if (TakeOffPoint == null)
                 {
-                    LaunchPoint = CleanTrack.First();
-                    LaunchPoint.Remarks = "Launch point not found. Using first track point";
-                    Notes.Add(LaunchPoint.Remarks);
+                    TakeOffPoint = CleanTrack.First();
+                    TakeOffPoint.Remarks = "Take off point not found. Using first track point";
+                    Notes.Add(TakeOffPoint.Remarks);
                 }
 
                 // find landing point
@@ -363,7 +363,7 @@ namespace AXToolbox.Scripting
 
             if (backwards)
             {
-                //launch can't be after first marker
+                //take off can't be after first marker
                 if (Markers.Count > 0 && Markers.First().Time < reference.Time)
                     reference = Markers.First();
                 track = track.Reverse().Where(p => reference == null || p.Time <= reference.Time);
@@ -447,7 +447,7 @@ namespace AXToolbox.Scripting
             foreach (var p in DeclaredGoals)
                 p.Altitude -= altitudeCorrection;
 
-            launchPoint.Altitude -= altitudeCorrection;
+            takeOffPoint.Altitude -= altitudeCorrection;
             landingPoint.Altitude -= altitudeCorrection;
         }
     }

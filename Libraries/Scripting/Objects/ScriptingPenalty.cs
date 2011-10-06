@@ -107,7 +107,7 @@ namespace AXToolbox.Scripting
                                           orderby ((ScriptingTask)obj).TaskOrder
                                           select obj as ScriptingTask;
 
-                        var firstPoint = Engine.Report.LaunchPoint;
+                        var firstPoint = Engine.Report.TakeOffPoint;
                         var done = false;
                         foreach (var task in sortedTasks)
                         {
@@ -149,7 +149,7 @@ namespace AXToolbox.Scripting
                                           orderby ((ScriptingTask)obj).TaskOrder
                                           select obj as ScriptingTask;
 
-                        var firstPoint = Engine.Report.LaunchPoint;
+                        var firstPoint = Engine.Report.TakeOffPoint;
                         var done = false;
                         foreach (var task in sortedTasks)
                         {
@@ -193,7 +193,7 @@ namespace AXToolbox.Scripting
                                           orderby ((ScriptingTask)obj).TaskOrder
                                           select obj as ScriptingTask;
 
-                        var firstPoint = Engine.Report.LaunchPoint;
+                        var firstPoint = Engine.Report.TakeOffPoint;
                         var done = false;
                         foreach (var task in sortedTasks)
                         {

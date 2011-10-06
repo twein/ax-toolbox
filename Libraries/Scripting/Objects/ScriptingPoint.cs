@@ -101,7 +101,7 @@ namespace AXToolbox.Scripting
                         defaultAltitude = ParseOrDie<double>(1, ParseLength);
                     break;
 
-                case "TLCH": //TLCH: launch
+                case "TLCH": //TLCH: take off
                 case "TLND": //TLND: landing
                     //XXXX()
                     //TODO: check if they are really needed or should be automatic
@@ -451,10 +451,10 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "TLCH":
-                    //TLCH: launch
+                    //TLCH: take off
                     //TLCH()
                     if (Engine.Report != null)
-                        Point = new AXWaypoint(ObjectName, Engine.Report.LaunchPoint);
+                        Point = new AXWaypoint(ObjectName, Engine.Report.TakeOffPoint);
                     break;
 
                 case "TLND":
