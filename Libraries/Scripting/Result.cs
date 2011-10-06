@@ -22,13 +22,14 @@ namespace AXToolbox.Scripting
         public double Value { get; protected set; }
         public string Reason { get; protected set; }
 
+        public Track UsedTrack { get; set; }
         public List<AXPoint> UsedPoints { get; protected set; }
         public AXPoint LastUsedPoint
         {
             get
             {
                 if (UsedPoints.Count > 0)
-                    return UsedPoints.OrderBy(p => p.Time).Last();
+                    return UsedPoints.Concat(UsedTrack.Points).OrderBy(p => p.Time).Last();
                 else
                     return null;
             }
@@ -50,6 +51,7 @@ namespace AXToolbox.Scripting
 
         protected Result()
         {
+            UsedTrack = new Track();
             UsedPoints = new List<AXPoint>();
         }
 

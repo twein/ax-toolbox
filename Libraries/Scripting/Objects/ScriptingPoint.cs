@@ -168,6 +168,7 @@ namespace AXToolbox.Scripting
                     if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
+
                 case "":
                 case "WAYPOINT":
                 case "MARKER":

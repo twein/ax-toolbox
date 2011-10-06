@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AXToolbox.MapViewer;
-using AXToolbox.Common;
 using System.Windows;
+using System.Windows.Media;
 using AXToolbox.GpsLoggers;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -142,10 +139,17 @@ namespace AXToolbox.Scripting
                     throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
 
                 case "NONE":
-                case "":
-                case "DEFAULT":
                     if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
+                    break;
+
+                case "":
+                case "DEFAULT":
+                    if (DisplayParameters.Length > 1)
+                        throw new ArgumentException("Syntax error");
+
+                    if (DisplayParameters[0] != "")
+                        Color = ParseColor(DisplayParameters[0]);
                     break;
             }
         }
@@ -267,10 +271,9 @@ namespace AXToolbox.Scripting
                         //DACC: accumulated distance
                         //DACC(<pointNameA>, <pointNameB>)
                         {
-                            Result = Task.NewResult(Math.Round(Engine.TaskValidTrack.Distance2D(), 0));
-                            Result.UsedPoints.Add(A.Point);
-                            Result.UsedPoints.AddRange(Engine.TaskValidTrack.Points); //cloned ValidTrackPoints
-                            Result.UsedPoints.Add(B.Point);
+                            var track = Engine.TaskValidTrack.Filter(p => p.Time >= A.Point.Time && p.Time <= B.Point.Time);
+                            Result = Task.NewResult(Math.Round(track.Distance2D(), 0));
+                            Result.UsedTrack = track;
                         }
                         break;
 
@@ -380,9 +383,6 @@ namespace AXToolbox.Scripting
                     case "DRAD10":
                     //DRAD10: relative altitude dependent distance rounded to decameter
                     //DRAD10(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
-                    case "DACC":
-                    //DACC: accumulated distance
-                    //DACC(<pointNameA>, <pointNameB>)
                     case "TSEC":
                     //TSEC: time in seconds
                     //TSEC(<pointNameA>, <pointNameB>)
@@ -391,6 +391,18 @@ namespace AXToolbox.Scripting
                         //TMIN(<pointNameA>, <pointNameB>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
                             string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
+                        break;
+
+                    case "DACC":
+                        //DACC: accumulated distance
+                        //DACC(<pointNameA>, <pointNameB>)
+                        var path = Result.UsedTrack.ToWindowsPointArray();
+                        var first = path[0][0];
+                        var last = path[path.Length - 1][path[path.Length - 1].Length - 1];
+
+                        Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = this.Color, Layer = (uint)OverlayLayers.Results });
+                        Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, 
+                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results });
                         break;
 
                     case "ATRI":

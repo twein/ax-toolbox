@@ -6,8 +6,8 @@ TO DO
 - checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
 - the debriefer must enter all the physical marker performances before being allowed to save
 - launch and landing helper buttons in tools
-- pilot names in a file defined in settings (like instrument error file)
-- taskbar jump lists
+* pilot names in a file defined in settings (like instrument error file)
+* taskbar jump lists
 - multiple MMA in HWZ, PDG, FON
 - pdf report: add the same notes in goaldeclarations and markers as in launch and landing (modified by...)
 - multiple file section in batch processing

@@ -189,9 +189,9 @@ namespace AXToolbox.Scripting
             c = new PdfPCell();
             c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.BoldFont));
             foreach (var p in Result.UsedPoints)
-            {
                 c.AddElement(new Paragraph(p.ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
-            }
+            foreach (var str in Result.UsedTrack.ToStringList())
+                c.AddElement(new Paragraph(str, config.FixedWidthFont) { SpacingBefore = 0 });
             table.AddCell(c);
 
             //penalties

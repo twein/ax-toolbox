@@ -1,12 +1,12 @@
 ﻿TO DO
-- make axpoint, axwaypoint, axtrackpoint immutable. Rewrite CleanTrack, FlightTrack & Co.
+- make axpoint, axwaypoint, immutable. Rewrite CleanTrack, FlightTrack & Co.
 * check if http://code.google.com/apis/maps/documentation/elevation/ is better
 - official altitude units in settings
 - restriction: non split tasks: check for no markers in between
 - Fix the text of distance infringement, it's not the infringement, it's the distance
 ! GoalDeclaration coordinates: don't parse at load time?. Don't assume anything: check 1111, 1111/, 111, 1111/1111, etc.
 ! think about measure/result/constraint/filter/restriction thing
-- in result and penalty, use point pairs for different entry/exit pairs instead of usedpoints. For single points, use point/null pair
+* in result and penalty, use point pairs for different entry/exit pairs instead of usedpoints. For single points, use point/null pair
 - Add SAMEAREA and DIFFERENTAREA restrictions
 * altitude units on pdf reports
 - list of all debriefers that worked on a flight report
