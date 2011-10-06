@@ -46,7 +46,7 @@ namespace FlightAnalyzer
             Worker.DoWork += Work;
             Worker.RunWorkerCompleted += WorkCompleted;
 
-            //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.Launch_And_Landing);
+            //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.TakeOff_And_Landing);
 
             if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer) || Properties.Settings.Default.Debriefer == "Debriefer")
                 ShowOptions();
@@ -116,13 +116,13 @@ namespace FlightAnalyzer
                 Worker.RunWorkerAsync(dlg.FileName); // look Work() and WorkCompleted()
             }
         }
-        private void setLaunchLandingButton_Click(object sender, RoutedEventArgs e)
+        private void setTakeOffLandingButton_Click(object sender, RoutedEventArgs e)
         {
             if (TrackPointer != null)
             {
                 var name = ((Button)sender).Name;
-                if (name == "setLaunchButton")
-                    Report.LaunchPoint = TrackPointer;
+                if (name == "setTakeOffButton")
+                    Report.TakeOffPoint = TrackPointer;
                 else
                     Report.LandingPoint = TrackPointer;
 

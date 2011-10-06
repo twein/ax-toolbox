@@ -24,7 +24,7 @@ namespace AXToolbox.Scripting
         Track = 0x2,
         Pointer = 0x4,
         Areas = 0x8,
-        Launch_And_Landing = 0x10,
+        TakeOff_And_Landing = 0x10,
         Static_Points = 0x20,
         Pilot_Points = 0x40,
         Results = 0x80,
@@ -64,7 +64,7 @@ namespace AXToolbox.Scripting
 
         internal Track FlightValidTrack { get; set; }
         internal Track TaskValidTrack { get; set; }
-        /// <summary>returns the last used point: last used marker drop or launch</summary>
+        /// <summary>returns the last used point: last used marker drop or take off</summary>
         internal AXPoint LastUsedPoint
         {
             get
@@ -76,7 +76,7 @@ namespace AXToolbox.Scripting
                                     && ((ScriptingTask)t).Result != null
                                     && ((ScriptingTask)t).Result.LastUsedPoint != null
                                   select ((ScriptingTask)t).Result.LastUsedPoint).ToList();
-                usedPoints.Add(Report.LaunchPoint);
+                usedPoints.Add(Report.TakeOffPoint);
 
                 try
                 {
@@ -407,11 +407,11 @@ namespace AXToolbox.Scripting
 
 
             table = helper.NewTable(null, new float[] { 1, 4 }, null);
-            table.AddCell(new PdfPCell(new Paragraph("Launch and landing:", config.BoldFont)));
+            table.AddCell(new PdfPCell(new Paragraph("Take off and landing:", config.BoldFont)));
             var c = new PdfPCell();
-            c.AddElement(new Paragraph("Launch " + Report.LaunchPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
-            if (!string.IsNullOrEmpty(Report.LaunchPoint.Remarks))
-                c.AddElement(new Paragraph(Report.LaunchPoint.Remarks, config.FixedWidthFont));
+            c.AddElement(new Paragraph("Take off " + Report.TakeOffPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
+            if (!string.IsNullOrEmpty(Report.TakeOffPoint.Remarks))
+                c.AddElement(new Paragraph(Report.TakeOffPoint.Remarks, config.FixedWidthFont));
             c.AddElement(new Paragraph("Landing " + Report.LandingPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
             if (!string.IsNullOrEmpty(Report.LandingPoint.Remarks))
                 c.AddElement(new Paragraph(Report.LandingPoint.Remarks, config.FixedWidthFont));
@@ -513,8 +513,8 @@ namespace AXToolbox.Scripting
                     TrackPointer = new CrosshairsOverlay(position) { Layer = (uint)OverlayLayers.Pointer };
                     MapViewer.AddOverlay(TrackPointer);
 
-                    MapViewer.AddOverlay(new WaypointOverlay(Report.LaunchPoint.ToWindowsPoint(), "Launch") { Layer = (uint)OverlayLayers.Launch_And_Landing });
-                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.Launch_And_Landing });
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.TakeOffPoint.ToWindowsPoint(), "Take off") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
 
                     foreach (var m in Report.Markers)
                     {
