@@ -121,7 +121,8 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            var infringingTrack = new Track(Engine.Report.FlightTrack).Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                            var infringingTrack = new Track(Engine.Report.FlightTrack)
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
                             double penaltyPoints = infringingTrack.ReducePairs((p1, p2) =>
                             {
                                 return area.ScaledBPZInfringement(p2) * (p2.Time - p1.Time).TotalSeconds;
@@ -161,7 +162,8 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            var infringingTrack = new Track(Engine.Report.FlightTrack).Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                            var infringingTrack = new Track(Engine.Report.FlightTrack)
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
                             double penaltyPoints = infringingTrack.ReduceSegments((p1, p2) =>
                             {
                                 return 1 - (p1.Altitude + p2.Altitude) / (2 * area.UpperLimit) + Physics.Distance2D(p1, p2) / area.MaxHorizontalInfringement;
@@ -206,16 +208,18 @@ namespace AXToolbox.Scripting
                                 .FilterPairs((p1, p2) => Math.Abs(Physics.VerticalVelocity(p1, p2)) > maxSpeed)
                                 .FilterSegments((p1, p2) => (p2.Time - p1.Time).TotalSeconds > 15);
 
-                            
-                            foreach (var str in infringingTrack.ToStringList())
 
-                                        task.AddNote(
-                                            string.Format("Max ascent/descent rate exceeded from {0} to {1}: {2:0} ft/min for {3} sec",
-                                            first.ToString(AXPointInfo.Time).TrimEnd(),
-                                            last.ToString(AXPointInfo.Time).TrimEnd(),
-                                            Physics.VerticalVelocity(first, last) * Physics.METERS2FEET * 60,
-                                            (last.Time - first.Time).TotalSeconds), true);
-                            
+                            foreach (var str in infringingTrack.ToStringList())
+                            {
+                                task.AddNote("Max ascent/descent rate exceeded " + str, true);
+                                //task.AddNote(
+                                //    string.Format("Max ascent/descent rate exceeded from {0} to {1}: {2:0} ft/min for {3} sec",
+                                //    first.ToString(AXPointInfo.Time).TrimEnd(),
+                                //    last.ToString(AXPointInfo.Time).TrimEnd(),
+                                //    Physics.VerticalVelocity(first, last) * Physics.METERS2FEET * 60,
+                                //    (last.Time - first.Time).TotalSeconds), true);
+                            }
+
                         }
                     }
                     break;
@@ -230,24 +234,26 @@ namespace AXToolbox.Scripting
             {
                 foreach (var inf in Infringements)
                 {
-                    if (inf.InfringingTrack.Count > 0)
+                    if (inf.InfringingTrack.Length > 0)
                     {
-                        var path = new Point[inf.InfringingTrack.Count];
-                        Parallel.For(0, inf.InfringingTrack.Count, i =>
-                        {
-                            path[i] = inf.InfringingTrack[i].ToWindowsPoint();
-                        });
-
+                        var path = inf.InfringingTrack.ToWindowsPointArray();
+                        var first = path[0][0];
+                        var last = path[path.Length - 1][path[path.Length - 1].Length - 1];
                         switch (ObjectType)
                         {
                             case "RPZ":
                                 Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Red, Layer = (uint)OverlayLayers.Penalties });
-                                Engine.MapViewer.AddOverlay(new DistanceOverlay(path[0], path[path.Length - 1], inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
                                 break;
 
                             case "BPZ":
                                 Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Blue, Layer = (uint)OverlayLayers.Penalties });
-                                Engine.MapViewer.AddOverlay(new DistanceOverlay(path[0], path[path.Length - 1], inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
+                                break;
+
+                            case "VSMAX":
+                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Green, Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
                                 break;
                         }
                     }
