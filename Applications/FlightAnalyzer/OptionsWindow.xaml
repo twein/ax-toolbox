@@ -15,7 +15,7 @@
         </StackPanel>
         <Separator Visibility="Hidden" Height="5" DockPanel.Dock="Top"></Separator>
         <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">
-            <Button Name="buttonOk" IsDefault="True"  Click="buttonOk_Click">OK</Button>
+            <Button Name="buttonOk" IsDefault="True" Click="buttonOk_Click">OK</Button>
             <Button Name="buttonReset" Click="buttonReset_Click">Reset</Button>
             <Button Name="buttonCancel"  IsCancel="True" Click="buttonCancel_Click">Cancel</Button>
         </WrapPanel>

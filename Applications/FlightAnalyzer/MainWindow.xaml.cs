@@ -40,7 +40,7 @@ namespace FlightAnalyzer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(this).Handle);
-            Tools = new ToolsWindow() { Owner = this, Left = screen.Bounds.Right, Top = screen.Bounds.Top };
+            Tools = new ToolsWindow(this) { Owner = this, Left = screen.Bounds.Right, Top = screen.Bounds.Top };
             Tools.PropertyChanged += new PropertyChangedEventHandler(Tools_PropertyChanged);
             Tools.Show();
             Worker.DoWork += Work;

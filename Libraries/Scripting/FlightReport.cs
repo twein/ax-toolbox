@@ -357,7 +357,7 @@ namespace AXToolbox.Scripting
                 }
             }
         }
-        protected AXPoint FindGroundContact(AXPoint reference, bool backwards)
+        public AXPoint FindGroundContact(AXPoint reference, bool backwards)
         {
             IEnumerable<AXPoint> track = CleanTrack;
 
