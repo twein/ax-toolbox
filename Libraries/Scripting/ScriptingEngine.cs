@@ -287,7 +287,7 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
         }
-        public void BatchProcess(string rootFolder)
+        public void BatchProcess(string fileName, string rootFolder)
         {
             Trace.WriteLine("Batch processing " + rootFolder, "ENGINE");
 
@@ -299,23 +299,16 @@ namespace AXToolbox.Scripting
             if (!Directory.Exists(resultsFolder))
                 Directory.CreateDirectory(resultsFolder);
 
-            foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.axr"))
-            //foreach (var report in Directory.EnumerateFiles(rootFolder, "*.igc"))
-            //foreach (var report in Directory.EnumerateFiles(reportsFolder, "*.igc"))
-            {
-                LoadFlightReport(report, true);
-                Process(true);
+            LoadFlightReport(fileName, true);
+            Process(true);
 
-                ExportResults(resultsFolder);
-                try
-                {
-                    SavePdfReport(reportsFolder);
-                }
-                catch { }
-                SavePdfLog(reportsFolder);
+            ExportResults(resultsFolder);
+            try
+            {
+                SavePdfReport(reportsFolder);
             }
-            Reset();
-            Display();
+            catch { }
+            SavePdfLog(reportsFolder);
         }
         public void SaveAll(string rootFolder)
         {
