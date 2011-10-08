@@ -5,12 +5,13 @@ namespace AXToolbox.MapViewer
 {
     public partial class CrosshairsOverlay : MapOverlay
     {
-        public override Brush Color
+        public override Color Color
         {
             set
             {
-                crosshairs.Stroke = value;
-                circle.Stroke = value;
+                var brush = new SolidColorBrush(value);
+                crosshairs.Stroke = brush;
+                circle.Stroke = brush;
             }
         }
 

@@ -11,11 +11,6 @@ namespace AXToolbox.MapViewer
     {
         protected double GridWidth;
 
-        public override Brush Color
-        {
-            set { }
-        }
-
         public CoordinateGridOverlay(double gridWidth)
         {
             InitializeComponent();

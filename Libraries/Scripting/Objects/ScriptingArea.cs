@@ -121,14 +121,14 @@ namespace AXToolbox.Scripting
                     case "CYLINDER":
                     case "SPHERE":
                         if (center.Point != null)
-                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = new SolidColorBrush(this.Color) };
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
 
                     case "PRISM":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
-                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = new SolidColorBrush(this.Color) };
+                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
                 }
 

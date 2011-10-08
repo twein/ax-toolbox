@@ -26,9 +26,10 @@ namespace AXToolbox.Scripting
         Areas = 0x8,
         TakeOff_And_Landing = 0x10,
         Static_Points = 0x20,
-        Pilot_Points = 0x40,
-        Results = 0x80,
-        Penalties = 0x100,
+        Markers = 0x40,
+        Pilot_Points = 0x80,
+        Results = 0x100,
+        Penalties = 0x200,
 
         All = 0xFFFFFFFF
     }
@@ -510,9 +511,7 @@ namespace AXToolbox.Scripting
                     MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
 
                     foreach (var m in Report.Markers)
-                    {
-                        MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Pilot_Points });
-                    }
+                        MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Markers });
                 }
                 if (KeepPointerCentered)
                     MapViewer.PanTo(TrackPointer.Position);

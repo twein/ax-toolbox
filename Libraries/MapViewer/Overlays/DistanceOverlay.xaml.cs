@@ -10,9 +10,9 @@ namespace AXToolbox.MapViewer
         public Point PointA;
         public Point PointB;
 
-        public override Brush Color
+        public override Color Color
         {
-            set { distance.Stroke = value; }
+            set { distance.Stroke = new SolidColorBrush(value); }
         }
 
         public DistanceOverlay(Point pointA, Point pointB, string text)

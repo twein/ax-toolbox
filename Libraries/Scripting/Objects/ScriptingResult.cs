@@ -150,7 +150,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     if (DisplayParameters[0] != "")
-                        Color=Parsers.ParseColor(DisplayParameters[0]);
+                        Color = Parsers.ParseColor(DisplayParameters[0]);
                     break;
             }
         }
@@ -401,7 +401,7 @@ namespace AXToolbox.Scripting
                         var first = path[0][0];
                         var last = path[path.Length - 1][path[path.Length - 1].Length - 1];
 
-                        Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = new SolidColorBrush(this.Color), Layer = (uint)OverlayLayers.Results });
+                        Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = this.Color, Layer = (uint)OverlayLayers.Results });
                         Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last,
                             string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results });
                         break;
@@ -410,7 +410,7 @@ namespace AXToolbox.Scripting
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() },
-                            string.Format("{0} = {1}", ObjectName, Result)) { Color = new SolidColorBrush(this.Color), Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", ObjectName, Result)) { Color = this.Color, Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANG3P":
@@ -439,19 +439,19 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(new WaypointOverlay(A.Point.ToWindowsPoint(), A.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
-                    Color = new SolidColorBrush(A.Color)
+                    Color = A.Color
                 });
             if (B != null && B.Point != null)
                 Engine.MapViewer.AddOverlay(new WaypointOverlay(B.Point.ToWindowsPoint(), B.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
-                    Color = new SolidColorBrush(B.Color)
+                    Color = B.Color
                 });
             if (C != null && C.Point != null)
                 Engine.MapViewer.AddOverlay(new WaypointOverlay(C.Point.ToWindowsPoint(), C.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
-                    Color = new SolidColorBrush(C.Color)
+                    Color = C.Color
                 });
         }
     }

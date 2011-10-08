@@ -52,6 +52,7 @@ namespace FlightAnalyzer
             listLayers.SelectedItems.Add(OverlayLayers.Pointer);
             listLayers.SelectedItems.Add(OverlayLayers.TakeOff_And_Landing);
             listLayers.SelectedItems.Add(OverlayLayers.Static_Points);
+            listLayers.SelectedItems.Add(OverlayLayers.Markers);
             listLayers.SelectedItems.Add(OverlayLayers.Pilot_Points);
         }
 
@@ -63,6 +64,7 @@ namespace FlightAnalyzer
             listLayers.SelectedItems.Add(OverlayLayers.Track);
             listLayers.SelectedItems.Add(OverlayLayers.Pointer);
             listLayers.SelectedItems.Add(OverlayLayers.TakeOff_And_Landing);
+            listLayers.SelectedItems.Add(OverlayLayers.Static_Points);
             listLayers.SelectedItems.Add(OverlayLayers.Results);
             listLayers.SelectedItems.Add(OverlayLayers.Penalties);
         }

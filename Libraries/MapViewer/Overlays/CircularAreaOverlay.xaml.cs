@@ -12,9 +12,9 @@ namespace AXToolbox.MapViewer
             set { area.Opacity = value; }
         }
 
-        public override Brush Color
+        public override Color Color
         {
-            set { area.Fill = value; }
+            set { area.Fill = new SolidColorBrush(value); }
         }
 
         public CircularAreaOverlay(Point position, double radius, string text)

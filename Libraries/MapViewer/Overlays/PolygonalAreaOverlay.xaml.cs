@@ -8,9 +8,9 @@ namespace AXToolbox.MapViewer
     {
         public Point[] Points;
 
-        public override Brush Color
+        public override Color Color
         {
-            set { area.Fill = value; }
+            set { area.Fill = new SolidColorBrush(value); }
         }
 
         public PolygonalAreaOverlay(Point[] points, string text)

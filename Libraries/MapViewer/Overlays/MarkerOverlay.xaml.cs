@@ -10,12 +10,13 @@ namespace AXToolbox.MapViewer
             set { border.Opacity = value; }
         }
 
-        public override Brush Color
+        public override Color Color
         {
             set
             {
-                border.Background = value;
-                flag.Fill = value;
+                var brush = new SolidColorBrush(value);
+                border.Background = brush;
+                flag.Fill = brush;
             }
         }
 
@@ -23,7 +24,7 @@ namespace AXToolbox.MapViewer
             : base(position)
         {
             this.InitializeComponent();
-            
+
             label.Text = text;
         }
     }
