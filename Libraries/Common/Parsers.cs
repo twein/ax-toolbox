@@ -15,6 +15,14 @@ namespace AXToolbox.Common
         {
             return double.Parse(str, NumberFormatInfo.InvariantInfo);
         }
+        public static double ParseLengthOrNaN(string str)
+        {
+            str = str.Trim();
+            if (str == "" || str == "-")
+                return double.NaN;
+            else
+                return ParseLength(str);
+        }
         public static double ParseLength(string str)
         {
             double length = 0;

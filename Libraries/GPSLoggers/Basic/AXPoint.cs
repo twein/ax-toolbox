@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
+using AXToolbox.Common;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -13,7 +14,7 @@ namespace AXToolbox.GpsLoggers
         All = 0xffff,
         Date = 0x1,
         Time = 0x2,
-        AltitudeFeet = 0x4,
+        Altitude = 0x4,
         Coords = 0x8,
         CompetitionCoords = 0x10,
         Declaration = 0x20,
@@ -21,20 +22,30 @@ namespace AXToolbox.GpsLoggers
         Description = 0x80,
         Radius = 0x100,
         Input = 0x200,
-        AltitudeMeters = 0x800,
+        AltitudeInMeters = 0x400,
+        AltitudeInFeet = 0x800,
 
-        CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Declaration | AXPointInfo.AltitudeMeters
+        SomeAltitude = AXPointInfo.Altitude | AXPointInfo.AltitudeInMeters | AXPointInfo.AltitudeInFeet,
+        CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Declaration | AXPointInfo.Altitude
     }
+
+    public enum AltitudeUnits { Meters, Feet }
 
     [Serializable]
     public class AXPoint : ITime
     {
+        public static AltitudeUnits DefaultAltitudeUnits { get; set; }
+
         public DateTime Time { get; protected set; }
         public Double Easting { get; protected set; }
         public double Northing { get; protected set; }
         public double Altitude { get; set; }
         public string Remarks { get; set; }
 
+        static AXPoint()
+        {
+            DefaultAltitudeUnits = AltitudeUnits.Feet;
+        }
 
         public AXPoint(DateTime time, double easting, double northing, double altitude)
         {
@@ -47,7 +58,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.AltitudeFeet | AXPointInfo.Radius);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
         }
         public virtual string ToString(AXPointInfo info)
         {
@@ -74,11 +85,17 @@ namespace AXToolbox.GpsLoggers
             if ((info & AXPointInfo.CompetitionCoords) > 0)
                 str.Append(string.Format("{0:00000}/{1:00000} ", Easting % 1e5, Northing % 1e5));
 
-            if ((info & AXPointInfo.AltitudeFeet) > 0)
-                str.Append(string.Format("0ft ", Altitude * Physics.METERS2FEET));
+            if (
+                ((info & AXPointInfo.Altitude) > 0 && DefaultAltitudeUnits == AltitudeUnits.Feet)
+                || (info & AXPointInfo.AltitudeInFeet) > 0
+            )
+                str.Append(string.Format("{0:0}ft ", Altitude * Physics.METERS2FEET));
+            else if (
+                ((info & AXPointInfo.Altitude) > 0 && DefaultAltitudeUnits == AltitudeUnits.Meters)
+                || (info & AXPointInfo.AltitudeInMeters) > 0
+            )
+                str.Append(string.Format("{0:0}m ", Altitude));
 
-            if ((info & AXPointInfo.AltitudeMeters) > 0)
-                str.Append(Altitude.ToString("0m "));
 
             return str.ToString();
         }
@@ -97,7 +114,7 @@ namespace AXToolbox.GpsLoggers
 
             var altitude = 0.0;
             if (fields.Length == 5)
-                altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
+                altitude = Parsers.ParseLength(fields[4]);
 
             return new AXPoint(time, easting, northing, altitude);
         }
@@ -105,6 +122,11 @@ namespace AXToolbox.GpsLoggers
         public Point ToWindowsPoint()
         {
             return new Point(Easting, Northing);
+        }
+
+        public static void SetDefaultAltitudeUnits(AltitudeUnits units)
+        {
+            DefaultAltitudeUnits = units;
         }
     }
 }

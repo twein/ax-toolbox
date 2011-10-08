@@ -25,7 +25,7 @@ namespace AXToolbox.Scripting
 
                 case "TITLE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.Title = ParseOrDie<string>(0,Parsers.ParseString);
+                    Engine.Settings.Title = ParseOrDie<string>(0, Parsers.ParseString);
                     break;
 
                 case "SUBTITLE":
@@ -34,8 +34,8 @@ namespace AXToolbox.Scripting
                     var st = "";
                     foreach (var s in ObjectParameters)
                     {
-                        if(!string.IsNullOrEmpty(st))
-                            st+=", ";
+                        if (!string.IsNullOrEmpty(st))
+                            st += ", ";
                         st += s;
                     }
                     Engine.Settings.Subtitle = st;
@@ -75,6 +75,17 @@ namespace AXToolbox.Scripting
                 case "QNH":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     Engine.Settings.Qnh = ParseOrDie<double>(0, Parsers.ParseDouble);
+                    break;
+
+                case "ALTITUDEUNITS":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    var units = ParseOrDie<string>(0, Parsers.ParseString).ToLower();
+                    if (units == "meters")
+                        Engine.Settings.AltitudeUnits = AltitudeUnits.Meters;
+                    else if (units == "feet")
+                        Engine.Settings.AltitudeUnits = AltitudeUnits.Feet;
+                    else
+                        throw new ArgumentException("Unknown unit: ", units);
                     break;
 
                 case "SMOOTHNESS":

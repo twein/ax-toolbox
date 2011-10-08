@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using System.Windows.Data;
+using AXToolbox.Common;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -39,12 +40,11 @@ namespace AXToolbox.GpsLoggers
                 Type = DeclarationType.GoalName;
                 Name = definition.TrimEnd(new char[] { '/' });
             }
-
         }
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.AltitudeFeet);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude);
         }
         public string ToString(AXPointInfo info)
         {
@@ -65,17 +65,23 @@ namespace AXToolbox.GpsLoggers
                 else
                     str.Append(string.Format("{0:0000}/{1:0000} ", Easting4Digits, Northing4Digits));
 
-            if ((info & AXPointInfo.AltitudeFeet) > 0)
+            if ((info & AXPointInfo.SomeAltitude) > 0)
+            {
                 if (double.IsNaN(Altitude))
                     str.Append("- ");
+                else if (
+                    ((info & AXPointInfo.Altitude) > 0 && AXPoint.DefaultAltitudeUnits == AltitudeUnits.Feet)
+                    || (info & AXPointInfo.AltitudeInFeet) > 0
+                )
+                    str.Append(string.Format("{0:0}ft ", Altitude * Physics.METERS2FEET));
+                else if (
+                    ((info & AXPointInfo.Altitude) > 0 && AXPoint.DefaultAltitudeUnits == AltitudeUnits.Meters)
+                    || (info & AXPointInfo.AltitudeInMeters) > 0
+                )
+                    str.Append(string.Format("{0:0}m ", Altitude));
                 else
-                    str.Append(Altitude.ToString("0 "));
-
-            if ((info & AXPointInfo.AltitudeMeters) > 0)
-                if (double.IsNaN(Altitude))
-                    str.Append("- ");
-                else
-                    str.Append(Altitude.ToString("0m "));
+                    throw new InvalidOperationException("Unknown altitude unit");
+            }
 
             return str.ToString();
         }
@@ -87,11 +93,7 @@ namespace AXToolbox.GpsLoggers
             var number = int.Parse(fields[0]);
             var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToUniversalTime();
             var definition = fields[3];
-            double altitude = 0;
-            if (fields[4] == "-")
-                altitude = double.NaN;
-            else
-                altitude = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
+            double altitude = Parsers.ParseLengthOrNaN(fields[4]);
 
             return new GoalDeclaration(number, time, definition, altitude);
         }
@@ -103,7 +105,7 @@ namespace AXToolbox.GpsLoggers
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var declaration = value as GoalDeclaration;
-            return declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.AltitudeFeet);
+            return declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude);
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
