@@ -1,29 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Windows.Media;
-using AXToolbox.MapViewer;
 using System.Linq;
-using AXToolbox.GpsLoggers;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Threading;
+using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
-        private static readonly Dictionary<string, Brush> colors = new Dictionary<string, Brush>() { 
-            {"BLUE",   Brushes.Blue},
-            {"BROWN",  Brushes.Brown},
-            {"GRAY",   Brushes.Gray},
-            {"GREEN",  Brushes.Green},
-            {"ORANGE", Brushes.Orange},
-            {"PINK",   Brushes.Pink},
-            {"RED",    Brushes.Red},
-            {"VIOLET", Brushes.Violet},
-            {"WHITE",  Brushes.White},
-            {"YELLOW", Brushes.Yellow}
-        };
         //Regular Expressions to parse commands. Use in this same order.
         private static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
         private static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
@@ -45,7 +32,7 @@ namespace AXToolbox.Scripting
         protected string DisplayMode { get; set; }
         protected string[] DisplayParameters { get; set; }
 
-        public Brush Color { get; protected set; }
+        public Color Color { get; protected set; }
         public List<Note> Notes { get; private set; }
         public ScriptingTask Task { get; private set; }
 
@@ -332,92 +319,6 @@ namespace AXToolbox.Scripting
             {
                 throw new ArgumentException(SyntaxErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
             }
-        }
-
-
-        //parser functions for ParseOrDie<T>
-        protected static int ParseInt(string str)
-        {
-            return int.Parse(str, NumberFormatInfo.InvariantInfo);
-        }
-        protected static double ParseDouble(string str)
-        {
-            return double.Parse(str, NumberFormatInfo.InvariantInfo);
-        }
-        protected static double ParseLength(string str)
-        {
-            double length = 0;
-
-            str = str.Trim().ToLower();
-            var regex = new Regex(@"(?<value>[\d\.]+)\s*(?<units>\w*)");
-            var matches = regex.Matches(str);
-            if (matches.Count != 1)
-            {
-                throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
-            }
-            else
-            {
-                length = ParseDouble(matches[0].Groups["value"].Value);
-                var units = matches[0].Groups["units"].Value;
-                switch (units)
-                {
-                    case "m":
-                        break;
-                    case "km":
-                        length *= 1000;
-                        break;
-                    case "ft":
-                        length *= Physics.FEET2METERS;// 0.3048;
-                        break;
-                    case "mi":
-                        length *= 1609.344;
-                        break;
-                    case "nm":
-                        length *= 1852;
-                        break;
-                    default:
-                        throw new ArgumentException("Syntax error in distance or altitude definition: " + str);
-                }
-            }
-
-            return length;
-        }
-        protected static DateTime ParseLocalDatetime(string str)
-        {
-            return DateTime.Parse(str, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeLocal);
-        }
-        protected static TimeSpan ParseTimeSpan(string str)
-        {
-            return TimeSpan.Parse(str, DateTimeFormatInfo.InvariantInfo);
-        }
-        protected static string ParseString(string str)
-        {
-            return str.Trim(new char[] { '"', '\'' });
-        }
-        protected static Brush ParseColor(string str)
-        {
-            str = str.ToUpper();
-            if (colors.ContainsKey(str))
-                return colors[str];
-            else
-                throw new ArgumentException("Unknown color '" + str + "'");
-        }
-        protected static bool ParseBoolean(string str)
-        {
-            bool value = false;
-            switch (str.ToLower())
-            {
-                case "true":
-                    value = true;
-                    break;
-                case "false":
-                    value = false;
-                    break;
-                default:
-                    throw new ArgumentException("Syntax error in boolean definition: " + str);
-            }
-
-            return value;
         }
 
         public void AddNote(string text, bool isImportant = false)

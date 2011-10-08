@@ -25,7 +25,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.AltitudeFeet | AXPointInfo.Radius);
         }
         public override string ToString(AXPointInfo info)
         {
@@ -34,7 +34,7 @@ namespace AXToolbox.GpsLoggers
             if (info == AXPointInfo.Input)
             {
                 str.Append(Name + " ");
-                str.Append(base.ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude));
+                str.Append(base.ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.AltitudeFeet));
             }
             else
             {
@@ -99,7 +99,7 @@ namespace AXToolbox.GpsLoggers
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var point = value as AXWaypoint;
-            return point.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude).TrimEnd();
+            return point.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.AltitudeFeet).TrimEnd();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

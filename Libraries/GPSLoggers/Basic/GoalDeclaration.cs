@@ -44,7 +44,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.AltitudeFeet);
         }
         public string ToString(AXPointInfo info)
         {
@@ -65,7 +65,7 @@ namespace AXToolbox.GpsLoggers
                 else
                     str.Append(string.Format("{0:0000}/{1:0000} ", Easting4Digits, Northing4Digits));
 
-            if ((info & AXPointInfo.Altitude) > 0)
+            if ((info & AXPointInfo.AltitudeFeet) > 0)
                 if (double.IsNaN(Altitude))
                     str.Append("- ");
                 else
@@ -103,7 +103,7 @@ namespace AXToolbox.GpsLoggers
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var declaration = value as GoalDeclaration;
-            return declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude);
+            return declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.AltitudeFeet);
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {

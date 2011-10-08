@@ -25,7 +25,7 @@ namespace AXToolbox.Scripting
 
                 case "TITLE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.Title = ParseOrDie<string>(0, ParseString);
+                    Engine.Settings.Title = ParseOrDie<string>(0,Parsers.ParseString);
                     break;
 
                 case "SUBTITLE":
@@ -45,7 +45,7 @@ namespace AXToolbox.Scripting
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
 
-                        Engine.Settings.Date = ParseOrDie<DateTime>(0, ParseLocalDatetime);
+                        Engine.Settings.Date = ParseOrDie<DateTime>(0, Parsers.ParseLocalDatetime);
 
                         var time = ParseOrDie<string>(1, s => s).ToUpper(); ;
                         if (time != "AM" && time != "PM")
@@ -69,12 +69,12 @@ namespace AXToolbox.Scripting
 
                 case "TASKSINORDER":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.TasksInOrder = ParseOrDie<bool>(0, ParseBoolean);
+                    Engine.Settings.TasksInOrder = ParseOrDie<bool>(0, Parsers.ParseBoolean);
                     break;
 
                 case "QNH":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.Qnh = ParseOrDie<double>(0, ParseDouble);
+                    Engine.Settings.Qnh = ParseOrDie<double>(0, Parsers.ParseDouble);
                     break;
 
                 case "SMOOTHNESS":
@@ -84,12 +84,12 @@ namespace AXToolbox.Scripting
 
                 case "MINSPEED":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.MinSpeed = ParseOrDie<double>(0, ParseDouble);
+                    Engine.Settings.MinSpeed = ParseOrDie<double>(0, Parsers.ParseDouble);
                     break;
 
                 case "MAXACCELERATION":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    Engine.Settings.MaxAcceleration = ParseOrDie<double>(0, ParseLength);
+                    Engine.Settings.MaxAcceleration = ParseOrDie<double>(0, Parsers.ParseLength);
                     break;
 
                 case "LOGFILE":

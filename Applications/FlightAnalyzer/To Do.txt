@@ -3,27 +3,21 @@
 
 TO DO
 - Update async workflow with .NET 4.5 (async/await instead of BackgroundWorker?)
-- checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
-- the debriefer must enter all the physical marker performances before being allowed to save
-- multiple MMA in HWZ, PDG, FON
+? the debriefer must enter all the physical marker performances before being allowed to save
 - pdf report: add the same notes in goaldeclarations and markers as in take off and landing (modified by...)
-* multiple file section in batch processing
-* progressbar in batch processing
 ! Add/remove penalties.
 - full IsDirty management.
-- Add the possibility of warning the user programmatically.
 - Mark manually added markers and declarations. Don't allow to delete non-manual ones.
-- Assign pilot ranges to each debriefer?
-- Don't score counterfeit logs.
-- List of saved reports.
+? Don't score counterfeit logs.
 - Getting started with FlightAnalyzer
-- Keep track of debriefer identity, with debriefer changes. 
 * Fix the log files thing
 * Batch process flight reports.
 * Fix add/remove goal declarations. Support null altitude
 * take off and landing helper buttons in tools
 * pilot names in a file defined in settings (like instrument error file)
 * taskbar jump lists
+* multiple file section in batch processing
+* progressbar in batch processing
 
 
 IDEAS

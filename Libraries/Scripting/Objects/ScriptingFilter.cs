@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
@@ -41,7 +40,7 @@ namespace AXToolbox.Scripting
                 case "BEFORETIME":
                 case "AFTERTIME":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    time = Engine.Settings.Date + ParseOrDie<TimeSpan>(0, ParseTimeSpan); //TODO: check local-GMT conversion
+                    time = Engine.Settings.Date + ParseOrDie<TimeSpan>(0, Parsers.ParseTimeSpan); //TODO: check local-GMT conversion
                     break;
 
                 case "BEFOREPOINT":
@@ -53,7 +52,7 @@ namespace AXToolbox.Scripting
                 case "ABOVE":
                 case "BELOW":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    altitude = ParseOrDie<double>(0, ParseLength);
+                    altitude = ParseOrDie<double>(0, Parsers.ParseLength);
                     break;
             }
         }

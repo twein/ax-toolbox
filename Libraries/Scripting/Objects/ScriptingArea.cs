@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using AXToolbox.Common;
-using AXToolbox.MapViewer;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Media;
+using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -38,11 +38,11 @@ namespace AXToolbox.Scripting
                 case "CYLINDER":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
-                    radius = ParseOrDie<double>(1, ParseLength);
+                    radius = ParseOrDie<double>(1, Parsers.ParseLength);
                     if (ObjectParameters.Length >= 3)
-                        upperLimit = ParseOrDie<double>(2, ParseLength);
+                        upperLimit = ParseOrDie<double>(2, Parsers.ParseLength);
                     if (ObjectParameters.Length >= 4)
-                        lowerLimit = ParseOrDie<double>(3, ParseLength);
+                        lowerLimit = ParseOrDie<double>(3, Parsers.ParseLength);
 
                     MaxHorizontalInfringement = 2 * radius;
                     break;
@@ -50,7 +50,7 @@ namespace AXToolbox.Scripting
                 case "SPHERE":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
-                    radius = ParseOrDie<double>(1, ParseLength);
+                    radius = ParseOrDie<double>(1, Parsers.ParseLength);
 
                     MaxHorizontalInfringement = 2 * radius;
                     break;
@@ -61,9 +61,9 @@ namespace AXToolbox.Scripting
                     var trackLog = LoggerFile.Load(fileName);
                     outline = Engine.Settings.GetTrack(trackLog);
                     if (ObjectParameters.Length >= 2)
-                        upperLimit = ParseOrDie<double>(1, ParseLength);
+                        upperLimit = ParseOrDie<double>(1, Parsers.ParseLength);
                     if (ObjectParameters.Length >= 3)
-                        lowerLimit = ParseOrDie<double>(2, ParseLength);
+                        lowerLimit = ParseOrDie<double>(2, Parsers.ParseLength);
 
                     for (var i = 1; i < outline.Count; i++)
                         for (var j = 0; j < i; j++)
@@ -89,7 +89,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     if (DisplayParameters[0] != "")
-                        Color = ParseColor(DisplayParameters[0]);
+                        Color = Parsers.ParseColor(DisplayParameters[0]);
                     break;
             }
         }
@@ -121,14 +121,14 @@ namespace AXToolbox.Scripting
                     case "CYLINDER":
                     case "SPHERE":
                         if (center.Point != null)
-                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = Color };
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = new SolidColorBrush(this.Color) };
                         break;
 
                     case "PRISM":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
-                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = Color };
+                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = new SolidColorBrush(this.Color) };
                         break;
                 }
 

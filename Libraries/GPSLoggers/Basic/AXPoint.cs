@@ -13,7 +13,7 @@ namespace AXToolbox.GpsLoggers
         All = 0xffff,
         Date = 0x1,
         Time = 0x2,
-        Altitude = 0x4,
+        AltitudeFeet = 0x4,
         Coords = 0x8,
         CompetitionCoords = 0x10,
         Declaration = 0x20,
@@ -47,7 +47,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.AltitudeFeet | AXPointInfo.Radius);
         }
         public virtual string ToString(AXPointInfo info)
         {
@@ -74,8 +74,8 @@ namespace AXToolbox.GpsLoggers
             if ((info & AXPointInfo.CompetitionCoords) > 0)
                 str.Append(string.Format("{0:00000}/{1:00000} ", Easting % 1e5, Northing % 1e5));
 
-            if ((info & AXPointInfo.Altitude) > 0)
-                str.Append(Altitude.ToString("0 "));
+            if ((info & AXPointInfo.AltitudeFeet) > 0)
+                str.Append(string.Format("0ft ", Altitude * Physics.METERS2FEET));
 
             if ((info & AXPointInfo.AltitudeMeters) > 0)
                 str.Append(Altitude.ToString("0m "));

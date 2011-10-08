@@ -4,7 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 using System.Xml.Linq;
+using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
 
@@ -47,9 +49,9 @@ namespace AXToolbox.Scripting
                         isStatic = true;
 
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
-                        var lat = ParseOrDie<double>(0, ParseDouble);
-                        var lng = ParseOrDie<double>(1, ParseDouble);
-                        var alt = ParseOrDie<double>(2, ParseLength);
+                        var lat = ParseOrDie<double>(0, Parsers.ParseDouble);
+                        var lng = ParseOrDie<double>(1, Parsers.ParseDouble);
+                        var alt = ParseOrDie<double>(2, Parsers.ParseLength);
                         Point = new AXWaypoint(ObjectName, Engine.Settings.FromLatLonToAXPoint(lat, lng, alt));
                     }
                     break;
@@ -60,9 +62,9 @@ namespace AXToolbox.Scripting
                         isStatic = true;
 
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
-                        var easting = ParseOrDie<double>(0, ParseDouble);
-                        var northing = ParseOrDie<double>(1, ParseDouble);
-                        var alt = ParseOrDie<double>(2, ParseLength);
+                        var easting = ParseOrDie<double>(0, Parsers.ParseDouble);
+                        var northing = ParseOrDie<double>(1, Parsers.ParseDouble);
+                        var alt = ParseOrDie<double>(2, Parsers.ParseLength);
                         Point = new AXWaypoint(ObjectName, Engine.Settings.Date.Date.ToUniversalTime(), easting, northing, alt);
                     }
                     break;
@@ -71,7 +73,7 @@ namespace AXToolbox.Scripting
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length >= 3);
                     ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
-                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
+                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, Parsers.ParseLength);
                     break;
 
                 case "LFT": //first in time from list
@@ -98,7 +100,7 @@ namespace AXToolbox.Scripting
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2);
                     number = ParseOrDie<int>(0, int.Parse);
                     if (ObjectParameters.Length == 2)
-                        defaultAltitude = ParseOrDie<double>(1, ParseLength);
+                        defaultAltitude = ParseOrDie<double>(1, Parsers.ParseLength);
                     break;
 
                 case "TLCH": //TLCH: take off
@@ -112,7 +114,7 @@ namespace AXToolbox.Scripting
                     //LNP(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
                     ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
-                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, ParseLength);
+                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, Parsers.ParseLength);
                     break;
 
                 case "TPT": //TPT at point time
@@ -125,25 +127,25 @@ namespace AXToolbox.Scripting
                     //TNP(<pointName>, <altitudeThreshold>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     ResolveOrDie<ScriptingPoint>(0);
-                    altitudeThreshold = ParseOrDie<double>(1, ParseLength);
+                    altitudeThreshold = ParseOrDie<double>(1, Parsers.ParseLength);
                     break;
 
                 case "TDT": //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     ResolveOrDie<ScriptingPoint>(0);
-                    timeDelay = ParseOrDie<TimeSpan>(1, ParseTimeSpan);
+                    timeDelay = ParseOrDie<TimeSpan>(1, Parsers.ParseTimeSpan);
                     if (ObjectParameters.Length == 3)
-                        maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
+                        maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, Parsers.ParseTimeSpan);
                     break;
 
                 case "TDD":  //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     ResolveOrDie<ScriptingPoint>(0);
-                    distanceDelay = ParseOrDie<double>(1, ParseLength);
+                    distanceDelay = ParseOrDie<double>(1, Parsers.ParseLength);
                     if (ObjectParameters.Length == 3)
-                        maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, ParseTimeSpan);
+                        maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, Parsers.ParseTimeSpan);
                     break;
 
                 case "TAFI": //area first in
@@ -177,17 +179,17 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     if (DisplayParameters[0] != "")
-                        Color = ParseColor(DisplayParameters[0]);
+                        Color = Parsers.ParseColor(DisplayParameters[0]);
                     break;
 
                 case "TARGET":
                     if (DisplayParameters.Length > 2)
                         throw new ArgumentException("Syntax error");
 
-                    radius = ParseLength(DisplayParameters[0]);
+                    radius = Parsers.ParseLength(DisplayParameters[0]);
 
                     if (DisplayParameters.Length == 2)
-                        Color = ParseColor(DisplayParameters[1]);
+                        Color = Parsers.ParseColor(DisplayParameters[1]);
                     break;
             }
         }
@@ -738,24 +740,24 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = Color };
+                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = new SolidColorBrush(this.Color) };
                         }
                         break;
 
                     case "TARGET":
                         {
-                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Layer = layer, Color = Color };
+                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Layer = layer, Color = new SolidColorBrush(this.Color) };
                         }
                         break;
 
                     case "MARKER":
                         {
-                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = Color };
+                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = new SolidColorBrush(this.Color) };
                         } break;
 
                     case "CROSSHAIRS":
                         {
-                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint()) { Layer = layer, Color = Color };
+                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint()) { Layer = layer, Color = new SolidColorBrush(this.Color) };
                         }
                         break;
                 }

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
+using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
+using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
@@ -46,7 +47,7 @@ namespace AXToolbox.Scripting
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     if (ObjectParameters.Length == 3)
-                        bestPerformance = ParseOrDie<double>(2, ParseLength);
+                        bestPerformance = ParseOrDie<double>(2, Parsers.ParseLength);
                     unit = "m";
                     break;
 
@@ -58,9 +59,9 @@ namespace AXToolbox.Scripting
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    altitudeThreshold = ParseOrDie<double>(2, ParseLength);
+                    altitudeThreshold = ParseOrDie<double>(2, Parsers.ParseLength);
                     if (ObjectParameters.Length == 4)
-                        bestPerformance = ParseOrDie<double>(3, ParseLength);
+                        bestPerformance = ParseOrDie<double>(3, Parsers.ParseLength);
                     unit = "m";
                     break;
 
@@ -126,7 +127,7 @@ namespace AXToolbox.Scripting
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    setDirection = ParseOrDie<double>(2, ParseDouble);
+                    setDirection = ParseOrDie<double>(2, Parsers.ParseDouble);
                     unit = "°";
                     break;
             }
@@ -149,7 +150,7 @@ namespace AXToolbox.Scripting
                         throw new ArgumentException("Syntax error");
 
                     if (DisplayParameters[0] != "")
-                        Color = ParseColor(DisplayParameters[0]);
+                        Color=Parsers.ParseColor(DisplayParameters[0]);
                     break;
             }
         }
@@ -400,8 +401,8 @@ namespace AXToolbox.Scripting
                         var first = path[0][0];
                         var last = path[path.Length - 1][path[path.Length - 1].Length - 1];
 
-                        Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = this.Color, Layer = (uint)OverlayLayers.Results });
-                        Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, 
+                        Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = new SolidColorBrush(this.Color), Layer = (uint)OverlayLayers.Results });
+                        Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last,
                             string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results });
                         break;
 
@@ -409,7 +410,7 @@ namespace AXToolbox.Scripting
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() },
-                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", ObjectName, Result)) { Color = new SolidColorBrush(this.Color), Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANG3P":
@@ -438,19 +439,19 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(new WaypointOverlay(A.Point.ToWindowsPoint(), A.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
-                    Color = A.Color
+                    Color = new SolidColorBrush(A.Color)
                 });
             if (B != null && B.Point != null)
                 Engine.MapViewer.AddOverlay(new WaypointOverlay(B.Point.ToWindowsPoint(), B.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
-                    Color = B.Color
+                    Color = new SolidColorBrush(B.Color)
                 });
             if (C != null && C.Point != null)
                 Engine.MapViewer.AddOverlay(new WaypointOverlay(C.Point.ToWindowsPoint(), C.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
-                    Color = C.Color
+                    Color = new SolidColorBrush(C.Color)
                 });
         }
     }
