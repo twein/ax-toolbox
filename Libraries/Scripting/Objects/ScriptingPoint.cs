@@ -720,18 +720,21 @@ namespace AXToolbox.Scripting
         }
         public override void Display()
         {
-            uint layer;
-            if (isStatic)
-                layer = (uint)OverlayLayers.Static_Points;
-            else// if (ObjectType == "MPDG" || ObjectType == "MVMD")
-                layer = (uint)OverlayLayers.Pilot_Points;
-            //else
-            //    layer = (uint)OverlayLayers.Reference_Points;
-
             MapOverlay overlay = null;
 
             if (Point != null)
             {
+                uint layer;
+
+                if (isStatic)
+                    layer = (uint)OverlayLayers.Static_Points;
+                //else if (ObjectType == "MVMD" || ObjectType == "MPDGD" || ObjectType == "MPDGF")
+                //    layer = (uint)OverlayLayers.Markers;
+                else
+                    layer = (uint)OverlayLayers.Pilot_Points;
+                //else
+                //    layer = (uint)OverlayLayers.Reference_Points;
+
                 switch (DisplayMode)
                 {
                     case "NONE":
@@ -740,24 +743,24 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = new SolidColorBrush(this.Color) };
+                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = this.Color };
                         }
                         break;
 
                     case "TARGET":
                         {
-                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Layer = layer, Color = new SolidColorBrush(this.Color) };
+                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Layer = layer, Color = this.Color };
                         }
                         break;
 
                     case "MARKER":
                         {
-                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = new SolidColorBrush(this.Color) };
+                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = this.Color };
                         } break;
 
                     case "CROSSHAIRS":
                         {
-                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint()) { Layer = layer, Color = new SolidColorBrush(this.Color) };
+                            overlay = new CrosshairsOverlay(Point.ToWindowsPoint()) { Layer = layer, Color = this.Color };
                         }
                         break;
                 }

@@ -10,9 +10,9 @@ namespace AXToolbox.MapViewer
             set { border.Opacity = value; }
         }
 
-        public override Brush Color
+        public override Color Color
         {
-            set { border.Background = value; }
+            set { border.Background = new SolidColorBrush(value); }
         }
 
         public WaypointOverlay(Point position, string text)

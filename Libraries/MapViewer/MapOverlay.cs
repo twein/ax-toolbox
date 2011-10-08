@@ -40,9 +40,9 @@ namespace AXToolbox.MapViewer
         {
             set { base.Opacity = value; }
         }
-        public virtual Brush Color
+        public virtual Color Color
         {
-            set { base.Background = value; }
+            set { Background = new SolidColorBrush(value); }
         }
         
         protected MapOverlay()

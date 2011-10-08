@@ -24,9 +24,9 @@ namespace AXToolbox.MapViewer
             set { border.Opacity = value; }
         }
 
-        public override Brush Color
+        public override Color Color
         {
-            set { border.Background = value; }
+            set { border.Background = new SolidColorBrush(value); }
         }
 
         public TargetOverlay(Point position, double radius, string text)

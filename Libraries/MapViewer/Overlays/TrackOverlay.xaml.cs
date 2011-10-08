@@ -9,9 +9,9 @@ namespace AXToolbox.MapViewer
     {
         public Point[][] Segments;
 
-        public override Brush Color
+        public override Color Color
         {
-            set { track.Stroke = value; }
+            set { track.Stroke = new SolidColorBrush(value); }
         }
 
         public TrackOverlay(Point[] points, double thickness)

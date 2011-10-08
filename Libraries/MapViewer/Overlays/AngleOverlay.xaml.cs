@@ -11,9 +11,9 @@ namespace AXToolbox.MapViewer
         public Point PointB;
         public Point PointC;
 
-        public override Brush Color
+        public override Color Color
         {
-            set { angle.Stroke = value; }
+            set { angle.Stroke = new SolidColorBrush(value); }
         }
 
         public AngleOverlay(Point pointA, Point pointB, Point pointC, string text)

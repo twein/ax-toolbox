@@ -247,17 +247,17 @@ namespace AXToolbox.Scripting
                         switch (ObjectType)
                         {
                             case "RPZ":
-                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Red, Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Colors.Red, Layer = (uint)OverlayLayers.Penalties });
                                 Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
                                 break;
 
                             case "BPZ":
-                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Blue, Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Colors.Blue, Layer = (uint)OverlayLayers.Penalties });
                                 Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
                                 break;
 
                             case "VSMAX":
-                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Brushes.Green, Layer = (uint)OverlayLayers.Penalties });
+                                Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = Colors.Green, Layer = (uint)OverlayLayers.Penalties });
                                 Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last, inf.ToString()) { Layer = (uint)OverlayLayers.Penalties });
                                 break;
                         }
