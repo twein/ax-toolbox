@@ -190,7 +190,7 @@ namespace FlightAnalyzer
             var dlg = new InputWindow(s => AXWaypoint.Parse(s) != null)
             {
                 Title = "Enter marker",
-                Text = waypoint.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude)
+                Text = waypoint.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.AltitudeFeet)
             };
             dlg.ShowDialog();
             if (dlg.Response == System.Windows.Forms.DialogResult.OK)
@@ -226,7 +226,7 @@ namespace FlightAnalyzer
                 var dlg = new InputWindow(s => GoalDeclaration.Parse(s) != null)
                 {
                     Title = "Enter goal declaration",
-                    Text = declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude)
+                    Text = declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.AltitudeFeet)
                 };
                 dlg.ShowDialog();
                 if (dlg.Response == System.Windows.Forms.DialogResult.OK)

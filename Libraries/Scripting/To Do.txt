@@ -1,21 +1,21 @@
 ﻿TO DO
 - make axpoint, axwaypoint, immutable. Rewrite CleanTrack, FlightTrack & Co.
-* check if http://code.google.com/apis/maps/documentation/elevation/ is better
-- official altitude units in settings
+- checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
+- Add the possibility of warning the user programmatically.
+- multiple MMA in HWZ, PDG, FON
+! official altitude units in settings
 - restriction: non split tasks: check for no markers in between
 - Fix the text of distance infringement, it's not the infringement, it's the distance
 ! GoalDeclaration coordinates: don't parse at load time?. Don't assume anything: check 1111, 1111/, 111, 1111/1111, etc.
 ! think about measure/result/constraint/filter/restriction thing
-* in result and penalty, use point pairs for different entry/exit pairs instead of usedpoints. For single points, use point/null pair
 - Add SAMEAREA and DIFFERENTAREA restrictions
-* altitude units on pdf reports
 - list of all debriefers that worked on a flight report
 - when a LRN result has ben overriden by a restriction, the result still shows on map. Check other types as well (e.g. Europeans2011, task 10, pilot 45)
 - Area type BOX
-- Area CSG?
+? Area CSG
 - Add a new type of point: TLU Track point last used: Last used point in any task
-- rewrite the examples in the AXS Specification for new syntax
-- fix the demo files for new syntax
+! rewrite the examples in the AXS Specification for new syntax
+! fix the demo files for new syntax
 
 * remove mintime and maxtime from MPDG. It can be programmed with restrictions.
 * add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
@@ -25,6 +25,9 @@
 * global penalties instead of task specific
 * implement VSMAX
 * Finish PDF report
+* check if http://code.google.com/apis/maps/documentation/elevation/ is better
+* in result and penalty, use point pairs for different entry/exit pairs instead of usedpoints. For single points, use point/null pair
+* altitude units on pdf reports
 
 How to set different tasks:
 	3DS: apply a filter for each area. the result is a DACC

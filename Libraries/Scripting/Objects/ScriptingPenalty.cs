@@ -45,7 +45,7 @@ namespace AXToolbox.Scripting
                     //BPZ(<area>,<description>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     area = ResolveOrDie<ScriptingArea>(0);
-                    description = ParseOrDie<string>(1, ParseString);
+                    description = ParseOrDie<string>(1, Parsers.ParseString);
                     break;
 
                 case "RPZ":
@@ -53,15 +53,15 @@ namespace AXToolbox.Scripting
                     //BPZ(<area>,<description>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
                     area = ResolveOrDie<ScriptingArea>(0);
-                    description = ParseOrDie<string>(1, ParseString);
+                    description = ParseOrDie<string>(1, Parsers.ParseString);
                     break;
 
                 case "VSMAX":
                     //VSMAX: maximum vertical speed
                     //VSMAX(<verticalSpeed>,<sensitivity>)
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
-                    maxSpeed = ParseOrDie<double>(0, ParseDouble) * Physics.FEET2METERS / 60;
-                    sensitivity = ParseOrDie<double>(1, ParseDouble);
+                    maxSpeed = ParseOrDie<double>(0, Parsers.ParseDouble) * Physics.FEET2METERS / 60;
+                    sensitivity = ParseOrDie<double>(1, Parsers.ParseDouble);
                     break;
 
             }

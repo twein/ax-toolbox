@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
 
@@ -63,7 +64,7 @@ namespace AXToolbox.Scripting
                     if (DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");
 
-                    gridWidth = ParseDouble(DisplayParameters[0]);
+                    gridWidth = Parsers.ParseDouble(DisplayParameters[0]);
                     if (gridWidth < 0)
                         throw new ArgumentException("Incorrect grid width.");
 

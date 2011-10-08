@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
@@ -31,7 +32,7 @@ namespace AXToolbox.Scripting
             base.CheckConstructorSyntax();
 
             AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-            Number = ParseOrDie<int>(0, ParseInt);
+            Number = ParseOrDie<int>(0, Parsers.ParseInt);
 
             resultPrecission = 2;
             switch (ObjectType)

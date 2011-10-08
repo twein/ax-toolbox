@@ -52,8 +52,8 @@ namespace AXToolbox.Scripting
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         B = ResolveOrDie<ScriptingPoint>(1);
-                        distance = ParseOrDie<double>(2, ParseLength);
-                        description = ParseOrDie<string>(3, ParseString);
+                        distance = ParseOrDie<double>(2, Parsers.ParseLength);
+                        description = ParseOrDie<string>(3, Parsers.ParseString);
                     }
                     break;
 
@@ -68,8 +68,8 @@ namespace AXToolbox.Scripting
                             AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
                             A = ResolveOrDie<ScriptingPoint>(0);
                             B = ResolveOrDie<ScriptingPoint>(1);
-                            time = ParseOrDie<int>(2, ParseInt);
-                            description = ParseOrDie<string>(3, ParseString);
+                            time = ParseOrDie<int>(2, Parsers.ParseInt);
+                            description = ParseOrDie<string>(3, Parsers.ParseString);
                         }
                     }
                     break;
@@ -83,8 +83,8 @@ namespace AXToolbox.Scripting
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
                         A = ResolveOrDie<ScriptingPoint>(0);
-                        timeOfDay = ParseOrDie<TimeSpan>(1, ParseTimeSpan);
-                        description = ParseOrDie<string>(2, ParseString);
+                        timeOfDay = ParseOrDie<TimeSpan>(1, Parsers.ParseTimeSpan);
+                        description = ParseOrDie<string>(2, Parsers.ParseString);
                     }
                     break;
             }
