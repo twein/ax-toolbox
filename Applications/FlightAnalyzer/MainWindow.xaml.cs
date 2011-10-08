@@ -50,10 +50,10 @@ namespace FlightAnalyzer
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.ProgressChanged += Worker_ProgressChanged;
 
-            //map.LayerVisibilityMask = (uint)(OverlayLayers.Pilot_Points | OverlayLayers.TakeOff_And_Landing);
-
             if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer) || Properties.Settings.Default.Debriefer == "Debriefer")
                 ShowOptions();
+            if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer) || Properties.Settings.Default.Debriefer == "Debriefer")
+                Close();
 
             Debriefer = Properties.Settings.Default.Debriefer;
             RaisePropertyChanged("Debriefer");
@@ -92,7 +92,10 @@ namespace FlightAnalyzer
         }
         private void optionsButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowOptions();
+            do
+            {
+                ShowOptions();
+            } while (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer) || Properties.Settings.Default.Debriefer == "Debriefer");
         }
         private void aboutButton_Click(object sender, RoutedEventArgs e)
         {
@@ -190,7 +193,7 @@ namespace FlightAnalyzer
             var dlg = new InputWindow(s => AXWaypoint.Parse(s) != null)
             {
                 Title = "Enter marker",
-                Text = waypoint.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.AltitudeFeet)
+                Text = waypoint.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude)
             };
             dlg.ShowDialog();
             if (dlg.Response == System.Windows.Forms.DialogResult.OK)
@@ -218,7 +221,7 @@ namespace FlightAnalyzer
             else if (sender is MenuItem)
             {
                 var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, 0);
-                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), 0);
+                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), double.NaN);
             }
 
             if (declaration != null)
@@ -226,7 +229,7 @@ namespace FlightAnalyzer
                 var dlg = new InputWindow(s => GoalDeclaration.Parse(s) != null)
                 {
                     Title = "Enter goal declaration",
-                    Text = declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.AltitudeFeet)
+                    Text = declaration.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Declaration | AXPointInfo.Altitude)
                 };
                 dlg.ShowDialog();
                 if (dlg.Response == System.Windows.Forms.DialogResult.OK)

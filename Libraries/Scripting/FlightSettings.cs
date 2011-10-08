@@ -20,6 +20,11 @@ namespace AXToolbox.Scripting
 
         public Boolean TasksInOrder { get; set; }
         public double Qnh { get; set; }
+        public AltitudeUnits AltitudeUnits
+        {
+            get { return AXPoint.DefaultAltitudeUnits; }
+            set { AXPoint.DefaultAltitudeUnits = value; }
+        }
 
         //Smoothness factor for speed used in take off and landing detection
         public double Smoothness { get; set; }
@@ -41,6 +46,7 @@ namespace AXToolbox.Scripting
             Date = new DateTime(1999, 12, 31);
             TasksInOrder = true;
             Qnh = double.NaN;
+            AltitudeUnits = AltitudeUnits.Feet;
 
             Smoothness = 3;
             MinSpeed = 0.5;

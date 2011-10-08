@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AXToolbox.Common;
 using Netline.BalloonLogger.SignatureLib;
 
 namespace AXToolbox.GpsLoggers
@@ -137,24 +138,8 @@ namespace AXToolbox.GpsLoggers
             var description = "[" + line.Substring(10) + "]";
 
             //parse altitude
-            var altitude = double.NaN;
             var strAltitude = line.Substring(12).Split(',')[1];
-            if (strAltitude == "")
-            {
-                altitude = double.NaN;
-            }
-            else if (strAltitude.EndsWith("ft")) //altitude in feet
-            {
-                altitude = double.Parse(strAltitude.Replace("ft", "")) * Physics.FEET2METERS;
-            }
-            else if (strAltitude.EndsWith("m")) //altitude in meters
-            {
-                altitude = double.Parse(strAltitude.Replace("m", ""));
-            }
-            else //no valid altitude
-            {
-                throw new InvalidOperationException("Unsupported altitude unit in declaration");
-            }
+            var altitude = Parsers.ParseLengthOrNaN(strAltitude);
 
             // position declaration
             var strGoal = line.Substring(12).Split(',')[0];

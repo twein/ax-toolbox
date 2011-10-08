@@ -3,7 +3,6 @@
 - checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
 - Add the possibility of warning the user programmatically.
 - multiple MMA in HWZ, PDG, FON
-! official altitude units in settings
 - restriction: non split tasks: check for no markers in between
 - Fix the text of distance infringement, it's not the infringement, it's the distance
 ! GoalDeclaration coordinates: don't parse at load time?. Don't assume anything: check 1111, 1111/, 111, 1111/1111, etc.
@@ -28,6 +27,7 @@
 * check if http://code.google.com/apis/maps/documentation/elevation/ is better
 * in result and penalty, use point pairs for different entry/exit pairs instead of usedpoints. For single points, use point/null pair
 * altitude units on pdf reports
+* altitude units in settings
 
 How to set different tasks:
 	3DS: apply a filter for each area. the result is a DACC

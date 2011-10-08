@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Globalization;
+using System.Text;
 using System.Windows.Data;
+using AXToolbox.Common;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -25,7 +26,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.AltitudeFeet | AXPointInfo.Radius);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
         }
         public override string ToString(AXPointInfo info)
         {
@@ -34,7 +35,7 @@ namespace AXToolbox.GpsLoggers
             if (info == AXPointInfo.Input)
             {
                 str.Append(Name + " ");
-                str.Append(base.ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.AltitudeFeet));
+                str.Append(base.ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude));
             }
             else
             {
@@ -64,7 +65,7 @@ namespace AXToolbox.GpsLoggers
 
             var altitude = 0.0;
             if (fields.Length == 6)
-                altitude = double.Parse(fields[5], NumberFormatInfo.InvariantInfo);
+                altitude = Parsers.ParseLength(fields[5]);
 
             return new AXWaypoint(name, time, easting, northing, altitude);
         }
@@ -99,7 +100,7 @@ namespace AXToolbox.GpsLoggers
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var point = value as AXWaypoint;
-            return point.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.AltitudeFeet).TrimEnd();
+            return point.ToString(AXPointInfo.Name | AXPointInfo.Date | AXPointInfo.Time | AXPointInfo.Coords | AXPointInfo.Altitude).TrimEnd();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

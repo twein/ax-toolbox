@@ -86,6 +86,12 @@
   <ItemGroup>
     <Content Include="license.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\AXToolbox.Common.csproj">
+      <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
+      <Name>AXToolbox.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
