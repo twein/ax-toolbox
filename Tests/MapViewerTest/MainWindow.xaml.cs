@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
 using Microsoft.Win32;
+using System.Windows.Media;
 
 namespace MapViewerTest
 {
@@ -115,31 +115,31 @@ namespace MapViewerTest
                 trackLog[i] = new Point(utm.X, utm.Y);
             }
             var track = new TrackOverlay(trackLog, 2);
-            track.Color = Brushes.Blue;
+            track.Color = Colors.Blue;
             map.AddOverlay(track);
 
             //add crosshairs
             position = trackLog[rnd.Next(trackLog.Length)];
             var crosshairs = new CrosshairsOverlay(position);
-            crosshairs.Color = Brushes.Red;
+            crosshairs.Color = Colors.Red;
             map.AddOverlay(crosshairs);
 
             //add a marker
             position = trackLog[rnd.Next(trackLog.Length)];
             var marker = new MarkerOverlay(position, "Marker 1");
-            marker.Color = Brushes.Green;
+            marker.Color = Colors.Green;
             map.AddOverlay(marker);
 
             //add a target
             position = new Point(306000, 4609000);
             var target = new TargetOverlay(position, 100, "Target 1");
-            target.Color = Brushes.Yellow;
+            target.Color = Colors.Yellow;
             map.AddOverlay(target);
 
             //add a waypoint
             position = new Point(305500, 4608500);
             var waypoint = new WaypointOverlay(position, "Waypoint 1");
-            waypoint.Color = Brushes.Orange;
+            waypoint.Color = Colors.Orange;
             map.AddOverlay(waypoint);
 
             //add a poligonal area
@@ -150,13 +150,13 @@ namespace MapViewerTest
                 new Point(303000, 4612000)
             };
             var area = new PolygonalAreaOverlay(polygon, "AREA 1");
-            area.Color = Brushes.Orange;
+            area.Color = Colors.Orange;
             map.AddOverlay(area);
 
             //add a PZ
             position = new Point(308000, 4608000);
             var pz = new CircularAreaOverlay(position, 500, "BPZ1");
-            pz.Color = Brushes.Blue;
+            pz.Color = Colors.Blue;
             map.AddOverlay(pz);
 
             {

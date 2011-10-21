@@ -65,6 +65,7 @@
     <Compile Include="Basic\AXPoint.cs" />
     <Compile Include="Basic\AXWaypoint.cs" />
     <Compile Include="Basic\Coordinates.cs" />
+    <Compile Include="Basic\Interpolation.cs" />
     <Compile Include="Basic\ITime.cs" />
     <Compile Include="Basic\Physics.cs" />
     <Compile Include="Basic\Track.cs" />
