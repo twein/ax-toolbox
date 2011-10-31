@@ -4,130 +4,13 @@ using System.Linq;
 
 namespace AXToolbox.GpsLoggers
 {
+    //http://codeplea.com/introduction-to-splines
+
     public static class Interpolation
     {
-        //http://paulbourke.net/miscellaneous/interpolation/
-
-        public enum InterpolationType
-        {
-            Linear,
-            Cosine,
-            Cubic,
-            CatmullRom
-        }
-
-        /// <summary>Fills the gaps in a track log using the specified interpolation algorithm</summary>
-        /// <param name="track">track log with gaps</param>
-        /// <param name="interpolationInterval">desired time interval in seconds between contiguous points</param>
-        /// <param name="maxAllowedGap">maximum number of contiguous points to be interpolated</param>
-        /// <param name="type">desired Interpolation algorithm</param>
-        /// <returns>track log with interpolated points filling gaps</returns>
+        // implements a cubic hermite spline interpolation with Catmull-Rom tension
         public static IEnumerable<AXPoint> Interpolate(
             IEnumerable<AXPoint> track,
-            int interpolationInterval = 1,
-            int maxAllowedGap = 5,
-            InterpolationType type = InterpolationType.CatmullRom)
-        {
-            Func<double, double, double, double, double, double> function;
-
-            switch (type)
-            {
-                case InterpolationType.Linear:
-                    function = Linear;
-                    break;
-                case InterpolationType.Cosine:
-                    function = Cosine;
-                    break;
-                case InterpolationType.Cubic:
-                    function = Cubic;
-                    break;
-                case InterpolationType.CatmullRom:
-                    function = CatmullRom;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            return Interpolate(track, function, interpolationInterval, maxAllowedGap);
-        }
-
-        /// <summary>Linear interpolation</summary>
-        /// The interpolated sample is anywhere between x1 and x2.
-        /// <param name="y0">not used</param>
-        /// <param name="y1"></param>
-        /// <param name="y2"></param>
-        /// <param name="y3">not used</param>
-        /// <param name="t">interpolation distance from x1: 0 = x1 .. 1 = x2</param>
-        /// <returns></returns>
-        private static double Linear(double y0, double y1, double y2, double y3, double t)
-        {
-            return y1 + (y2 - y1) * t;
-        }
-
-        /// <summary>Cosine interpolation</summary>
-        /// The interpolated sample is anywhere between x1 and x2.
-        /// <param name="y0">not used</param>
-        /// <param name="y1"></param>
-        /// <param name="y2"></param>
-        /// <param name="y3">not used</param>
-        /// <param name="t">interpolation distance from x1: 0 = x1 .. 1 = x2</param>
-        /// <returns></returns>
-        private static double Cosine(double y0, double y1, double y2, double y3, double t)
-        {
-            var t2 = (1 - Math.Cos(t * Math.PI)) / 2;
-            return y1 + (y2 - y1) * t2;
-        }
-
-        /// <summary>Cubic (spline) interpolation
-        /// The interpolated sample is anywhere between x1 and x2.
-        /// Use y0 = y1 or y2 = y3 to interpolate extremes.
-        /// </summary>
-        /// <param name="y0"></param>
-        /// <param name="y1"></param>
-        /// <param name="y2"></param>
-        /// <param name="y3"></param>
-        /// <param name="t">interpolation distance from x1: 0 = x1 .. 1 = x2</param>
-        /// <returns></returns>
-        private static double Cubic(double y0, double y1, double y2, double y3, double t)
-        {
-            var t2 = t * t;
-            var a0 = y3 - y2 - y0 + y1;
-            var a1 = y0 - y1 - a0;
-            var a2 = y2 - y0;
-            var a3 = y1;
-
-            return a0 * t * t2 + a1 * t2 + a2 * t + a3;
-        }
-
-        /// <summary> Catmull-Rom spline interpolation
-        /// The interpolated sample is anywhere between x1 and x2.
-        /// Use y0 = y1 or y2 = y3 to interpolate extremes.
-        /// </summary>
-        /// <param name="y0"></param>
-        /// <param name="y1"></param>
-        /// <param name="y2"></param>
-        /// <param name="y3"></param>
-        /// <returns></returns>
-        private static double CatmullRom(double y0, double y1, double y2, double y3, double t)
-        {
-            var t2 = t * t;
-            var a0 = -0.5 * y0 + 1.5 * y1 - 1.5 * y2 + 0.5 * y3;
-            var a1 = y0 - 2.5 * y1 + 2 * y2 - 0.5 * y3;
-            var a2 = -0.5 * y0 + 0.5 * y2;
-            var a3 = y1;
-
-            return a0 * t * t2 + a1 * t2 + a2 * t + a3;
-        }
-
-        /// <summary>Fills the gaps in a track log using a 4 control point interpolation function</summary>
-        /// <param name="track">track log with gaps</param>
-        /// <param name="function">4 control point interpolation function (cubic)</param>
-        /// <param name="interpolationInterval">desired time interval in seconds between contiguous points</param>
-        /// <param name="maxAllowedGap">maximum number of contiguous points to be interpolated</param>
-        /// <returns>track log with interpolated points filling gaps</returns>
-        private static IEnumerable<AXPoint> Interpolate(
-            IEnumerable<AXPoint> track,
-            Func<double, double, double, double, double, double> function,
             int interpolationInterval = 1,
             int maxAllowedGap = 5)
         {
@@ -137,33 +20,83 @@ namespace AXToolbox.GpsLoggers
             var p2 = p0;
             foreach (var p3 in track)
             {
-                // calculate the number of points to be interpolated
-                var numberOfPoints = ((int)Math.Floor((p2.Time - p1.Time).TotalSeconds / interpolationInterval)) - 1;
-                var deltaT = 1.0 / numberOfPoints;
-
-                // don't interpolate if it's not needed or the gap is too large
-                if (numberOfPoints > 0 && numberOfPoints <= maxAllowedGap)
-                {
-                    for (int i = 1; i <= numberOfPoints; i++)
-                    {
-                        var interpolatedp = new AXPoint(
-                            p1.Time + new TimeSpan(0, 0, i * interpolationInterval),
-                            function(p0.Easting, p1.Easting, p2.Easting, p3.Easting, i * deltaT),
-                            function(p0.Northing, p1.Northing, p2.Northing, p3.Northing, i * deltaT),
-                            function(p0.Altitude, p1.Altitude, p2.Altitude, p3.Altitude, i * deltaT));
-                        newTrack.Add(interpolatedp);
-                    }
-                }
-
+                newTrack.AddRange(InterpolateGap(p0, p1, p2, p3, interpolationInterval, maxAllowedGap));
                 newTrack.Add(p2);
 
                 p0 = p1;
                 p1 = p2;
                 p2 = p3;
             }
-            newTrack.Add(p2); //last point
+
+            //last point
+            newTrack.AddRange(InterpolateGap(p0, p1, p2, p2, interpolationInterval, maxAllowedGap));
+            newTrack.Add(p2);
 
             return newTrack.ToArray();
+        }
+
+        //interpolates all needed points in the gap between p1 and p2
+        private static IEnumerable<AXPoint> InterpolateGap(
+            AXPoint p0, AXPoint p1, AXPoint p2, AXPoint p3,
+            int interpolationInterval = 1,
+            int maxAllowedGap = 5)
+        {
+            // calculate the number of points to be interpolated
+            var timeDiff = (p2.Time - p1.Time).TotalSeconds;
+            var numberOfPoints = ((int)Math.Floor(timeDiff / interpolationInterval)) - 1;
+
+            // don't interpolate if it's not needed or the gap is too large
+            if (numberOfPoints > 0 && numberOfPoints <= maxAllowedGap)
+            {
+                //compute non-uniform scaling
+                var s1 = 2 * timeDiff / (p2.Time - p0.Time).TotalSeconds;
+                var s2 = 2 * timeDiff / (p3.Time - p1.Time).TotalSeconds;
+
+                var deltaT = 1.0 / numberOfPoints;
+
+                //interpolate points
+                for (int i = 1; i <= numberOfPoints; i++)
+                {
+                    // compute interpolation parameters
+                    var t = i * deltaT;
+                    var t2 = t * t;
+                    var t3 = t * t2;
+
+                    var parms = new HermiteParms()
+                    {
+                        H1 = 2 * t3 - 3 * t2 + 1,
+                        H2 = 3 * t2 - 2 * t3,
+                        H3 = t3 - 2 * t2 + t,
+                        H4 = t3 - t2,
+                        S1 = s1,
+                        S2 = s2,
+                        C = 0.5 //Catmull-Rom
+                    };
+
+                    // perform interpolation
+                    yield return new AXPoint(
+                        p1.Time + new TimeSpan(0, 0, i * interpolationInterval),
+                        Interpolate1D(p0.Easting, p1.Easting, p2.Easting, p3.Easting, parms),
+                        Interpolate1D(p0.Northing, p1.Northing, p2.Northing, p3.Northing, parms),
+                        Interpolate1D(p0.Altitude, p1.Altitude, p2.Altitude, p3.Altitude, parms));
+                }
+            }
+        }
+
+        private static double Interpolate1D(double y0, double y1, double y2, double y3, HermiteParms parms)
+        {
+            return parms.S1 * parms.C * (y2 - y0) * parms.H3 + y1 * parms.H2 + y2 * parms.H2 + parms.S2 * parms.C * (y3 - y1) * parms.H4;
+        }
+
+        public struct HermiteParms
+        {
+            public double H1;
+            public double H2;
+            public double H3;
+            public double H4;
+            public double S1;
+            public double S2;
+            public double C;
         }
     }
 }
