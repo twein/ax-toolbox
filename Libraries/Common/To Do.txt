@@ -1,0 +1,3 @@
+﻿TO DO
+- Check the workflow of BindableObject.IsDirty
+* Add logger altitude correction file support

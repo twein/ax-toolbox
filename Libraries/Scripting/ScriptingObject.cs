@@ -1,0 +1,350 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Threading;
+using System.Windows.Media;
+
+namespace AXToolbox.Scripting
+{
+    public abstract class ScriptingObject
+    {
+        //Regular Expressions to parse commands. Use in this same order.
+        private static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
+        private static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
+
+
+        protected ScriptingEngine Engine { get; private set; }
+        public string ObjectClass
+        {
+            get
+            {
+                var hierarchy = this.GetType().ToString().Split(new char[] { '.' });
+                return hierarchy[hierarchy.Length - 1].Substring(9).ToUpper();
+            }
+        }
+
+        public string ObjectName { get; protected set; }
+        public string ObjectType { get; protected set; }
+        protected string[] ObjectParameters { get; set; }
+        protected string DisplayMode { get; set; }
+        protected string[] DisplayParameters { get; set; }
+
+        public Color Color { get; protected set; }
+        public List<Note> Notes { get; private set; }
+        public ScriptingTask Task { get; private set; }
+
+        protected string SyntaxErrorMessage
+        {
+            get { return "Syntax error in " + ObjectName + " definition"; }
+        }
+        protected string IncorrectNumberOfArgumentsErrorMessage
+        {
+            get { return "Incorrect number of arguments in " + ObjectName + " definition"; }
+        }
+
+        public string ToShortString()
+        {
+            return ObjectType;
+        }
+        public override string ToString()
+        {
+            string str = ObjectClass + " " + ObjectName + " = ";
+
+            var parms = "";
+            foreach (var par in ObjectParameters)
+                parms += par + ",";
+            parms = parms.Trim(new char[] { ',' });
+
+            str += ObjectType + "(" + parms + ")";
+
+            if (DisplayMode != "")
+            {
+                parms = "";
+                foreach (var par in DisplayParameters)
+                    parms += par + ",";
+                parms = parms.Trim(new char[] { ',' });
+
+                str += " " + DisplayMode + "(" + parms + ")";
+            }
+
+            return str;
+        }
+
+        private ScriptingObject()
+        {
+            throw new InvalidOperationException("This constructor must not be used");
+        }
+
+        /// <summary>Scripting object factory
+        /// </summary>
+        /// <param name="objectClass"></param>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <param name="parameters"></param>
+        /// <param name="displayMode"></param>
+        /// <param name="displayParameters"></param>
+        /// <returns></returns>
+        public static ScriptingObject Create(ScriptingEngine engine, string line)
+        {
+            ScriptingObject obj = null;
+
+            line = line.Trim();
+
+            //ignore blank lines and comments
+            if (line != "" && !line.StartsWith("//"))
+            {
+                //find token or die
+                MatchCollection matches = null;
+                if (objectRE.IsMatch(line))
+                    matches = objectRE.Matches(line);
+                else if (setRE.IsMatch(line))
+                    matches = setRE.Matches(line);
+
+                if (matches != null)
+                {
+                    //parse the constructor and create the object or die
+                    var groups = matches[0].Groups;
+
+                    var objectClass = groups["object"].Value.ToUpper();
+                    var name = groups["name"].Value;
+                    var type = groups["type"].Value.ToUpper(); ;
+                    var parameters = SplitParameters(groups["parms"].Value);
+                    var displayMode = groups["display"].Value.ToUpper(); ;
+                    var displayParameters = SplitParameters(groups["displayparms"].Value);
+
+                    switch (objectClass)
+                    {
+                        case "AREA":
+                            obj = new ScriptingArea(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "FILTER":
+                            obj = new ScriptingFilter(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "MAP":
+                            obj = new ScriptingMap(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "POINT":
+                            obj = new ScriptingPoint(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "SET":
+                            obj = new ScriptingSetting(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "TASK":
+                            obj = new ScriptingTask(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "RESULT":
+                            obj = new ScriptingResult(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "RESTRICTION":
+                            obj = new ScriptingRestriction(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        case "PENALTY":
+                            obj = new ScriptingPenalty(engine, name, type, parameters, displayMode, displayParameters);
+                            break;
+                        default:
+                            throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
+                    }
+                }
+                else
+                    //no token match
+                    throw new ArgumentException("Syntax error");
+            }
+
+            return obj;
+        }
+        /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
+        /// <param name="parms">string containing comma separated parameters</param>
+        /// <returns>array of string parameters</returns>
+        private static string[] SplitParameters(string parms)
+        {
+            var split = parms.Split(new char[] { ',' });
+            for (int i = 0; i < split.Length; i++)
+            {
+                split[i] = split[i].Trim();
+            }
+
+            return split;
+        }
+        protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        {
+            this.Engine = engine;
+            this.ObjectName = name;
+            this.ObjectType = type;
+            this.ObjectParameters = parameters;
+            this.DisplayMode = displayMode;
+            this.DisplayParameters = displayParameters;
+
+            CheckConstructorSyntax();
+            CheckDisplayModeSyntax();
+
+            Trace.WriteLine(this.ToString(), ObjectClass);
+            Notes = new List<Note>();
+        }
+
+        /// <summary>Check constructor syntax and parse static definitions or die
+        /// </summary>
+        public virtual void CheckConstructorSyntax()
+        {
+            if (this is ScriptingTask)
+                Task = this as ScriptingTask;
+            else
+            {
+                try
+                {
+                    Task = (ScriptingTask)Engine.Heap.Values.Last(o => o is ScriptingTask);
+                }
+                catch { }
+            }
+        }
+        /// <summary>Check display mode syntax or die
+        /// </summary>
+        public abstract void CheckDisplayModeSyntax();
+        /// <summary>Displays te object on the map
+        /// </summary>
+        public abstract void Display();
+
+        /// <summary>Clears the pilot dependent (non-static) values
+        /// </summary>
+        public virtual void Reset()
+        {
+            Trace.WriteLine("Resetting " + ObjectName, ObjectClass);
+            Notes.Clear();
+        }
+        /// <summary>Executes the script
+        /// </summary>
+        /// <param name="report"></param>
+        public virtual void Process()
+        {
+            Trace.WriteLine("Processing " + ObjectName, ObjectClass);
+        }
+
+
+        //error checking and parsing
+
+        /// <summary>Die if the condition is false
+        /// </summary>
+        /// <param name="ok"></param>
+        //TODO: improve this function
+        protected void AssertNumberOfParametersOrDie(bool ok)
+        {
+            if (!ok)
+                throw new ArgumentException(IncorrectNumberOfArgumentsErrorMessage);
+        }
+
+        /// <summary>Looks for a definition of a scripting object T at a given parameter array index
+        /// No checkings
+        /// </summary>
+        /// <param name="atParameterIndex"></param>
+        protected T Resolve<T>(int atParameterIndex) where T : ScriptingObject
+        {
+            var key = ObjectParameters[atParameterIndex];
+            return ((T)Engine.Heap[key]);
+        }
+        /// <summary>Looks for a definition of scripting object T at a given parameter array index
+        /// With lots of checkings
+        /// </summary>
+        /// <param name="atParameterIndex"></param>
+        protected T ResolveOrDie<T>(int atParameterIndex) where T : ScriptingObject
+        {
+            var key = ObjectParameters[atParameterIndex];
+            if (!Engine.Heap.ContainsKey(key))
+                throw new ArgumentException(key + " is undefined");
+
+            if (!(Engine.Heap[key] is T))
+                throw new ArgumentException(key + " is the wrong type (" + Engine.Heap[key].ObjectClass + ")");
+
+            return ((T)Engine.Heap[key]);
+        }
+
+        /// <summary>Looks for n scripting point definitions starting at a given parameter array index
+        /// No checkings
+        /// </summary>
+        /// <param name="startingAtParameterIndex"></param>
+        /// <param name="n"></param>
+        protected T[] ResolveN<T>(int startingAtParameterIndex, int n) where T : ScriptingObject
+        {
+            var list = new T[n];
+
+            for (int i = 0; i < n; i++)
+                list[i] = Resolve<T>(startingAtParameterIndex + i);
+
+            return list;
+        }
+        /// <summary>Looks for n scripting point definitions starting at a given parameter array index
+        /// Lots of checkings
+        /// </summary>
+        /// <param name="startingAtParameterIndex"></param>
+        /// <param name="n"></param>
+        protected T[] ResolveNOrDie<T>(int startingAtParameterIndex, int n) where T : ScriptingObject
+        {
+            var list = new T[n];
+
+            for (int i = 0; i < n; i++)
+                list[i] = ResolveOrDie<T>(startingAtParameterIndex + i);
+
+            return list;
+        }
+
+        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// No checkings
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="atParameterIndex">position of the value in the parameter array</param>
+        /// <param name="parseFunction">function used to parse the string</param>
+        /// <returns></returns>
+        protected T Parse<T>(int atParameterIndex, Func<string, T> parseFunction)
+        {
+            return parseFunction(ObjectParameters[atParameterIndex]);
+        }
+        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// Lots of checkings
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="atParameterIndex">position of the value in the parameter array</param>
+        /// <param name="parseFunction">function used to parse the string</param>
+        /// <returns></returns>
+        protected T ParseOrDie<T>(int atParameterIndex, Func<string, T> parseFunction)
+        {
+            if (atParameterIndex >= ObjectParameters.Length)
+                throw new ArgumentException(SyntaxErrorMessage);
+
+            try
+            {
+                return parseFunction(ObjectParameters[atParameterIndex]);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException(SyntaxErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
+            }
+        }
+
+        public void AddNote(string text, bool isImportant = false)
+        {
+            Notes.Add(new Note() { Text = text, IsImportant = isImportant });
+        }
+
+        public string GetFirstNoteText()
+        {
+            try
+            {
+                var note = Notes.First(n => n.IsImportant);
+                return note.Text;
+            }
+            catch
+            {
+                try
+                {
+                    var note = Notes.First();
+                    return note.Text;
+                }
+                catch
+                {
+                    return "";
+                }
+            }
+        }
+    }
+}
