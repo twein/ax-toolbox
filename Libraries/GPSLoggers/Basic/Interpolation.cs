@@ -51,7 +51,6 @@ namespace AXToolbox.GpsLoggers
                 var deltat = 1.0 / numberOfPoints;
 
                 // define interpolator
-
                 // "convert" time to double
                 var x0 = 0;
                 var x1 = (p1.Time - p0.Time).TotalSeconds;
@@ -73,9 +72,10 @@ namespace AXToolbox.GpsLoggers
 
         public class Interpolator
         {
-            public static Interpolator Linear(double x0, double x1)
+            // factory
+            public static Interpolator Linear()
             {
-                return new Interpolator(double.NaN, x0, x1, double.NaN, 0);
+                return new Interpolator();
             }
             public static Interpolator Hermite(double x0, double x1, double x2, double x3, double c)
             {
@@ -86,25 +86,33 @@ namespace AXToolbox.GpsLoggers
                 return new Interpolator(x0, x1, x2, x3, 0.5);
             }
 
-
+            private readonly bool linear;
             private readonly double ts1; // tension*scale
             private readonly double ts2; // tension*scale
 
+            // linear interpolator
+            private Interpolator()
+            {
+                linear = true;
+            }
+            // cubic interpolator
             private Interpolator(double x0, double x1, double x2, double x3, double c)
             {
                 ts1 = c * 2 * (x2 - x1) / x2 - x0;
                 ts2 = c * 2 * (x2 - x1) / x3 - x1;
             }
-
+            
 
             public double Interpolate(double y0, double y1, double t)
             {
-                Debug.Assert(ts1 == 0 && ts2 == 0, "Cubic interpolation needs 4 reference points");
+                Debug.Assert(linear==true, "Use Interpolate(double y0, double y1, double y2, double y3, double t) for cubic interpolation");
 
                 return y0 + (y1 - y0) * t;
             }
             public double Interpolate(double y0, double y1, double y2, double y3, double t)
             {
+                Debug.Assert(linear == false, "Use Interpolate(double y0, double y1, double t) for linear interpolation");
+
                 var t2 = t * t;
                 var t3 = t * t2;
 
