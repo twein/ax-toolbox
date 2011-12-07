@@ -1,10 +1,10 @@
-﻿! Ties at the median
-! ties: sharing process: round points, add, average, round and assign CHECK IT!
-! don't import results if task status is not provisional
-! make a named backup at each publication.
-* listing like scores ordered by pilot number
+﻿! don't import results if task status is not provisional
+- make a named backup at each publication.
+* listing like scores but ordered by pilot number
 - alternating row background color in listings
 - index.html for all official pdfs
++ Ties at the median (check and complete other options)
+- Option to choose method for resolving ties at the median
 
 
 Marc André homework:
