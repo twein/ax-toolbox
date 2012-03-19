@@ -76,7 +76,7 @@ namespace Scorer
 
         public void ComputeScores()
         {
-            //formulae apllication
+            //formulae application
             /*
                 P =  number of competitors entered in the competition.
                 M =  P/2 (rounded to the next higher number)  (Median Rank).
@@ -114,17 +114,41 @@ namespace Scorer
                 //sort by result
                 if (Task.SortAscending)
                     PilotScores = (from ps in PilotScores
-                                   orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result
+                                   orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result ascending, ps.Pilot.Number
                                    select ps).ToArray();
                 else
                     PilotScores = (from ps in PilotScores
-                                   orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result descending
+                                   orderby ps.Pilot.IsDisqualified, ps.ResultInfo.Group, ps.ResultInfo.Result descending, ps.Pilot.Number
                                    select ps).ToArray();
 
+                //compute the median rank
                 if (A >= ((decimal)P / 2))
-                    M = (int)Math.Ceiling((decimal)P / 2); //rule 14.5.5: more than half the competitors scored
+                {
+                    //rule 14.5.5: more than half the competitors scored
+                    M = (int)Math.Ceiling((decimal)P / 2);
+
+                    //ties at the median resolution
+
+                    //option 1: share points
+                    //do not use: the competitors with rank above M would get less than 500 points despite having the same result as the ones below M
+                    //{
+                    //    //do nothing
+                    //}
+
+                    //option 2: raise the median rank Ex: { 1, 2, 4, 5, 5, 5, 7, 8, 8 } -> M should be 6
+                    while (M < P && PilotScores[M - 1 + 1].ResultInfo.Result == PilotScores[M - 1].ResultInfo.Result)
+                        M++;
+
+                    //option 3: lower the median Ex: { 1, 2, 4, 5, 5, 5, 7, 8, 8 } -> M should be 3 (not 4!)
+                    //{
+                    //    //code here
+                    //}
+                }
                 else
-                    M = A; //rule 14.5.6: fewer than half the competitors scored
+                {
+                    //rule 14.5.6: fewer than half the competitors scored
+                    M = A;
+                }
 
                 SM = (int)Math.Round(1000m * (P + 1 - M) / P); //formula 2
                 RM = PilotScores[M - 1].ResultInfo.Result; //array is zero based
@@ -178,7 +202,7 @@ namespace Scorer
                 {
                     var sharePoints = (int)Math.Round(1m * remainingPoints / B);
                     foreach (var ps in PilotScores.Where(s => s.ResultInfo.Group == 2))
-                        ps.Score = Math.Max(ps.Score, sharePoints);
+                        ps.Score = Math.Max(ps.Score, sharePoints); // share only if better
                 }
 
                 //resolve ties
@@ -191,7 +215,6 @@ namespace Scorer
                         break;
 
                     //look for ties
-                    //TODO: ties at the median: options: share points, lower the median or raise the median
                     //ties: sharing process: round points, add, average, round and assign
                     var lastTieMember = i;
                     var tieScoreSum = psi.Score;
@@ -215,6 +238,8 @@ namespace Scorer
                         var sharePoints = (int)Math.Round(tieScoreSum / (lastTieMember - i + 1m));
                         for (var j = i; j <= lastTieMember; j++)
                             PilotScores[j].Score = sharePoints;
+
+                        i = lastTieMember;
                     }
                 }
             }
