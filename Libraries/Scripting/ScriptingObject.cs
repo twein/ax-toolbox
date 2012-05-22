@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Threading;
 using System.Windows.Media;
 
 namespace AXToolbox.Scripting

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows;
-using System.Windows.Media;
 using System.Xml.Linq;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;

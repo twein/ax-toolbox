@@ -5,7 +5,6 @@ using System.Linq;
 using System.Xml.Serialization;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
-using iTextSharp.text.pdf;
 
 namespace Scorer
 {
