@@ -1,4 +1,4 @@
-﻿"DeployProject"
+"DeployProject"
 {
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
@@ -22,13 +22,13 @@
         "Entry"
         {
         "MsmKey" = "8:_017BEB597CBCB0CD0C20E58C9505F9CB"
-        "OwnerKey" = "8:_8166AD23935678252AAF11C9A6B69338"
+        "OwnerKey" = "8:_92598E313AEE3E9598F8B421EA8CDC97"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_017BEB597CBCB0CD0C20E58C9505F9CB"
-        "OwnerKey" = "8:_92598E313AEE3E9598F8B421EA8CDC97"
+        "OwnerKey" = "8:_8166AD23935678252AAF11C9A6B69338"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -40,13 +40,13 @@
         "Entry"
         {
         "MsmKey" = "8:_5730E7FB3BEE7CCAEBC89BDF68EE05ED"
-        "OwnerKey" = "8:_F6AEA6275E714981B2D7CCE3DA23DE71"
+        "OwnerKey" = "8:_8166AD23935678252AAF11C9A6B69338"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_5730E7FB3BEE7CCAEBC89BDF68EE05ED"
-        "OwnerKey" = "8:_8166AD23935678252AAF11C9A6B69338"
+        "OwnerKey" = "8:_F6AEA6275E714981B2D7CCE3DA23DE71"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -148,37 +148,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8166AD23935678252AAF11C9A6B69338"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BDDBEE0212CA6D887BEF5C3D8549AEFB"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5730E7FB3BEE7CCAEBC89BDF68EE05ED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_92598E313AEE3E9598F8B421EA8CDC97"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F36206C2E25C1CE15C5724287AFB4B33"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_017BEB597CBCB0CD0C20E58C9505F9CB"
+        "OwnerKey" = "8:_C16F24F51B2DDD73AF3A599458B16591"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -190,7 +160,37 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C16F24F51B2DDD73AF3A599458B16591"
+        "OwnerKey" = "8:_017BEB597CBCB0CD0C20E58C9505F9CB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_F36206C2E25C1CE15C5724287AFB4B33"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_92598E313AEE3E9598F8B421EA8CDC97"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5730E7FB3BEE7CCAEBC89BDF68EE05ED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_BDDBEE0212CA6D887BEF5C3D8549AEFB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_8166AD23935678252AAF11C9A6B69338"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -305,11 +305,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.GpsLoggers, Version=1.0.4289.26502, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_017BEB597CBCB0CD0C20E58C9505F9CB"
-                    {
-                    "Name" = "8:AXToolbox.GpsLoggers.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.GpsLoggers.dll"
             "TargetName" = "8:"
@@ -336,11 +331,6 @@
             "AssemblyAsmDisplayName" = "8:itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5730E7FB3BEE7CCAEBC89BDF68EE05ED"
-                    {
-                    "Name" = "8:itextsharp.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:itextsharp.dll"
             "TargetName" = "8:"
@@ -407,11 +397,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Scripting, Version=11.9.4289.27240, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8166AD23935678252AAF11C9A6B69338"
-                    {
-                    "Name" = "8:AXToolbox.Scripting.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Scripting.dll"
             "TargetName" = "8:"
@@ -458,11 +443,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Model, Version=1.0.4289.26503, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_92598E313AEE3E9598F8B421EA8CDC97"
-                    {
-                    "Name" = "8:AXToolbox.Model.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Model.dll"
             "TargetName" = "8:"
@@ -489,11 +469,6 @@
             "AssemblyAsmDisplayName" = "8:BalloonLoggerSignature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B233EA519D511150885483D5EC954744"
-                    {
-                    "Name" = "8:BalloonLoggerSignature.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:BalloonLoggerSignature.dll"
             "TargetName" = "8:"
@@ -520,11 +495,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.PdfHelpers, Version=1.0.4289.26634, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_BDDBEE0212CA6D887BEF5C3D8549AEFB"
-                    {
-                    "Name" = "8:AXToolbox.PdfHelpers.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.PdfHelpers.dll"
             "TargetName" = "8:"
@@ -551,11 +521,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.Common, Version=1.0.4289.26634, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_C16F24F51B2DDD73AF3A599458B16591"
-                    {
-                    "Name" = "8:AXToolbox.Common.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.Common.dll"
             "TargetName" = "8:"
@@ -602,11 +567,6 @@
             "AssemblyAsmDisplayName" = "8:AXToolbox.MapViewer, Version=11.9.4289.26503, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_F36206C2E25C1CE15C5724287AFB4B33"
-                    {
-                    "Name" = "8:AXToolbox.MapViewer.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AXToolbox.MapViewer.dll"
             "TargetName" = "8:"
@@ -749,15 +709,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AX-Toolbox FlightAnalyzer"
-        "ProductCode" = "8:{0EC5B368-6632-4E17-B846-367A3CA4F173}"
-        "PackageCode" = "8:{79C94B37-2450-422D-B50A-1620469A5D92}"
+        "ProductCode" = "8:{47D569A1-307E-4807-9FDF-948C39DF106C}"
+        "PackageCode" = "8:{51D0E298-524E-4406-939D-F7E7FD6510BB}"
         "UpgradeCode" = "8:{3BE0DD8B-B888-4311-8429-CA5F241E07A7}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:11.09.362"
+        "ProductVersion" = "8:12.05.3911"
         "Manufacturer" = "8:Balloonerds"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
