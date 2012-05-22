@@ -1,0 +1,6 @@
+To change version numbers:
+	1: change VersionInfo.base.cs in each application Properties folder
+	2: build
+	3: look at given version number in VersionInfo.cs in each application Properties folder
+	4: change version in deployment project properties
+	5: build deployment project
