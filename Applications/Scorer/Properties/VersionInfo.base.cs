@@ -1,2 +1,2 @@
 ﻿using System.Reflection;
-[assembly: AssemblyVersion("11.09.$REVNUM$.$DIRTY$")]
+[assembly: AssemblyVersion("12.05.$REVNUM$.$DIRTY$")]
