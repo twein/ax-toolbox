@@ -309,7 +309,7 @@ namespace AXToolbox.Scripting
             Notes.Add(string.Format("Original track has {0} points", OriginalTrack.Length));
 
             if (nTime > 0)
-                Notes.Add(string.Format("Removed {0} out-of-time points", OriginalTrack.Length - nTime));
+                Notes.Add(string.Format("Removed {0} out-of-time points", nTime));
             if (nDupe > 0)
                 Notes.Add(string.Format("Removed {0} duplicated points", nDupe));
             if (nSpike > 0)
