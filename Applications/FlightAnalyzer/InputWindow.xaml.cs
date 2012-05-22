@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Forms;
-using AXToolbox.GpsLoggers;
 
 namespace FlightAnalyzer
 {

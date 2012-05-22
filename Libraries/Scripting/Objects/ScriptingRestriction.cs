@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AXToolbox.MapViewer;
 using AXToolbox.Common;
-using System.Windows;
 using AXToolbox.GpsLoggers;
+using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {

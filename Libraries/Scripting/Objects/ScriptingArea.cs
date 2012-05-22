@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Media;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;

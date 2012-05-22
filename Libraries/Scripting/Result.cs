@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AXToolbox.GpsLoggers;
-using System.IO;
 using System.Linq;
+using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {

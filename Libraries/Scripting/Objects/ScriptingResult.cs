@@ -3,7 +3,6 @@ using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
-using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
