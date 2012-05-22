@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Balloonerds.com")]
 [assembly: AssemblyProduct("AXToolbox")]
-[assembly: AssemblyCopyright("© 2009-2011 balloonerds.com")]
+[assembly: AssemblyCopyright("© 2009-2012 balloonerds.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
