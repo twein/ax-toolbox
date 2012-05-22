@@ -83,7 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Geodesy\Docs\NATO_DT.pdf" />
-    <None Include="Geodesy\helmert.ods" />
+    <None Include="Geodesy\Docs\helmert.ods" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="license.txt" />

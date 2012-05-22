@@ -40,7 +40,7 @@ namespace AXToolbox.Scripting
                 case "BEFORETIME":
                 case "AFTERTIME":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
-                    time = Engine.Settings.Date + ParseOrDie<TimeSpan>(0, Parsers.ParseTimeSpan); //TODO: check local-GMT conversion
+                    time = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(0, Parsers.ParseTimeSpan);
                     break;
 
                 case "BEFOREPOINT":

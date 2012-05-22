@@ -271,26 +271,20 @@ namespace AXToolbox.Scripting
             int nTime = 0, nDupe = 0, nSpike = 0;
             var validPoints = new List<AXPoint>();
 
-            // remove points before/after valid times
-            DateTime minTime, maxTime;
-            if (Settings.Date.Hour < 12)
-            {
-                minTime = Date.ToUniversalTime() + new TimeSpan(6, 0, 0);
-                maxTime = Date.ToUniversalTime() + new TimeSpan(12, 0, 0);
-            }
-            else
-            {
-                minTime = Date.ToUniversalTime() + new TimeSpan(4, 0, 0);
-                maxTime = Date.ToUniversalTime() + new TimeSpan(10, 0, 0);
-            }
+            var minValidTime = Date.ToUniversalTime() + new TimeSpan(4, 0, 0); //04:00(am) or 16:00(pm) local
+            var maxValidTime = Date.ToUniversalTime() + new TimeSpan(12, 0, 0);//12:00(am) or 24:00(pm) local
 
-            // remove dupes and spikes
-            //TODO: consider removing spikes by change in direction
             AXPoint point_m1 = null;
             AXPoint point_m2 = null;
-            foreach (var point in OriginalTrack.Where(p => p.Time >= minTime || p.Time <= maxTime))
+
+            foreach (var point in OriginalTrack)
             {
-                nTime++;
+                // remove points before/after valid times
+                if (point.Time < minValidTime || point.Time > maxValidTime)
+                {
+                    nTime++;
+                    continue;
+                }
 
                 // remove dupe
                 if (point_m1 != null && Physics.TimeDiff(point, point_m1).TotalSeconds == 0)
@@ -300,6 +294,7 @@ namespace AXToolbox.Scripting
                 }
 
                 // remove spike
+                //TODO: consider removing spikes by change in direction
                 if (point_m2 != null && Physics.Acceleration3D(point, point_m1, point_m2) > Settings.MaxAcceleration)
                 {
                     nSpike++;
@@ -321,6 +316,9 @@ namespace AXToolbox.Scripting
                 Notes.Add(string.Format("Removed {0} spike points", nSpike));
 
             cleanTrack = validPoints.ToArray();
+
+            if (cleanTrack.Length == 0)
+                Notes.Add("Empty track file! Check the flight date and time and UTM zone.");
         }
         protected void DetectTakeOffAndLanding()
         {
@@ -359,7 +357,7 @@ namespace AXToolbox.Scripting
         }
         public AXPoint FindGroundContact(AXPoint reference, bool backwards)
         {
-            IEnumerable<AXPoint> track = CleanTrack;
+            var track = CleanTrack as IEnumerable<AXPoint>;
 
             if (backwards)
             {
@@ -378,7 +376,7 @@ namespace AXToolbox.Scripting
 
             AXPoint groundContact = null;
             AXPoint point_m1 = null;
-            double smoothedSpeed = double.NaN;
+            var smoothedSpeed = double.NaN;
 
             foreach (var point in track)
             {
@@ -403,7 +401,7 @@ namespace AXToolbox.Scripting
         protected void InsertIntoCollection<T>(Collection<T> collection, T point) where T : ITime
         {
             T next = default(T);
-            bool found = true;
+            var found = true;
             try
             {
                 next = collection.First(m => m.Time > point.Time);

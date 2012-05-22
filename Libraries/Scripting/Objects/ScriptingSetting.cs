@@ -45,14 +45,16 @@ namespace AXToolbox.Scripting
                     {
                         AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
 
-                        Engine.Settings.Date = ParseOrDie<DateTime>(0, Parsers.ParseLocalDatetime);
+                        var date = ParseOrDie<DateTime>(0, Parsers.ParseLocalDatetime);
+                        var am_pm = ParseOrDie<string>(1, s => s).ToUpper();
 
-                        var time = ParseOrDie<string>(1, s => s).ToUpper(); ;
-                        if (time != "AM" && time != "PM")
+                        var time = new TimeSpan(0, 0, 0);
+                        if (am_pm == "PM")
+                            time = new TimeSpan(12, 0, 0);
+                        else if (am_pm != "AM")
                             throw new ArgumentException(SyntaxErrorMessage);
 
-                        if (time == "PM")
-                            Engine.Settings.Date += new TimeSpan(12, 0, 0);
+                        Engine.Settings.Date = date + time;
                     }
                     break;
 
