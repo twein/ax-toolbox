@@ -362,7 +362,7 @@ namespace AXToolbox.Scripting
                         var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
                         try
                         {
-                            var nearestPoint = Engine.TaskValidTrack.Points.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) <= 2);
+                            var nearestPoint = Engine.TaskValidTrack.Points.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) == 0);
                             Point = new AXWaypoint("M" + marker.Name, marker);
                         }
                         catch (InvalidOperationException)

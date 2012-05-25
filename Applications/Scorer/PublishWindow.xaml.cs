@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -59,7 +60,10 @@ namespace Scorer
             Task = task;
 
             //TODO: fix [0]
-            var taskScore = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == Task);
+            var taskScoresTmp = from c in Event.Instance.Competitions
+                                from ts in c.TaskScores
+                                select ts;
+            var taskScore = taskScoresTmp.First(s => s.Task == Task);
 
             Title = "Task " + Task.Description;
             Status = taskScore.Status;
@@ -77,16 +81,19 @@ namespace Scorer
 
                 foreach (var c in Event.Instance.Competitions)
                 {
-                    var taskScore = c.TaskScores.First(s => s.Task == Task);
-                    taskScore.Status = Status;
-                    taskScore.Version = Version;
-                    taskScore.RevisionDate = RevisionDate;
-
-                    try
+                    var taskScore = c.TaskScores.FirstOrDefault(s => s.Task == Task);
+                    if (taskScore != null)
                     {
-                        taskScore.ScoresToPdf(false);
+                        taskScore.Status = Status;
+                        taskScore.Version = Version;
+                        taskScore.RevisionDate = RevisionDate;
+
+                        try
+                        {
+                            taskScore.ScoresToPdf(false);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
 
             }

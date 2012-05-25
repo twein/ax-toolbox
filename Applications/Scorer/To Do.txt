@@ -1,4 +1,7 @@
-﻿! don't import results if task status is not provisional
+﻿BUGS:
+- Pilot disqualification not working
+
+! don't import results if task status is not provisional
 - make a named backup at each publication.
 * listing like scores but ordered by pilot number
 - alternating row background color in listings

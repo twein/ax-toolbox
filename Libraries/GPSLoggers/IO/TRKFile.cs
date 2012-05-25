@@ -49,7 +49,8 @@ namespace AXToolbox.GpsLoggers
                             //Track point
                             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            var time = DateTime.Parse(fields[4] + " " + fields[5]);
+                            DateTime time = new DateTime(1900, 1, 1);
+                            DateTime.TryParse(fields[4] + " " + fields[5], out time); // if datetime is invalid, time is 1900/01/01 00:00
                             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
                             GeoPoint p;
 

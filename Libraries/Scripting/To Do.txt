@@ -1,4 +1,5 @@
 ﻿TO DO
+? check for repeated task numbers
 - make axpoint, axwaypoint, immutable. Rewrite CleanTrack, FlightTrack & Co.
 - checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
 - Add the possibility of warning the user programmatically.
