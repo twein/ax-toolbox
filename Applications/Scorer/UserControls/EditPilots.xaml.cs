@@ -23,11 +23,15 @@ namespace Scorer
         }
         private void addButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+
             Pilot newPilot = null;
             if (DataGridCollection.Count == 0)
                 newPilot = new Pilot() { Number = 1 };
             else
+            {
+                DataGridCollection.Sort(p => p.Number);
                 newPilot = new Pilot() { Number = DataGridCollection.Max(p => p.Number) + 1 };
+            }
 
             DataGridCollection.Add(newPilot);
         }

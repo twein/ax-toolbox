@@ -291,11 +291,15 @@ namespace Scorer
             get
             {
                 //TODO: fix [0]
-                var ts = Event.Instance.Competitions[0].TaskScores.First(s => s.Task == this);
-                var str = string.Format("Task {0} {1} v{2:00} {3}",
-                       ShortDescription, ts.Status.ToString(), ts.Version, ts.RevisionDate);
+                var ts = Event.Instance.Competitions[0].TaskScores.FirstOrDefault(s => s.Task == this);
+                if (ts != null)
+                {
+                    var str = string.Format("Task {0} {1} v{2:00} {3}",
+                           ShortDescription, ts.Status.ToString(), ts.Version, ts.RevisionDate);
 
-                return str;
+                    return str;
+                }
+                else return "";
             }
         }
     }
