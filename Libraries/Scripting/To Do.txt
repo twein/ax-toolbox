@@ -1,4 +1,9 @@
-﻿TO DO
+﻿!!!!!!!!!!
+
+- MVMDP Previous task marker or launch point (for PDG FON restrictions)
+
+
+TO DO
 ? check for repeated task numbers
 - make axpoint, axwaypoint, immutable. Rewrite CleanTrack, FlightTrack & Co.
 - checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
