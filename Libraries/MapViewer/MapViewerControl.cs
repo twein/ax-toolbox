@@ -50,6 +50,12 @@ namespace AXToolbox.MapViewer
         public double MinZoom { get; set; }
         public double DefaultZoomFactor { get; set; }
 
+        public BitmapScalingMode BitmapScalingMode
+        {
+            get { return RenderOptions.GetBitmapScalingMode(mainGrid); }
+            set { RenderOptions.SetBitmapScalingMode(mainGrid, value); }
+        }
+        
         private uint layerVisibilityMask;
         public uint LayerVisibilityMask
         {
@@ -97,6 +103,7 @@ namespace AXToolbox.MapViewer
             mapCanvas = new Canvas();
             overlaysCanvas = new Canvas();
             mainGrid = new Grid();
+
             mainGrid.Children.Add(mapCanvas);
             mainGrid.Children.Add(overlaysCanvas);
             Child = mainGrid;
@@ -498,7 +505,7 @@ namespace AXToolbox.MapViewer
                         break;
                     case Key.P:
                         if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
-                        PrintSnapshot();
+                            PrintSnapshot();
                         break;
                     case Key.Back:
                     case Key.Delete:

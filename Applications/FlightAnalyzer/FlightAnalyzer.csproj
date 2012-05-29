@@ -192,7 +192,7 @@
   <UsingTask TaskName="HgVersionFile" AssemblyFile="..\..\ThirdParty\MSBuildVersioning\MSBuildVersioning.dll" />
   <Target Name="BeforeBuild">
     <HgVersionFile TemplateFile="Properties\VersionInfo.base.cs" DestinationFile="Properties\VersionInfo.cs" />
-    <HgVersionFile TemplateFile="..\..\Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.base.vdproj" DestinationFile="..\..\Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.vdproj" />
+    <HgVersionFile Condition=" '%(ConfigurationToBuild.FlavorToBuild)'=='Release' " TemplateFile="..\..\Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.base.vdproj" DestinationFile="..\..\Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.vdproj" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

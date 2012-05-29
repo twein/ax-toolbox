@@ -5,5 +5,8 @@
     <Setting Name="Debriefer" Type="System.String" Scope="User">
       <Value Profile="(Default)">Debriefer</Value>
     </Setting>
+    <Setting Name="BitmapScaling" Type="System.Windows.Media.BitmapScalingMode" Scope="User">
+      <Value Profile="(Default)">NearestNeighbor</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

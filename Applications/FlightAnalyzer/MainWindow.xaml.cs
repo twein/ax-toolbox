@@ -58,6 +58,8 @@ namespace FlightAnalyzer
             Debriefer = Properties.Settings.Default.Debriefer;
             RaisePropertyChanged("Debriefer");
 
+            MapViewer.BitmapScalingMode = Properties.Settings.Default.BitmapScaling;
+
             if (Engine == null)
                 Engine = new ScriptingEngine(MapViewer) { VisibleTrackType = Tools.TrackType };
 
@@ -402,6 +404,8 @@ namespace FlightAnalyzer
             {
                 Debriefer = Properties.Settings.Default.Debriefer;
                 RaisePropertyChanged("Debriefer");
+
+                MapViewer.BitmapScalingMode = Properties.Settings.Default.BitmapScaling;
             }
 
             if (string.IsNullOrEmpty(Properties.Settings.Default.Debriefer))

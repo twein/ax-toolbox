@@ -170,7 +170,7 @@
             </ScrollViewer>
             <GridSplitter Background="LightGray" Grid.Column="1" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2">
-                <maps:MapViewerControl Name="MapViewer" >
+                <maps:MapViewerControl Name="MapViewer">
                     <maps:MapViewerControl.ContextMenu>
                         <ContextMenu Visibility="{Binding Path=Report, Converter={StaticResource isNullVisibilityConverter}}">
                             <MenuItem Header="Add declared goal" Click="AddDeclaredGoal_Click"/>
