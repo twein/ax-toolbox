@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
 
 namespace FlightAnalyzer
 {
@@ -12,7 +14,7 @@ namespace FlightAnalyzer
         private void buttonOk_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(Properties.Settings.Default.Debriefer)
-                && Properties.Settings.Default.Debriefer!="Debriefer")
+                && Properties.Settings.Default.Debriefer != "Debriefer")
             {
                 Properties.Settings.Default.Save();
                 DialogResult = true;
