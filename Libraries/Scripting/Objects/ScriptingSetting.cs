@@ -119,6 +119,14 @@ namespace AXToolbox.Scripting
                         throw new Exception("Logger altitude corrections file does not exist");
                     Engine.Settings.AltitudeCorrectionsFileName = fileName;
                     break;
+
+                case "INTERPOLATION":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2);
+                    Engine.Settings.InterpolationInterval = ParseOrDie<int>(0, Parsers.ParseInt);
+                    if (ObjectParameters.Length == 2)
+                        Engine.Settings.InterpolationMaxGap = ParseOrDie<int>(1, Parsers.ParseInt);
+                    break;
+
             }
         }
         public override void CheckDisplayModeSyntax()

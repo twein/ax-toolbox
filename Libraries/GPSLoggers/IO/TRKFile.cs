@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace AXToolbox.GpsLoggers
 {
+    [Serializable]
     public class TRKFile : LoggerFile
     {
         public TRKFile(string filePath)
@@ -14,7 +15,9 @@ namespace AXToolbox.GpsLoggers
             SignatureStatus = SignatureStatus.NotSigned;
 
             //get logger info
-            LoggerModel = TrackLogLines.FirstOrDefault(l => l[0] == 'P').Substring(2).Trim();
+            LoggerModel = TrackLogLines.FirstOrDefault(l => l[0] == 'P');
+            if (!string.IsNullOrEmpty(LoggerModel))
+                LoggerModel = LoggerModel.Substring(2).Trim();
         }
 
         public override GeoPoint[] GetTrackLog()

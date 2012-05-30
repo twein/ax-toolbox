@@ -54,7 +54,7 @@ namespace AXToolbox.Scripting
                     Notes.Add(string.Format("The pilot number has been changed from {0} to {1}", pilotId, value));
                     pilotId = value;
                     base.RaisePropertyChanged("PilotId");
-                    base.RaisePropertyChanged("Description");
+                    base.RaisePropertyChanged("ShortDescription");
                     IsDirty = true;
                 }
             }
@@ -189,7 +189,7 @@ namespace AXToolbox.Scripting
                     IsDirty = true,
                     LogFile = logFile,
                     SignatureStatus = logFile.SignatureStatus,
-                    PilotId = pilotId,
+                    pilotId = pilotId, //don't use PilotId on constructor!
                     LoggerModel = logFile.LoggerModel,
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
                     OriginalTrack = track,
@@ -331,16 +331,23 @@ namespace AXToolbox.Scripting
             Notes.Add(string.Format("Original track has {0} points", OriginalTrack.Length));
 
             if (nTime > 0)
-                Notes.Add(string.Format("Removed {0} out-of-time points", nTime));
+                Notes.Add(string.Format("{0} out-of-time points removed", nTime));
             if (nDupe > 0)
-                Notes.Add(string.Format("Removed {0} duplicated points", nDupe));
+                Notes.Add(string.Format("{0} duplicated points removed", nDupe));
             if (nSpike > 0)
-                Notes.Add(string.Format("Removed {0} spike points", nSpike));
+                Notes.Add(string.Format("{0} spike points removed", nSpike));
 
             cleanTrack = validPoints.ToArray();
 
             if (cleanTrack.Length == 0)
                 Notes.Add("Empty track file! Check the flight date and time and UTM zone.");
+            else if (Settings.InterpolationInterval > 0)
+            {
+                var nBefore = cleanTrack.Length;
+                //cleanTrack = Interpolation.Linear(cleanTrack, Settings.InterpolationInterval, Settings.InterpolationMaxGap).ToArray();
+                cleanTrack = Interpolation.Spline(cleanTrack, Settings.InterpolationInterval, Settings.InterpolationMaxGap).ToArray();
+                Notes.Add(string.Format("{0} points added by interpolation", cleanTrack.Length-nBefore));
+            }
         }
         protected void DetectTakeOffAndLanding()
         {

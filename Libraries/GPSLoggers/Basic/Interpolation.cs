@@ -9,20 +9,23 @@ namespace AXToolbox.GpsLoggers
 
     public static class Interpolation
     {
-        // implements a cubic hermite spline interpolation with Catmull-Rom tension
-        public static IEnumerable<AXPoint> Interpolate(
-            IEnumerable<AXPoint> track,
-            int interpolationInterval = 1,
-            int maxAllowedGap = 5)
+        // implements track log cubic hermite spline interpolation with Catmull-Rom tension
+        public static IEnumerable<AXPoint> Spline(IEnumerable<AXPoint> track, int interpolationInterval = 1, int maxAllowedGap = 10)
         {
             var newTrack = new List<AXPoint>();
-            var p0 = track.First();
-            var p1 = p0;
-            var p2 = p0;
+            AXPoint p0 = null;
+            AXPoint p1 = null;
+            AXPoint p2 = null;
             foreach (var p3 in track)
             {
-                newTrack.AddRange(InterpolateGap(p0, p1, p2, p3, interpolationInterval, maxAllowedGap));
-                newTrack.Add(p2);
+                if (p2 == null)
+                    p0 = p1 = p2 = p3;
+                else
+                {
+                    if (p1 != p2)
+                        newTrack.AddRange(InterpolateGapSpline(p0, p1, p2, p3, interpolationInterval, maxAllowedGap));
+                    newTrack.Add(p2);
+                }
 
                 p0 = p1;
                 p1 = p2;
@@ -30,17 +33,12 @@ namespace AXToolbox.GpsLoggers
             }
 
             //last point
-            newTrack.AddRange(InterpolateGap(p0, p1, p2, p2, interpolationInterval, maxAllowedGap));
+            newTrack.AddRange(InterpolateGapSpline(p0, p1, p2, p2, interpolationInterval, maxAllowedGap));
             newTrack.Add(p2);
 
             return newTrack.ToArray();
         }
-
-        //interpolates all needed points in the gap between p1 and p2
-        private static IEnumerable<AXPoint> InterpolateGap(
-            AXPoint p0, AXPoint p1, AXPoint p2, AXPoint p3,
-            int interpolationInterval,
-            int maxAllowedGap)
+        private static IEnumerable<AXPoint> InterpolateGapSpline(AXPoint p0, AXPoint p1, AXPoint p2, AXPoint p3, int interpolationInterval, int maxAllowedGap)
         {
             // calculate the number of points to be interpolated
             var numberOfPoints = ((int)Math.Floor((p2.Time - p1.Time).TotalSeconds / interpolationInterval)) - 1;
@@ -48,71 +46,90 @@ namespace AXToolbox.GpsLoggers
             // don't interpolate if it's not needed or the gap is too large
             if (numberOfPoints > 0 && numberOfPoints <= maxAllowedGap)
             {
-                var deltat = 1.0 / numberOfPoints;
-
                 // define interpolator
                 // "convert" time to double
                 var x0 = 0;
                 var x1 = (p1.Time - p0.Time).TotalSeconds;
                 var x2 = (p2.Time - p0.Time).TotalSeconds;
                 var x3 = (p3.Time - p0.Time).TotalSeconds;
-                var interpolator = Interpolator.CatmullRom(x0, x1, x2, x3);
+                var interpolator = CubicInterpolator.CatmullRom(x0, x1, x2, x3);
 
+                var deltat = 1.0 / (numberOfPoints + 1);
                 for (int i = 1; i <= numberOfPoints; i++)
                 {
                     // perform interpolation
-                    yield return new AXPoint(
+                    var p = new AXPoint(
                         p1.Time.AddSeconds(i * interpolationInterval),
                         interpolator.Interpolate(p0.Easting, p1.Easting, p2.Easting, p3.Easting, i * deltat),
                         interpolator.Interpolate(p0.Northing, p1.Northing, p2.Northing, p3.Northing, i * deltat),
                         interpolator.Interpolate(p0.Altitude, p1.Altitude, p2.Altitude, p3.Altitude, i * deltat));
+                    yield return p;
                 }
             }
         }
 
-        public class Interpolator
+        // implements track log linear interpolation
+        public static IEnumerable<AXPoint> Linear(IEnumerable<AXPoint> track, int interpolationInterval = 1, int maxAllowedGap = 10)
         {
-            // factory
-            public static Interpolator Linear()
+            AXPoint p0 = null;
+            foreach (var p1 in track)
             {
-                return new Interpolator();
+                if (p0 != null)
+                {
+                    // calculate the number of points to be interpolated
+                    var numberOfPoints = ((int)Math.Floor((p1.Time - p0.Time).TotalSeconds / interpolationInterval)) - 1;
+
+                    // don't interpolate if it's not needed or the gap is too large
+                    if (numberOfPoints > 0 && numberOfPoints <= maxAllowedGap)
+                    {
+                        var deltat = 1.0 / (numberOfPoints + 1);
+                        for (int i = 1; i <= numberOfPoints; i++)
+                        {
+                            // perform interpolation
+                            var p = new AXPoint(
+                                p0.Time.AddSeconds(i * interpolationInterval),
+                                InterpolateSingleLinear(p0.Easting, p1.Easting, i * deltat),
+                                InterpolateSingleLinear(p0.Northing, p1.Northing, i * deltat),
+                                InterpolateSingleLinear(p0.Altitude, p1.Altitude, i * deltat));
+                            yield return p;
+                        }
+                    }
+                }
+                yield return p1;
+                p0 = p1;
             }
-            public static Interpolator Hermite(double x0, double x1, double x2, double x3, double c)
+        }
+        private static double InterpolateSingleLinear(double y0, double y1, double t)
+        {
+            return y0 + (y1 - y0) * t;
+        }
+
+
+        private class CubicInterpolator
+        {
+            // cubic interpolator
+            private CubicInterpolator(double x0, double x1, double x2, double x3, double c)
             {
-                return new Interpolator(x0, x1, x2, x3, c);
-            }
-            public static Interpolator CatmullRom(double x0, double x1, double x2, double x3)
-            {
-                return new Interpolator(x0, x1, x2, x3, 0.5);
+                var k = c * 2 * (x2 - x1);
+                ts1 = k / (x2 - x0);
+                ts2 = k / (x3 - x1);
             }
 
-            private readonly bool linear;
+            // factory
+            public static CubicInterpolator Hermite(double x0, double x1, double x2, double x3, double c)
+            {
+                return new CubicInterpolator(x0, x1, x2, x3, c);
+            }
+            public static CubicInterpolator CatmullRom(double x0, double x1, double x2, double x3)
+            {
+                return new CubicInterpolator(x0, x1, x2, x3, 0.5);
+            }
+
             private readonly double ts1; // tension*scale
             private readonly double ts2; // tension*scale
 
-            // linear interpolator
-            private Interpolator()
-            {
-                linear = true;
-            }
-            // cubic interpolator
-            private Interpolator(double x0, double x1, double x2, double x3, double c)
-            {
-                ts1 = c * 2 * (x2 - x1) / x2 - x0;
-                ts2 = c * 2 * (x2 - x1) / x3 - x1;
-            }
-            
-
-            public double Interpolate(double y0, double y1, double t)
-            {
-                Debug.Assert(linear==true, "Use Interpolate(double y0, double y1, double y2, double y3, double t) for cubic interpolation");
-
-                return y0 + (y1 - y0) * t;
-            }
             public double Interpolate(double y0, double y1, double y2, double y3, double t)
             {
-                Debug.Assert(linear == false, "Use Interpolate(double y0, double y1, double t) for linear interpolation");
-
                 var t2 = t * t;
                 var t3 = t * t2;
 
