@@ -361,11 +361,11 @@ namespace FlightAnalyzer
                         Report = Engine.Report;
                         if (string.IsNullOrEmpty(Report.Debriefer))
                             Report.Debriefer = Debriefer;
-                        if (Report.PilotId <= 0)
-                        {
-                            ShowError("The pilot number cannot be zero");
-                            return;
-                        }
+                        //if (Report.PilotId <= 0)
+                        //{
+                        //    ShowError("The pilot number cannot be zero");
+                        //    return;
+                        //}
                         TrackPointer = null;
                         Tools.TrackPointsCount = Engine.VisibleTrack.Length;
                         RaisePropertyChanged("Report");

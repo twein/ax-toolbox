@@ -33,6 +33,9 @@ namespace AXToolbox.Scripting
 
         public string AltitudeCorrectionsFileName { get; set; }
 
+        public int InterpolationInterval { get; set; }
+        public int InterpolationMaxGap { get; set; }
+
         public override string ToString()
         {
             if (AreWellInitialized())
@@ -51,6 +54,8 @@ namespace AXToolbox.Scripting
             Smoothness = 3;
             MinSpeed = 0.5;
             MaxAcceleration = 2;
+            InterpolationInterval = 1;
+            InterpolationMaxGap = 10;
         }
 
         public bool AreWellInitialized()
