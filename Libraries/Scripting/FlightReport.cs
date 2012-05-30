@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AXToolbox.Common;
 using AXToolbox.Common.IO;
@@ -145,6 +146,27 @@ namespace AXToolbox.Scripting
             {
                 var logFile = LoggerFile.Load(filePath, settings.AltitudeCorrectionsFileName);
 
+                //check pilot id
+                var pilotId = logFile.PilotId;
+                if (pilotId == 0)
+                {
+                    //try to get the pilot Id from filename 
+                    //The file name must contain a P or p followed with pilot number (1 to 3 digits)
+                    //examples: f001_p021_l0.trk, Flight01P001.trk, 20120530AM_p01.trk, 0530AMP02_1.trk
+                    var pattern = @"P(\d{1,3})";
+                    var input = Path.GetFileName(filePath);
+                    var matches = Regex.Matches(input, pattern, RegexOptions.IgnoreCase);
+                    if (matches.Count == 1)
+                        pilotId = int.Parse(matches[0].Groups[1].Value);
+
+                    if (pilotId == 0)
+                        throw new Exception(
+                            "The pilot id is not present in the track log file and it could not be inferred from the file name.\n" +
+                            "The file name must contain a P or p followed with pilot number (1 to 3 digits)\n" +
+                            "examples: f001_p021_l0.trk, Flight01P001.trk, 20120530AM_p01.trk, 0530AMP02_1.trk"
+                            );
+                }
+
                 //Convert geographical coordinates to AX coordinates
                 var tracklog = logFile.GetTrackLog();
                 var track = new AXPoint[tracklog.Length];
@@ -167,7 +189,7 @@ namespace AXToolbox.Scripting
                     IsDirty = true,
                     LogFile = logFile,
                     SignatureStatus = logFile.SignatureStatus,
-                    pilotId = logFile.PilotId,
+                    PilotId = pilotId,
                     LoggerModel = logFile.LoggerModel,
                     LoggerSerialNumber = logFile.LoggerSerialNumber,
                     OriginalTrack = track,

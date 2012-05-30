@@ -265,7 +265,7 @@ namespace AXToolbox.Scripting
         public void Process(bool noDisplay = false)
         {
             if (Report.PilotId == 0)
-                throw new InvalidOperationException("The pilot id can not be zero");
+                throw new InvalidOperationException("The pilot id can not be zero"); //should never happen. checked before
 
             Trace.WriteLine("Processing " + Report.ToString(), "ENGINE");
 
