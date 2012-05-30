@@ -14,16 +14,11 @@ namespace AXToolbox.GpsLoggers
             SignatureStatus = SignatureStatus.NotSigned;
 
             //get logger info
-            try
-            {
-                LoggerModel = TrackLogLines.First(l => l[0] == 'P').Substring(2).Trim();
-            }
-            catch (InvalidOperationException) { }
+            LoggerModel = TrackLogLines.FirstOrDefault(l => l[0] == 'P').Substring(2).Trim();
         }
 
         public override GeoPoint[] GetTrackLog()
         {
-
             var utm = false;
             var track = new List<GeoPoint>();
 
