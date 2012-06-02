@@ -59,7 +59,7 @@ namespace AXToolbox.GpsLoggers
             var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             var name = int.Parse(fields[0].Trim(new char[] { ':' })).ToString("00");
-            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToUniversalTime();
+            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo);
             var easting = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
             var northing = double.Parse(fields[4], NumberFormatInfo.InvariantInfo);
 

@@ -12,6 +12,7 @@ namespace AXToolbox.GpsLoggers
     {
         protected DateTime loggerDate;
         protected Datum loggerDatum;
+        protected TimeSpan utcOffset;
 
         public bool IsAltitudeBarometric { get; protected set; }
         public string LogFileExtension { get; protected set; }
@@ -22,8 +23,9 @@ namespace AXToolbox.GpsLoggers
 
         public string[] TrackLogLines { get; protected set; }
 
-        public LoggerFile(string filePath)
+        public LoggerFile(string filePath, TimeSpan utcOffset)
         {
+            this.utcOffset = utcOffset;
             IsAltitudeBarometric = false;
             LoggerModel = "";
             LoggerSerialNumber = "";
@@ -35,16 +37,16 @@ namespace AXToolbox.GpsLoggers
         public abstract List<GeoWaypoint> GetMarkers();
         public abstract List<GoalDeclaration> GetGoalDeclarations();
 
-        public static LoggerFile Load(string fileName, string altitudeCorrectionsFilePath = null)
+        public static LoggerFile Load(string fileName, TimeSpan utcOffset, string altitudeCorrectionsFilePath = null)
         {
             LoggerFile logFile = null;
             switch (Path.GetExtension(fileName).ToLower())
             {
                 case ".igc":
-                    logFile = new IGCFile(fileName, altitudeCorrectionsFilePath);
+                    logFile = new IGCFile(fileName, utcOffset, altitudeCorrectionsFilePath);
                     break;
                 case ".trk":
-                    logFile = new TRKFile(fileName);
+                    logFile = new TRKFile(fileName, utcOffset);
                     break;
                 default:
                     throw new InvalidOperationException("Logger file type not supported");

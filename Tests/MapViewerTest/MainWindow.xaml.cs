@@ -78,7 +78,7 @@ namespace MapViewerTest
                 //dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog(this) == true)
                 {
-                    var logFile = LoggerFile.Load(dlg.FileName);
+                    var logFile = LoggerFile.Load(dlg.FileName, DateTime.Now - DateTime.UtcNow);
                     var trackLog = logFile.GetTrackLog();
                     var track = new Point[trackLog.Length];
                     for (var i = 0; i < trackLog.Length; i++)

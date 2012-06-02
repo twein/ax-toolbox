@@ -8,8 +8,8 @@ namespace AXToolbox.GpsLoggers
     [Serializable]
     public class TRKFile : LoggerFile
     {
-        public TRKFile(string filePath)
-            : base(filePath)
+        public TRKFile(string filePath, TimeSpan utcOffset)
+            : base(filePath, utcOffset)
         {
             LogFileExtension = ".trk";
             SignatureStatus = SignatureStatus.NotSigned;
@@ -47,8 +47,9 @@ namespace AXToolbox.GpsLoggers
                             //Track point
                             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                            DateTime time = new DateTime(1900, 1, 1);
-                            DateTime.TryParse(fields[4] + " " + fields[5], out time); // if datetime is invalid, time is 1900/01/01 00:00
+                            DateTime time = DateTime.MinValue;
+                            if (DateTime.TryParse(fields[4] + " " + fields[5], out time)) // if datetime is invalid, time is 0000/00/00 00:00:00
+                                time += utcOffset; // utc to local
                             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
                             GeoPoint p;
 

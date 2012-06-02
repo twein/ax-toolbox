@@ -14,8 +14,8 @@ namespace AXToolbox.GpsLoggers
     {
         private double altitudeCorrection;
 
-        public IGCFile(string logFilePath, string altitudeCorrectionsFilePath = null)
-            : base(logFilePath)
+        public IGCFile(string logFilePath, TimeSpan utcOffset, string altitudeCorrectionsFilePath = null)
+            : base(logFilePath, utcOffset)
         {
             IsAltitudeBarometric = true;
             LogFileExtension = ".igc";
@@ -154,14 +154,14 @@ namespace AXToolbox.GpsLoggers
             int year = int.Parse(line.Substring(pos, 2));
             int month = int.Parse(line.Substring(pos - 2, 2));
             int day = int.Parse(line.Substring(pos - 4, 2));
-            return new DateTime(year + ((year > 69) ? 1900 : 2000), month, day, 0, 0, 0, DateTimeKind.Utc);
+            return new DateTime(year + ((year > 69) ? 1900 : 2000), month, day, 0, 0, 0, DateTimeKind.Local) + utcOffset; // utc to local
         }
         private DateTime ParseTimeAt(string line, int pos)
         {
             int hour = int.Parse(line.Substring(pos, 2));
             int minute = int.Parse(line.Substring(pos + 2, 2));
             int second = int.Parse(line.Substring(pos + 4, 2));
-            return new DateTime(loggerDate.Year, loggerDate.Month, loggerDate.Day, hour, minute, second, DateTimeKind.Utc);
+            return loggerDate + new TimeSpan(hour, minute, second);
         }
         private GeoPoint ParseFixAt(string line, int pos)
         {

@@ -82,7 +82,7 @@ namespace GpsLoggersTest
             //var lat = 41.950881;
             //var lng = 3.225678;
 
-            var sun = new Sun(lat, lng);
+            var sun = new Sun(lat, lng, DateTime.Now - DateTime.UtcNow);
 
             var today = DateTime.Now;
             var from = today - new TimeSpan(30, 0, 0, 0);

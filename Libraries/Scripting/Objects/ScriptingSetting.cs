@@ -58,6 +58,11 @@ namespace AXToolbox.Scripting
                     }
                     break;
 
+                case "UTCOFFSET":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    Engine.Settings.UtcOffset = ParseOrDie<TimeSpan>(0, Parsers.ParseTimeSpan);
+                    break;
+
                 case "DATUM":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     Engine.Settings.DatumName = ParseOrDie<string>(0, s => s);

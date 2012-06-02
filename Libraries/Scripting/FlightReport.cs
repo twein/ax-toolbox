@@ -144,7 +144,7 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                var logFile = LoggerFile.Load(filePath, settings.AltitudeCorrectionsFileName);
+                var logFile = LoggerFile.Load(filePath, settings.UtcOffset, settings.AltitudeCorrectionsFileName);
 
                 //check pilot id
                 var pilotId = logFile.PilotId;
@@ -293,8 +293,8 @@ namespace AXToolbox.Scripting
             int nTime = 0, nDupe = 0, nSpike = 0;
             var validPoints = new List<AXPoint>();
 
-            var minValidTime = Date.ToUniversalTime() + new TimeSpan(4, 0, 0); //04:00(am) or 16:00(pm) local
-            var maxValidTime = Date.ToUniversalTime() + new TimeSpan(12, 0, 0);//12:00(am) or 24:00(pm) local
+            var minValidTime = Date + new TimeSpan(4, 0, 0); //04:00(am) or 16:00(pm) local
+            var maxValidTime = Date + new TimeSpan(12, 0, 0);//12:00(am) or 24:00(pm) local
 
             AXPoint point_m1 = null;
             AXPoint point_m2 = null;
@@ -346,7 +346,7 @@ namespace AXToolbox.Scripting
                 var nBefore = cleanTrack.Length;
                 //cleanTrack = Interpolation.Linear(cleanTrack, Settings.InterpolationInterval, Settings.InterpolationMaxGap).ToArray();
                 cleanTrack = Interpolation.Spline(cleanTrack, Settings.InterpolationInterval, Settings.InterpolationMaxGap).ToArray();
-                Notes.Add(string.Format("{0} points added by interpolation", cleanTrack.Length-nBefore));
+                Notes.Add(string.Format("{0} points added by interpolation", cleanTrack.Length - nBefore));
             }
         }
         protected void DetectTakeOffAndLanding()
