@@ -57,7 +57,7 @@ namespace AXToolbox.Scripting
                 case "PRISM":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
                     var fileName = ParseOrDie<string>(0, s => s);
-                    var trackLog = LoggerFile.Load(fileName);
+                    var trackLog = LoggerFile.Load(fileName, Engine.Settings.UtcOffset);
                     outline = Engine.Settings.GetTrack(trackLog);
                     if (ObjectParameters.Length >= 2)
                         upperLimit = ParseOrDie<double>(1, Parsers.ParseLength);

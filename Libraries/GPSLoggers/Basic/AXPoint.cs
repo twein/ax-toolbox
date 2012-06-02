@@ -65,15 +65,15 @@ namespace AXToolbox.GpsLoggers
 
             if ((info & AXPointInfo.Date) > 0)
             {
-                if (Time > new DateTime(2000, 01, 01))
-                    str.Append(Time.ToLocalTime().ToString("yyyy/MM/dd "));
+                if (Time > DateTime.MinValue)
+                    str.Append(Time.ToString("yyyy/MM/dd "));
                 else
                     str.Append("----/--/-- ");
             }
 
             if ((info & AXPointInfo.Time) > 0)
-                if (Time > new DateTime(2000, 01, 01))
-                    str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
+                if (Time > DateTime.MinValue)
+                    str.Append(Time.ToString("HH:mm:ss "));
                 else
                     str.Append("--:--:-- ");
 
@@ -107,7 +107,7 @@ namespace AXToolbox.GpsLoggers
         {
             var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var time = DateTime.Parse(fields[0] + ' ' + fields[1], DateTimeFormatInfo.InvariantInfo).ToLocalTime();
+            var time = DateTime.Parse(fields[0] + ' ' + fields[1], DateTimeFormatInfo.InvariantInfo);
             var easting = double.Parse(fields[2], NumberFormatInfo.InvariantInfo);
             var northing = double.Parse(fields[3], NumberFormatInfo.InvariantInfo);
 

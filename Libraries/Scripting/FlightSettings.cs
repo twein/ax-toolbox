@@ -12,7 +12,7 @@ namespace AXToolbox.Scripting
         public string Title { get; set; }
         public string Subtitle { get; set; }
         public DateTime Date { get; set; }
-
+        public TimeSpan UtcOffset { get; set; }
         public string DatumName { get; set; }
         public string UtmZone { get; set; }
         public AXPoint TopLeft { get; set; }
@@ -46,7 +46,8 @@ namespace AXToolbox.Scripting
 
         public FlightSettings()
         {
-            Date = new DateTime(1999, 12, 31);
+            Date = DateTime.MinValue;
+            UtcOffset = TimeSpan.MinValue;
             TasksInOrder = true;
             Qnh = double.NaN;
             AltitudeUnits = AltitudeUnits.Feet;
@@ -61,7 +62,8 @@ namespace AXToolbox.Scripting
         public bool AreWellInitialized()
         {
             return !(
-                Date < new DateTime(2000, 01, 01) ||
+                Date == DateTime.MinValue ||
+                UtcOffset == TimeSpan.MinValue ||
                 DatumName == null ||
                 UtmZone == null ||
                 TopLeft == null ||
@@ -80,7 +82,7 @@ namespace AXToolbox.Scripting
         {
             var llc = new LatLonCoordinates(Datum.GetInstance("WGS84"), latitude, longitude, altitude);
             var utmc = llc.ToUtm(Datum.GetInstance(DatumName), UtmZone);
-            return new AXPoint(Date.Date.ToUniversalTime(), utmc);
+            return new AXPoint(Date.Date, utmc);
         }
         public AXPoint FromGeoToAXPoint(GeoPoint geoPoint, bool isBarometricAltitude)
         {

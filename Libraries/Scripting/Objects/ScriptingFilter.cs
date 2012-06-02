@@ -89,11 +89,11 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "BEFORETIME":
-                    trackPoints = trackPoints.Filter(p => p.Time.ToLocalTime() <= time);
+                    trackPoints = trackPoints.Filter(p => p.Time <= time);
                     break;
 
                 case "AFTERTIME":
-                    trackPoints = trackPoints.Filter(p => p.Time.ToLocalTime() >= time);
+                    trackPoints = trackPoints.Filter(p => p.Time >= time);
                     break;
 
                 case "BEFOREPOINT":

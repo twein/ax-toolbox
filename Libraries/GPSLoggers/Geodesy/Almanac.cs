@@ -18,11 +18,13 @@ namespace AXToolbox.GpsLoggers
 
         private Angle latitude;
         private Angle longitude;
+        private TimeSpan utcOffset;
 
-        public Sun(double latitude, double longitude)
+        public Sun(double latitude, double longitude, TimeSpan utcOffset)
         {
             this.latitude = new Angle(latitude);
             this.longitude = new Angle(longitude);
+            this.utcOffset = utcOffset;
         }
 
         public Sun(LatLonCoordinates position)
@@ -33,7 +35,7 @@ namespace AXToolbox.GpsLoggers
 
         public DateTime Sunrise(DateTime date, ZenithTypes zenithType)
         {
-            var timeZone = (date - date.ToUniversalTime()).TotalHours;
+            var timeZone = utcOffset.TotalHours;
             var zenith = new Angle(ZenithDegrees(zenithType));
 
             //1: calculate the day of the year
@@ -86,7 +88,7 @@ namespace AXToolbox.GpsLoggers
         }
         public DateTime Sunset(DateTime date, ZenithTypes zenithType)
         {
-            var timeZone = (date - date.ToUniversalTime()).TotalHours;
+            var timeZone = utcOffset.TotalHours;
             var zenith = new Angle(ZenithDegrees(zenithType));
 
             //1: calculate the day of the year

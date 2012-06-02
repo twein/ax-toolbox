@@ -10,7 +10,7 @@ namespace AXToolbox.GpsLoggers
 {
     public class WPTFile
     {
-        public static List<GeoWaypoint> Load(string filePath)
+        public static List<GeoWaypoint> Load(string filePath, TimeSpan utcOffset)
         {
             var waypoints = new List<GeoWaypoint>();
             Datum fileDatum = null;
@@ -32,7 +32,7 @@ namespace AXToolbox.GpsLoggers
                         break;
                     case 'W':
                         //Track point
-                        var p = ParseWaypoint(line, fileDatum);
+                        var p = ParseWaypoint(line, fileDatum, utcOffset);
                         if (p != null)
                             waypoints.Add(p);
                         break;
@@ -41,7 +41,7 @@ namespace AXToolbox.GpsLoggers
 
             return waypoints;
         }
-        public static void Save(List<GeoWaypoint> waypoints, string filePath)
+        public static void Save(List<GeoWaypoint> waypoints, string filePath, TimeSpan utcOffset)
         {
             StreamWriter sw = new StreamWriter(filePath, false);
 
@@ -57,7 +57,7 @@ namespace AXToolbox.GpsLoggers
                     coord.UtmZone,
                     coord.Easting.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     coord.Northing.ToString("0.0", NumberFormatInfo.InvariantInfo),
-                    wp.Time.ToString("dd-MMM-yy HH:mm:ss", NumberFormatInfo.InvariantInfo).ToUpper(),
+                    (wp.Time - utcOffset).ToString("dd-MMM-yy HH:mm:ss", NumberFormatInfo.InvariantInfo).ToUpper(), //local to utc
                     coord.Altitude.ToString("0.0", NumberFormatInfo.InvariantInfo),
                     ""); //description
                 //TODO: fix waypoint radius
@@ -68,14 +68,14 @@ namespace AXToolbox.GpsLoggers
         }
 
 
-        private static GeoWaypoint ParseWaypoint(string line, Datum fileDatum)
+        private static GeoWaypoint ParseWaypoint(string line, Datum fileDatum, TimeSpan utcOffset)
         {
             GeoWaypoint wp;
 
             var fields = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             var name = fields[1].Replace("_", "");
-            var time = DateTime.Parse(fields[5] + " " + fields[6]);
+            var time = DateTime.Parse(fields[5] + " " + fields[6]) + utcOffset; //utc to local
             var altitude = double.Parse(fields[7], NumberFormatInfo.InvariantInfo);
 
 

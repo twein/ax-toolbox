@@ -217,7 +217,7 @@ namespace AXToolbox.Scripting
 
             if (!Settings.AreWellInitialized())
             {
-                var message = "The settings are not fully initialized";
+                var message = "Incomplete script: DATETIME, UTCOFFSET, DATUM, UTMZONE and MAP are required.";
                 Trace.WriteLine("Exception: " + message, "ENGINE");
                 throw new ArgumentException(message);
             }

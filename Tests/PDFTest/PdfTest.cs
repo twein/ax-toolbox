@@ -55,7 +55,7 @@ namespace PdfTest
             //table body
 
             //compute cells
-            var sun = new Sun(lat, lng);
+            var sun = new Sun(lat, lng, DateTime.Now - DateTime.UtcNow);
             var today = DateTime.Now;
             //var from = today - new TimeSpan(10, 0, 0, 0);
             //var to = today + new TimeSpan(30, 0, 0, 0);

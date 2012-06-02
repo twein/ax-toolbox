@@ -238,7 +238,7 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
+                        var refTime = Engine.Settings.Date.Date + timeOfDay;
                         if (A.Point.Time > refTime)
                         {
                             //Penalty = new Penalty(Result.NewNoResult(description));
@@ -256,7 +256,7 @@ namespace AXToolbox.Scripting
                     }
                     else
                     {
-                        var refTime = (Engine.Settings.Date.Date + timeOfDay).ToUniversalTime();
+                        var refTime = Engine.Settings.Date.Date + timeOfDay;
                         if (A.Point.Time < refTime)
                         {
                             //Penalty = new Penalty(Result.NewNoResult(description));

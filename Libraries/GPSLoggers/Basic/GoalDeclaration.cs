@@ -54,10 +54,10 @@ namespace AXToolbox.GpsLoggers
                 str.Append(string.Format("{0:00} ", Number));
 
             if ((info & AXPointInfo.Date) > 0)
-                str.Append(Time.ToLocalTime().ToString("yyyy/MM/dd "));
+                str.Append(Time.ToString("yyyy/MM/dd "));
 
             if ((info & AXPointInfo.Time) > 0)
-                str.Append(Time.ToLocalTime().ToString("HH:mm:ss "));
+                str.Append(Time.ToString("HH:mm:ss "));
 
             if ((info & AXPointInfo.Declaration) > 0)
                 if (Type == DeclarationType.GoalName)
@@ -91,7 +91,7 @@ namespace AXToolbox.GpsLoggers
             var fields = strValue.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             var number = int.Parse(fields[0]);
-            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo).ToUniversalTime();
+            var time = DateTime.Parse(fields[1] + ' ' + fields[2], DateTimeFormatInfo.InvariantInfo);
             var definition = fields[3];
             double altitude = Parsers.ParseLengthOrNaN(fields[4]);
 

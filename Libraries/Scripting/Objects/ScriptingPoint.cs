@@ -64,7 +64,7 @@ namespace AXToolbox.Scripting
                         var easting = ParseOrDie<double>(0, Parsers.ParseDouble);
                         var northing = ParseOrDie<double>(1, Parsers.ParseDouble);
                         var alt = ParseOrDie<double>(2, Parsers.ParseLength);
-                        Point = new AXWaypoint(ObjectName, Engine.Settings.Date.Date.ToUniversalTime(), easting, northing, alt);
+                        Point = new AXWaypoint(ObjectName, Engine.Settings.Date.Date, easting, northing, alt);
                     }
                     break;
 
