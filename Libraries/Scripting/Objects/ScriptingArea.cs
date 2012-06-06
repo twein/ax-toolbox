@@ -73,6 +73,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "UNION":
+                case "INTERSECTION":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length > 1);
                     areas = new List<ScriptingArea>();
                     foreach (var areaName in ObjectParameters)
@@ -146,6 +147,7 @@ namespace AXToolbox.Scripting
                         break;
 
                     case "UNION":
+                    case "INTERSECTION":
                         //do nothing (already drawn)
                         break;
                 }
@@ -183,10 +185,18 @@ namespace AXToolbox.Scripting
                         foreach (var area in areas)
                         {
                             isInside = area.Contains(point);
+                            if (isInside)
+                                break;
+                        }
+                        break;
+
+                    case "INTERSECTION":
+                        foreach (var area in areas)
+                        {
+                            isInside = area.Contains(point);
                             if (!isInside)
                                 break;
                         }
-
                         break;
                 }
             }
