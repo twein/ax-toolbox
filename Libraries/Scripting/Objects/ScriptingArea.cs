@@ -5,6 +5,7 @@ using System.Windows;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
+using System.Linq;
 
 namespace AXToolbox.Scripting
 {
@@ -15,6 +16,8 @@ namespace AXToolbox.Scripting
         protected double upperLimit = double.PositiveInfinity;
         protected double lowerLimit = double.NegativeInfinity;
         protected List<AXPoint> outline;
+
+        protected List<ScriptingArea> areas;
 
         public double MaxHorizontalInfringement { get; protected set; }
         public double UpperLimit { get { return upperLimit; } }
@@ -67,6 +70,18 @@ namespace AXToolbox.Scripting
                     for (var i = 1; i < outline.Count; i++)
                         for (var j = 0; j < i; j++)
                             MaxHorizontalInfringement = Math.Max(MaxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
+                    break;
+
+                case "UNION":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length > 1);
+                    areas = new List<ScriptingArea>();
+                    foreach (var areaName in ObjectParameters)
+                    {
+                        var area = Engine.Heap.Values.FirstOrDefault(o => o is ScriptingArea && o.ObjectName == areaName) as ScriptingArea;
+                        if (area == null)
+                            throw new ArgumentException("undeclaread area " + areaName);
+                        areas.Add(area);
+                    }
                     break;
             }
         }
@@ -129,6 +144,10 @@ namespace AXToolbox.Scripting
                             list[i] = outline[i].ToWindowsPoint();
                         overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
+
+                    case "UNION":
+                        //do nothing (already drawn)
+                        break;
                 }
 
                 if (overlay != null)
@@ -158,6 +177,16 @@ namespace AXToolbox.Scripting
 
                     case "PRISM":
                         isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && InPolygon(point);
+                        break;
+
+                    case "UNION":
+                        foreach (var area in areas)
+                        {
+                            isInside = area.Contains(point);
+                            if (!isInside)
+                                break;
+                        }
+
                         break;
                 }
             }

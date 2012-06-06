@@ -108,9 +108,9 @@ namespace AXToolbox.Scripting
 
                     var objectClass = groups["object"].Value.ToUpper();
                     var name = groups["name"].Value;
-                    var type = groups["type"].Value.ToUpper(); ;
+                    var type = groups["type"].Value.ToUpper(); 
                     var parameters = SplitParameters(groups["parms"].Value);
-                    var displayMode = groups["display"].Value.ToUpper(); ;
+                    var displayMode = groups["display"].Value.ToUpper(); 
                     var displayParameters = SplitParameters(groups["displayparms"].Value);
 
                     switch (objectClass)

@@ -1,9 +1,9 @@
-﻿!!!!!!!!!!
-
-- MVMDP Previous task marker or launch point (for PDG FON restrictions)
-
-
+﻿
 TO DO
+- MVMDP Previous task marker or launch point (for PDG FON restrictions)
+- Add a new type of point: TLU Track point last used: Last used point in any task
+
+- Scripting object inheritance instead of switch case
 ? check for repeated task numbers
 - make axpoint, axwaypoint, immutable. Rewrite CleanTrack, FlightTrack & Co.
 - checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
@@ -18,10 +18,9 @@ TO DO
 - when a LRN result has ben overriden by a restriction, the result still shows on map. Check other types as well (e.g. Europeans2011, task 10, pilot 45)
 - Area type BOX
 ? Area CSG
-- Add a new type of point: TLU Track point last used: Last used point in any task
 ! rewrite the examples in the AXS Specification for new syntax
-! fix the demo files for new syntax
 
+* fix the demo files for new syntax
 * remove mintime and maxtime from MPDG. It can be programmed with restrictions.
 * add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
 * Add event title to settings
