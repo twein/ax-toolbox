@@ -108,9 +108,9 @@ namespace AXToolbox.Scripting
 
                     var objectClass = groups["object"].Value.ToUpper();
                     var name = groups["name"].Value;
-                    var type = groups["type"].Value.ToUpper(); 
+                    var type = groups["type"].Value.ToUpper();
                     var parameters = SplitParameters(groups["parms"].Value);
-                    var displayMode = groups["display"].Value.ToUpper(); 
+                    var displayMode = groups["display"].Value.ToUpper();
                     var displayParameters = SplitParameters(groups["displayparms"].Value);
 
                     switch (objectClass)
@@ -342,6 +342,52 @@ namespace AXToolbox.Scripting
                 {
                     return "";
                 }
+            }
+        }
+
+        protected class ObjectDefinition
+        {
+            public string ObjectClass;
+            public string ObjectName;
+            public string ObjectType;
+            public string[] ObjectParameters;
+            public string DisplayMode;
+            public string[] DisplayParameters;
+
+            private ObjectDefinition() { }
+
+            public static ObjectDefinition Parse(string line)
+            {
+                ObjectDefinition def = null;
+                line = line.Trim();
+
+                //ignore blank lines and comments
+                if (line != "" && !line.StartsWith("//"))
+                {
+                    //find token or die
+                    MatchCollection matches = null;
+                    if (objectRE.IsMatch(line))
+                        matches = objectRE.Matches(line);
+                    else if (setRE.IsMatch(line))
+                        matches = setRE.Matches(line);
+
+                    if (matches != null)
+                    {
+                        //parse the constructor and create the object or die
+                        var groups = matches[0].Groups;
+
+                        def = new ObjectDefinition()
+                        {
+                            ObjectClass = groups["object"].Value.ToUpper(),
+                            ObjectName = groups["name"].Value,
+                            ObjectType = groups["type"].Value.ToUpper(),
+                            ObjectParameters = SplitParameters(groups["parms"].Value),
+                            DisplayMode = groups["display"].Value.ToUpper(),
+                            DisplayParameters = SplitParameters(groups["displayparms"].Value)
+                        };
+                    }
+                }
+                return def;
             }
         }
     }
