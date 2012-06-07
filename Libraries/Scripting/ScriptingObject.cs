@@ -9,26 +9,8 @@ namespace AXToolbox.Scripting
 {
     public abstract class ScriptingObject
     {
-        //Regular Expressions to parse commands. Use in this same order.
-        private static Regex setRE = new Regex(@"^(?<object>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
-        private static Regex objectRE = new Regex(@"^(?<object>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
-
-
         protected ScriptingEngine Engine { get; private set; }
-        public string ObjectClass
-        {
-            get
-            {
-                var hierarchy = this.GetType().ToString().Split(new char[] { '.' });
-                return hierarchy[hierarchy.Length - 1].Substring(9).ToUpper();
-            }
-        }
-
-        public string ObjectName { get; protected set; }
-        public string ObjectType { get; protected set; }
-        protected string[] ObjectParameters { get; set; }
-        protected string DisplayMode { get; set; }
-        protected string[] DisplayParameters { get; set; }
+        public ObjectDefinition Definition { get; private set; }
 
         public Color Color { get; protected set; }
         public List<Note> Notes { get; private set; }
@@ -36,39 +18,20 @@ namespace AXToolbox.Scripting
 
         protected string SyntaxErrorMessage
         {
-            get { return "Syntax error in " + ObjectName + " definition"; }
+            get { return "Syntax error in " + Definition.ObjectName + " definition"; }
         }
         protected string IncorrectNumberOfArgumentsErrorMessage
         {
-            get { return "Incorrect number of arguments in " + ObjectName + " definition"; }
+            get { return "Incorrect number of arguments in " + Definition.ObjectName + " definition"; }
         }
 
         public string ToShortString()
         {
-            return ObjectType;
+            return Definition.ObjectType;
         }
         public override string ToString()
         {
-            string str = ObjectClass + " " + ObjectName + " = ";
-
-            var parms = "";
-            foreach (var par in ObjectParameters)
-                parms += par + ",";
-            parms = parms.Trim(new char[] { ',' });
-
-            str += ObjectType + "(" + parms + ")";
-
-            if (DisplayMode != "")
-            {
-                parms = "";
-                foreach (var par in DisplayParameters)
-                    parms += par + ",";
-                parms = parms.Trim(new char[] { ',' });
-
-                str += " " + DisplayMode + "(" + parms + ")";
-            }
-
-            return str;
+            return Definition.Line;
         }
 
         private ScriptingObject()
@@ -76,109 +39,59 @@ namespace AXToolbox.Scripting
             throw new InvalidOperationException("This constructor must not be used");
         }
 
-        /// <summary>Scripting object factory
-        /// </summary>
-        /// <param name="objectClass"></param>
-        /// <param name="name"></param>
-        /// <param name="type"></param>
-        /// <param name="parameters"></param>
-        /// <param name="displayMode"></param>
-        /// <param name="displayParameters"></param>
-        /// <returns></returns>
-        public static ScriptingObject Create(ScriptingEngine engine, string line)
+        public static ScriptingObject Parse(ScriptingEngine engine, string line)
         {
             ScriptingObject obj = null;
 
-            line = line.Trim();
-
-            //ignore blank lines and comments
-            if (line != "" && !line.StartsWith("//"))
+            var definition = ObjectDefinition.Parse(line);
+            if (definition != null)
             {
-                //find token or die
-                MatchCollection matches = null;
-                if (objectRE.IsMatch(line))
-                    matches = objectRE.Matches(line);
-                else if (setRE.IsMatch(line))
-                    matches = setRE.Matches(line);
-
-                if (matches != null)
+                switch (definition.ObjectClass)
                 {
-                    //parse the constructor and create the object or die
-                    var groups = matches[0].Groups;
-
-                    var objectClass = groups["object"].Value.ToUpper();
-                    var name = groups["name"].Value;
-                    var type = groups["type"].Value.ToUpper();
-                    var parameters = SplitParameters(groups["parms"].Value);
-                    var displayMode = groups["display"].Value.ToUpper();
-                    var displayParameters = SplitParameters(groups["displayparms"].Value);
-
-                    switch (objectClass)
-                    {
-                        case "AREA":
-                            obj = new ScriptingArea(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "FILTER":
-                            obj = new ScriptingFilter(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "MAP":
-                            obj = new ScriptingMap(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "POINT":
-                            obj = new ScriptingPoint(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "SET":
-                            obj = new ScriptingSetting(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "TASK":
-                            obj = new ScriptingTask(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "RESULT":
-                            obj = new ScriptingResult(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "RESTRICTION":
-                            obj = new ScriptingRestriction(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        case "PENALTY":
-                            obj = new ScriptingPenalty(engine, name, type, parameters, displayMode, displayParameters);
-                            break;
-                        default:
-                            throw new ArgumentException("Unrecognized object type '" + objectClass + "'");
-                    }
+                    case "AREA":
+                        obj = new ScriptingArea(engine, definition);
+                        break;
+                    case "FILTER":
+                        obj = new ScriptingFilter(engine, definition);
+                        break;
+                    case "MAP":
+                        obj = new ScriptingMap(engine, definition);
+                        break;
+                    case "POINT":
+                        obj = new ScriptingPoint(engine, definition);
+                        break;
+                    case "SET":
+                        obj = new ScriptingSetting(engine, definition);
+                        break;
+                    case "TASK":
+                        obj = new ScriptingTask(engine, definition);
+                        break;
+                    case "RESULT":
+                        obj = new ScriptingResult(engine, definition);
+                        break;
+                    case "RESTRICTION":
+                        obj = new ScriptingRestriction(engine, definition);
+                        break;
+                    case "PENALTY":
+                        obj = new ScriptingPenalty(engine, definition);
+                        break;
+                    default:
+                        throw new ArgumentException("Unrecognized object type '" + definition.ObjectClass + "'");
                 }
-                else
-                    //no token match
-                    throw new ArgumentException("Syntax error");
             }
 
             return obj;
         }
-        /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
-        /// <param name="parms">string containing comma separated parameters</param>
-        /// <returns>array of string parameters</returns>
-        private static string[] SplitParameters(string parms)
-        {
-            var split = parms.Split(new char[] { ',' });
-            for (int i = 0; i < split.Length; i++)
-            {
-                split[i] = split[i].Trim();
-            }
 
-            return split;
-        }
-        protected ScriptingObject(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
+        protected ScriptingObject(ScriptingEngine engine, ObjectDefinition definition)
         {
-            this.Engine = engine;
-            this.ObjectName = name;
-            this.ObjectType = type;
-            this.ObjectParameters = parameters;
-            this.DisplayMode = displayMode;
-            this.DisplayParameters = displayParameters;
+            Engine = engine;
+            Definition = definition;
 
             CheckConstructorSyntax();
             CheckDisplayModeSyntax();
 
-            Trace.WriteLine(this.ToString(), ObjectClass);
+            Trace.WriteLine(this.ToString(), definition.ObjectClass);
             Notes = new List<Note>();
         }
 
@@ -208,7 +121,7 @@ namespace AXToolbox.Scripting
         /// </summary>
         public virtual void Reset()
         {
-            Trace.WriteLine("Resetting " + ObjectName, ObjectClass);
+            Trace.WriteLine("Resetting " + Definition.ObjectName, Definition.ObjectClass);
             Notes.Clear();
         }
         /// <summary>Executes the script
@@ -216,7 +129,7 @@ namespace AXToolbox.Scripting
         /// <param name="report"></param>
         public virtual void Process()
         {
-            Trace.WriteLine("Processing " + ObjectName, ObjectClass);
+            Trace.WriteLine("Processing " + Definition.ObjectName, Definition.ObjectClass);
         }
 
 
@@ -238,7 +151,7 @@ namespace AXToolbox.Scripting
         /// <param name="atParameterIndex"></param>
         protected T Resolve<T>(int atParameterIndex) where T : ScriptingObject
         {
-            var key = ObjectParameters[atParameterIndex];
+            var key = Definition.ObjectParameters[atParameterIndex];
             return ((T)Engine.Heap[key]);
         }
         /// <summary>Looks for a definition of scripting object T at a given parameter array index
@@ -247,12 +160,12 @@ namespace AXToolbox.Scripting
         /// <param name="atParameterIndex"></param>
         protected T ResolveOrDie<T>(int atParameterIndex) where T : ScriptingObject
         {
-            var key = ObjectParameters[atParameterIndex];
+            var key = Definition.ObjectParameters[atParameterIndex];
             if (!Engine.Heap.ContainsKey(key))
                 throw new ArgumentException(key + " is undefined");
 
             if (!(Engine.Heap[key] is T))
-                throw new ArgumentException(key + " is the wrong type (" + Engine.Heap[key].ObjectClass + ")");
+                throw new ArgumentException(key + " is the wrong type (" + Engine.Heap[key].Definition.ObjectClass + ")");
 
             return ((T)Engine.Heap[key]);
         }
@@ -295,7 +208,7 @@ namespace AXToolbox.Scripting
         /// <returns></returns>
         protected T Parse<T>(int atParameterIndex, Func<string, T> parseFunction)
         {
-            return parseFunction(ObjectParameters[atParameterIndex]);
+            return parseFunction(Definition.ObjectParameters[atParameterIndex]);
         }
         /// <summary>Looks for a definition of object T at a given parameter array index
         /// Lots of checkings
@@ -306,16 +219,16 @@ namespace AXToolbox.Scripting
         /// <returns></returns>
         protected T ParseOrDie<T>(int atParameterIndex, Func<string, T> parseFunction)
         {
-            if (atParameterIndex >= ObjectParameters.Length)
+            if (atParameterIndex >= Definition.ObjectParameters.Length)
                 throw new ArgumentException(SyntaxErrorMessage);
 
             try
             {
-                return parseFunction(ObjectParameters[atParameterIndex]);
+                return parseFunction(Definition.ObjectParameters[atParameterIndex]);
             }
             catch (Exception)
             {
-                throw new ArgumentException(SyntaxErrorMessage + " '" + ObjectParameters[atParameterIndex] + "'");
+                throw new ArgumentException(SyntaxErrorMessage + " '" + Definition.ObjectParameters[atParameterIndex] + "'");
             }
         }
 
@@ -344,51 +257,72 @@ namespace AXToolbox.Scripting
                 }
             }
         }
+    }
 
-        protected class ObjectDefinition
+    public class ObjectDefinition
+    {
+        //Regular Expressions to parse commands. Use in this same order.
+        private static Regex setRE = new Regex(@"^(?<class>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
+        private static Regex objectRE = new Regex(@"^(?<class>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
+
+        public string Line;
+        public string ObjectClass;
+        public string ObjectName;
+        public string ObjectType;
+        public string[] ObjectParameters;
+        public string DisplayMode;
+        public string[] DisplayParameters;
+
+        private ObjectDefinition() { }
+
+        public static ObjectDefinition Parse(string line)
         {
-            public string ObjectClass;
-            public string ObjectName;
-            public string ObjectType;
-            public string[] ObjectParameters;
-            public string DisplayMode;
-            public string[] DisplayParameters;
+            ObjectDefinition def = null;
 
-            private ObjectDefinition() { }
+            var trimmedLine = line.Trim();
 
-            public static ObjectDefinition Parse(string line)
+            //ignore blank lines and comments
+            if (trimmedLine != "" && !trimmedLine.StartsWith("//"))
             {
-                ObjectDefinition def = null;
-                line = line.Trim();
+                //find token or die
+                MatchCollection matches = null;
+                if (objectRE.IsMatch(trimmedLine))
+                    matches = objectRE.Matches(trimmedLine);
+                else if (setRE.IsMatch(trimmedLine))
+                    matches = setRE.Matches(trimmedLine);
 
-                //ignore blank lines and comments
-                if (line != "" && !line.StartsWith("//"))
+                if (matches != null)
                 {
-                    //find token or die
-                    MatchCollection matches = null;
-                    if (objectRE.IsMatch(line))
-                        matches = objectRE.Matches(line);
-                    else if (setRE.IsMatch(line))
-                        matches = setRE.Matches(line);
+                    //parse the constructor and create the object or die
+                    var groups = matches[0].Groups;
 
-                    if (matches != null)
+                    def = new ObjectDefinition()
                     {
-                        //parse the constructor and create the object or die
-                        var groups = matches[0].Groups;
-
-                        def = new ObjectDefinition()
-                        {
-                            ObjectClass = groups["object"].Value.ToUpper(),
-                            ObjectName = groups["name"].Value,
-                            ObjectType = groups["type"].Value.ToUpper(),
-                            ObjectParameters = SplitParameters(groups["parms"].Value),
-                            DisplayMode = groups["display"].Value.ToUpper(),
-                            DisplayParameters = SplitParameters(groups["displayparms"].Value)
-                        };
-                    }
+                        Line = trimmedLine,
+                        ObjectClass = groups["class"].Value.ToUpper(),
+                        ObjectName = groups["name"].Value,
+                        ObjectType = groups["type"].Value.ToUpper(),
+                        ObjectParameters = SplitParameters(groups["parms"].Value),
+                        DisplayMode = groups["display"].Value.ToUpper(),
+                        DisplayParameters = SplitParameters(groups["displayparms"].Value)
+                    };
                 }
-                return def;
             }
+            return def;
+        }
+
+        /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
+        /// <param name="parms">string containing comma separated parameters</param>
+        /// <returns>array of string parameters</returns>
+        private static string[] SplitParameters(string parms)
+        {
+            var split = parms.Split(new char[] { ',' });
+            for (int i = 0; i < split.Length; i++)
+            {
+                split[i] = split[i].Trim();
+            }
+
+            return split;
         }
     }
 }

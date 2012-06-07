@@ -28,8 +28,8 @@ namespace AXToolbox.Scripting
         //display fields
         protected double radius;
 
-        internal ScriptingPoint(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
+        internal ScriptingPoint(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
         { }
 
         public override void CheckConstructorSyntax()
@@ -37,21 +37,21 @@ namespace AXToolbox.Scripting
             base.CheckConstructorSyntax();
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown point type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown point type '" + Definition.ObjectType + "'");
 
                 case "SLL": //WGS84 lat/lon
                     //SLL(<lat>, <long>, <alt>)
                     {
                         isStatic = true;
 
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
                         var lat = ParseOrDie<double>(0, Parsers.ParseDouble);
                         var lng = ParseOrDie<double>(1, Parsers.ParseDouble);
                         var alt = ParseOrDie<double>(2, Parsers.ParseLength);
-                        Point = new AXWaypoint(ObjectName, Engine.Settings.FromLatLonToAXPoint(lat, lng, alt));
+                        Point = new AXWaypoint(Definition.ObjectName, Engine.Settings.FromLatLonToAXPoint(lat, lng, alt));
                     }
                     break;
 
@@ -60,19 +60,19 @@ namespace AXToolbox.Scripting
                     {
                         isStatic = true;
 
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
                         var easting = ParseOrDie<double>(0, Parsers.ParseDouble);
                         var northing = ParseOrDie<double>(1, Parsers.ParseDouble);
                         var alt = ParseOrDie<double>(2, Parsers.ParseLength);
-                        Point = new AXWaypoint(ObjectName, Engine.Settings.Date.Date, easting, northing, alt);
+                        Point = new AXWaypoint(Definition.ObjectName, Engine.Settings.Date.Date, easting, northing, alt);
                     }
                     break;
 
                 case "LNP": //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 3);
-                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
-                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, Parsers.ParseLength);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 3);
+                    ResolveNOrDie<ScriptingPoint>(0, Definition.ObjectParameters.Length - 1);
+                    altitudeThreshold = ParseOrDie<double>(Definition.ObjectParameters.Length - 1, Parsers.ParseLength);
                     break;
 
                 case "LFT": //first in time from list
@@ -80,14 +80,14 @@ namespace AXToolbox.Scripting
                 case "LFNN": //LFNN: first not null from list
                 case "LLNN": //last not null
                     //XXXX(<listPoint1>, <listPoint2>, …)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 1);
-                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 1);
+                    ResolveNOrDie<ScriptingPoint>(0, Definition.ObjectParameters.Length);
                     break;
 
                 case "MVMD":
                     //MVMD: virtual marker drop
                     //MVMD(<number>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     number = ParseOrDie<int>(0, int.Parse);
                     break;
 
@@ -96,9 +96,9 @@ namespace AXToolbox.Scripting
                     //MPDGD: pilot declared goal with default altitude
                     //MPDGF: pilot declared goal with forced altitude
                     //XXXX(<number>[, <defaultAltitude>])
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1 || Definition.ObjectParameters.Length == 2);
                     number = ParseOrDie<int>(0, int.Parse);
-                    if (ObjectParameters.Length == 2)
+                    if (Definition.ObjectParameters.Length == 2)
                         defaultAltitude = ParseOrDie<double>(1, Parsers.ParseLength);
                     break;
 
@@ -106,44 +106,44 @@ namespace AXToolbox.Scripting
                 case "TLND": //TLND: landing
                     //XXXX()
                     //TODO: check if they are really needed or should be automatic
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1 && Definition.ObjectParameters[0] == "");
                     break;
 
                 case "TNL": //nearest to point list 
                     //LNP(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length >= 2);
-                    ResolveNOrDie<ScriptingPoint>(0, ObjectParameters.Length - 1);
-                    altitudeThreshold = ParseOrDie<double>(ObjectParameters.Length - 1, Parsers.ParseLength);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 2);
+                    ResolveNOrDie<ScriptingPoint>(0, Definition.ObjectParameters.Length - 1);
+                    altitudeThreshold = ParseOrDie<double>(Definition.ObjectParameters.Length - 1, Parsers.ParseLength);
                     break;
 
                 case "TPT": //TPT at point time
                     //TPT(<pointName>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     ResolveOrDie<ScriptingPoint>(0);
                     break;
 
                 case "TNP": //nearest to point
                     //TNP(<pointName>, <altitudeThreshold>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     ResolveOrDie<ScriptingPoint>(0);
                     altitudeThreshold = ParseOrDie<double>(1, Parsers.ParseLength);
                     break;
 
                 case "TDT": //delayed in time
                     //TDT(<pointName>, <timeDelay>[, <maxTime>])
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2 || Definition.ObjectParameters.Length == 3);
                     ResolveOrDie<ScriptingPoint>(0);
                     timeDelay = ParseOrDie<TimeSpan>(1, Parsers.ParseTimeSpan);
-                    if (ObjectParameters.Length == 3)
+                    if (Definition.ObjectParameters.Length == 3)
                         maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, Parsers.ParseTimeSpan);
                     break;
 
                 case "TDD":  //delayed in distance
                     //TDD(<pointName>, <distanceDelay>[, <maxTime>])
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2 || Definition.ObjectParameters.Length == 3);
                     ResolveOrDie<ScriptingPoint>(0);
                     distanceDelay = ParseOrDie<double>(1, Parsers.ParseLength);
-                    if (ObjectParameters.Length == 3)
+                    if (Definition.ObjectParameters.Length == 3)
                         maxTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(2, Parsers.ParseTimeSpan);
                     break;
 
@@ -152,21 +152,21 @@ namespace AXToolbox.Scripting
                 case "TALI": //area last in
                 case "TALO": //area last out
                     //XXXX(<areaName>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     ResolveOrDie<ScriptingArea>(0);
                     break;
             }
         }
         public override void CheckDisplayModeSyntax()
         {
-            switch (DisplayMode)
+            switch (Definition.DisplayMode)
             {
                 default:
-                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+                    throw new ArgumentException("Unknown display mode '" + Definition.DisplayMode + "'");
 
                 //TODO: revise all cases (including "")
                 case "NONE":
-                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
+                    if (Definition.DisplayParameters.Length != 1 || Definition.DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
@@ -174,21 +174,21 @@ namespace AXToolbox.Scripting
                 case "WAYPOINT":
                 case "MARKER":
                 case "CROSSHAIRS":
-                    if (DisplayParameters.Length > 1)
+                    if (Definition.DisplayParameters.Length > 1)
                         throw new ArgumentException("Syntax error");
 
-                    if (DisplayParameters[0] != "")
-                        Color = Parsers.ParseColor(DisplayParameters[0]);
+                    if (Definition.DisplayParameters[0] != "")
+                        Color = Parsers.ParseColor(Definition.DisplayParameters[0]);
                     break;
 
                 case "TARGET":
-                    if (DisplayParameters.Length > 2)
+                    if (Definition.DisplayParameters.Length > 2)
                         throw new ArgumentException("Syntax error");
 
-                    radius = Parsers.ParseLength(DisplayParameters[0]);
+                    radius = Parsers.ParseLength(Definition.DisplayParameters[0]);
 
-                    if (DisplayParameters.Length == 2)
-                        Color = Parsers.ParseColor(DisplayParameters[1]);
+                    if (Definition.DisplayParameters.Length == 2)
+                        Color = Parsers.ParseColor(Definition.DisplayParameters[1]);
                     break;
             }
         }
@@ -209,14 +209,14 @@ namespace AXToolbox.Scripting
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 case "LNP":
                     //nearest to point from list
                     //LNP(<desiredPoint>, <listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length - 1);
+                        var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length - 1);
 
                         var referencePoint = list[0].Point;
                         if (referencePoint == null)
@@ -248,7 +248,7 @@ namespace AXToolbox.Scripting
                     //first in time from list
                     //LFT(<listPoint1>, <listPoint2>, …)
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
+                        var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length);
 
                         foreach (var p in list)
                         {
@@ -271,7 +271,7 @@ namespace AXToolbox.Scripting
                     //last in time from list
                     //LLT(<listPoint1>, <listPoint2>)
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
+                        var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length);
 
                         foreach (var p in list)
                         {
@@ -294,7 +294,7 @@ namespace AXToolbox.Scripting
                     //first not null from list
                     //LFNN(<listPoint1>, <listPoint2>, …)
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
+                        var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length);
 
                         foreach (var p in list)
                         {
@@ -317,7 +317,7 @@ namespace AXToolbox.Scripting
                     //last not null from list
                     //LLNN(<listPoint1>, <listPoint2>, …)
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length);
+                        var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length);
 
                         foreach (var p in list.Reverse())
                         {
@@ -455,14 +455,14 @@ namespace AXToolbox.Scripting
                     //TLCH: take off
                     //TLCH()
                     if (Engine.Report != null)
-                        Point = new AXWaypoint(ObjectName, Engine.Report.TakeOffPoint);
+                        Point = new AXWaypoint(Definition.ObjectName, Engine.Report.TakeOffPoint);
                     break;
 
                 case "TLND":
                     //TLND: landing
                     //TLND()
                     if (Engine.Report != null)
-                        Point = new AXWaypoint(ObjectName, Engine.Report.LandingPoint);
+                        Point = new AXWaypoint(Definition.ObjectName, Engine.Report.LandingPoint);
                     break;
 
 
@@ -480,7 +480,7 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
-                            Point = new AXWaypoint(ObjectName, Engine.Report.CleanTrack.First(p => p.Time == referencePoint.Time));
+                            Point = new AXWaypoint(Definition.ObjectName, Engine.Report.CleanTrack.First(p => p.Time == referencePoint.Time));
                         }
                     }
                     catch (InvalidOperationException)
@@ -506,7 +506,7 @@ namespace AXToolbox.Scripting
                             foreach (var nextTrackPoint in Engine.TaskValidTrack.Points)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
-                                    Point = new AXWaypoint(ObjectName, nextTrackPoint);
+                                    Point = new AXWaypoint(Definition.ObjectName, nextTrackPoint);
                             if (Point == null)
                             {
                                 AddNote("no remaining valid track points", true);
@@ -520,7 +520,7 @@ namespace AXToolbox.Scripting
                     //TNL(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     //TODO: what kind of distance should be used? d2d, d3d or drad?
                     {
-                        var list = ResolveN<ScriptingPoint>(0, ObjectParameters.Length - 1);
+                        var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length - 1);
 
                         var nnull = 0;
                         foreach (var p in list)
@@ -534,7 +534,7 @@ namespace AXToolbox.Scripting
                             foreach (var nextTrackPoint in Engine.TaskValidTrack.Points)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
-                                    Point = new AXWaypoint(ObjectName, nextTrackPoint);
+                                    Point = new AXWaypoint(Definition.ObjectName, nextTrackPoint);
                         }
                         if (nnull == list.Length)
                         {
@@ -559,9 +559,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrack.Points.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime));
+                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime));
                             else
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrack.Points.First(p => p.Time >= referencePoint.Time + timeDelay));
+                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => p.Time >= referencePoint.Time + timeDelay));
 
                             if (Point == null)
                             {
@@ -585,9 +585,9 @@ namespace AXToolbox.Scripting
                         else
                         {
                             if (maxTime.HasValue)
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrack.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime));
+                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime));
                             else
-                                Point = new AXWaypoint(ObjectName, Engine.TaskValidTrack.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay));
+                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay));
 
                             if (Point == null)
                             {
@@ -607,7 +607,7 @@ namespace AXToolbox.Scripting
                         try
                         {
                             var tafi = Engine.TaskValidTrack.Points.First(p => area.Contains(p));
-                            Point = new AXWaypoint(ObjectName, tafi);
+                            Point = new AXWaypoint(Definition.ObjectName, tafi);
                         }
                         catch
                         {
@@ -627,7 +627,7 @@ namespace AXToolbox.Scripting
                             var tafi = Engine.TaskValidTrack.Points.First(p => area.Contains(p));
                             var tafoo = Engine.TaskValidTrack.Points.First(p => p.Time > tafi.Time && !area.Contains(p));
                             var tafo = Engine.TaskValidTrack.Points.Last(p => p.Time < tafoo.Time && area.Contains(p));
-                            Point = new AXWaypoint(ObjectName, tafi);
+                            Point = new AXWaypoint(Definition.ObjectName, tafi);
                         }
                         catch
                         {
@@ -664,7 +664,7 @@ namespace AXToolbox.Scripting
                             var talo = Engine.TaskValidTrack.Points.Last(p => area.Contains(p));
                             var talio = Engine.TaskValidTrack.Points.Last(p => p.Time < talo.Time && !area.Contains(p));
                             var tafo = Engine.TaskValidTrack.Points.First(p => p.Time > talio.Time && area.Contains(p));
-                            Point = new AXWaypoint(ObjectName, tafo);
+                            Point = new AXWaypoint(Definition.ObjectName, tafo);
                         }
                         catch
                         {
@@ -699,7 +699,7 @@ namespace AXToolbox.Scripting
                         try
                         {
                             var talo = Engine.TaskValidTrack.Points.Last(p => area.Contains(p));
-                            Point = new AXWaypoint(ObjectName, talo);
+                            Point = new AXWaypoint(Definition.ObjectName, talo);
                         }
                         catch
                         {
@@ -734,7 +734,7 @@ namespace AXToolbox.Scripting
                 //else
                 //    layer = (uint)OverlayLayers.Reference_Points;
 
-                switch (DisplayMode)
+                switch (Definition.DisplayMode)
                 {
                     case "NONE":
                         break;
@@ -742,19 +742,19 @@ namespace AXToolbox.Scripting
                     case "":
                     case "WAYPOINT":
                         {
-                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = this.Color };
+                            overlay = new WaypointOverlay(Point.ToWindowsPoint(), Definition.ObjectName) { Layer = layer, Color = this.Color };
                         }
                         break;
 
                     case "TARGET":
                         {
-                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, ObjectName) { Layer = layer, Color = this.Color };
+                            overlay = new TargetOverlay(Point.ToWindowsPoint(), radius, Definition.ObjectName) { Layer = layer, Color = this.Color };
                         }
                         break;
 
                     case "MARKER":
                         {
-                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), ObjectName) { Layer = layer, Color = this.Color };
+                            overlay = new MarkerOverlay(Point.ToWindowsPoint(), Definition.ObjectName) { Layer = layer, Color = this.Color };
                         } break;
 
                     case "CROSSHAIRS":
