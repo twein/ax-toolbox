@@ -4,16 +4,23 @@ using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingFilter : ScriptingObject
+    internal class ScriptingFilter : ScriptingObject
     {
+        internal static ScriptingFilter Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingFilter(engine, definition);
+        }
+
+        protected ScriptingFilter(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+        
         private ScriptingArea area;
         private ScriptingPoint point;
         private DateTime time;
         private double altitude;
 
-        internal ScriptingFilter(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { }
 
         public override void CheckConstructorSyntax()
         {

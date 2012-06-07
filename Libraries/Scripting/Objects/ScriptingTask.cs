@@ -10,8 +10,21 @@ using iTextSharp.text.pdf;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingTask : ScriptingObject
+    internal class ScriptingTask : ScriptingObject
     {
+        internal static ScriptingTask Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingTask(engine, definition);
+        }
+
+        protected ScriptingTask(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        {
+            Penalties = new List<Penalty>();
+            LoggerMarks = new List<string>();
+        }
+
+
         public int Number { get; protected set; }
         protected string resultUnit;
         protected int resultPrecission;
@@ -20,13 +33,7 @@ namespace AXToolbox.Scripting
         public List<string> LoggerMarks { get; protected set; }
 
 
-        internal ScriptingTask(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        {
-            Penalties = new List<Penalty>();
-            LoggerMarks = new List<string>();
-        }
-
+        
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();

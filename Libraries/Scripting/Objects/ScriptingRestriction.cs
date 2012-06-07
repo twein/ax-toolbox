@@ -7,16 +7,21 @@ namespace AXToolbox.Scripting
 {
     class ScriptingRestriction : ScriptingObject
     {
+        internal static ScriptingRestriction Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingRestriction(engine, definition);
+        }
+
+        protected ScriptingRestriction(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
         protected ScriptingPoint A, B;
         protected double distance = 0;
         protected int time = 0;
         protected TimeSpan timeOfDay;
         protected string description;
         protected bool infringed = false;
-
-        internal ScriptingRestriction(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { }
 
 
         public override void CheckConstructorSyntax()

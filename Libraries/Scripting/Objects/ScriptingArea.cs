@@ -9,8 +9,18 @@ using System.Linq;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingArea : ScriptingObject
+    internal class ScriptingArea : ScriptingObject
     {
+        internal static ScriptingArea Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingArea(engine, definition);
+        }
+
+        protected ScriptingArea(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+
         protected ScriptingPoint center = null;
         protected double radius = 0;
         protected double upperLimit = double.PositiveInfinity;
@@ -21,11 +31,6 @@ namespace AXToolbox.Scripting
 
         public double MaxHorizontalInfringement { get; protected set; }
         public double UpperLimit { get { return upperLimit; } }
-
-
-        internal ScriptingArea(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { }
 
 
         public override void CheckConstructorSyntax()
@@ -58,7 +63,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "PRISM":
-                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >=1 && Definition.ObjectParameters.Length <= 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 1 && Definition.ObjectParameters.Length <= 3);
                     var fileName = ParseOrDie<string>(0, s => s);
                     var trackLog = LoggerFile.Load(fileName, Engine.Settings.UtcOffset);
                     outline = Engine.Settings.GetTrack(trackLog);

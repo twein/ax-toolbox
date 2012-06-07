@@ -11,8 +11,18 @@ using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingPoint : ScriptingObject
+    internal class ScriptingPoint : ScriptingObject
     {
+        internal static ScriptingPoint Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingPoint(engine, definition);
+        }
+
+        protected ScriptingPoint(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+
         protected bool isStatic = false;
 
         //type fields
@@ -28,9 +38,6 @@ namespace AXToolbox.Scripting
         //display fields
         protected double radius;
 
-        internal ScriptingPoint(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { }
 
         public override void CheckConstructorSyntax()
         {

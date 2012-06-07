@@ -10,18 +10,23 @@ namespace AXToolbox.Scripting
 {
     class ScriptingPenalty : ScriptingObject
     {
+        internal static ScriptingPenalty Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingPenalty(engine, definition);
+        }
+
+        protected ScriptingPenalty(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        {
+            Infringements = new List<Penalty>();
+        }
+
         protected ScriptingArea area;
         protected double maxSpeed = 0;
         protected double sensitivity = 0;
         protected string description = "";
 
         public List<Penalty> Infringements { get; protected set; }
-
-        internal ScriptingPenalty(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { 
-            Infringements = new List<Penalty>();
-        }
 
 
         public override void CheckConstructorSyntax()
