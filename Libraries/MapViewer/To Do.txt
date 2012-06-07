@@ -1,0 +1,6 @@
+﻿BUGS
+- GeoreferencedImage is dependent of the image resolution. It only works at 96dpi.
+
+TO DO
+- Display correctly AXTrackpoint.StartSubtrack
+* Add distance measure tool (shift-click)

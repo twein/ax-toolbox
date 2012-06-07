@@ -1,0 +1,47 @@
+﻿<Window x:Class="FlightAnalyzer.ToolsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:scripting="clr-namespace:AXToolbox.Scripting;assembly=AXToolbox.Scripting"
+        Title="Tools" Height="Auto" Width="Auto" MaxWidth="300" 
+        WindowStyle="ToolWindow" SizeToContent="WidthAndHeight" ShowInTaskbar="False" WindowStartupLocation="Manual"
+        Loaded="Window_Loaded" Closing="Window_Closing" >
+    <Window.Resources>
+        <ObjectDataProvider MethodName="GetValues"
+                        ObjectType="{x:Type sys:Enum}"
+                        x:Key="Layers">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="scripting:OverlayLayers" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <RadioButton Name="radioOriginalTrack" GroupName="radioTrackType" ToolTip="Show the original track log" Checked="radioTrack_Checked">Original</RadioButton>
+            <RadioButton Name="radioCleanTrack" GroupName="radioTrackType" ToolTip="Show the clean track log (no spikes)" Checked="radioTrack_Checked" IsChecked="True">Clean</RadioButton>
+            <RadioButton Name="radioFlightTrack" GroupName="radioTrackType" ToolTip="Show the flight track log (from take off to landing)" Checked="radioTrack_Checked">Flight track</RadioButton>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Name="buttonBck" Grid.Column="0" ToolTip="Take off hint" Click="buttonHint_Click">«</Button>
+            <Slider Grid.Column="1" Name="sliderTrackPointer" ToolTip="Track pointer" Width="Auto" SmallChange="1" LargeChange="60" ValueChanged="sliderTrackPointer_ValueChanged" IsSnapToTickEnabled="True" />
+            <Button Name="buttonFwd" Grid.Column="2" ToolTip="Landing hint" Click="buttonHint_Click">»</Button>
+        </Grid>
+        <CheckBox Grid.Row="2" Name="checkCenterPointer" ToolTip="Center the track pointer" Click="checkCenterPointer_Click">Center pointer</CheckBox>
+        <Expander Grid.Row="3">
+            <Expander.Header>Layers</Expander.Header>
+            <ListBox Name="listLayers" SelectionMode="Multiple" ItemsSource="{Binding Source={StaticResource Layers}}" SelectionChanged="ListBox_SelectionChanged"/>
+        </Expander>
+
+    </Grid>
+</Window>

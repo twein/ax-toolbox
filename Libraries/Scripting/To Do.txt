@@ -1,0 +1,38 @@
+﻿
+TO DO
+- MVMDP Previous task marker or launch point (for PDG FON restrictions)
+- Add a new type of point: TLU Track point last used: Last used point in any task
+
+- Scripting object inheritance instead of switch case
+? check for repeated task numbers
+- make axpoint, axwaypoint, immutable. Rewrite CleanTrack, FlightTrack & Co.
+- checkbox scripting object: shown in a separate window, the user must check all checkboxes before being allowed to save. Show in the report too?
+- Add the possibility of warning the user programmatically.
+- restriction: non split tasks: check for no markers in between
+- Fix the text of distance infringement, it's not the infringement, it's the distance
+! GoalDeclaration coordinates: don't parse at load time?. Don't assume anything: check 1111, 1111/, 111, 1111/1111, etc.
+! think about measure/result/constraint/filter/restriction thing
+- Add SAMEAREA and DIFFERENTAREA restrictions
+- list of all debriefers that worked on a flight report
+- when a LRN result has ben overriden by a restriction, the result still shows on map. Check other types as well (e.g. Europeans2011, task 10, pilot 45)
+- Area type BOX
+! rewrite the examples in the AXS Specification for new syntax
+? multiple MMA in HWZ, PDG, FON (not a good idea. The GPS performance should always be worse than ANY physical marker performance)
+
+* remove mintime and maxtime from MPDG. It can be programmed with restrictions.
+* add TBEFORE(<point>,<time of day>) and TAFTER(<point>,<time of day>): the point must happen before or after the given time of day
+* Add event title to settings
+* Competition area and exclusion areas
+* think about the area/filter for competition area and exclusion areas: when filter is ouside task, it is assumed to filter the competition area
+* global penalties instead of task specific
+* implement VSMAX
+* Finish PDF report
+* check if http://code.google.com/apis/maps/documentation/elevation/ is better
+* in result and penalty, use point pairs for different entry/exit pairs instead of usedpoints. For single points, use point/null pair
+* altitude units on pdf reports
+* altitude units in settings
+* fix the demo files for new syntax
+* Area CSG
+
+How to set different tasks:
+	3DS: apply a filter for each area. the result is a DACC

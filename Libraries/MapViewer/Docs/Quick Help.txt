@@ -1,0 +1,15 @@
+﻿Mouse:
+    Move: move the pointer.
+    Wheel: augment o reduce zoom.
+    Left button drag: pan the map.
+    Shift+left button drag: set a distance measurement.
+
+Hot keys:
+    +: augment zoom.
+    -: reduce zoom.
+    .: set zoom to 1.
+    Escape: reset zoom to fit the window.
+    Up/down/left/right: pan the map.
+    back/delete: delete all distance measurements.
+    CTRL+S: take a snapshot (snapshot.png)
+    CTRL+P: print snapshot

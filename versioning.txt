@@ -1,0 +1,5 @@
+To change version numbers:
+	1: Change AssemblyVersion in VersionInfo.base.cs in the application Properties folder
+	2: Change ProductVersion in Setup*.base.vdproj in the application deployment project folder
+	3: Build the application. Press "reload" when asked
+	4: Build the deployment project
