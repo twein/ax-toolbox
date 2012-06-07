@@ -23,8 +23,8 @@ namespace AXToolbox.Scripting
         public double UpperLimit { get { return upperLimit; } }
 
 
-        internal ScriptingArea(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
+        internal ScriptingArea(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
         { }
 
 
@@ -32,25 +32,25 @@ namespace AXToolbox.Scripting
         {
             base.CheckConstructorSyntax();
 
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown area type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown area type '" + Definition.ObjectType + "'");
 
                 case "CYLINDER":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 2 && Definition.ObjectParameters.Length <= 4);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, Parsers.ParseLength);
-                    if (ObjectParameters.Length >= 3)
+                    if (Definition.ObjectParameters.Length >= 3)
                         upperLimit = ParseOrDie<double>(2, Parsers.ParseLength);
-                    if (ObjectParameters.Length >= 4)
+                    if (Definition.ObjectParameters.Length >= 4)
                         lowerLimit = ParseOrDie<double>(3, Parsers.ParseLength);
 
                     MaxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "SPHERE":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, Parsers.ParseLength);
 
@@ -58,13 +58,13 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "PRISM":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >=1 && Definition.ObjectParameters.Length <= 3);
                     var fileName = ParseOrDie<string>(0, s => s);
                     var trackLog = LoggerFile.Load(fileName, Engine.Settings.UtcOffset);
                     outline = Engine.Settings.GetTrack(trackLog);
-                    if (ObjectParameters.Length >= 2)
+                    if (Definition.ObjectParameters.Length >= 2)
                         upperLimit = ParseOrDie<double>(1, Parsers.ParseLength);
-                    if (ObjectParameters.Length >= 3)
+                    if (Definition.ObjectParameters.Length >= 3)
                         lowerLimit = ParseOrDie<double>(2, Parsers.ParseLength);
 
                     for (var i = 1; i < outline.Count; i++)
@@ -74,11 +74,11 @@ namespace AXToolbox.Scripting
 
                 case "UNION":
                 case "INTERSECTION":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length > 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length > 1);
                     areas = new List<ScriptingArea>();
-                    foreach (var areaName in ObjectParameters)
+                    foreach (var areaName in Definition.ObjectParameters)
                     {
-                        var area = Engine.Heap.Values.FirstOrDefault(o => o is ScriptingArea && o.ObjectName == areaName) as ScriptingArea;
+                        var area = Engine.Heap.Values.FirstOrDefault(o => o is ScriptingArea && o.Definition.ObjectName == areaName) as ScriptingArea;
                         if (area == null)
                             throw new ArgumentException("undeclaread area " + areaName);
                         areas.Add(area);
@@ -88,23 +88,23 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            switch (DisplayMode)
+            switch (Definition.DisplayMode)
             {
                 default:
-                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+                    throw new ArgumentException("Unknown display mode '" + Definition.DisplayMode + "'");
 
                 case "NONE":
-                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
+                    if (Definition.DisplayParameters.Length != 1 || Definition.DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "":
                 case "DEFAULT":
-                    if (DisplayParameters.Length != 1)
+                    if (Definition.DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");
 
-                    if (DisplayParameters[0] != "")
-                        Color = Parsers.ParseColor(DisplayParameters[0]);
+                    if (Definition.DisplayParameters[0] != "")
+                        Color = Parsers.ParseColor(Definition.DisplayParameters[0]);
                     break;
             }
         }
@@ -113,7 +113,7 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 case "CYLINDER":
                 case "SPHERE":
@@ -129,21 +129,21 @@ namespace AXToolbox.Scripting
         public override void Display()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE")
+            if (Definition.DisplayMode != "NONE")
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "CYLINDER":
                     case "SPHERE":
                         if (center.Point != null)
-                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, Definition.ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
 
                     case "PRISM":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
-                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
+                        overlay = new PolygonalAreaOverlay(list, Definition.ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
 
                     case "UNION":
@@ -162,10 +162,10 @@ namespace AXToolbox.Scripting
             var isInside = false;
 
             if (point == null)
-                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+                Trace.WriteLine("Area " + Definition.ObjectName + ": the testing point is null", Definition.ObjectClass);
             else
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "CYLINDER":
                         if (center.Point != null)
@@ -208,7 +208,7 @@ namespace AXToolbox.Scripting
             double infringement = 0;
 
             if (point == null)
-                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+                Trace.WriteLine("Area " + Definition.ObjectName + ": the testing point is null", Definition.ObjectClass);
             else //if (Contains(point))
                 infringement = (point.Altitude - lowerLimit) / 30.48;
 
@@ -219,7 +219,7 @@ namespace AXToolbox.Scripting
             double infringement = 0;
 
             if (point == null)
-                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+                Trace.WriteLine("Area " + Definition.ObjectName + ": the testing point is null", Definition.ObjectClass);
             else //if (Contains(point))
                 infringement = upperLimit - point.Altitude;
 

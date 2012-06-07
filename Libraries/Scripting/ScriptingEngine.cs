@@ -132,7 +132,7 @@ namespace AXToolbox.Scripting
 
                 foreach (var t in taskQuery)
                     if (t.Result != null)
-                        yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.ObjectType, t.Result.ToString());
+                        yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.Definition.ObjectType, t.Result.ToString());
             }
         }
         public IEnumerable<string> Penalties
@@ -145,7 +145,7 @@ namespace AXToolbox.Scripting
 
                 foreach (var t in taskQuery)
                     foreach (var p in t.Penalties)
-                        yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.ObjectType, p.ToString());
+                        yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.Definition.ObjectType, p.ToString());
             }
         }
         public IEnumerable<string> Log
@@ -164,7 +164,7 @@ namespace AXToolbox.Scripting
                 if (!importantOnly)
                     lines.Add(obj.ToString());
                 foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
-                    lines.Add(obj.ObjectClass + " " + obj.ObjectName + ": " + note.Text);
+                    lines.Add(obj.Definition.ObjectClass + " " + obj.Definition.ObjectName + ": " + note.Text);
             }
 
             return lines;
@@ -199,12 +199,12 @@ namespace AXToolbox.Scripting
                 {
                     line = lines[lineNumber];
 
-                    var obj = ScriptingObject.Create(this, line);
+                    var obj = ScriptingObject.Parse(this, line);
 
                     if (obj != null)
                     {
                         //place on heap
-                        Heap.Add(obj.ObjectName, obj);
+                        Heap.Add(obj.Definition.ObjectName, obj);
                     }
                 }
             }
