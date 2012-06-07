@@ -8,6 +8,16 @@ namespace AXToolbox.Scripting
 {
     class ScriptingResult : ScriptingObject
     {
+        internal static ScriptingResult Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingResult(engine, definition);
+        }
+
+        protected ScriptingResult(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+        
         protected string unit;
         protected ScriptingPoint A, B, C;
         protected double setDirection;
@@ -15,10 +25,6 @@ namespace AXToolbox.Scripting
         protected double bestPerformance = 0;
 
         public Result Result { get; protected set; }
-
-        internal ScriptingResult(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { }
 
 
         public override void CheckConstructorSyntax()

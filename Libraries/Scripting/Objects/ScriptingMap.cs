@@ -7,15 +7,21 @@ using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingMap : ScriptingObject
+    internal class ScriptingMap : ScriptingObject
     {
+        internal static ScriptingMap Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingMap(engine, definition);
+        }
+
+        protected ScriptingMap(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+
         protected AXPoint topLeft;
         protected AXPoint bottomRight;
         protected double gridWidth = 0;
-
-        internal ScriptingMap(ScriptingEngine engine, ObjectDefinition definition)
-            : base(engine, definition)
-        { }
 
         public override void CheckConstructorSyntax()
         {

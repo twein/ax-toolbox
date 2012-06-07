@@ -6,11 +6,17 @@ using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingSetting : ScriptingObject
+    internal class ScriptingSetting : ScriptingObject
     {
-        internal ScriptingSetting(ScriptingEngine engine, ObjectDefinition definition)
+        internal static ScriptingSetting Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingSetting(engine, definition);
+        }
+
+        protected ScriptingSetting(ScriptingEngine engine, ObjectDefinition definition)
             : base(engine, definition)
         { }
+
 
         public override void CheckConstructorSyntax()
         {

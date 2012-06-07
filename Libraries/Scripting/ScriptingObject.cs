@@ -7,10 +7,59 @@ using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
-    public abstract class ScriptingObject
+    internal class ScriptingObject
     {
-        protected ScriptingEngine Engine { get; private set; }
-        public ObjectDefinition Definition { get; private set; }
+        //Object constructors table
+        private static Constructor[] Constructors =
+        {
+            new Constructor("AREA",        "*", ScriptingArea.Create),
+            new Constructor("FILTER",      "*", ScriptingFilter.Create),
+            new Constructor("MAP",         "*", ScriptingMap.Create),
+            new Constructor("PENALTY",     "*", ScriptingPenalty.Create),
+            new Constructor("POINT",       "*", ScriptingPoint.Create),
+            new Constructor("RESTRICTION", "*", ScriptingRestriction.Create),
+            new Constructor("RESULT",      "*", ScriptingResult.Create),
+            new Constructor("SET",         "*", ScriptingSetting.Create),
+            new Constructor("TASK",        "*", ScriptingTask.Create)
+        };
+
+        public static ScriptingObject Parse(ScriptingEngine engine, string line)
+        {
+            ScriptingObject obj = null;
+
+            var definition = ObjectDefinition.Parse(line);
+            if (definition != null)
+            {
+                var constructor = Constructors.FirstOrDefault(c => c.ObjectClass == definition.ObjectClass && (c.ObjectType == "*" || c.ObjectType == definition.ObjectType));
+                if (constructor == null)
+                    throw new ArgumentException("Unrecognized object " + definition.ObjectClass + " " + definition.ObjectType);
+
+                obj = constructor.Create(engine, definition);
+            }
+
+            return obj;
+        }
+
+        private ScriptingObject()
+        {
+            throw new InvalidOperationException("Don't use this constructor. Use Constructor.Create instead");
+        }
+        protected ScriptingObject(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            Engine = engine;
+            Definition = definition;
+
+            CheckConstructorSyntax();
+            CheckDisplayModeSyntax();
+
+            Trace.WriteLine(this.ToString(), definition.ObjectClass);
+            Notes = new List<Note>();
+        }
+
+
+
+        public ScriptingEngine Engine { get; internal set; }
+        public ObjectDefinition Definition { get; internal set; }
 
         public Color Color { get; protected set; }
         public List<Note> Notes { get; private set; }
@@ -34,66 +83,6 @@ namespace AXToolbox.Scripting
             return Definition.Line;
         }
 
-        private ScriptingObject()
-        {
-            throw new InvalidOperationException("This constructor must not be used");
-        }
-
-        public static ScriptingObject Parse(ScriptingEngine engine, string line)
-        {
-            ScriptingObject obj = null;
-
-            var definition = ObjectDefinition.Parse(line);
-            if (definition != null)
-            {
-                switch (definition.ObjectClass)
-                {
-                    case "AREA":
-                        obj = new ScriptingArea(engine, definition);
-                        break;
-                    case "FILTER":
-                        obj = new ScriptingFilter(engine, definition);
-                        break;
-                    case "MAP":
-                        obj = new ScriptingMap(engine, definition);
-                        break;
-                    case "POINT":
-                        obj = new ScriptingPoint(engine, definition);
-                        break;
-                    case "SET":
-                        obj = new ScriptingSetting(engine, definition);
-                        break;
-                    case "TASK":
-                        obj = new ScriptingTask(engine, definition);
-                        break;
-                    case "RESULT":
-                        obj = new ScriptingResult(engine, definition);
-                        break;
-                    case "RESTRICTION":
-                        obj = new ScriptingRestriction(engine, definition);
-                        break;
-                    case "PENALTY":
-                        obj = new ScriptingPenalty(engine, definition);
-                        break;
-                    default:
-                        throw new ArgumentException("Unrecognized object type '" + definition.ObjectClass + "'");
-                }
-            }
-
-            return obj;
-        }
-
-        protected ScriptingObject(ScriptingEngine engine, ObjectDefinition definition)
-        {
-            Engine = engine;
-            Definition = definition;
-
-            CheckConstructorSyntax();
-            CheckDisplayModeSyntax();
-
-            Trace.WriteLine(this.ToString(), definition.ObjectClass);
-            Notes = new List<Note>();
-        }
 
         /// <summary>Check constructor syntax and parse static definitions or die
         /// </summary>
@@ -112,10 +101,16 @@ namespace AXToolbox.Scripting
         }
         /// <summary>Check display mode syntax or die
         /// </summary>
-        public abstract void CheckDisplayModeSyntax();
+        public virtual void CheckDisplayModeSyntax()
+        {
+            throw new InvalidOperationException("Don't use this method! Implement it in the derived class");
+        }
         /// <summary>Displays te object on the map
         /// </summary>
-        public abstract void Display();
+        public virtual void Display()
+        {
+            throw new InvalidOperationException("Don't use this method! Implement it in the derived class");
+        }
 
         /// <summary>Clears the pilot dependent (non-static) values
         /// </summary>
@@ -257,9 +252,24 @@ namespace AXToolbox.Scripting
                 }
             }
         }
+
+        private class Constructor
+        {
+            public string ObjectClass;
+            public string ObjectType;
+            public Func<ScriptingEngine, ObjectDefinition, ScriptingObject> Create;
+
+            public Constructor(string objectClass, string objectType, Func<ScriptingEngine, ObjectDefinition, ScriptingObject> create)
+            {
+                ObjectClass = objectClass;
+                ObjectType = objectType;
+                Create = create;
+            }
+        }
+
     }
 
-    public class ObjectDefinition
+    internal class ObjectDefinition
     {
         //Regular Expressions to parse commands. Use in this same order.
         private static Regex setRE = new Regex(@"^(?<class>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
@@ -308,6 +318,7 @@ namespace AXToolbox.Scripting
                     };
                 }
             }
+
             return def;
         }
 
