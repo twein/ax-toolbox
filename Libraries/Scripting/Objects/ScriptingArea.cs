@@ -25,12 +25,9 @@ namespace AXToolbox.Scripting
         protected double radius = 0;
         protected double upperLimit = double.PositiveInfinity;
         protected double lowerLimit = double.NegativeInfinity;
+        protected double maxHorizontalInfringement;
         protected List<AXPoint> outline;
-
         protected List<ScriptingArea> areas;
-
-        public double MaxHorizontalInfringement { get; protected set; }
-        public double UpperLimit { get { return upperLimit; } }
 
 
         public override void CheckConstructorSyntax()
@@ -51,7 +48,7 @@ namespace AXToolbox.Scripting
                     if (Definition.ObjectParameters.Length >= 4)
                         lowerLimit = ParseOrDie<double>(3, Parsers.ParseLength);
 
-                    MaxHorizontalInfringement = 2 * radius;
+                    maxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "SPHERE":
@@ -59,7 +56,7 @@ namespace AXToolbox.Scripting
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, Parsers.ParseLength);
 
-                    MaxHorizontalInfringement = 2 * radius;
+                    maxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "PRISM":
@@ -74,7 +71,7 @@ namespace AXToolbox.Scripting
 
                     for (var i = 1; i < outline.Count; i++)
                         for (var j = 0; j < i; j++)
-                            MaxHorizontalInfringement = Math.Max(MaxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
+                            maxHorizontalInfringement = Math.Max(maxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
                     break;
 
                 case "UNION":
@@ -208,27 +205,45 @@ namespace AXToolbox.Scripting
 
             return isInside;
         }
-        public double ScaledBPZInfringement(AXPoint point)
+
+        public Track FilterTrack(Track unfilteredTrack)
         {
-            double infringement = 0;
-
-            if (point == null)
-                Trace.WriteLine("Area " + Definition.ObjectName + ": the testing point is null", Definition.ObjectClass);
-            else //if (Contains(point))
-                infringement = (point.Altitude - lowerLimit) / 30.48;
-
-            return infringement;
+            return unfilteredTrack.Filter(p => Contains(p));
         }
-        public double RPZAltitudeInfringement(AXPoint point)
+
+        //returns the BPZ penalty points for a given track
+        //CIA COMPETITION OPERATION HANDBOOK Rule 10.14
+        public int BpzPenalty(Track track)
         {
-            double infringement = 0;
+            var infringement =
+                FilterTrack(track)
+                .ReducePairs((p1, p2) =>
+                {
+                    var altitudeAboveLimitInFeet = (p2.Altitude - lowerLimit) * Physics.METERS2FEET;
+                    var seconds = (p2.Time - p1.Time).TotalSeconds;
+                    return altitudeAboveLimitInFeet * seconds / 100;
+                });
 
-            if (point == null)
-                Trace.WriteLine("Area " + Definition.ObjectName + ": the testing point is null", Definition.ObjectClass);
-            else //if (Contains(point))
-                infringement = upperLimit - point.Altitude;
+            return (int)Math.Min(1000, 10 * Math.Ceiling(infringement / 10)); //points rounded to next 10, up to 1000 points
+        }
+        //returns the RPZ penalty points for a given track
+        //CIA COMPETITION OPERATION HANDBOOK Rule 7.5
+        public int RpzPenalty(Track track)
+        {
+            var infringement =
+                FilterTrack(track)
+                .ReduceSegments((p1, p2) =>
+                {
+                    var horizontalDistance = Physics.Distance2D(p1, p2);
+                    var averageAltitude = (p1.Altitude + p2.Altitude) / 2;
+                    return
+                        (
+                            horizontalDistance / maxHorizontalInfringement + //7.5.1 horizontal contribution
+                            1 - (averageAltitude / upperLimit) // 7.5.2 vertical contribition
+                        ) / 2; //7.5.3 average
+                });
 
-            return infringement;
+            return (int)Math.Min(1000, 10 * Math.Ceiling(500 * infringement / 10)); //7.5.4 infringement * 500 points rounded to next 10, up to 1000 points
         }
 
         /*

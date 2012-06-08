@@ -200,9 +200,14 @@ namespace AXToolbox.GpsLoggers
             return track;
         }
 
+
+        /// <summary>accumulate the value of a function applied to every pair of contiguous points belonging to the track
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public double ReducePairs(Func<AXPoint, AXPoint, double> func)
         {
-            double points = 0;
+            double value = 0;
 
             foreach (var s in segments)
             {
@@ -211,22 +216,26 @@ namespace AXToolbox.GpsLoggers
 
                 for (var i = 1; i < s.Length; i++)
                 {
-                    points += func(s[i - 1], s[i]);
+                    value += func(s[i - 1], s[i]);
                 }
             }
 
-            return points;
+            return value;
         }
+        /// <summary>accumulate the value of a function applied to the first and last point of every segment of the track
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public double ReduceSegments(Func<AXPoint, AXPoint, double> func)
         {
-            double points = 0;
+            double value = 0;
 
             foreach (var s in segments)
             {
-                points += func(s[s.Length - 1], s[0]);
+                value += func(s[s.Length - 1], s[0]);
             }
 
-            return points;
+            return value;
         }
     }
 }

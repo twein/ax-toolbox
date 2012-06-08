@@ -35,6 +35,13 @@ namespace AXToolbox.Scripting
 
     public sealed class ScriptingEngine : BindableObject
     {
+        public ScriptingEngine(MapViewerControl mapViewer)
+        {
+            MapViewer = mapViewer;
+            Settings = new FlightSettings();
+            Heap = new Dictionary<string, ScriptingObject>();
+        }
+
         public string ShortDescription
         {
             get
@@ -156,27 +163,6 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public IEnumerable<string> GetLog(bool importantOnly)
-        {
-            var lines = new List<string>();
-            foreach (var obj in Heap.Values)
-            {
-                if (!importantOnly)
-                    lines.Add(obj.ToString());
-                foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
-                    lines.Add(obj.Definition.ObjectClass + " " + obj.Definition.ObjectName + ": " + note.Text);
-            }
-
-            return lines;
-        }
-
-        public ScriptingEngine(MapViewerControl mapViewer)
-        {
-            MapViewer = mapViewer;
-            Settings = new FlightSettings();
-            Heap = new Dictionary<string, ScriptingObject>();
-        }
-
         public void LoadScript(string scriptFileName)
         {
             Trace.WriteLine("Loading script '" + scriptFileName + "'", "ENGINE");
@@ -252,7 +238,6 @@ namespace AXToolbox.Scripting
                 throw new InvalidOperationException("No valid points in track");
             }
         }
-
         public void Reset()
         {
             TrackPointer = null;
@@ -308,6 +293,39 @@ namespace AXToolbox.Scripting
             }
             catch { }
             SavePdfLog(reportsFolder);
+        }
+        public void Display(bool factoryReset = false)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            {
+                if (factoryReset)
+                    MapViewer.Clear();
+                else
+                    MapViewer.ClearOverlays();
+
+                foreach (var obj in Heap.Values)
+                    obj.Display();
+
+                if (Report != null)
+                {
+                    var path = new Track(VisibleTrack).ToWindowsPointArray();
+                    MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
+
+                    var position = path[0][0];
+                    if (TrackPointer != null)
+                        position = TrackPointer.Position;
+                    TrackPointer = new CrosshairsOverlay(position) { Layer = (uint)OverlayLayers.Pointer };
+                    MapViewer.AddOverlay(TrackPointer);
+
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.TakeOffPoint.ToWindowsPoint(), "Take off") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
+                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
+
+                    foreach (var m in Report.Markers)
+                        MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Markers });
+                }
+                if (KeepPointerCentered)
+                    MapViewer.PanTo(TrackPointer.Position);
+            }));
         }
         public void SaveAll(string rootFolder)
         {
@@ -481,39 +499,18 @@ namespace AXToolbox.Scripting
 
             document.Close();
         }
-
-        public void Display(bool factoryReset = false)
+        public IEnumerable<string> GetLog(bool importantOnly)
         {
-            Application.Current.Dispatcher.BeginInvoke(new ThreadStart(() =>
+            var lines = new List<string>();
+            foreach (var obj in Heap.Values)
             {
-                if (factoryReset)
-                    MapViewer.Clear();
-                else
-                    MapViewer.ClearOverlays();
+                if (!importantOnly)
+                    lines.Add(obj.ToString());
+                foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
+                    lines.Add(obj.Definition.ObjectClass + " " + obj.Definition.ObjectName + ": " + note.Text);
+            }
 
-                foreach (var obj in Heap.Values)
-                    obj.Display();
-
-                if (Report != null)
-                {
-                    var path = new Track(VisibleTrack).ToWindowsPointArray();
-                    MapViewer.AddOverlay(new TrackOverlay(path, 2) { Layer = (uint)OverlayLayers.Track });
-
-                    var position = path[0][0];
-                    if (TrackPointer != null)
-                        position = TrackPointer.Position;
-                    TrackPointer = new CrosshairsOverlay(position) { Layer = (uint)OverlayLayers.Pointer };
-                    MapViewer.AddOverlay(TrackPointer);
-
-                    MapViewer.AddOverlay(new WaypointOverlay(Report.TakeOffPoint.ToWindowsPoint(), "Take off") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
-                    MapViewer.AddOverlay(new WaypointOverlay(Report.LandingPoint.ToWindowsPoint(), "Landing") { Layer = (uint)OverlayLayers.TakeOff_And_Landing });
-
-                    foreach (var m in Report.Markers)
-                        MapViewer.AddOverlay(new MarkerOverlay(m.ToWindowsPoint(), "Marker " + m.Name) { Layer = (uint)OverlayLayers.Markers });
-                }
-                if (KeepPointerCentered)
-                    MapViewer.PanTo(TrackPointer.Position);
-            }));
+            return lines;
         }
     }
 }
