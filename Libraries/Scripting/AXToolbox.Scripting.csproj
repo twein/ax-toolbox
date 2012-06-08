@@ -70,6 +70,7 @@
     <Compile Include="FlightReport.cs" />
     <Compile Include="FlightSettings.cs" />
     <Compile Include="Note.cs" />
+    <Compile Include="ObjectDefinition.cs" />
     <Compile Include="Objects\ScriptingRestriction.cs" />
     <Compile Include="Objects\ScriptingPenalty.cs" />
     <Compile Include="Objects\ScriptingArea.cs" />

@@ -2,6 +2,7 @@
 TO DO
 - MVMDP Previous task marker or launch point (for PDG FON restrictions)
 - Add a new type of point: TLU Track point last used: Last used point in any task
+- fix BPZ and RPZ penalties for CSG areas
 
 - Scripting object inheritance instead of switch case
 ? check for repeated task numbers

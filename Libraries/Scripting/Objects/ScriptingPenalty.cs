@@ -123,18 +123,14 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            var infringingTrack = new Track(Engine.Report.FlightTrack)
-                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time)
-                                .Filter(p => area.Contains(p));
-                            double penaltyPoints = infringingTrack.ReducePairs((p1, p2) =>
-                            {
-                                return area.ScaledBPZInfringement(p2) * (p2.Time - p1.Time).TotalSeconds;
-                            });
+                            var currentTrack =
+                                new Track(Engine.Report.FlightTrack)
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                            var penaltyPoints = area.BpzPenalty(currentTrack);
                             if (penaltyPoints > 0)
                             {
-                                penaltyPoints = Math.Min(1000, 10 * Math.Ceiling(penaltyPoints / 10)); //Rule 7.5
-                                var infringement = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
-                                infringement.InfringingTrack = infringingTrack;
+                                var infringement = new Penalty("R7.3.6 " + description, PenaltyType.CompetitionPoints, penaltyPoints);
+                                infringement.InfringingTrack = area.FilterTrack(currentTrack);
                                 Infringements.Add(infringement);
                                 task.Penalties.Add(infringement);
                             }
@@ -165,20 +161,14 @@ namespace AXToolbox.Scripting
                                 done = true;
                             }
 
-                            var infringingTrack = new Track(Engine.Report.FlightTrack)
-                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time)
-                                .Filter(p => area.Contains(p));
-                            double penaltyPoints = infringingTrack.ReduceSegments((p1, p2) =>
-                            {
-                                return 1 - (p1.Altitude + p2.Altitude) / (2 * area.UpperLimit) + Physics.Distance2D(p1, p2) / area.MaxHorizontalInfringement;
-                            });
-
+                            var currentTrack =
+                                new Track(Engine.Report.FlightTrack)
+                                .Filter(p => p.Time >= firstPoint.Time && p.Time <= lastPoint.Time);
+                            var penaltyPoints = area.RpzPenalty(currentTrack);
                             if (penaltyPoints > 0)
                             {
-                                penaltyPoints = 500 * penaltyPoints / 2; //COH7.5
-                                penaltyPoints = Math.Min(1000, 10 * Math.Ceiling(penaltyPoints / 10)); //Rule 7.5
-                                var infringement = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, (int)penaltyPoints);
-                                infringement.InfringingTrack = infringingTrack;
+                                var infringement = new Penalty("R7.3.4 " + description, PenaltyType.CompetitionPoints, penaltyPoints);
+                                infringement.InfringingTrack = area.FilterTrack(currentTrack);
                                 Infringements.Add(infringement);
                                 task.Penalties.Add(infringement);
                             }

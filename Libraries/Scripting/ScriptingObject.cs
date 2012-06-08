@@ -2,47 +2,26 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Media;
 
 namespace AXToolbox.Scripting
 {
     internal class ScriptingObject
     {
-        //Object constructors table
-        private static Constructor[] Constructors =
-        {
-            new Constructor("AREA",        "*", ScriptingArea.Create),
-            new Constructor("FILTER",      "*", ScriptingFilter.Create),
-            new Constructor("MAP",         "*", ScriptingMap.Create),
-            new Constructor("PENALTY",     "*", ScriptingPenalty.Create),
-            new Constructor("POINT",       "*", ScriptingPoint.Create),
-            new Constructor("RESTRICTION", "*", ScriptingRestriction.Create),
-            new Constructor("RESULT",      "*", ScriptingResult.Create),
-            new Constructor("SET",         "*", ScriptingSetting.Create),
-            new Constructor("TASK",        "*", ScriptingTask.Create)
-        };
+        #region Construction
 
         public static ScriptingObject Parse(ScriptingEngine engine, string line)
         {
-            ScriptingObject obj = null;
-
             var definition = ObjectDefinition.Parse(line);
             if (definition != null)
-            {
-                var constructor = Constructors.FirstOrDefault(c => c.ObjectClass == definition.ObjectClass && (c.ObjectType == "*" || c.ObjectType == definition.ObjectType));
-                if (constructor == null)
-                    throw new ArgumentException("Unrecognized object " + definition.ObjectClass + " " + definition.ObjectType);
-
-                obj = constructor.Create(engine, definition);
-            }
-
-            return obj;
+                return definition.CreateObject(engine);
+            else
+                return null;
         }
 
         private ScriptingObject()
         {
-            throw new InvalidOperationException("Don't use this constructor. Use Constructor.Create instead");
+            throw new InvalidOperationException("Don't use this constructor. Use ObjectConstructor instead");
         }
         protected ScriptingObject(ScriptingEngine engine, ObjectDefinition definition)
         {
@@ -55,33 +34,14 @@ namespace AXToolbox.Scripting
             Trace.WriteLine(this.ToString(), definition.ObjectClass);
             Notes = new List<Note>();
         }
+        #endregion
 
-
-
-        public ScriptingEngine Engine { get; internal set; }
-        public ObjectDefinition Definition { get; internal set; }
+        protected ScriptingEngine Engine { get; set; }
+        public ObjectDefinition Definition { get; set; }
 
         public Color Color { get; protected set; }
         public List<Note> Notes { get; private set; }
         public ScriptingTask Task { get; private set; }
-
-        protected string SyntaxErrorMessage
-        {
-            get { return "Syntax error in " + Definition.ObjectName + " definition"; }
-        }
-        protected string IncorrectNumberOfArgumentsErrorMessage
-        {
-            get { return "Incorrect number of arguments in " + Definition.ObjectName + " definition"; }
-        }
-
-        public string ToShortString()
-        {
-            return Definition.ObjectType;
-        }
-        public override string ToString()
-        {
-            return Definition.Line;
-        }
 
 
         /// <summary>Check constructor syntax and parse static definitions or die
@@ -105,6 +65,7 @@ namespace AXToolbox.Scripting
         {
             throw new InvalidOperationException("Don't use this method! Implement it in the derived class");
         }
+
         /// <summary>Displays te object on the map
         /// </summary>
         public virtual void Display()
@@ -128,12 +89,36 @@ namespace AXToolbox.Scripting
         }
 
 
-        //error checking and parsing
+        public string ToShortString()
+        {
+            return Definition.ObjectType;
+        }
+        public override string ToString()
+        {
+            return Definition.OriginalSentence;
+        }
 
+        public void AddNote(string text, bool isImportant = false)
+        {
+            Notes.Add(new Note(text, isImportant));
+        }
+        public string GetFirstNoteText()
+        {
+            var note = Notes.FirstOrDefault(n => n.IsImportant);
+
+            if (note == null)
+                note = Notes.FirstOrDefault();
+
+            if (note == null)
+                note = new Note("");
+
+            return note.Text;
+        }
+
+        //error checking and parsing
         /// <summary>Die if the condition is false
         /// </summary>
         /// <param name="ok"></param>
-        //TODO: improve this function
         protected void AssertNumberOfParametersOrDie(bool ok)
         {
             if (!ok)
@@ -147,7 +132,7 @@ namespace AXToolbox.Scripting
         protected T Resolve<T>(int atParameterIndex) where T : ScriptingObject
         {
             var key = Definition.ObjectParameters[atParameterIndex];
-            return ((T)Engine.Heap[key]);
+            return (T)Engine.Heap[key];
         }
         /// <summary>Looks for a definition of scripting object T at a given parameter array index
         /// With lots of checkings
@@ -162,7 +147,7 @@ namespace AXToolbox.Scripting
             if (!(Engine.Heap[key] is T))
                 throw new ArgumentException(key + " is the wrong type (" + Engine.Heap[key].Definition.ObjectClass + ")");
 
-            return ((T)Engine.Heap[key]);
+            return (T)Engine.Heap[key];
         }
 
         /// <summary>Looks for n scripting point definitions starting at a given parameter array index
@@ -194,18 +179,7 @@ namespace AXToolbox.Scripting
             return list;
         }
 
-        /// <summary>Looks for a definition of object T at a given parameter array index
-        /// No checkings
-        /// </summary>
-        /// <typeparam name="T">Return type</typeparam>
-        /// <param name="atParameterIndex">position of the value in the parameter array</param>
-        /// <param name="parseFunction">function used to parse the string</param>
-        /// <returns></returns>
-        protected T Parse<T>(int atParameterIndex, Func<string, T> parseFunction)
-        {
-            return parseFunction(Definition.ObjectParameters[atParameterIndex]);
-        }
-        /// <summary>Looks for a definition of object T at a given parameter array index
+        /// <summary>Parses object T at a given parameter array index
         /// Lots of checkings
         /// </summary>
         /// <typeparam name="T">Return type</typeparam>
@@ -227,113 +201,13 @@ namespace AXToolbox.Scripting
             }
         }
 
-        public void AddNote(string text, bool isImportant = false)
+        protected string SyntaxErrorMessage
         {
-            Notes.Add(new Note() { Text = text, IsImportant = isImportant });
+            get { return "Syntax error in " + Definition.ObjectName + " definition"; }
         }
-
-        public string GetFirstNoteText()
+        protected string IncorrectNumberOfArgumentsErrorMessage
         {
-            try
-            {
-                var note = Notes.First(n => n.IsImportant);
-                return note.Text;
-            }
-            catch
-            {
-                try
-                {
-                    var note = Notes.First();
-                    return note.Text;
-                }
-                catch
-                {
-                    return "";
-                }
-            }
-        }
-
-        private class Constructor
-        {
-            public string ObjectClass;
-            public string ObjectType;
-            public Func<ScriptingEngine, ObjectDefinition, ScriptingObject> Create;
-
-            public Constructor(string objectClass, string objectType, Func<ScriptingEngine, ObjectDefinition, ScriptingObject> create)
-            {
-                ObjectClass = objectClass;
-                ObjectType = objectType;
-                Create = create;
-            }
-        }
-
-    }
-
-    internal class ObjectDefinition
-    {
-        //Regular Expressions to parse commands. Use in this same order.
-        private static Regex setRE = new Regex(@"^(?<class>SET)\s+(?<name>\S+?)\s*=\s*(?<parms>.*)$", RegexOptions.IgnoreCase);
-        private static Regex objectRE = new Regex(@"^(?<class>\S+?)\s+(?<name>\S+?)\s*=\s*(?<type>\S+?)\s*\((?<parms>.*?)\)\s*(\s*(?<display>\S+?)\s*\((?<displayparms>.*?)\))*.*$", RegexOptions.IgnoreCase);
-
-        public string Line;
-        public string ObjectClass;
-        public string ObjectName;
-        public string ObjectType;
-        public string[] ObjectParameters;
-        public string DisplayMode;
-        public string[] DisplayParameters;
-
-        private ObjectDefinition() { }
-
-        public static ObjectDefinition Parse(string line)
-        {
-            ObjectDefinition def = null;
-
-            var trimmedLine = line.Trim();
-
-            //ignore blank lines and comments
-            if (trimmedLine != "" && !trimmedLine.StartsWith("//"))
-            {
-                //find token or die
-                MatchCollection matches = null;
-                if (objectRE.IsMatch(trimmedLine))
-                    matches = objectRE.Matches(trimmedLine);
-                else if (setRE.IsMatch(trimmedLine))
-                    matches = setRE.Matches(trimmedLine);
-
-                if (matches != null)
-                {
-                    //parse the constructor and create the object or die
-                    var groups = matches[0].Groups;
-
-                    def = new ObjectDefinition()
-                    {
-                        Line = trimmedLine,
-                        ObjectClass = groups["class"].Value.ToUpper(),
-                        ObjectName = groups["name"].Value,
-                        ObjectType = groups["type"].Value.ToUpper(),
-                        ObjectParameters = SplitParameters(groups["parms"].Value),
-                        DisplayMode = groups["display"].Value.ToUpper(),
-                        DisplayParameters = SplitParameters(groups["displayparms"].Value)
-                    };
-                }
-            }
-
-            return def;
-        }
-
-        /// <summary>Split a string containing comma separated parameters and trim the individual parameters</summary>
-        /// <param name="parms">string containing comma separated parameters</param>
-        /// <returns>array of string parameters</returns>
-        private static string[] SplitParameters(string parms)
-        {
-            var split = parms.Split(new char[] { ',' });
-            for (int i = 0; i < split.Length; i++)
-            {
-                split[i] = split[i].Trim();
-            }
-
-            return split;
+            get { return "Incorrect number of arguments in " + Definition.ObjectName + " definition"; }
         }
     }
 }
