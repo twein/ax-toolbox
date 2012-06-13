@@ -37,7 +37,7 @@ namespace AXToolbox.Scripting
             switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown area type '" + Definition.ObjectType + "'");
+                    throw new ArgumentException(string.Format("Unknown area type '{0}'", Definition.ObjectType));
 
                 case "CYLINDER":
                     AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 2 && Definition.ObjectParameters.Length <= 4);
@@ -119,13 +119,17 @@ namespace AXToolbox.Scripting
             {
                 case "CYLINDER":
                 case "SPHERE":
-                    //radius is static
                     if (center.Point == null)
                         AddNote("center point is null", true);
                     break;
                 case "PRISM":
+                case "UNION":
+                case "INTERSECTION":
                     //do nothing
                     break;
+
+                default:
+                    throw new ArgumentException(string.Format("Process() not implemented for '{0}'", Definition.ObjectType));
             }
         }
         public override void Display()
@@ -150,8 +154,11 @@ namespace AXToolbox.Scripting
 
                     case "UNION":
                     case "INTERSECTION":
-                        //do nothing (already drawn)
+                        //do nothing
                         break;
+
+                    default:
+                        throw new ArgumentException(string.Format("Display() not implemented for '{0}'", Definition.ObjectType));
                 }
 
                 if (overlay != null)
@@ -200,6 +207,9 @@ namespace AXToolbox.Scripting
                                 break;
                         }
                         break;
+
+                    default:
+                        throw new ArgumentException(string.Format("Contains() not implemented for '{0}'", Definition.ObjectType));
                 }
             }
 
@@ -215,35 +225,73 @@ namespace AXToolbox.Scripting
         //CIA COMPETITION OPERATION HANDBOOK Rule 10.14
         public int BpzPenalty(Track track)
         {
-            var infringement =
-                FilterTrack(track)
-                .ReducePairs((p1, p2) =>
-                {
-                    var altitudeAboveLimitInFeet = (p2.Altitude - lowerLimit) * Physics.METERS2FEET;
-                    var seconds = (p2.Time - p1.Time).TotalSeconds;
-                    return altitudeAboveLimitInFeet * seconds / 100;
-                });
+            switch (Definition.ObjectType)
+            {
+                case "CYLINDER":
+                case "PRISM":
+                    {
+                        var infringement =
+                            FilterTrack(track)
+                            .ReducePairs((p1, p2) =>
+                            {
+                                var altitudeAboveLimitInFeet = (p2.Altitude - lowerLimit) * Physics.METERS2FEET;
+                                var seconds = (p2.Time - p1.Time).TotalSeconds;
+                                return altitudeAboveLimitInFeet * seconds / 100;
+                            });
 
-            return (int)Math.Min(1000, 10 * Math.Ceiling(infringement / 10)); //points rounded to next 10, up to 1000 points
+                        return (int)Math.Min(1000, 10 * Math.Ceiling(infringement / 10)); //points rounded to next 10, up to 1000 points
+                    }
+
+                //case "UNION":
+                //    {
+                //        var infringement = 0;
+                //        foreach (var area in areas)
+                //            infringement += area.BpzPenalty(track);
+
+                //        return infringement;
+                //    }
+
+                default:
+                    throw new InvalidOperationException(string.Format("BPZ infringement not supported for '{0}'", Definition.ObjectType));
+            }
         }
         //returns the RPZ penalty points for a given track
         //CIA COMPETITION OPERATION HANDBOOK Rule 7.5
         public int RpzPenalty(Track track)
         {
-            var infringement =
-                FilterTrack(track)
-                .ReduceSegments((p1, p2) =>
-                {
-                    var horizontalDistance = Physics.Distance2D(p1, p2);
-                    var averageAltitude = (p1.Altitude + p2.Altitude) / 2;
-                    return
-                        (
-                            horizontalDistance / maxHorizontalInfringement + //7.5.1 horizontal contribution
-                            1 - (averageAltitude / upperLimit) // 7.5.2 vertical contribition
-                        ) / 2; //7.5.3 average
-                });
+            switch (Definition.ObjectType)
+            {
+                case "CYLINDER":
+                case "PRISM":
+                    {
+                        var infringement =
+                            FilterTrack(track)
+                            .ReduceSegments((p1, p2) =>
+                            {
+                                var horizontalDistance = Physics.Distance2D(p1, p2);
+                                var averageAltitude = (p1.Altitude + p2.Altitude) / 2;
+                                return
+                                    (
+                                        horizontalDistance / maxHorizontalInfringement + //7.5.1 horizontal contribution
+                                        1 - (averageAltitude / upperLimit) // 7.5.2 vertical contribition
+                                    ) / 2; //7.5.3 average
+                            });
 
-            return (int)Math.Min(1000, 10 * Math.Ceiling(500 * infringement / 10)); //7.5.4 infringement * 500 points rounded to next 10, up to 1000 points
+                        return (int)Math.Min(1000, 10 * Math.Ceiling(500 * infringement / 10)); //7.5.4 infringement * 500 points rounded to next 10, up to 1000 points
+                    }
+
+                //case "UNION":
+                //    {
+                //        var infringement = 0;
+                //        foreach (var area in areas)
+                //            infringement += area.RpzPenalty(track);
+
+                //        return infringement;
+                //    }
+
+                default:
+                    throw new InvalidOperationException(string.Format("RPZ infringement not supported for '{0}'", Definition.ObjectType));
+            }
         }
 
         /*
