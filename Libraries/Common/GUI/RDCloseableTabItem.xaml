@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary
-    x:Class="ResourceDictionary"
-   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-   xmlns:local="clr-namespace:Scorer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:AXToolbox.Common;assembly=AXToolbox.Common"
     >
 
   <Style x:Key="TabItemFocusVisual">

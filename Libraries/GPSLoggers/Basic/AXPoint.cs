@@ -23,6 +23,7 @@ namespace AXToolbox.GpsLoggers
         Input = 0x200,
         AltitudeInMeters = 0x400,
         AltitudeInFeet = 0x800,
+        CompetitionCoords4Figures = 0x1000,
 
         SomeAltitude = AXPointInfo.Altitude | AXPointInfo.AltitudeInMeters | AXPointInfo.AltitudeInFeet,
         CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Declaration | AXPointInfo.Altitude
@@ -83,6 +84,9 @@ namespace AXToolbox.GpsLoggers
 
             if ((info & AXPointInfo.CompetitionCoords) > 0)
                 str.Append(string.Format("{0:00000}/{1:00000} ", Easting % 1e5, Northing % 1e5));
+
+            if ((info & AXPointInfo.CompetitionCoords4Figures) > 0)
+                str.Append(string.Format("{0:0000}/{1:0000} ", (int)(Easting / 10) % 1e4, (int)(Northing / 10) % 1e4));
 
             if (
                 ((info & AXPointInfo.Altitude) > 0 && DefaultAltitudeUnits == AltitudeUnits.Feet)
