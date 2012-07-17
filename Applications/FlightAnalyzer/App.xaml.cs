@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 
+//TODO remove AXToolbox from namespace
 namespace AXToolbox.FlightAnalyzer
 {
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Scorer
+namespace AXToolbox.Common
 {
     public class CloseableTabItem : TabItem
     {

@@ -101,7 +101,6 @@
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="Data\TaskScore.cs" />
-    <Compile Include="Controls\CloseableTabItem.cs" />
     <Compile Include="Data\Competition.cs" />
     <Compile Include="Data\Event.cs" />
     <Compile Include="Data\TaskType.cs" />
@@ -168,10 +167,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Themes\generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -247,11 +242,12 @@
   <ItemGroup>
     <None Include="To Do.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="HgVersionFile" AssemblyFile="..\..\ThirdParty\MSBuildVersioning\MSBuildVersioning.dll" />
   <Target Name="BeforeBuild">
     <HgVersionFile TemplateFile="Properties\VersionInfo.base.cs" DestinationFile="Properties\VersionInfo.cs" />
-    <HgVersionFile Condition=" '%(ConfigurationToBuild.FlavorToBuild)'=='Release' " TemplateFile="..\..\Deployment\SetupScorer\SetupScorer.base.vdproj" DestinationFile="..\..\Deployment\SetupScorer\SetupScorer.vdproj" />
+    <HgVersionFile TemplateFile="..\..\Deployment\SetupScorer\SetupScorer.base.vdproj" DestinationFile="..\..\Deployment\SetupScorer\SetupScorer.vdproj" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

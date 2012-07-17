@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{53BC0BD5-D609-49C6-939A-1BE1E2047B04}</ProjectGuid>
+    <ProjectGuid>{432E3CE2-9433-4A42-BB82-3ED785B9C6B3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlightAnalyzer</RootNamespace>
-    <AssemblyName>FlightAnalyzer</AssemblyName>
+    <RootNamespace>Tools</RootNamespace>
+    <AssemblyName>Tools</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -36,28 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>AXToolbox.FlightAnalyzer.App</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Build\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\Build\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>true</CodeAnalysisFailOnMissingRules>
+    <StartupObject>Tools.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>balloon.ico</ApplicationIcon>
@@ -65,15 +44,14 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -83,22 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="OptionsWindow.xaml.cs">
-      <DependentUpon>OptionsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="InputWindow.xaml.cs">
-      <DependentUpon>InputWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ToolsWindow.xaml.cs">
-      <DependentUpon>ToolsWindow.xaml</DependentUpon>
-    </Compile>
-    <None Include="Properties\VersionInfo.base.cs" />
-    <Compile Include="Properties\VersionInfo.cs" />
-    <Page Include="OptionsWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="InputWindow.xaml">
+    <Page Include="WptToPdf.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -110,14 +73,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Properties\VersionInfo.base.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
+    <Compile Include="WptToPdf.xaml.cs">
+      <DependentUpon>WptToPdf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ToolsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -133,24 +97,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Resource Include="To Do.txt" />
-    <None Include="license.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <Content Include="Demo\demo.axs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Demo\demo.igc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Demo\demo.pgw">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -160,38 +110,27 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Common\AXToolbox.Common.csproj">
       <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
-      <Name>Common</Name>
+      <Name>AXToolbox.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\GpsLoggers\AXToolbox.GpsLoggers.csproj">
       <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
       <Name>AXToolbox.GpsLoggers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\MapViewer\AXToolbox.MapViewer.csproj">
-      <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
-      <Name>MapViewer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Model\AXToolbox.Model.csproj">
-      <Project>{1995DB1D-2B57-49B3-BD4A-AD7FDFCF47CD}</Project>
-      <Name>Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Scripting\AXToolbox.Scripting.csproj">
-      <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
-      <Name>Scripting</Name>
+    <ProjectReference Include="..\..\Libraries\PdfHelpers\AXToolbox.PdfHelpers.csproj">
+      <Project>{913DBAE6-A76F-42C2-9814-C5C54BA88BAE}</Project>
+      <Name>AXToolbox.PdfHelpers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="balloon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Demo\demo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="HgVersionFile" AssemblyFile="..\..\ThirdParty\MSBuildVersioning\MSBuildVersioning.dll" />
   <Target Name="BeforeBuild">
     <HgVersionFile TemplateFile="Properties\VersionInfo.base.cs" DestinationFile="Properties\VersionInfo.cs" />
-    <HgVersionFile TemplateFile="..\..\Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.base.vdproj" DestinationFile="..\..\Deployment\SetupFlightAnalyzer\SetupFlightAnalyzer.vdproj" />
+    <!--
+    	<HgVersionFile Condition=" '%(ConfigurationToBuild.FlavorToBuild)'=='Release' " TemplateFile="..\..\Deployment\SetupScorer\SetupScorer.base.vdproj" DestinationFile="..\..\Deployment\SetupScorer\SetupScorer.vdproj" />
+    -->
   </Target>
   <Target Name="AfterBuild">
   </Target>

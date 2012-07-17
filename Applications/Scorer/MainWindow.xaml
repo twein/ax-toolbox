@@ -7,6 +7,15 @@
         Title="{Binding Path=Name}" Height="600" Width="1024" WindowState="Maximized" 
         Loaded="Window_Loaded" Closing="Window_Closing" Drop="Window_Drop" AllowDrop="True"
         Icon="/Scorer;component/balloon.ico">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                  Source="pack://application:,,,/AXToolbox.Common;component/GUI/RDCloseableTabItem.xaml">
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="Open" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
         <CommandBinding Command="Save" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
