@@ -223,7 +223,7 @@ namespace FlightAnalyzer
             else if (sender is MenuItem)
             {
                 var point = new AXPoint(DateTime.Now, MapViewer.MousePointerPosition.X, MapViewer.MousePointerPosition.Y, 0);
-                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords).Trim(), double.NaN);
+                declaration = new GoalDeclaration(0, Engine.Settings.Date, point.ToString(AXPointInfo.CompetitionCoords10).Trim(), double.NaN);
             }
 
             if (declaration != null)

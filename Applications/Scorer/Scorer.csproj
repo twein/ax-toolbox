@@ -247,7 +247,7 @@
   <UsingTask TaskName="HgVersionFile" AssemblyFile="..\..\ThirdParty\MSBuildVersioning\MSBuildVersioning.dll" />
   <Target Name="BeforeBuild">
     <HgVersionFile TemplateFile="Properties\VersionInfo.base.cs" DestinationFile="Properties\VersionInfo.cs" />
-    <HgVersionFile TemplateFile="..\..\Deployment\SetupScorer\SetupScorer.base.vdproj" DestinationFile="..\..\Deployment\SetupScorer\SetupScorer.vdproj" />
+    <HgVersionFile Condition="'$(Configuration)'!='Debug'" TemplateFile="..\..\Deployment\SetupScorer\SetupScorer.base.vdproj" DestinationFile="..\..\Deployment\SetupScorer\SetupScorer.vdproj" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

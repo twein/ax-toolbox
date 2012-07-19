@@ -26,7 +26,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords10 | AXPointInfo.Altitude | AXPointInfo.Radius);
         }
         public override string ToString(AXPointInfo info)
         {
@@ -35,7 +35,7 @@ namespace AXToolbox.GpsLoggers
             if (info == AXPointInfo.Input)
             {
                 str.Append(Name + " ");
-                str.Append(base.ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude));
+                str.Append(base.ToString(AXPointInfo.Time | AXPointInfo.CompetitionCoords10 | AXPointInfo.Altitude));
             }
             else
             {
