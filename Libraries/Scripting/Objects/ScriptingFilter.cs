@@ -4,54 +4,61 @@ using AXToolbox.GpsLoggers;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingFilter : ScriptingObject
+    internal class ScriptingFilter : ScriptingObject
     {
+        internal static ScriptingFilter Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingFilter(engine, definition);
+        }
+
+        protected ScriptingFilter(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+        
         private ScriptingArea area;
         private ScriptingPoint point;
         private DateTime time;
         private double altitude;
 
-        internal ScriptingFilter(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
-        { }
 
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
 
             //parse static types
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown filter type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown filter type '" + Definition.ObjectType + "'");
 
                 case "NONE":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 && ObjectParameters[0] == "");
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1 && Definition.ObjectParameters[0] == "");
                     if (Task == null)
                         throw new InvalidOperationException("Filter NONE is valid only inside tasks");
                     break;
 
                 case "INSIDE":
                 case "OUTSIDE":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     area = ResolveOrDie<ScriptingArea>(0);
                     break;
 
                 case "BEFORETIME":
                 case "AFTERTIME":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     time = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(0, Parsers.ParseTimeSpan);
                     break;
 
                 case "BEFOREPOINT":
                 case "AFTERPOINT":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     point = ResolveOrDie<ScriptingPoint>(0);
                     break;
 
                 case "ABOVE":
                 case "BELOW":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
                     altitude = ParseOrDie<double>(0, Parsers.ParseLength);
                     break;
             }
@@ -73,7 +80,7 @@ namespace AXToolbox.Scripting
 
             var initialCount = trackPoints.Length;
 
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 case "NONE":
                     Task.ResetValidTrackPoints(); //Task is never null in NONE filter

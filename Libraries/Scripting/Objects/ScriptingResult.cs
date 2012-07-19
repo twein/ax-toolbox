@@ -8,6 +8,16 @@ namespace AXToolbox.Scripting
 {
     class ScriptingResult : ScriptingObject
     {
+        internal static ScriptingResult Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingResult(engine, definition);
+        }
+
+        protected ScriptingResult(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+        
         protected string unit;
         protected ScriptingPoint A, B, C;
         protected double setDirection;
@@ -16,10 +26,6 @@ namespace AXToolbox.Scripting
 
         public Result Result { get; protected set; }
 
-        internal ScriptingResult(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
-        { }
-
 
         public override void CheckConstructorSyntax()
         {
@@ -27,14 +33,14 @@ namespace AXToolbox.Scripting
 
             if (Task == null)
             {
-                throw new ArgumentException(ObjectName + ": no previous task defined");
+                throw new ArgumentException(Definition.ObjectName + ": no previous task defined");
             }
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown result type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown result type '" + Definition.ObjectType + "'");
 
                 case "D2D":
                 //D2D: distance in 2D
@@ -42,10 +48,10 @@ namespace AXToolbox.Scripting
                 case "D3D":
                     //D3D: distance in 3D
                     //D3D(<pointNameA>, <pointNameB> [,<bestPerformance>])
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2 || Definition.ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
-                    if (ObjectParameters.Length == 3)
+                    if (Definition.ObjectParameters.Length == 3)
                         bestPerformance = ParseOrDie<double>(2, Parsers.ParseLength);
                     unit = "m";
                     break;
@@ -55,11 +61,11 @@ namespace AXToolbox.Scripting
                     //DRAD: relative altitude dependent distance
                     //DRAD10: relative altitude dependent distance rounded down to decameter
                     //XXXX(<pointNameA>, <pointNameB>, <threshold> [,<bestPerformance>])
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3 || Definition.ObjectParameters.Length == 4);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     altitudeThreshold = ParseOrDie<double>(2, Parsers.ParseLength);
-                    if (ObjectParameters.Length == 4)
+                    if (Definition.ObjectParameters.Length == 4)
                         bestPerformance = ParseOrDie<double>(3, Parsers.ParseLength);
                     unit = "m";
                     break;
@@ -67,7 +73,7 @@ namespace AXToolbox.Scripting
                 case "DACC":
                     //DACC: accumulated distance
                     //DACC(<pointNameA>, <pointNameB>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "m";
@@ -76,7 +82,7 @@ namespace AXToolbox.Scripting
                 case "TSEC":
                     //TSEC: time in seconds
                     //TSEC(<pointNameA>, <pointNameB>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "s";
@@ -85,7 +91,7 @@ namespace AXToolbox.Scripting
                 case "TMIN":
                     //TMIN: time in minutes
                     //TMIN(<pointNameA>, <pointNameB>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "min";
@@ -94,7 +100,7 @@ namespace AXToolbox.Scripting
                 case "ATRI":
                     //ATRI: area of triangle
                     //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     C = ResolveOrDie<ScriptingPoint>(2);
@@ -104,7 +110,7 @@ namespace AXToolbox.Scripting
                 case "ANG3P":
                     //ANG3P: angle between 3 points
                     //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     C = ResolveOrDie<ScriptingPoint>(2);
@@ -114,7 +120,7 @@ namespace AXToolbox.Scripting
                 case "ANGN":
                     //ANGN: angle to the north
                     //ANGN(<pointNameA>, <pointNameB>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     unit = "°";
@@ -123,7 +129,7 @@ namespace AXToolbox.Scripting
                 case "ANGSD":
                     //ANGSD: angle to a set direction
                     //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
                     A = ResolveOrDie<ScriptingPoint>(0);
                     B = ResolveOrDie<ScriptingPoint>(1);
                     setDirection = ParseOrDie<double>(2, Parsers.ParseDouble);
@@ -133,23 +139,23 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            switch (DisplayMode)
+            switch (Definition.DisplayMode)
             {
                 default:
-                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+                    throw new ArgumentException("Unknown display mode '" + Definition.DisplayMode + "'");
 
                 case "NONE":
-                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
+                    if (Definition.DisplayParameters.Length != 1 || Definition.DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "":
                 case "DEFAULT":
-                    if (DisplayParameters.Length > 1)
+                    if (Definition.DisplayParameters.Length > 1)
                         throw new ArgumentException("Syntax error");
 
-                    if (DisplayParameters[0] != "")
-                        Color = Parsers.ParseColor(DisplayParameters[0]);
+                    if (Definition.DisplayParameters[0] != "")
+                        Color = Parsers.ParseColor(Definition.DisplayParameters[0]);
                     break;
             }
         }
@@ -177,7 +183,7 @@ namespace AXToolbox.Scripting
             }
             else
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "D2D":
                         //D2D: distance in 2D
@@ -367,9 +373,9 @@ namespace AXToolbox.Scripting
         public override void Display()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE" && Result != null && Result.Type == ResultType.Result)
+            if (Definition.DisplayMode != "NONE" && Result != null && Result.Type == ResultType.Result)
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "D2D":
                     //D2D: distance in 2D
@@ -390,7 +396,7 @@ namespace AXToolbox.Scripting
                         //TMIN: time in minutes
                         //TMIN(<pointNameA>, <pointNameB>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", Definition.ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "DACC":
@@ -402,21 +408,21 @@ namespace AXToolbox.Scripting
 
                         Engine.MapViewer.AddOverlay(new TrackOverlay(path, 5) { Color = this.Color, Layer = (uint)OverlayLayers.Results });
                         Engine.MapViewer.AddOverlay(new DistanceOverlay(first, last,
-                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results });
+                            string.Format("{0} = {1}", Definition.ObjectName, Result)) { Layer = (uint)OverlayLayers.Results });
                         break;
 
                     case "ATRI":
                         //ATRI: area of triangle
                         //ATRI(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new PolygonalAreaOverlay(new Point[] { A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint() },
-                            string.Format("{0} = {1}", ObjectName, Result)) { Color = this.Color, Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", Definition.ObjectName, Result)) { Color = this.Color, Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANG3P":
                         //ANG3P: angle between 3 points
                         //ANG3P(<pointNameA>, <pointNameB>, <pointNameC>)
                         overlay = new AngleOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(), C.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", Definition.ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
 
                     case "ANGN":
@@ -426,7 +432,7 @@ namespace AXToolbox.Scripting
                         //ANGSD: angle to a set direction
                         //ANGSD(<pointNameA>, <pointNameB>, <setDirection>)
                         overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                            string.Format("{0} = {1}", ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
+                            string.Format("{0} = {1}", Definition.ObjectName, Result)) { Layer = (uint)OverlayLayers.Results };
                         break;
                 }
             }
@@ -435,19 +441,19 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(overlay);
 
             if (A != null && A.Point != null)
-                Engine.MapViewer.AddOverlay(new WaypointOverlay(A.Point.ToWindowsPoint(), A.ObjectName)
+                Engine.MapViewer.AddOverlay(new WaypointOverlay(A.Point.ToWindowsPoint(), A.Definition.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
                     Color = A.Color
                 });
             if (B != null && B.Point != null)
-                Engine.MapViewer.AddOverlay(new WaypointOverlay(B.Point.ToWindowsPoint(), B.ObjectName)
+                Engine.MapViewer.AddOverlay(new WaypointOverlay(B.Point.ToWindowsPoint(), B.Definition.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
                     Color = B.Color
                 });
             if (C != null && C.Point != null)
-                Engine.MapViewer.AddOverlay(new WaypointOverlay(C.Point.ToWindowsPoint(), C.ObjectName)
+                Engine.MapViewer.AddOverlay(new WaypointOverlay(C.Point.ToWindowsPoint(), C.Definition.ObjectName)
                 {
                     Layer = (uint)OverlayLayers.Results,
                     Color = C.Color

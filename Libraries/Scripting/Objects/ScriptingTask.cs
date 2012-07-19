@@ -10,8 +10,21 @@ using iTextSharp.text.pdf;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingTask : ScriptingObject
+    internal class ScriptingTask : ScriptingObject
     {
+        internal static ScriptingTask Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingTask(engine, definition);
+        }
+
+        protected ScriptingTask(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        {
+            Penalties = new List<Penalty>();
+            LoggerMarks = new List<string>();
+        }
+
+
         public int Number { get; protected set; }
         protected string resultUnit;
         protected int resultPrecission;
@@ -20,25 +33,19 @@ namespace AXToolbox.Scripting
         public List<string> LoggerMarks { get; protected set; }
 
 
-        internal ScriptingTask(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
-        {
-            Penalties = new List<Penalty>();
-            LoggerMarks = new List<string>();
-        }
-
+        
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
 
-            AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+            AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1);
             Number = ParseOrDie<int>(0, Parsers.ParseInt);
 
             resultPrecission = 2;
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown task type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown task type '" + Definition.ObjectType + "'");
 
                 case "PDG":
                     resultUnit = "m";
@@ -182,7 +189,7 @@ namespace AXToolbox.Scripting
             var config = helper.Config;
             PdfPCell c = null;
 
-            var title = string.Format("Task {0}: {1}", Number, ObjectType);
+            var title = string.Format("Task {0}: {1}", Number, Definition.ObjectType);
             var table = helper.NewTable(null, new float[] { 1, 4 }, title);
 
             //results
@@ -219,7 +226,7 @@ namespace AXToolbox.Scripting
             foreach (var obj in Engine.Heap.Values.Where(o => o.Task == this))
                 foreach (var note in obj.Notes.Where(n => n.IsImportant))
                 {
-                    c.AddElement(new Paragraph(obj.ObjectName + ": " + note.Text, config.FixedWidthFont) { SpacingBefore = 0 });
+                    c.AddElement(new Paragraph(obj.Definition.ObjectName + ": " + note.Text, config.FixedWidthFont) { SpacingBefore = 0 });
                 }
             table.AddCell(c);
 

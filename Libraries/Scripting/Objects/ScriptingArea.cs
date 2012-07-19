@@ -9,76 +9,78 @@ using System.Linq;
 
 namespace AXToolbox.Scripting
 {
-    public class ScriptingArea : ScriptingObject
+    internal class ScriptingArea : ScriptingObject
     {
+        internal static ScriptingArea Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingArea(engine, definition);
+        }
+
+        protected ScriptingArea(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
+
         protected ScriptingPoint center = null;
         protected double radius = 0;
         protected double upperLimit = double.PositiveInfinity;
         protected double lowerLimit = double.NegativeInfinity;
+        protected double maxHorizontalInfringement;
         protected List<AXPoint> outline;
-
         protected List<ScriptingArea> areas;
-
-        public double MaxHorizontalInfringement { get; protected set; }
-        public double UpperLimit { get { return upperLimit; } }
-
-
-        internal ScriptingArea(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
-        { }
 
 
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
 
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown area type '" + ObjectType + "'");
+                    throw new ArgumentException(string.Format("Unknown area type '{0}'", Definition.ObjectType));
 
                 case "CYLINDER":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2 || ObjectParameters.Length == 3 || ObjectParameters.Length == 4);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 2 && Definition.ObjectParameters.Length <= 4);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, Parsers.ParseLength);
-                    if (ObjectParameters.Length >= 3)
+                    if (Definition.ObjectParameters.Length >= 3)
                         upperLimit = ParseOrDie<double>(2, Parsers.ParseLength);
-                    if (ObjectParameters.Length >= 4)
+                    if (Definition.ObjectParameters.Length >= 4)
                         lowerLimit = ParseOrDie<double>(3, Parsers.ParseLength);
 
-                    MaxHorizontalInfringement = 2 * radius;
+                    maxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "SPHERE":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 2);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     center = ResolveOrDie<ScriptingPoint>(0); // point will be static or null
                     radius = ParseOrDie<double>(1, Parsers.ParseLength);
 
-                    MaxHorizontalInfringement = 2 * radius;
+                    maxHorizontalInfringement = 2 * radius;
                     break;
 
                 case "PRISM":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1 || ObjectParameters.Length == 2 || ObjectParameters.Length == 3);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 1 && Definition.ObjectParameters.Length <= 3);
                     var fileName = ParseOrDie<string>(0, s => s);
                     var trackLog = LoggerFile.Load(fileName, Engine.Settings.UtcOffset);
                     outline = Engine.Settings.GetTrack(trackLog);
-                    if (ObjectParameters.Length >= 2)
+                    if (Definition.ObjectParameters.Length >= 2)
                         upperLimit = ParseOrDie<double>(1, Parsers.ParseLength);
-                    if (ObjectParameters.Length >= 3)
+                    if (Definition.ObjectParameters.Length >= 3)
                         lowerLimit = ParseOrDie<double>(2, Parsers.ParseLength);
 
                     for (var i = 1; i < outline.Count; i++)
                         for (var j = 0; j < i; j++)
-                            MaxHorizontalInfringement = Math.Max(MaxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
+                            maxHorizontalInfringement = Math.Max(maxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
                     break;
 
                 case "UNION":
                 case "INTERSECTION":
-                    AssertNumberOfParametersOrDie(ObjectParameters.Length > 1);
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length > 1);
                     areas = new List<ScriptingArea>();
-                    foreach (var areaName in ObjectParameters)
+                    foreach (var areaName in Definition.ObjectParameters)
                     {
-                        var area = Engine.Heap.Values.FirstOrDefault(o => o is ScriptingArea && o.ObjectName == areaName) as ScriptingArea;
+                        var area = Engine.Heap.Values.FirstOrDefault(o => o is ScriptingArea && o.Definition.ObjectName == areaName) as ScriptingArea;
                         if (area == null)
                             throw new ArgumentException("undeclaread area " + areaName);
                         areas.Add(area);
@@ -88,23 +90,23 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            switch (DisplayMode)
+            switch (Definition.DisplayMode)
             {
                 default:
-                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+                    throw new ArgumentException("Unknown display mode '" + Definition.DisplayMode + "'");
 
                 case "NONE":
-                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
+                    if (Definition.DisplayParameters.Length != 1 || Definition.DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
 
                 case "":
                 case "DEFAULT":
-                    if (DisplayParameters.Length != 1)
+                    if (Definition.DisplayParameters.Length != 1)
                         throw new ArgumentException("Syntax error");
 
-                    if (DisplayParameters[0] != "")
-                        Color = Parsers.ParseColor(DisplayParameters[0]);
+                    if (Definition.DisplayParameters[0] != "")
+                        Color = Parsers.ParseColor(Definition.DisplayParameters[0]);
                     break;
             }
         }
@@ -113,43 +115,50 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 case "CYLINDER":
                 case "SPHERE":
-                    //radius is static
                     if (center.Point == null)
                         AddNote("center point is null", true);
                     break;
                 case "PRISM":
+                case "UNION":
+                case "INTERSECTION":
                     //do nothing
                     break;
+
+                default:
+                    throw new ArgumentException(string.Format("Process() not implemented for '{0}'", Definition.ObjectType));
             }
         }
         public override void Display()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE")
+            if (Definition.DisplayMode != "NONE")
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "CYLINDER":
                     case "SPHERE":
                         if (center.Point != null)
-                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
+                            overlay = new CircularAreaOverlay(center.Point.ToWindowsPoint(), radius, Definition.ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
 
                     case "PRISM":
                         var list = new Point[outline.Count];
                         for (var i = 0; i < list.Length; i++)
                             list[i] = outline[i].ToWindowsPoint();
-                        overlay = new PolygonalAreaOverlay(list, ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
+                        overlay = new PolygonalAreaOverlay(list, Definition.ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
 
                     case "UNION":
                     case "INTERSECTION":
-                        //do nothing (already drawn)
+                        //do nothing
                         break;
+
+                    default:
+                        throw new ArgumentException(string.Format("Display() not implemented for '{0}'", Definition.ObjectType));
                 }
 
                 if (overlay != null)
@@ -162,10 +171,10 @@ namespace AXToolbox.Scripting
             var isInside = false;
 
             if (point == null)
-                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
+                Trace.WriteLine("Area " + Definition.ObjectName + ": the testing point is null", Definition.ObjectClass);
             else
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "CYLINDER":
                         if (center.Point != null)
@@ -198,32 +207,91 @@ namespace AXToolbox.Scripting
                                 break;
                         }
                         break;
+
+                    default:
+                        throw new ArgumentException(string.Format("Contains() not implemented for '{0}'", Definition.ObjectType));
                 }
             }
 
             return isInside;
         }
-        public double ScaledBPZInfringement(AXPoint point)
+
+        public Track FilterTrack(Track unfilteredTrack)
         {
-            double infringement = 0;
-
-            if (point == null)
-                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
-            else //if (Contains(point))
-                infringement = (point.Altitude - lowerLimit) / 30.48;
-
-            return infringement;
+            return unfilteredTrack.Filter(p => Contains(p));
         }
-        public double RPZAltitudeInfringement(AXPoint point)
+
+        //returns the BPZ penalty points for a given track
+        //CIA COMPETITION OPERATION HANDBOOK Rule 10.14
+        public int BpzPenalty(Track track)
         {
-            double infringement = 0;
+            switch (Definition.ObjectType)
+            {
+                case "CYLINDER":
+                case "PRISM":
+                    {
+                        var infringement =
+                            FilterTrack(track)
+                            .ReducePairs((p1, p2) =>
+                            {
+                                var altitudeAboveLimitInFeet = (p2.Altitude - lowerLimit) * Physics.METERS2FEET;
+                                var seconds = (p2.Time - p1.Time).TotalSeconds;
+                                return altitudeAboveLimitInFeet * seconds / 100;
+                            });
 
-            if (point == null)
-                Trace.WriteLine("Area " + ObjectName + ": the testing point is null", ObjectClass);
-            else //if (Contains(point))
-                infringement = upperLimit - point.Altitude;
+                        return (int)Math.Min(1000, 10 * Math.Ceiling(infringement / 10)); //points rounded to next 10, up to 1000 points
+                    }
 
-            return infringement;
+                //case "UNION":
+                //    {
+                //        var infringement = 0;
+                //        foreach (var area in areas)
+                //            infringement += area.BpzPenalty(track);
+
+                //        return infringement;
+                //    }
+
+                default:
+                    throw new InvalidOperationException(string.Format("BPZ infringement not supported for '{0}'", Definition.ObjectType));
+            }
+        }
+        //returns the RPZ penalty points for a given track
+        //CIA COMPETITION OPERATION HANDBOOK Rule 7.5
+        public int RpzPenalty(Track track)
+        {
+            switch (Definition.ObjectType)
+            {
+                case "CYLINDER":
+                case "PRISM":
+                    {
+                        var infringement =
+                            FilterTrack(track)
+                            .ReduceSegments((p1, p2) =>
+                            {
+                                var horizontalDistance = Physics.Distance2D(p1, p2);
+                                var averageAltitude = (p1.Altitude + p2.Altitude) / 2;
+                                return
+                                    (
+                                        horizontalDistance / maxHorizontalInfringement + //7.5.1 horizontal contribution
+                                        1 - (averageAltitude / upperLimit) // 7.5.2 vertical contribition
+                                    ) / 2; //7.5.3 average
+                            });
+
+                        return (int)Math.Min(1000, 10 * Math.Ceiling(500 * infringement / 10)); //7.5.4 infringement * 500 points rounded to next 10, up to 1000 points
+                    }
+
+                //case "UNION":
+                //    {
+                //        var infringement = 0;
+                //        foreach (var area in areas)
+                //            infringement += area.RpzPenalty(track);
+
+                //        return infringement;
+                //    }
+
+                default:
+                    throw new InvalidOperationException(string.Format("RPZ infringement not supported for '{0}'", Definition.ObjectType));
+            }
         }
 
         /*

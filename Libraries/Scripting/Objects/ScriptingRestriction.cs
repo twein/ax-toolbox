@@ -7,6 +7,15 @@ namespace AXToolbox.Scripting
 {
     class ScriptingRestriction : ScriptingObject
     {
+        internal static ScriptingRestriction Create(ScriptingEngine engine, ObjectDefinition definition)
+        {
+            return new ScriptingRestriction(engine, definition);
+        }
+
+        protected ScriptingRestriction(ScriptingEngine engine, ObjectDefinition definition)
+            : base(engine, definition)
+        { }
+
         protected ScriptingPoint A, B;
         protected double distance = 0;
         protected int time = 0;
@@ -14,23 +23,19 @@ namespace AXToolbox.Scripting
         protected string description;
         protected bool infringed = false;
 
-        internal ScriptingRestriction(ScriptingEngine engine, string name, string type, string[] parameters, string displayMode, string[] displayParameters)
-            : base(engine, name, type, parameters, displayMode, displayParameters)
-        { }
-
 
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
 
             if (Task == null)
-                throw new ArgumentException(ObjectName + ": no previous task defined");
+                throw new ArgumentException(Definition.ObjectName + ": no previous task defined");
 
             //check syntax and resolve static values (well defined at constructor time, not pilot dependent)
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown restriction type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown restriction type '" + Definition.ObjectType + "'");
 
                 //DMAX: maximum distance
                 //DMAX(<pointNameA>, <pointNameB>, <distance>, <description>)
@@ -45,7 +50,7 @@ namespace AXToolbox.Scripting
                 //DVMIN(<pointNameA>, <pointNameB>, <altitude>, <description>)
                 case "DVMIN":
                     {
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
+                        AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 4);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         B = ResolveOrDie<ScriptingPoint>(1);
                         distance = ParseOrDie<double>(2, Parsers.ParseLength);
@@ -61,7 +66,7 @@ namespace AXToolbox.Scripting
                 case "TMIN":
                     {
                         {
-                            AssertNumberOfParametersOrDie(ObjectParameters.Length == 4);
+                            AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 4);
                             A = ResolveOrDie<ScriptingPoint>(0);
                             B = ResolveOrDie<ScriptingPoint>(1);
                             time = ParseOrDie<int>(2, Parsers.ParseInt);
@@ -77,7 +82,7 @@ namespace AXToolbox.Scripting
                 //TATOD(<pointNameA>, <time>, <description>)
                 case "TATOD":
                     {
-                        AssertNumberOfParametersOrDie(ObjectParameters.Length == 3);
+                        AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
                         A = ResolveOrDie<ScriptingPoint>(0);
                         timeOfDay = ParseOrDie<TimeSpan>(1, Parsers.ParseTimeSpan);
                         description = ParseOrDie<string>(2, Parsers.ParseString);
@@ -87,15 +92,15 @@ namespace AXToolbox.Scripting
         }
         public override void CheckDisplayModeSyntax()
         {
-            switch (DisplayMode)
+            switch (Definition.DisplayMode)
             {
                 default:
-                    throw new ArgumentException("Unknown display mode '" + DisplayMode + "'");
+                    throw new ArgumentException("Unknown display mode '" + Definition.DisplayMode + "'");
 
                 case "NONE":
                 case "":
                 case "DEFAULT":
-                    if (DisplayParameters.Length != 1 || DisplayParameters[0] != "")
+                    if (Definition.DisplayParameters.Length != 1 || Definition.DisplayParameters[0] != "")
                         throw new ArgumentException("Syntax error");
                     break;
             }
@@ -115,10 +120,10 @@ namespace AXToolbox.Scripting
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
-            switch (ObjectType)
+            switch (Definition.ObjectType)
             {
                 default:
-                    throw new ArgumentException("Unknown restriction type '" + ObjectType + "'");
+                    throw new ArgumentException("Unknown restriction type '" + Definition.ObjectType + "'");
 
                 case "DMAX":
                     if (A.Point == null || B.Point == null)
@@ -279,9 +284,9 @@ namespace AXToolbox.Scripting
         public override void Display()
         {
             MapOverlay overlay = null;
-            if (DisplayMode != "NONE" && infringed)
+            if (Definition.DisplayMode != "NONE" && infringed)
             {
-                switch (ObjectType)
+                switch (Definition.ObjectType)
                 {
                     case "DMAX":
                     case "DMIN":
@@ -292,7 +297,7 @@ namespace AXToolbox.Scripting
                         if (A.Point != null && B.Point != null)
                         {
                             overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
-                                string.Format("{0} = {1}", ObjectType, description)) { Layer = (uint)OverlayLayers.Penalties };
+                                string.Format("{0} = {1}", Definition.ObjectType, description)) { Layer = (uint)OverlayLayers.Penalties };
                         }
                         break;
                 }
