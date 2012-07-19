@@ -17,11 +17,11 @@
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Margin="5">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Left" Width="100">Datum</TextBlock>
+                    <TextBlock DockPanel.Dock="Left" Width="110">Datum</TextBlock>
                     <TextBox Text="{Binding DatumName}"/>
                 </DockPanel>
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Left" Width="100">UTM zone</TextBlock>
+                    <TextBlock DockPanel.Dock="Left" Width="110">UTM zone</TextBlock>
                     <TextBox Text="{Binding UtmZone}"/>
                 </DockPanel>
                 <WrapPanel HorizontalAlignment="Right">
@@ -30,11 +30,11 @@
             </StackPanel>
             <StackPanel DockPanel.Dock="Bottom" Margin="5">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Left" Width="100">Title</TextBlock>
-                    <TextBox Text="{Binding Title}"/>
+                    <TextBlock DockPanel.Dock="Left" Width="110">Competition name</TextBlock>
+                    <TextBox Text="{Binding Competition}"/>
                 </DockPanel>
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Left" Width="100">Columns</TextBlock>
+                    <TextBlock DockPanel.Dock="Left" Width="110">Columns</TextBlock>
                     <TextBox Text="{Binding Columns}"/>
                 </DockPanel>
                 <WrapPanel HorizontalAlignment="Right">

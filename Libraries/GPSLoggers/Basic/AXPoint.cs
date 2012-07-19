@@ -15,7 +15,7 @@ namespace AXToolbox.GpsLoggers
         Time = 0x2,
         Altitude = 0x4,
         Coords = 0x8,
-        CompetitionCoords = 0x10,
+        CompetitionCoords10 = 0x10,
         Declaration = 0x20,
         Name = 0x40,
         Description = 0x80,
@@ -23,10 +23,10 @@ namespace AXToolbox.GpsLoggers
         Input = 0x200,
         AltitudeInMeters = 0x400,
         AltitudeInFeet = 0x800,
-        CompetitionCoords4Figures = 0x1000,
+        CompetitionCoords8 = 0x1000,
 
         SomeAltitude = AXPointInfo.Altitude | AXPointInfo.AltitudeInMeters | AXPointInfo.AltitudeInFeet,
-        CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Declaration | AXPointInfo.Altitude
+        CustomReport = AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords10 | AXPointInfo.Declaration | AXPointInfo.Altitude
     }
 
     public enum AltitudeUnits { Meters, Feet }
@@ -58,7 +58,7 @@ namespace AXToolbox.GpsLoggers
 
         public override string ToString()
         {
-            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords | AXPointInfo.Altitude | AXPointInfo.Radius);
+            return ToString(AXPointInfo.Name | AXPointInfo.Time | AXPointInfo.CompetitionCoords10 | AXPointInfo.Altitude | AXPointInfo.Radius);
         }
         public virtual string ToString(AXPointInfo info)
         {
@@ -82,11 +82,11 @@ namespace AXToolbox.GpsLoggers
             if ((info & AXPointInfo.Coords) > 0)
                 str.Append(string.Format("{0:000000},{1:0000000} ", Easting, Northing));
 
-            if ((info & AXPointInfo.CompetitionCoords) > 0)
+            if ((info & AXPointInfo.CompetitionCoords10) > 0)
                 str.Append(string.Format("{0:00000}/{1:00000} ", Easting % 1e5, Northing % 1e5));
 
-            if ((info & AXPointInfo.CompetitionCoords4Figures) > 0)
-                str.Append(string.Format("{0:0000}/{1:0000} ", (int)(Easting / 10) % 1e4, (int)(Northing / 10) % 1e4));
+            if ((info & AXPointInfo.CompetitionCoords8) > 0)
+                str.Append(string.Format("{0:0000}/{1:0000} ", (Easting % 1e5) / 10, (Northing % 1e5) / 10));
 
             if (
                 ((info & AXPointInfo.Altitude) > 0 && DefaultAltitudeUnits == AltitudeUnits.Feet)
