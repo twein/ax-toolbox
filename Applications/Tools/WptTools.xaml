@@ -1,0 +1,57 @@
+﻿<common:TabWindow x:Class="Tools.WptTools" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:Tools"
+             xmlns:common="clr-namespace:AXToolbox.Common;assembly=AXToolbox.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="RightCellStyle" TargetType="DataGridCell">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+    </UserControl.Resources>
+    <Border Padding="5" BorderBrush="Black" BorderThickness="1">
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Padding="5">
+                <WrapPanel>
+                    <Button Click="Load_Click">Load WPT</Button>
+                </WrapPanel>
+            </Border>
+            <Border DockPanel.Dock="Bottom" Padding="5" BorderBrush="Black" BorderThickness="1">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Width="100" Click="SavePdf_Click">Save PDF</Button>
+                    <TextBlock DockPanel.Dock="Left">Columns:</TextBlock>
+                    <TextBox Text="{Binding Columns}"/>
+                </DockPanel>
+            </Border>
+            <Border DockPanel.Dock="Bottom" Padding="5" BorderBrush="Black" BorderThickness="1">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Width="100" Click="SaveAxs_Click">Save AXS points</Button>
+                    <TextBlock/>
+                </DockPanel>
+            </Border>
+            <StackPanel DockPanel.Dock="Bottom" Margin="5">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Width="110">Competition name:</TextBlock>
+                    <TextBox Text="{Binding Competition}"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Width="110">Target datum:</TextBlock>
+                    <TextBox Text="{Binding DatumName}"/>
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Width="110">Target UTM zone:</TextBlock>
+                    <TextBox Text="{Binding UtmZone}"/>
+                </DockPanel>
+            </StackPanel>
+            <DataGrid Margin="5"
+                  ItemsSource="{Binding Path=Waypoints}" 
+                  AlternatingRowBackground="SkyBlue"  AlternationCount="2" CanUserAddRows="False" CanUserDeleteRows="False">
+            </DataGrid>
+
+        </DockPanel>
+    </Border>
+</common:TabWindow>
