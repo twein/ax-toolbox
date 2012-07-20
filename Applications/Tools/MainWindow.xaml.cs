@@ -45,9 +45,9 @@ namespace Tools
             MessageBox.Show(this, programInfo, "About", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void menuWptToPdf_Click(object sender, RoutedEventArgs e)
+        private void menuWptTools_Click(object sender, RoutedEventArgs e)
         {
-            AddTab(new WpfToPdf(), "WPF to PDF");
+            AddTab(new WptTools(), "Waypoint Tools");
         }
 
         public void AddTab(UserControl control, string header)

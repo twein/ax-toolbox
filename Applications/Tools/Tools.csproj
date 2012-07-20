@@ -64,7 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="WptToPdf.xaml">
+    <Page Include="WptTools.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -78,8 +78,9 @@
     </Compile>
     <None Include="Properties\VersionInfo.base.cs" />
     <Compile Include="Properties\VersionInfo.cs" />
-    <Compile Include="WptToPdf.xaml.cs">
-      <DependentUpon>WptToPdf.xaml</DependentUpon>
+    <Compile Include="Helper.cs" />
+    <Compile Include="WptTools.xaml.cs">
+      <DependentUpon>WptTools.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
