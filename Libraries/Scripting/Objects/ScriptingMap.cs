@@ -30,15 +30,28 @@ namespace AXToolbox.Scripting
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
 
                     //load the georeferenced image to retrieve top-left and bottom-right corners
+                    Exception exception = null;
                     var t = new Thread(() =>
                     {
-                        var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
-                        topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
-                        bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
+                        try
+                        {
+                            var map = new GeoreferencedImage(Path.Combine(Directory.GetCurrentDirectory(), ObjectParameters[0]));
+                            topLeft = new AXPoint(DateTime.Now, map.TopLeft.X, map.TopLeft.Y, 0);
+                            bottomRight = new AXPoint(DateTime.Now, map.BottomRight.X, map.BottomRight.Y, 0);
+                        }
+                        catch (Exception ex)
+                        {
+                            exception = ex;
+                        }
                     });
+                    // ensure we are doing this in the main thread
                     t.SetApartmentState(ApartmentState.STA);
                     t.Start();
                     t.Join();
+
+                    //throw any exception
+                    if (exception != null)
+                        throw exception;
 
                     break;
 
