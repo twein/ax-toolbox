@@ -4,10 +4,8 @@
 TO DO
 - Update async workflow with .NET 4.5 (async/await instead of BackgroundWorker?)
 ? the debriefer must enter all the physical marker performances before being allowed to save
-- pdf report: add the same notes in goaldeclarations and markers as in take off and landing (modified by...)
 ! Add/remove penalties.
 - full IsDirty management.
-- Mark manually added markers and declarations. Don't allow to delete non-manual ones.
 ? Don't score counterfeit logs.
 - Getting started with FlightAnalyzer
 * Fix the log files thing
@@ -18,6 +16,7 @@ TO DO
 * taskbar jump lists
 * multiple file section in batch processing
 * progressbar in batch processing
+* pdf report: add the same notes in goaldeclarations and markers as in take off and landing (modified by...)
 
 
 IDEAS
@@ -33,7 +32,7 @@ Checklist:
 Pilot number
 Track log signature
 Max vertical speed
-take off and landing
+Take off and landing
 Markers
 	Incorrect marker number
 Pilot declared goals

@@ -23,20 +23,28 @@ namespace AXToolbox.Scripting
         protected FlightSettings Settings { get; set; }
         protected LoggerFile LogFile { get; set; }
 
-        protected string debriefer;
+        protected List<string> debriefers;
+        public IEnumerable<string> Debriefers
+        {
+            get
+            {
+                return debriefers;
+            }
+        }
         public string Debriefer
         {
             get
             {
-                return debriefer;
+                return debriefers.Last();
             }
             set
             {
-                if (value != debriefer)
+                if (!debriefers.Exists(d => d == value))
                 {
                     Notes.Add(string.Format("Debriefer name set to {0}", value));
-                    debriefer = value;
+                    debriefers.Add(value);
                     base.RaisePropertyChanged("Debriefer");
+                    base.RaisePropertyChanged("Debriefers");
                 }
             }
         }
@@ -92,9 +100,7 @@ namespace AXToolbox.Scripting
                 if (value != takeOffPoint)
                 {
                     takeOffPoint = value;
-                    if (!string.IsNullOrEmpty(Debriefer))
-                        takeOffPoint.Remarks = "Take off point set manually by " + Debriefer;
-                    Notes.Add(string.Format("Take off point set to {0}", value));
+                    Notes.Add(string.Format("Take off point set to {0} by {1}", value, Debriefer));
                     RaisePropertyChanged("TakeOffPoint");
                 }
             }
@@ -108,9 +114,7 @@ namespace AXToolbox.Scripting
                 if (value != landingPoint)
                 {
                     landingPoint = value;
-                    if (!string.IsNullOrEmpty(Debriefer))
-                        landingPoint.Remarks = "Landing point set manually by " + Debriefer;
-                    Notes.Add(string.Format("Landing point set to {0}", value));
+                    Notes.Add(string.Format("Landing point set to {0} by {1}", value, Debriefer));
                     RaisePropertyChanged("LandingPoint");
                 }
             }
@@ -258,7 +262,7 @@ namespace AXToolbox.Scripting
         public void AddMarker(AXWaypoint marker)
         {
             InsertIntoCollection(Markers, marker);
-            Notes.Add(string.Format("New marker added: {0}", marker));
+            Notes.Add(string.Format("New marker {0} added by {1}", marker, Debriefer));
             IsDirty = true;
         }
         public bool RemoveMarker(AXWaypoint marker)
@@ -266,7 +270,7 @@ namespace AXToolbox.Scripting
             var ok = Markers.Remove(marker);
             if (ok)
             {
-                Notes.Add(string.Format("Marker removed: {0}", marker));
+                Notes.Add(string.Format("Marker {0} removed by {1}", marker, Debriefer));
                 IsDirty = true;
             }
             return ok;
@@ -274,7 +278,7 @@ namespace AXToolbox.Scripting
         public void AddDeclaredGoal(GoalDeclaration declaration)
         {
             InsertIntoCollection(DeclaredGoals, declaration);
-            Notes.Add(string.Format("New goal declaration added: {0}", declaration));
+            Notes.Add(string.Format("New goal declaration {0} added by {1}", declaration, Debriefer));
             IsDirty = true;
         }
         public bool RemoveDeclaredGoal(GoalDeclaration declaration)
@@ -282,7 +286,7 @@ namespace AXToolbox.Scripting
             var ok = DeclaredGoals.Remove(declaration);
             if (ok)
             {
-                Notes.Add(string.Format("Goal declaration removed: {0}", declaration));
+                Notes.Add(string.Format("Goal declaration {0} removed by {1}", declaration, Debriefer));
                 IsDirty = true;
             }
             return ok;

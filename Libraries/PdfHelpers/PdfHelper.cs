@@ -10,13 +10,16 @@ namespace AXToolbox.PdfHelpers
     {
         public static float cm2pt = 72f / 2.54f;
 
-        public PdfConfig Config;
+        public PdfConfig Config{get;protected set;}
 
         public Document Document { get; protected set; }
         public PdfWriter Writer { get; protected set; }
 
+        private string pdfFileName;
+
         public PdfHelper(string pdfFileName, PdfConfig pdfConfig)
         {
+            this.pdfFileName = pdfFileName;
             Config = pdfConfig;
 
             Document = new Document();
@@ -94,6 +97,11 @@ namespace AXToolbox.PdfHelpers
             if (bgColor != null)
                 cell.BackgroundColor = bgColor;
             return cell;
+        }
+
+        public void OpenPdf()
+        {
+            PdfHelper.OpenPdf(pdfFileName);
         }
 
         public static void OpenPdf(string pdfFileName)

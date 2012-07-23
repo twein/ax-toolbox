@@ -104,7 +104,7 @@ namespace Tools
 
                 helper.Document.Close();
 
-                PdfHelper.OpenPdf(fileName);
+                helper.OpenPdf();
             }
         }
         private void SaveAxs_Click(object sender, System.Windows.RoutedEventArgs e)

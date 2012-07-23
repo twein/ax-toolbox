@@ -370,63 +370,22 @@ namespace AXToolbox.Scripting
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
+
         public void SavePdfReport(string folder, bool shouldOpenPdf = false)
         {
-            var assembly = GetType().Assembly;
-            var aName = assembly.GetName();
-            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+            var helper = NewEmptyPdfFlightReport(folder);
 
-            var programInfo = string.Format("{0} {2}",
-                ((AssemblyTitleAttribute)aTitle[0]).Title,
-                aName.Version,
-                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
-            //return string.Format("{0} v{1} {2}",
-            //    ((AssemblyTitleAttribute)aTitle[0]).Title,
-            //    aName.Version,
-            //    ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
-
-
-            var config = new PdfConfig(PdfConfig.Application.FlightAnalyzer)
-            {
-                FooterRight = programInfo
-            };
-            var pdfFileName = Path.Combine(folder, Report.ToShortString() + ".pdf");
-            var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.Document;
-
-            config.HeaderLeft = Settings.Title;
-            config.HeaderRight = Settings.Subtitle;
-            //document.Add(new Paragraph(Settings.Title, config.TitleFont));
-            //document.Add(new Paragraph(Settings.Subtitle, config.SubtitleFont));
-            document.Add(new Paragraph("Automatic Flight Report", config.TitleFont));
-
-            var table = helper.NewTable(null, new float[] { 1, 1 });
-            table.WidthPercentage = 50;
-            table.HorizontalAlignment = Element.ALIGN_LEFT;
-            table.AddCell(helper.NewLCell("Flight Date:"));
-            table.AddCell(helper.NewLCell(Settings.Date.GetDateAmPm()));
-            table.AddCell(helper.NewLCell("Pilot number:"));
-            table.AddCell(helper.NewLCell(Report.PilotId.ToString()));
-            table.AddCell(helper.NewLCell("Logger serial number:"));
-            table.AddCell(helper.NewLCell(Report.LoggerSerialNumber));
-            table.AddCell(helper.NewLCell("Debriefer:"));
-            table.AddCell(helper.NewLCell(Report.Debriefer));
-            document.Add(table);
-
-
-            table = helper.NewTable(null, new float[] { 1, 4 }, null);
-            table.AddCell(new PdfPCell(new Paragraph("Take off and landing:", config.BoldFont)));
+            var table = helper.NewTable(null, new float[] { 1, 4 }, null);
+            table.AddCell(new PdfPCell(new Paragraph("Take off and landing:", helper.Config.BoldFont)));
             var c = new PdfPCell();
-            c.AddElement(new Paragraph("Take off " + Report.TakeOffPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
+            c.AddElement(new Paragraph("Take off " + Report.TakeOffPoint.ToString(AXPointInfo.CustomReport), helper.Config.FixedWidthFont));
             if (!string.IsNullOrEmpty(Report.TakeOffPoint.Remarks))
-                c.AddElement(new Paragraph(Report.TakeOffPoint.Remarks, config.FixedWidthFont));
-            c.AddElement(new Paragraph("Landing " + Report.LandingPoint.ToString(AXPointInfo.CustomReport), config.FixedWidthFont));
+                c.AddElement(new Paragraph(Report.TakeOffPoint.Remarks, helper.Config.FixedWidthFont));
+            c.AddElement(new Paragraph("Landing " + Report.LandingPoint.ToString(AXPointInfo.CustomReport), helper.Config.FixedWidthFont));
             if (!string.IsNullOrEmpty(Report.LandingPoint.Remarks))
-                c.AddElement(new Paragraph(Report.LandingPoint.Remarks, config.FixedWidthFont));
+                c.AddElement(new Paragraph(Report.LandingPoint.Remarks, helper.Config.FixedWidthFont));
             table.AddCell(c);
-            document.Add(table);
+            helper.Document.Add(table);
 
 
             var taskQuery = from t in Heap.Values
@@ -436,69 +395,32 @@ namespace AXToolbox.Scripting
                 task.ToPdfReport(helper);
 
 
-            document.Add(new Paragraph("Notes", config.SubtitleFont));
+            helper.Document.Add(new Paragraph("Notes", helper.Config.SubtitleFont));
             foreach (var line in Report.Notes)
-                document.Add(new Paragraph(line, config.FixedWidthFont));
+                helper.Document.Add(new Paragraph(line, helper.Config.FixedWidthFont));
 
 
-            document.Close();
+            helper.Document.Close();
 
             if (shouldOpenPdf)
-                PdfHelper.OpenPdf(pdfFileName);
+                helper.OpenPdf();
         }
         public void SavePdfLog(string folder, bool shouldOpenPdf = false)
         {
-            var assembly = GetType().Assembly;
-            var aName = assembly.GetName();
-            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+            var helper = NewEmptyPdfFlightReport(folder);
 
-            var programInfo = string.Format("{0} {2}",
-                ((AssemblyTitleAttribute)aTitle[0]).Title,
-                aName.Version,
-                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
-            //return string.Format("{0} v{1} {2}",
-            //    ((AssemblyTitleAttribute)aTitle[0]).Title,
-            //    aName.Version,
-            //    ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
-
-
-            var config = new PdfConfig(PdfConfig.Application.FlightAnalyzer)
-            {
-                FooterRight = programInfo
-            };
-            var pdfFileName = Path.Combine(folder, Report.ToShortString() + "_log.pdf");
-            var helper = new PdfHelper(pdfFileName, config);
-            var document = helper.Document;
-
-            config.HeaderLeft = Settings.Title;
-            config.HeaderRight = Settings.Subtitle;
-            //document.Add(new Paragraph(Settings.Title, config.TitleFont));
-            //document.Add(new Paragraph(Settings.Subtitle, config.SubtitleFont));
-            document.Add(new Paragraph("Automatic Flight Report", config.TitleFont));
-
-            var table = helper.NewTable(null, new float[] { 1, 1 });
-            table.WidthPercentage = 50;
-            table.HorizontalAlignment = Element.ALIGN_LEFT;
-            table.AddCell(helper.NewLCell("Flight Date:"));
-            table.AddCell(helper.NewLCell(Settings.Date.GetDateAmPm()));
-            table.AddCell(helper.NewLCell("Pilot number:"));
-            table.AddCell(helper.NewLCell(Report.PilotId.ToString()));
-            table.AddCell(helper.NewLCell("Logger serial number:"));
-            table.AddCell(helper.NewLCell(Report.LoggerSerialNumber));
-            table.AddCell(helper.NewLCell("Debriefer:"));
-            table.AddCell(helper.NewLCell(Report.Debriefer));
-            document.Add(table);
-
-            document.Add(new Paragraph("Measurement process log", config.SubtitleFont));
+            helper.Document.Add(new Paragraph("Measurement process log", helper.Config.SubtitleFont));
             foreach (var line in Report.Notes)
-                document.Add(new Paragraph(line, config.FixedWidthFont));
+                helper.Document.Add(new Paragraph(line, helper.Config.FixedWidthFont));
             foreach (var line in GetLog(false))
-                document.Add(new Paragraph(line, config.FixedWidthFont));
+                helper.Document.Add(new Paragraph(line, helper.Config.FixedWidthFont));
 
-            document.Close();
+            helper.Document.Close();
+
+            if (shouldOpenPdf)
+                helper.OpenPdf();
         }
+
         public IEnumerable<string> GetLog(bool importantOnly)
         {
             var lines = new List<string>();
@@ -511,6 +433,47 @@ namespace AXToolbox.Scripting
             }
 
             return lines;
+        }
+
+
+        private PdfHelper NewEmptyPdfFlightReport(string folder)
+        {
+            var assembly = GetType().Assembly;
+            var aName = assembly.GetName();
+            var aTitle = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            var aCopyright = assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            Debug.Assert(aTitle.Length > 0 && aCopyright.Length > 0, "Assembly information incomplete");
+
+            var programInfo = string.Format("{0} {2}",
+                ((AssemblyTitleAttribute)aTitle[0]).Title,
+                aName.Version,
+                ((AssemblyCopyrightAttribute)aCopyright[0]).Copyright);
+
+            var config = new PdfConfig(PdfConfig.Application.FlightAnalyzer)
+            {
+                HeaderLeft = Settings.Title,
+                HeaderRight = Settings.Subtitle,
+                FooterRight = programInfo
+            };
+            var pdfFileName = Path.Combine(folder, Report.ToShortString() + ".pdf");
+            var helper = new PdfHelper(pdfFileName, config);
+
+            helper.Document.Add(new Paragraph("Automatic Flight Report", config.TitleFont));
+
+            var table = helper.NewTable(null, new float[] { 1, 1 });
+            table.WidthPercentage = 50;
+            table.HorizontalAlignment = Element.ALIGN_LEFT;
+            table.AddCell(helper.NewLCell("Flight Date:"));
+            table.AddCell(helper.NewLCell(Settings.Date.GetDateAmPm()));
+            table.AddCell(helper.NewLCell("Pilot number:"));
+            table.AddCell(helper.NewLCell(Report.PilotId.ToString()));
+            table.AddCell(helper.NewLCell("Logger serial number:"));
+            table.AddCell(helper.NewLCell(Report.LoggerSerialNumber));
+            table.AddCell(helper.NewLCell("Debriefers:"));
+            table.AddCell(helper.NewLCell(Report.Debriefers.Aggregate((acc, item) => acc + ", " + item)));
+            helper.Document.Add(table);
+
+            return helper;
         }
     }
 }
