@@ -311,7 +311,7 @@ namespace Scorer
             document.Close();
 
             if (openAfterCreation)
-                PdfHelper.OpenPdf(fileName);
+                helper.OpenPdf();
         }
         public void BookScoresToPdf(bool openAfterCreation)
         {
@@ -334,7 +334,7 @@ namespace Scorer
             document.Close();
 
             if (openAfterCreation)
-                PdfHelper.OpenPdf(fileName);
+                helper.OpenPdf();
         }
         public void ScoresToTable(PdfHelper helper, bool sortByPilotNumber = false)
         {

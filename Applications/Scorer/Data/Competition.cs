@@ -253,7 +253,7 @@ namespace Scorer
             document.Close();
 
             if (openAfterCreation)
-                PdfHelper.OpenPdf(fileName);
+                helper.OpenPdf();
         }
         public void TaskScoresTo1Pdf(string folder, bool openAfterCreation = false)
         {
@@ -280,7 +280,7 @@ namespace Scorer
             document.Close();
 
             if (openAfterCreation)
-                PdfHelper.OpenPdf(fileName);
+                helper.OpenPdf();
         }
         public void TaskScoresToNPdf()
         {

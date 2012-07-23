@@ -278,7 +278,7 @@ namespace Scorer
             document.Close();
 
             if (openAfterCreation)
-                PdfHelper.OpenPdf(fileName);
+                helper.OpenPdf();
         }
 
         public override string ToString()

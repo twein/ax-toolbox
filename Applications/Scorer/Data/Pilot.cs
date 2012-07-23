@@ -127,7 +127,7 @@ namespace Scorer
 
             document.Close();
 
-            PdfHelper.OpenPdf(pdfFileName);
+            helper.OpenPdf();
         }
         public static void WorkListToPdf(string pdfFileName, string title, IEnumerable<Pilot> pilots)
         {
@@ -155,7 +155,7 @@ namespace Scorer
 
             document.Close();
 
-            PdfHelper.OpenPdf(pdfFileName);
+            helper.OpenPdf();
         }
     }
 }
