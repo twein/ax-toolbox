@@ -305,7 +305,7 @@ namespace FlightAnalyzer
                 case "openTrack":
                     {
                         var fileName = parms.Arguments.First();
-                        Engine.LoadFlightReport(fileName);
+                        Engine.LoadFlightReport(Debriefer, fileName);
                         break;
                     }
                 case "batchProcess":
@@ -319,7 +319,7 @@ namespace FlightAnalyzer
                             {
                                 currentFile = fileName;
                                 worker.ReportProgress(100 * i++ / n);
-                                Engine.BatchProcess(fileName, rootFolder);
+                                Engine.BatchProcess(Debriefer, fileName, rootFolder);
                             }
                         }
                         catch (Exception ex)

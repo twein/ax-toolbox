@@ -33,6 +33,7 @@ namespace AXToolbox.Scripting
 
             Trace.WriteLine(this.ToString(), definition.ObjectClass);
             Notes = new List<Note>();
+            Notes.Add(new Note(this.ToString(), false));
         }
         #endregion
 
@@ -100,7 +101,7 @@ namespace AXToolbox.Scripting
 
         public void AddNote(string text, bool isImportant = false)
         {
-            Notes.Add(new Note(text, isImportant));
+            Notes.Add(new Note(Definition.ObjectClass.ToLower() + " " + Definition.ObjectName + ": " + text, isImportant));
         }
         public string GetFirstNoteText()
         {

@@ -33,7 +33,7 @@ namespace AXToolbox.Scripting
         public List<string> LoggerMarks { get; protected set; }
 
 
-        
+
         public override void CheckConstructorSyntax()
         {
             base.CheckConstructorSyntax();
@@ -194,7 +194,7 @@ namespace AXToolbox.Scripting
 
             //results
             table.AddCell(new PdfPCell(new Paragraph("Result:", config.BoldFont)));
-            c = new PdfPCell();
+            c = new PdfPCell() { PaddingBottom = 5 };
             c.AddElement(new Paragraph("Performance = " + Result.ToString(), config.BoldFont));
             foreach (var p in Result.UsedPoints)
                 c.AddElement(new Paragraph(p.ToString(AXPointInfo.CustomReport), config.FixedWidthFont) { SpacingBefore = 0 });
@@ -204,7 +204,7 @@ namespace AXToolbox.Scripting
 
             //penalties
             table.AddCell(new PdfPCell(new Paragraph("Penalties:", config.BoldFont)));
-            c = new PdfPCell();
+            c = new PdfPCell() { PaddingBottom = 5 };
             foreach (var pen in Penalties)
             {
                 c.AddElement(new Paragraph(pen.ToString(), config.BoldFont) { SpacingBefore = 0 });
@@ -214,7 +214,7 @@ namespace AXToolbox.Scripting
             table.AddCell(c);
 
             table.AddCell(new PdfPCell(new Paragraph("Logger marks:", config.BoldFont)));
-            c = new PdfPCell();
+            c = new PdfPCell() { PaddingBottom = 5 };
             foreach (var m in LoggerMarks)
             {
                 c.AddElement(new Paragraph(m, config.FixedWidthFont) { SpacingBefore = 0 });
@@ -222,12 +222,10 @@ namespace AXToolbox.Scripting
             table.AddCell(c);
 
             table.AddCell(new PdfPCell(new Paragraph("Remarks:", config.BoldFont)));
-            c = new PdfPCell();
+            c = new PdfPCell() { PaddingBottom = 5 };
             foreach (var obj in Engine.Heap.Values.Where(o => o.Task == this))
                 foreach (var note in obj.Notes.Where(n => n.IsImportant))
-                {
-                    c.AddElement(new Paragraph(obj.Definition.ObjectName + ": " + note.Text, config.FixedWidthFont) { SpacingBefore = 0 });
-                }
+                    c.AddElement(new Paragraph(note.ToString(), config.FixedWidthFont) { SpacingBefore = 0 });
             table.AddCell(c);
 
             document.Add(table);
