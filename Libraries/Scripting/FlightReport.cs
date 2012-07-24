@@ -35,13 +35,13 @@ namespace AXToolbox.Scripting
         {
             get
             {
-                return debriefers.Last();
+                return debriefers.LastOrDefault();
             }
             set
             {
                 if (!debriefers.Exists(d => d == value))
                 {
-                    Notes.Add(string.Format("Debriefer name set to {0}", value));
+                    //Notes.Add(string.Format("Debriefer name set to {0}", value));
                     debriefers.Add(value);
                     base.RaisePropertyChanged("Debriefer");
                     base.RaisePropertyChanged("Debriefers");
@@ -135,7 +135,7 @@ namespace AXToolbox.Scripting
         }
 
         //factory
-        public static FlightReport Load(string filePath, FlightSettings settings)
+        public static FlightReport Load(string debriefer, string filePath, FlightSettings settings)
         {
             FlightReport report = null;
 
@@ -144,6 +144,7 @@ namespace AXToolbox.Scripting
             {
                 //deserialize report
                 report = ObjectSerializer<FlightReport>.Load(filePath, serializationFormat);
+                report.Debriefer = debriefer;
                 report.DoTrackCleanUp();
             }
             else
@@ -190,6 +191,7 @@ namespace AXToolbox.Scripting
                 //Make new report
                 report = new FlightReport(settings)
                 {
+                    Debriefer = debriefer,
                     IsDirty = true,
                     LogFile = logFile,
                     SignatureStatus = logFile.SignatureStatus,
@@ -229,6 +231,7 @@ namespace AXToolbox.Scripting
             pilotId = 0;
             LoggerModel = "";
             LoggerSerialNumber = "";
+            debriefers = new List<string>();
             OriginalTrack = new AXPoint[0];
             Markers = new ObservableCollection<AXWaypoint>();
             DeclaredGoals = new ObservableCollection<GoalDeclaration>();
@@ -415,15 +418,22 @@ namespace AXToolbox.Scripting
             {
                 if (point_m1 != null)
                 {
-                    if (double.IsNaN(smoothedSpeed))
-                        smoothedSpeed = Math.Abs(Physics.Velocity3D(point, point_m1));
-                    else
-                        smoothedSpeed = (Math.Abs(Physics.Velocity3D(point, point_m1)) + smoothedSpeed * (Settings.Smoothness - 1)) / Settings.Smoothness;
-
-                    if (smoothedSpeed < Settings.MinSpeed)
+                    try
                     {
-                        groundContact = point;
-                        break;
+                        if (double.IsNaN(smoothedSpeed))
+                            smoothedSpeed = Math.Abs(Physics.Velocity3D(point, point_m1));
+                        else
+                            smoothedSpeed = (Math.Abs(Physics.Velocity3D(point, point_m1)) + smoothedSpeed * (Settings.Smoothness - 1)) / Settings.Smoothness;
+
+                        if (smoothedSpeed < Settings.MinSpeed)
+                        {
+                            groundContact = point;
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex);
                     }
                 }
                 point_m1 = point;

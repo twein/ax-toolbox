@@ -4,10 +4,13 @@ namespace AXToolbox.Scripting
 {
     public class Note
     {
-        public string Text { get; set; }
-        public Boolean IsImportant { get; set; }
+        public DateTime TimeStamp { get; private set; }
+        public string Text { get; private set; }
+        public Boolean IsImportant { get; private set; }
 
-        public Note(string text, bool isImportant=false){
+        public Note(string text, bool isImportant = false)
+        {
+            TimeStamp = DateTime.Now;
             Text = text;
             IsImportant = isImportant;
         }
@@ -15,6 +18,11 @@ namespace AXToolbox.Scripting
         public override string ToString()
         {
             return Text;
+        }
+
+        public string ToLongString()
+        {
+            return string.Format("{0:yyyy/MM/dd HH\\:mm\\:ss.fff}: {1}", TimeStamp, Text);
         }
     }
 }

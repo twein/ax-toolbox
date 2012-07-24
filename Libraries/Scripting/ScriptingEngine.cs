@@ -155,7 +155,7 @@ namespace AXToolbox.Scripting
                         yield return string.Format("Task {0:00} {1}: {2}", t.Number, t.Definition.ObjectType, p.ToString());
             }
         }
-        public IEnumerable<string> Log
+        public IEnumerable<Note> Log
         {
             get
             {
@@ -214,12 +214,12 @@ namespace AXToolbox.Scripting
 
             Display(true);
         }
-        public void LoadFlightReport(string loggerFile, bool noDisplay = false)
+        public void LoadFlightReport(string debriefer, string loggerFile, bool noDisplay = false)
         {
             Trace.WriteLine("Loading " + loggerFile, "ENGINE");
             Reset();
 
-            Report = FlightReport.Load(loggerFile, Settings);
+            Report = FlightReport.Load(debriefer, loggerFile, Settings);
 
             if (Report.OriginalTrack.Length > 0)
             {
@@ -271,7 +271,7 @@ namespace AXToolbox.Scripting
             RaisePropertyChanged("Results");
             RaisePropertyChanged("Penalties");
         }
-        public void BatchProcess(string fileName, string rootFolder)
+        public void BatchProcess(string debriefer, string fileName, string rootFolder)
         {
             Trace.WriteLine("Batch processing " + rootFolder, "ENGINE");
 
@@ -283,7 +283,7 @@ namespace AXToolbox.Scripting
             if (!Directory.Exists(resultsFolder))
                 Directory.CreateDirectory(resultsFolder);
 
-            LoadFlightReport(fileName, true);
+            LoadFlightReport(debriefer, fileName, true);
             Process(true);
 
             ExportResults(resultsFolder);
@@ -352,7 +352,6 @@ namespace AXToolbox.Scripting
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
-
         public void ExportResults(string folder)
         {
             if (Report.PilotId > 0)
@@ -370,14 +369,14 @@ namespace AXToolbox.Scripting
             else
                 throw new InvalidOperationException("The pilot id can not be zero");
         }
-
         public void SavePdfReport(string folder, bool shouldOpenPdf = false)
         {
-            var helper = NewEmptyPdfFlightReport(folder);
+            var pdfFileName = Path.Combine(folder, Report.ToShortString() + ".pdf");
+            var helper = NewEmptyPdfFlightReport(pdfFileName);
 
             var table = helper.NewTable(null, new float[] { 1, 4 }, null);
             table.AddCell(new PdfPCell(new Paragraph("Take off and landing:", helper.Config.BoldFont)));
-            var c = new PdfPCell();
+            var c = new PdfPCell() { PaddingBottom = 5 };
             c.AddElement(new Paragraph("Take off " + Report.TakeOffPoint.ToString(AXPointInfo.CustomReport), helper.Config.FixedWidthFont));
             if (!string.IsNullOrEmpty(Report.TakeOffPoint.Remarks))
                 c.AddElement(new Paragraph(Report.TakeOffPoint.Remarks, helper.Config.FixedWidthFont));
@@ -407,12 +406,13 @@ namespace AXToolbox.Scripting
         }
         public void SavePdfLog(string folder, bool shouldOpenPdf = false)
         {
-            var helper = NewEmptyPdfFlightReport(folder);
+            var pdfFileName = Path.Combine(folder, Report.ToShortString() + "_log.pdf");
+            var helper = NewEmptyPdfFlightReport(pdfFileName);
 
             helper.Document.Add(new Paragraph("Measurement process log", helper.Config.SubtitleFont));
             foreach (var line in Report.Notes)
                 helper.Document.Add(new Paragraph(line, helper.Config.FixedWidthFont));
-            foreach (var line in GetLog(false))
+            foreach (var line in GetLog(false).Select(n => n.ToLongString()))
                 helper.Document.Add(new Paragraph(line, helper.Config.FixedWidthFont));
 
             helper.Document.Close();
@@ -421,22 +421,7 @@ namespace AXToolbox.Scripting
                 helper.OpenPdf();
         }
 
-        public IEnumerable<string> GetLog(bool importantOnly)
-        {
-            var lines = new List<string>();
-            foreach (var obj in Heap.Values)
-            {
-                if (!importantOnly)
-                    lines.Add(obj.ToString());
-                foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
-                    lines.Add(obj.Definition.ObjectClass + " " + obj.Definition.ObjectName + ": " + note.Text);
-            }
-
-            return lines;
-        }
-
-
-        private PdfHelper NewEmptyPdfFlightReport(string folder)
+        private PdfHelper NewEmptyPdfFlightReport(string pdfFileName)
         {
             var assembly = GetType().Assembly;
             var aName = assembly.GetName();
@@ -455,7 +440,7 @@ namespace AXToolbox.Scripting
                 HeaderRight = Settings.Subtitle,
                 FooterRight = programInfo
             };
-            var pdfFileName = Path.Combine(folder, Report.ToShortString() + ".pdf");
+
             var helper = new PdfHelper(pdfFileName, config);
 
             helper.Document.Add(new Paragraph("Automatic Flight Report", config.TitleFont));
@@ -474,6 +459,24 @@ namespace AXToolbox.Scripting
             helper.Document.Add(table);
 
             return helper;
+        }
+
+        internal IEnumerable<Note> GetLog(bool importantOnly)
+        {
+            return from obj in Heap.Values
+                   from note in obj.Notes
+                   where note.IsImportant || !importantOnly
+                   orderby note.TimeStamp
+                   select note;
+
+            //var lines = new List<string>();
+            //foreach (var obj in Heap.Values)
+            //{
+            //    foreach (var note in obj.Notes.Where(n => importantOnly ? n.IsImportant : true))
+            //        lines.Add(obj.Definition.ObjectClass + " " + obj.Definition.ObjectName + ": " + note.Text);
+            //}
+
+            //return lines.OrderBy(l => l);
         }
     }
 }

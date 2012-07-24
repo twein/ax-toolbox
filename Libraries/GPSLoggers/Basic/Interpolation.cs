@@ -9,6 +9,42 @@ namespace AXToolbox.GpsLoggers
 
     public static class Interpolation
     {
+        // implements track log linear interpolation
+        public static IEnumerable<AXPoint> Linear(IEnumerable<AXPoint> track, int interpolationInterval = 1, int maxAllowedGap = 10)
+        {
+            AXPoint p0 = null;
+            foreach (var p1 in track)
+            {
+                if (p0 != null)
+                {
+                    // calculate the number of points to be interpolated
+                    var numberOfPoints = ((int)Math.Floor((p1.Time - p0.Time).TotalSeconds / interpolationInterval)) - 1;
+
+                    // don't interpolate if it's not needed or the gap is too large
+                    if (numberOfPoints > 0 && numberOfPoints <= maxAllowedGap)
+                    {
+                        var deltat = 1.0 / (numberOfPoints + 1);
+                        for (int i = 1; i <= numberOfPoints; i++)
+                        {
+                            // perform interpolation
+                            var p = new AXPoint(
+                                p0.Time.AddSeconds(i * interpolationInterval),
+                                InterpolateSingleLinear(p0.Easting, p1.Easting, i * deltat),
+                                InterpolateSingleLinear(p0.Northing, p1.Northing, i * deltat),
+                                InterpolateSingleLinear(p0.Altitude, p1.Altitude, i * deltat));
+                            yield return p;
+                        }
+                    }
+                }
+                yield return p1;
+                p0 = p1;
+            }
+        }
+        private static double InterpolateSingleLinear(double y0, double y1, double t)
+        {
+            return y0 + (y1 - y0) * t;
+        }
+
         // implements track log cubic hermite spline interpolation with Catmull-Rom tension
         public static IEnumerable<AXPoint> Spline(IEnumerable<AXPoint> track, int interpolationInterval = 1, int maxAllowedGap = 10)
         {
@@ -67,44 +103,6 @@ namespace AXToolbox.GpsLoggers
                 }
             }
         }
-
-        // implements track log linear interpolation
-        public static IEnumerable<AXPoint> Linear(IEnumerable<AXPoint> track, int interpolationInterval = 1, int maxAllowedGap = 10)
-        {
-            AXPoint p0 = null;
-            foreach (var p1 in track)
-            {
-                if (p0 != null)
-                {
-                    // calculate the number of points to be interpolated
-                    var numberOfPoints = ((int)Math.Floor((p1.Time - p0.Time).TotalSeconds / interpolationInterval)) - 1;
-
-                    // don't interpolate if it's not needed or the gap is too large
-                    if (numberOfPoints > 0 && numberOfPoints <= maxAllowedGap)
-                    {
-                        var deltat = 1.0 / (numberOfPoints + 1);
-                        for (int i = 1; i <= numberOfPoints; i++)
-                        {
-                            // perform interpolation
-                            var p = new AXPoint(
-                                p0.Time.AddSeconds(i * interpolationInterval),
-                                InterpolateSingleLinear(p0.Easting, p1.Easting, i * deltat),
-                                InterpolateSingleLinear(p0.Northing, p1.Northing, i * deltat),
-                                InterpolateSingleLinear(p0.Altitude, p1.Altitude, i * deltat));
-                            yield return p;
-                        }
-                    }
-                }
-                yield return p1;
-                p0 = p1;
-            }
-        }
-        private static double InterpolateSingleLinear(double y0, double y1, double t)
-        {
-            return y0 + (y1 - y0) * t;
-        }
-
-
         private class CubicInterpolator
         {
             // cubic interpolator
