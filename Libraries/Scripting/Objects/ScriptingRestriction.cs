@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
@@ -121,12 +122,7 @@ namespace AXToolbox.Scripting
                     throw new ArgumentException("Unknown restriction type '" + ObjectType + "'");
 
                 case "DMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance > distance)
@@ -139,12 +135,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "DMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
                         if (calcDistance < distance)
@@ -157,12 +148,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "DVMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference > distance)
@@ -175,12 +161,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "DVMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
                         if (calcDifference < distance)
@@ -193,12 +174,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "TMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcTime = (B.Point.Time - A.Point.Time).TotalMinutes;
                         if (calcTime > time)
@@ -213,12 +189,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "TMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcTime = Math.Ceiling((B.Point.Time - A.Point.Time).TotalMinutes);
                         if (calcTime < time)
@@ -231,12 +202,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "TBTOD":
-                    if (A.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(1))
                     {
                         var refTime = Engine.Settings.Date.Date + timeOfDay;
                         if (A.Point.Time > refTime)
@@ -249,12 +215,7 @@ namespace AXToolbox.Scripting
                     break;
 
                 case "TATOD":
-                    if (A.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(1))
                     {
                         var refTime = Engine.Settings.Date.Date + timeOfDay;
                         if (A.Point.Time < refTime)
@@ -302,7 +263,26 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(overlay);
         }
 
-        public static string MinToHms(double minutes)
+        private bool CheckParameters(int nRequired)
+        {
+            Debug.Assert(nRequired == 1 || nRequired == 2);
+
+            if (A.Point == null || (nRequired == 2 && B.Point == null))
+            {
+                AddNote("reference point is null");
+                AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
+                return false;
+            }
+            else if (A.Point.Name == "Landing" && (nRequired == 2 && B.Point.Name == "Landing"))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        private string MinToHms(double minutes)
         {
             var d = Math.Floor(minutes / 1440);
             var hr = Math.Floor((minutes - d * 1440) / 60);
