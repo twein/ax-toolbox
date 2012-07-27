@@ -79,6 +79,11 @@ namespace AXToolbox.Scripting
                     Engine.Settings.TasksInOrder = ParseOrDie<bool>(0, Parsers.ParseBoolean);
                     break;
 
+                case "CONTESTLANDING":
+                    AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
+                    Engine.Settings.ContestLanding = ParseOrDie<bool>(0, Parsers.ParseBoolean);
+                    break;
+
                 case "QNH":
                     AssertNumberOfParametersOrDie(ObjectParameters.Length == 1);
                     Engine.Settings.Qnh = ParseOrDie<double>(0, Parsers.ParseDouble);

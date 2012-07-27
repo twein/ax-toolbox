@@ -186,8 +186,8 @@ namespace AXToolbox.Scripting
                             var distance = Physics.Distance2D(A.Point, B.Point);
                             if (distance < bestPerformance)
                             {
+                                AddNote(string.Format("forcing performance ({0:0.00}) to be MMA max ({1})", distance, bestPerformance), true);
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
@@ -202,8 +202,8 @@ namespace AXToolbox.Scripting
                             var distance = Physics.Distance3D(A.Point, B.Point);
                             if (distance < bestPerformance)
                             {
+                                AddNote(string.Format("forcing performance ({0:0.00}) to be MMA max ({1})", distance, bestPerformance), true);
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
@@ -230,8 +230,8 @@ namespace AXToolbox.Scripting
 
                             if (distance < bestPerformance)
                             {
+                                AddNote(string.Format("forcing performance ({0:0.00}) to be MMA max ({1})", distance, bestPerformance), true);
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Round(distance, 0));
                             Result.UsedPoints.Add(A.Point);
@@ -258,8 +258,8 @@ namespace AXToolbox.Scripting
 
                             if (distance < bestPerformance)
                             {
+                                AddNote(string.Format("forcing performance ({0:0.00}) to be MMA max ({1})", distance, bestPerformance), true);
                                 distance = bestPerformance;
-                                AddNote("forcing distance to be MMA max", true);
                             }
                             Result = Task.NewResult(Math.Floor(distance / 10) * 10);
                             Result.UsedPoints.Add(A.Point);
