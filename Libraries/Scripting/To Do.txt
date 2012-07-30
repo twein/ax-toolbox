@@ -1,6 +1,8 @@
 ﻿
 TO DO
 - MVMDP Previous task marker or launch point (for PDG FON restrictions)
++ R13.3.5 table of distance infringement penalties. ("For Elbow, Angle and Land Run Tasks, the percent infringements will be the sum of the percent infringements of each ‘leg’" not implemented)
+
 - Add a new type of point: TLU Track point last used: Last used point in any task
 
 - Scripting object inheritance instead of switch case
@@ -33,6 +35,7 @@ TO DO
 * altitude units in settings
 * fix the demo files for new syntax
 * Area CSG
+* Use contest landing if no marker has been produced for a given task.
 
 How to set different tasks:
 	3DS: apply a filter for each area. the result is a DACC

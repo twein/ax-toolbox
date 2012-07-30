@@ -1,6 +1,7 @@
 ﻿BUGS:
 - Pilot disqualification not working
 
+- R10.1.5 In case the competitor suffering the collision is not able to fly further tasks after the collision, THE DIRECTOR MAY AWARD HIM POINTS for the lost tasks in that flight. (COH)
 ! don't import results if task status is not provisional
 - make a named backup at each publication.
 * listing like scores but ordered by pilot number
