@@ -19,6 +19,7 @@ namespace AXToolbox.Scripting
         public AXPoint BottomRight { get; set; }
 
         public Boolean TasksInOrder { get; set; }
+        public Boolean ContestLanding { get; set; }
         public double Qnh { get; set; }
         public AltitudeUnits AltitudeUnits
         {
@@ -49,6 +50,7 @@ namespace AXToolbox.Scripting
             Date = DateTime.MinValue;
             UtcOffset = TimeSpan.MinValue;
             TasksInOrder = true;
+            ContestLanding = true;
             Qnh = double.NaN;
             AltitudeUnits = AltitudeUnits.Feet;
 

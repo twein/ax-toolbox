@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
@@ -115,8 +116,6 @@ namespace AXToolbox.Scripting
         {
             base.Process();
 
-            var reason = "";
-
             // parse and resolve pilot dependent values
             // the static values are already defined
             // syntax is already checked
@@ -126,160 +125,141 @@ namespace AXToolbox.Scripting
                     throw new ArgumentException("Unknown restriction type '" + Definition.ObjectType + "'");
 
                 case "DMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
-                        if (calcDistance > distance)
+                        var pctInfringement = 100 * (calcDistance - distance) / distance;
+                        var penalty = DistanceInfringementPenalty(calcDistance, pctInfringement, description);
+                        if (penalty != null)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
-                            reason = string.Format("R13.3.4.1 {0}", description, calcDistance);
+                            infringed = true;
+                            Task.Penalties.Add(penalty);
                             AddNote(string.Format("distance infringement: {0}m", calcDistance), true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "DMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
-                        if (calcDistance < distance)
+                        var pctInfringement = 100 * (distance - calcDistance) / distance;
+                        var penalty = DistanceInfringementPenalty(calcDistance, pctInfringement, description);
+                        if (penalty != null)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.4.1 {0} ({1}m)", description, calcDistance)));
-                            reason = string.Format("R13.3.4.1 {0}", description, calcDistance);
+                            infringed = true;
+                            Task.Penalties.Add(penalty);
                             AddNote(string.Format("distance infringement: {0}m", calcDistance), true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "DVMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
-                        if (calcDifference > distance)
+                        var pctInfringement = 100 * (calcDifference - distance) / distance;
+                        var penalty = DistanceInfringementPenalty(calcDifference, pctInfringement, description);
+                        if (penalty != null)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
-                            reason = string.Format("{0}", description, calcDifference);
+                            infringed = true;
+                            Task.Penalties.Add(penalty);
                             AddNote(string.Format("distance infringement: {0}m", calcDifference), true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "DVMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
-                        if (calcDifference < distance)
+                        var pctInfringement = 100 * (distance - calcDifference) / distance;
+                        var penalty = DistanceInfringementPenalty(calcDifference, pctInfringement, description);
+                        if (penalty != null)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1}m)", description, calcDifference)));
-                            reason = string.Format("{0}", description, calcDifference);
+                            infringed = true;
+                            Task.Penalties.Add(penalty);
                             AddNote(string.Format("distance infringement: {0}m", calcDifference), true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "TMAX":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcTime = (B.Point.Time - A.Point.Time).TotalMinutes;
                         if (calcTime > time)
                         {
-                            var min = Math.Floor(calcTime);
-                            var sec = Math.Ceiling((calcTime - min) * 60);
-                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
-                            reason = string.Format("{0}", description, MinToHms(calcTime));
+                            infringed = true;
+                            var reason = string.Format("{0}", description, MinToHms(calcTime));
                             AddNote(string.Format("time infringement: {0}", MinToHms(calcTime)), true);
+                            Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
+                            AddNote("No Result (group B): " + reason, true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "TMIN":
-                    if (A.Point == null || B.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(2))
                     {
                         var calcTime = Math.Ceiling((B.Point.Time - A.Point.Time).TotalMinutes);
                         if (calcTime < time)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(string.Format("{0} ({1})", description, MinToHms(calcTime))));
-                            reason = string.Format("{0}", description, MinToHms(calcTime));
+                            infringed = true;
+                            var reason = string.Format("{0}", description, MinToHms(calcTime));
                             AddNote(string.Format("time infringement: {0}", MinToHms(calcTime)), true);
+                            Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
+                            AddNote("No Result (group B): " + reason, true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "TBTOD":
-                    if (A.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(1))
                     {
                         var refTime = Engine.Settings.Date.Date + timeOfDay;
                         if (A.Point.Time > refTime)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(description));
-                            reason = description;
+                            infringed = true;
+                            var reason = string.Format("{0}", description, MinToHms((A.Point.Time - refTime).TotalMinutes));
                             AddNote(string.Format("time infringement: {0}", MinToHms((A.Point.Time - refTime).TotalMinutes)), true);
+                            Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
+                            AddNote("No Result (group B): " + reason, true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
 
                 case "TATOD":
-                    if (A.Point == null)
-                    {
-                        AddNote("reference point is null");
-                        AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
-                    }
-                    else
+                    if (CheckParameters(1))
                     {
                         var refTime = Engine.Settings.Date.Date + timeOfDay;
                         if (A.Point.Time < refTime)
                         {
-                            //Penalty = new Penalty(Result.NewNoResult(description));
-                            reason = description;
+                            infringed = true;
+                            var reason = string.Format("{0}", description, MinToHms((refTime - A.Point.Time).TotalMinutes));
                             AddNote(string.Format("time infringement: {0}", MinToHms((refTime - A.Point.Time).TotalMinutes)), true);
+                            Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
+                            AddNote("No Result (group B): " + reason, true);
                         }
+                        else
+                            AddNote("not infringed");
                     }
                     break;
             }
-
-            if (!string.IsNullOrEmpty(reason))
-            {
-                infringed = true;
-                Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
-                AddNote("No Result (group B): " + reason, true);
-            }
-            else
-                AddNote("not infringed");
         }
         public override void Display()
         {
@@ -307,7 +287,61 @@ namespace AXToolbox.Scripting
                 Engine.MapViewer.AddOverlay(overlay);
         }
 
-        public static string MinToHms(double minutes)
+        private bool CheckParameters(int nRequired)
+        {
+            Debug.Assert(nRequired == 1 || nRequired == 2);
+
+            if (A.Point == null || (nRequired == 2 && B.Point == null))
+            {
+                AddNote("restriction reference point is null");
+                AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
+                return false;
+            }
+            else if (A.Point.Name == "Landing" && (nRequired == 2 && B.Point.Name == "Landing"))
+            {
+                AddNote("restriction reference point is landing");
+                AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        private Penalty DistanceInfringementPenalty(double calcDistance, double pctInfringement, string description)
+        {
+            // Rule 13.3.5 
+
+            Penalty penalty;
+
+            if (pctInfringement <= 0)
+            {
+                penalty = null;
+            }
+            else if (pctInfringement <= 2)
+            {
+                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 2%", calcDistance, description), PenaltyType.TaskPoints, 25);
+            }
+            else if (pctInfringement <= 5)
+            {
+                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 5%", calcDistance, description), PenaltyType.TaskPoints, 50);
+            }
+            else if (pctInfringement <= 10)
+            {
+                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 10%", calcDistance, description), PenaltyType.TaskPoints, 200);
+            }
+            else if (pctInfringement <= 25)
+            {
+                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 25%", calcDistance, description), PenaltyType.TaskPoints, 500);
+            }
+            else //if (pctInfringement > 25)
+            {
+                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} > 25%", calcDistance, description), PenaltyType.TaskPoints, 1000);
+            }
+
+            return penalty;
+        }
+        private string MinToHms(double minutes)
         {
             var d = Math.Floor(minutes / 1440);
             var hr = Math.Floor((minutes - d * 1440) / 60);

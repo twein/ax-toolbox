@@ -359,40 +359,38 @@ namespace AXToolbox.Scripting
                      *      else
                      *          point = null
                      */
-                    try
                     {
                         var marks = from mark in Engine.Report.Markers
                                     where int.Parse(mark.Name) == number
                                     select "M" + mark.ToString(AXPointInfo.CustomReport);
                         Task.LoggerMarks.AddRange(marks);
 
-                        var marker = Engine.Report.Markers.First(m => int.Parse(m.Name) == number);
-                        try
+                        var marker = Engine.Report.Markers.FirstOrDefault(m => int.Parse(m.Name) == number);
+
+                        if (marker != null)
                         {
-                            var nearestPoint = Engine.TaskValidTrack.Points.First(p => Math.Abs((p.Time - marker.Time).TotalSeconds) == 0);
-                            Point = new AXWaypoint("M" + marker.Name, marker);
+                            var nearestPoint = Engine.TaskValidTrack.Points.FirstOrDefault(p => Math.Abs((p.Time - marker.Time).TotalSeconds) == 0);
+                            if (nearestPoint != null)
+                            {
+                                Point = new AXWaypoint("M" + marker.Name, marker);
+                            }
+                            else
+                            {
+                                AddNote(string.Format("R12.21.1: invalid marker drop #{0}", number), true);
+                            }
                         }
-                        catch (InvalidOperationException)
+                        else
                         {
-                            AddNote(string.Format("R12.21.1: invalid marker drop #{0}", number), true);
+                            if (Engine.Settings.ContestLanding)
+                            {
+                                Point = new AXWaypoint("Landing", Engine.Report.LandingPoint);
+                                AddNote(string.Format("no marker #{0}: assuming contest landing", number), true);
+                            }
+                            else
+                            {
+                                AddNote(string.Format("RII.17.d: no marker drop #{0}", number), true);
+                            }
                         }
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        //TODO: enable all this if contest landing is substitute for not dropped marker
-                        //try
-                        //{
-                        //    var landing = Engine.Report.LandingPoint;
-                        //    var nearestPoint = Engine.TaskValidTrackPoints.First(p => Math.Abs((p.Time - landing.Time).TotalSeconds) <= 2);
-                        //    Point = new AXWaypoint(ObjectName, nearestPoint);
-                        //    AddNote(string.Format("no marker #{0} (assuming contest landing)", number), true);
-                        //}
-                        //catch (InvalidOperationException)
-                        //{
-                        //    AddNote(string.Format("no marker #{0} (couldn't assume contest landing)", number), true);
-                        //}
-                        //TODO: enable if no contest landing option
-                        AddNote(string.Format("RII.17.d: no marker drop #{0}", number), true);
                     }
                     break;
 
