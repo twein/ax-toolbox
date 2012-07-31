@@ -1,6 +1,7 @@
 ﻿
 TO DO
 - MVMDP Previous task marker or launch point (for PDG FON restrictions)
+- TDT and TDD: remove maxTime parameters? -> use filter instead?
 + R13.3.5 table of distance infringement penalties. ("For Elbow, Angle and Land Run Tasks, the percent infringements will be the sum of the percent infringements of each ‘leg’" not implemented)
 
 - Add a new type of point: TLU Track point last used: Last used point in any task
