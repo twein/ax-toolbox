@@ -629,7 +629,7 @@ namespace AXToolbox.Scripting
                                 //last valid track point is inside the area and no exits
                                 tafo = Engine.TaskValidTrack.Points.Last(p => area.Contains(p));// == TALO
                             }
-                            Point = new AXWaypoint(ObjectName, tafi);
+                            Point = new AXWaypoint(ObjectName, tafo);
                         }
                         catch
                         {
