@@ -2,8 +2,9 @@
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 TO DO
-! Use contest landing if no marker has been produced for a given task.
-! R13.3.5 table of distance infringement penalties
+! The automatic launch and landing points should not be shown as set by debriefer
+* Use contest landing if no marker has been produced for a given task.
+* R13.3.5 table of distance infringement penalties
 - Update async workflow with .NET 4.5 (async/await instead of BackgroundWorker?)
 ? the debriefer must enter all the physical marker performances before being allowed to save
 ! Add/remove penalties.
