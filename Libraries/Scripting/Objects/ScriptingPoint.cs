@@ -561,12 +561,17 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
+                            AXPoint point_tmp;
                             if (maxTime.HasValue)
-                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime));
+                                point_tmp = Engine.TaskValidTrack.Points.FirstOrDefault(p => p.Time >= referencePoint.Time + timeDelay && p.Time <= maxTime);
                             else
-                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => p.Time >= referencePoint.Time + timeDelay));
+                                point_tmp = Engine.TaskValidTrack.Points.FirstOrDefault(p => p.Time >= referencePoint.Time + timeDelay);
 
-                            if (Point == null)
+                            if (point_tmp != null)
+                            {
+                                Point = new AXWaypoint(Definition.ObjectName, point_tmp);
+                            }
+                            else
                             {
                                 AddNote("no valid track point within time limits", true);
                             }
