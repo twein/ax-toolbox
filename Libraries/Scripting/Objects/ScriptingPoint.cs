@@ -585,12 +585,17 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
+                            AXPoint point_tmp;
                             if (maxTime.HasValue)
-                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime));
+                                point_tmp = Engine.TaskValidTrack.Points.FirstOrDefault(p => Physics.Distance2D(p, referencePoint) >= distanceDelay && p.Time <= maxTime);
                             else
-                                Point = new AXWaypoint(Definition.ObjectName, Engine.TaskValidTrack.Points.First(p => Physics.Distance2D(p, referencePoint) >= distanceDelay));
+                                point_tmp = Engine.TaskValidTrack.Points.FirstOrDefault(p => Physics.Distance2D(p, referencePoint) >= distanceDelay);
 
-                            if (Point == null)
+                            if (point_tmp != null)
+                            {
+                                Point = new AXWaypoint(Definition.ObjectName, point_tmp);
+                            }
+                            else
                             {
                                 AddNote("no valid track point within distance limits", true);
                             }
