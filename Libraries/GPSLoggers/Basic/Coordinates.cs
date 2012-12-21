@@ -44,6 +44,9 @@ namespace AXToolbox.GpsLoggers
     /// 
     public class LatLonCoordinates : Coordinates
     {
+        private static readonly string UtmLetterDesignators = "XWVUTSRQPNMLKJHGFEDC";
+        private static readonly double[] UtmLetterDesignatorLatitudes = new double[] { 84, 72, 64, 56, 48, 40, 32, 24, 16, 8, 0, -8, -16, -24, -32, -40, -48, -56, -64, -72, -80 };
+
         public Angle Latitude { get; protected set; }
         public Angle Longitude { get; protected set; }
 
@@ -79,36 +82,21 @@ namespace AXToolbox.GpsLoggers
         {
             get
             {
-                var Lat = Latitude.Degrees;
-                char LetterDesignator;
+                var lat = Latitude.Degrees;
 
-                //TODO: Make a formula for this
-                if ((84 >= Lat) && (Lat >= 72)) LetterDesignator = 'X';
-                else if ((72 > Lat) && (Lat >= 64)) LetterDesignator = 'W';
-                else if ((64 > Lat) && (Lat >= 56)) LetterDesignator = 'V';
-                else if ((56 > Lat) && (Lat >= 48)) LetterDesignator = 'U';
-                else if ((48 > Lat) && (Lat >= 40)) LetterDesignator = 'T';
-                else if ((40 > Lat) && (Lat >= 32)) LetterDesignator = 'S';
-                else if ((32 > Lat) && (Lat >= 24)) LetterDesignator = 'R';
-                else if ((24 > Lat) && (Lat >= 16)) LetterDesignator = 'Q';
-                else if ((16 > Lat) && (Lat >= 8)) LetterDesignator = 'P';
-                else if ((8 > Lat) && (Lat >= 0)) LetterDesignator = 'N';
-                else if ((0 > Lat) && (Lat >= -8)) LetterDesignator = 'M';
-                else if ((-8 > Lat) && (Lat >= -16)) LetterDesignator = 'L';
-                else if ((-16 > Lat) && (Lat >= -24)) LetterDesignator = 'K';
-                else if ((-24 > Lat) && (Lat >= -32)) LetterDesignator = 'J';
-                else if ((-32 > Lat) && (Lat >= -40)) LetterDesignator = 'H';
-                else if ((-40 > Lat) && (Lat >= -48)) LetterDesignator = 'G';
-                else if ((-48 > Lat) && (Lat >= -56)) LetterDesignator = 'F';
-                else if ((-56 > Lat) && (Lat >= -64)) LetterDesignator = 'E';
-                else if ((-64 > Lat) && (Lat >= -72)) LetterDesignator = 'D';
-                else if ((-72 > Lat) && (Lat >= -80)) LetterDesignator = 'C';
-                else LetterDesignator = 'Z'; //Latitude is outside the UTM limits
+                char letter = 'Z'; //Latitude is outside the UTM limits
+                for (var i = 0; i < UtmLetterDesignators.Length; i++)
+                {
+                    if (UtmLetterDesignatorLatitudes[i] >= lat && lat >= UtmLetterDesignatorLatitudes[i + 1])
+                    {
+                        letter = UtmLetterDesignators[i];
+                        break;
+                    }
+                }
 
-                return LetterDesignator;
+                return letter;
             }
         }
-
 
         public LatLonCoordinates(Datum datum, double latitude, double longitude, double altitude)
         {
