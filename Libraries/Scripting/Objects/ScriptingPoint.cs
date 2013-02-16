@@ -526,20 +526,27 @@ namespace AXToolbox.Scripting
                     {
                         var list = ResolveN<ScriptingPoint>(0, Definition.ObjectParameters.Length - 1);
 
+                        var bestDistance = double.PositiveInfinity;
                         var nnull = 0;
                         foreach (var p in list)
                         {
-                            var referencePoint = p.Point;
-                            if (referencePoint == null)
+                            var listPoint = p.Point;
+                            if (listPoint == null)
                             {
                                 nnull++;
                                 continue;
                             }
-                            foreach (var nextTrackPoint in Engine.TaskValidTrack.Points)
-                                if (Point == null
-                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
-                                    Point = new AXWaypoint(Definition.ObjectName, nextTrackPoint);
+                            foreach (var trackPoint in Engine.TaskValidTrack.Points)
+                            {
+                                var dist = Physics.DistanceRad(listPoint, trackPoint, altitudeThreshold);
+                                if (Point == null || dist < bestDistance)
+                                {
+                                    Point = new AXWaypoint(Definition.ObjectName, trackPoint);
+                                    bestDistance = dist;
+                                }
+                            }
                         }
+
                         if (nnull == list.Length)
                         {
                             //all points are null
