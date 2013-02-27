@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Balloonerds.com")]
 [assembly: AssemblyProduct("AX-Toolbox Scorer")]
-[assembly: AssemblyCopyright("© 2011-2012 balloonerds.com")]
+[assembly: AssemblyCopyright("© 2011-2013 balloonerds.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,3 +51,4 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 // [assembly: AssemblyVersion("11.09.22.02")]
+[assembly: AssemblyVersionAttribute("13.3.1.1")]
