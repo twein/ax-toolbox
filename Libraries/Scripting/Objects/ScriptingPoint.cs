@@ -552,8 +552,10 @@ namespace AXToolbox.Scripting
                             //all points are null
                             AddNote(list[0].GetFirstNoteText(), true); //inherit notes from first point
                         }
-                        else
+                        else if (Point == null)
+                        {
                             AddNote("no remaining valid track points", true);
+                        }
                     }
                     break;
 
