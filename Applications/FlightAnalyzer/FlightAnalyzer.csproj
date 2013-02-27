@@ -30,7 +30,8 @@
     <ProductName>FlightAnalyzer</ProductName>
     <PublisherName>balloonerds.com</PublisherName>
     <SuiteName>AX-Toolbox</SuiteName>
-    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>index.html</WebPage>
     <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>13.3.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
