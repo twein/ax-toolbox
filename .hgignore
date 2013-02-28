@@ -6,3 +6,4 @@ relre:obj\/
 relre:bin\/
 syntax: glob
 Properties/VersionInfo.cs
+Publish
