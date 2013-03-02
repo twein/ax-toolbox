@@ -129,8 +129,9 @@ namespace AXToolbox.Scripting
                     ResolveOrDie<ScriptingPoint>(0);
                     break;
 
-                case "TNP": //nearest to point
-                    //TNP(<pointName>, <altitudeThreshold>)
+                case "TNP": //nearest to point                
+                case "TFP": //farthest from point
+                    //XXX(<pointName>, <altitudeThreshold>)
                     AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
                     ResolveOrDie<ScriptingPoint>(0);
                     altitudeThreshold = ParseOrDie<double>(1, Parsers.ParseLength);
@@ -511,6 +512,31 @@ namespace AXToolbox.Scripting
                             foreach (var nextTrackPoint in Engine.TaskValidTrack.Points)
                                 if (Point == null
                                     || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) < Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
+                                    Point = new AXWaypoint(Definition.ObjectName, nextTrackPoint);
+                            if (Point == null)
+                            {
+                                AddNote("no remaining valid track points", true);
+                            }
+                        }
+                    }
+                    break;
+
+                case "TFP":
+                    //farthest from point
+                    //TFP(<pointName>, <altitudeThreshold>)
+                    {
+                        var referenceScriptingPoint = Resolve<ScriptingPoint>(0);
+                        var referencePoint = referenceScriptingPoint.Point;
+                        if (referencePoint == null)
+                        {
+                            Point = null;
+                            AddNote(referenceScriptingPoint.GetFirstNoteText(), true); // inherit ref point notes
+                        }
+                        else
+                        {
+                            foreach (var nextTrackPoint in Engine.TaskValidTrack.Points)
+                                if (Point == null
+                                    || Physics.DistanceRad(referencePoint, nextTrackPoint, altitudeThreshold) > Physics.DistanceRad(referencePoint, Point, altitudeThreshold))
                                     Point = new AXWaypoint(Definition.ObjectName, nextTrackPoint);
                             if (Point == null)
                             {
