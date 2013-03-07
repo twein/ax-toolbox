@@ -1,0 +1,15 @@
+//BPZ, 100km radius above 10000ft
+point seu=sutm(302270,4610028,218m) crosshairs(red)
+area BPZ1=cylinder(seu,100000m,99999ft,10000ft) none()
+penalty bpz1=BPZ(BPZ1,"BPZ1")
+
+//RPZ, 11km radius below 3000ft
+point rpz2_center=SUTM(295870,4622820,0m) none()
+area RPZ2=cylinder(rpz2_center,11000m,3000ft) default(red)
+penalty rpz2=RPZ(RPZ2,"RPZ2")
+
+//RPZ, 250m radius below 1200ft
+point rpz4_center=SUTM(299790,4599200,0m) none()
+area RPZ4=cylinder(rpz4_center,250m,1200ft) default(red)
+penalty rpz4=RPZ(RPZ4,"RPZ4")
+

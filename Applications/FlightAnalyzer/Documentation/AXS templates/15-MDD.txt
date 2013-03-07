@@ -1,0 +1,31 @@
+// logger marker between 6:30 and 8:00 inside area defined by track
+// logger marker between 6:45 and 8:15 inside another area defined by track
+task task5 = MDD(5)
+	// Define 2 areas needed for the for the task
+	// We do so by loading a "trk" file (CompeGPS format) or an IGC file
+	area task5_area1=PRISM(task5_area1_A71W.trk) DEFAULT(pink)
+	area task5_area2=PRISM(task5_area2_N20E.trk) DEFAULT(pink)
+
+	// Make a filter for the first point of the task
+	filter task5_filterTimeA1 = AFTERTIME(06:30:00)
+	filter task5_filterTimeB1 = BEFORETIME(08:00:00)
+	filter task1_filter_area1 = INSIDE(task5_area1)
+
+	// Get the LoggerMarkder #1 (with the conditions of the filter)
+	point task5_marker1=MVMD(1) none()
+	
+	// Reset the filter to set a new area for the second point
+	filter task5_filter_clear = NONE()
+
+	//  Make a filter for the second point of the task
+	filter task5_filterTimeA2 = AFTERTIME(06:45:00)
+	filter task5_filterTimeB2 = BEFORETIME(08:15:00)
+	filter task5_filter_area2=INSIDE(task5_area2)
+
+	// Get the LoggerMarkder #2 (with the conditions of the 2nd filter)
+	point task5_marker2=MVMD(2) none()
+
+	// The result is the 2D distance between the 2 markers if both exist
+	// and are valid
+	result task5_result=D2D(task5_marker1,task5_marker2)
+

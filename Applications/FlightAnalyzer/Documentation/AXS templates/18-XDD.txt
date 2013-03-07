@@ -1,0 +1,19 @@
+// logger markers
+// area defined by track file
+// valid period from 6:10 to 9:30
+task task11 = XDD(11)
+	area task11_area01=PRISM(Area01.trk) default(yellow)
+
+	// Define the valid period for dropping the marker 
+	filter task11_filterTimeA=AFTERTIME(06:10:00)	
+	filter task11_filterTimeB=BEFORETIME(09:30:00)
+	filter task11_filterArea=INSIDE(task11_area01)
+
+	point task11_marker1=MVMD(4) MARKER(yellow)
+	point task11_marker2=MVMD(5) MARKER(yellow)
+	
+	result task11_result=D2D(task11_marker1,task11_marker2)
+	
+	//clear the applied filters
+	filter task11_filter_clear = NONE()
+

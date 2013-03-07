@@ -1,0 +1,58 @@
+//best track point
+task task6=HWZ(6)
+	point task6_target1=SUTM(305799,4604375,189m) TARGET(100m,yellow)
+	point task6_target2=SUTM(305487,4604218,200m) TARGET(100m,yellow)
+	point task6_marker=TNL(task6_target1,task6_target2,500ft) MARKER(yellow)
+	point task6_target=LNP(task6_marker,task6_target1,task6_target2,500ft) TARGET(100m,yellow)
+
+	result task6_result=DRAD(task6_marker,task6_target,500ft)
+
+
+
+//logger marker before 20:45	
+task task19 = HWZ(19)
+
+	// Define a filter selecting a portion of the track in 
+	// to work from here onwards (on the task)
+	filter task19_filterTime=BEFORETIME(20:45:00)
+
+	// Get the LoggerMarker #2 (from the portion of the track
+	// valid for the filter)		
+	point task19_marker=MVMD(2) MARKER(blue)
+
+	// Define the 2 possible goals of the HWZ, they are given by UTM Coords
+	point task19_target1=SUTM(624295,4330114,318m) TARGET(50m,blue)
+	point task19_target2=SUTM(627982,4328986,976ft) TARGET(50m,blue)
+	
+	// Select the goal that is closest to the marker (using 3D distance or 2D within 500ft height)
+	point task19_target=LNP(task19_marker,task19_target1,task19_target2,500ft) WAYPOINT(blue)
+
+	// Result is the 3D distance (or 2D within 500ft height) between
+	// marker and the previously selected target
+	result task19_result=DRAD(task19_marker,task19_target,500ft)
+	
+
+//logger marker before 10:00, with minimum distance from launch to goals	
+task task2 = HWZ(2)
+	filter task2_filterTime=BEFORETIME(10:00:00)
+	
+	//these are the given goals
+	point task2_goal1=SUTM(304890,4600010,750ft) none()
+	point task2_goal2=SUTM(304830,4600880,725ft) none()
+	point task2_goal3=SUTM(304570,4601630,707ft) none()
+	point task2_goal4=SUTM(302330,4598850,769ft) none()	
+	
+	//these are the exposed targets
+	point task2_target1=SUTM(304887,4600013,750ft) TARGET(100m,yellow)
+	point task2_target2=SUTM(304924,4600883,725ft) TARGET(100m,yellow)
+	point task2_target3=SUTM(304587,4601634,707ft) TARGET(100m,yellow)
+	point task2_target4=SUTM(302420,4598812,769ft) TARGET(100m,yellow)
+	
+	point task2_marker=MVMD(2) MARKER(yellow)
+	point task2_target=LNP(task2_marker,task2_target1,task2_target2,task2_target3,task2_target4,500ft) WAYPOINT(yellow)
+	result task2_result=DRAD(task2_marker,task2_target,500ft)
+	
+	restriction task2_dmin1=DMIN(launch, task2_goal1, 500m, "launch too close to goal 139")
+	restriction task2_dmin2=DMIN(launch, task2_goal2, 500m, "launch too close to goal 141")
+	restriction task2_dmin3=DMIN(launch, task2_goal3, 500m, "launch too close to goal 143")
+	restriction task2_dmin4=DMIN(launch, task2_goal4, 500m, "launch too close to goal 159")

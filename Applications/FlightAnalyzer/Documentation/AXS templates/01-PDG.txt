@@ -1,0 +1,21 @@
+//logger goal declaration with minimum distances to some goals
+//logger marker before 10:30, not dropped before declaration and not closer than 1km from declaration
+task task3 = PDG(3)
+	filter task3_filterTime=BEFORETIME(10:30:00)
+	
+	point task3_target=MPDGF(1,700ft) TARGET(0m,green)
+	point task3_marker=MVMD(3) MARKER(green)
+	result task3_result=DRAD10(task3_marker,task3_target,500ft)
+
+	point task3_declarationpoint=TPT(task3_target) target(0m,green)
+	restriction task3_dminl=DMIN(task3_target, task3_declarationpoint, 1000m, "declaration too close to goal")
+	
+	restriction task3_dmin=DMIN(task3_target, task1_goal, 500m, "declared goal too close to goal 135")
+	restriction task3_dmin1=DMIN(task3_target, task2_goal1, 500m, "declared goal too close to goal 139")
+	restriction task3_dmin2=DMIN(task3_target, task2_goal2, 500m, "declared goal too close to goal 141")
+	restriction task3_dmin3=DMIN(task3_target, task2_goal3, 500m, "declared goal too close to goal 143")
+	restriction task3_dmin4=DMIN(task3_target, task2_goal4, 500m, "declared goal too close to goal 159")
+	
+	restriction task3_timesequence=TMIN(task3_target,task3_marker,0,"marker dropped before declaration")
+
+	

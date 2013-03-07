@@ -1,0 +1,16 @@
+//WARNING: not very useful
+//logger marker manually filtered 
+//launch between 7:45 and 8:30, 1km minimum distance from goal
+task task21=CRT(21)
+	filter task21_scoringtime=BEFORETIME(10:00:00)
+	
+	point task21_goal=SUTM(303830,4600360,706ft) none()
+	point task21_target=SUTM(303825,4600358,706ft) TARGET(50m,green)
+	point task21_marker=MVMD(1) MARKER(green)
+	result task21_result=DRAD(task21_target,task21_marker,500ft,50m)
+	
+	restriction task21_dmin=DMIN(launch, task21_goal, 500m, "R15.9: launch too close to goal") 
+	restriction task21_launchmint=TATOD(launch, 07:45:00, "launch period")
+	restriction task21_launchmaxt=TBTOD(launch, 08:30:00, "launch period")
+
+	
