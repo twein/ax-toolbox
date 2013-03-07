@@ -1,0 +1,6 @@
+//trackpont farthest from launch point before 11:00
+task task4 = XDI(4)
+	filter task4_filterTime=BEFORETIME(11:00:00)
+
+	point task4_pointB = TFP(launch,99999m)
+	result task4_result=D2D(launch,task4_pointB)

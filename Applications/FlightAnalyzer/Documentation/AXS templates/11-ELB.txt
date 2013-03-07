@@ -1,0 +1,49 @@
+//	A: previous task marker
+//	B: first track point farther than 1km from A
+//	C: first track point after 20 minutes from B
+task task3 = ELB(3)
+	filter task3_filterTime=BEFORETIME(11:00:00)
+
+	point task3_pointB=TDD(task2_marker, 1000m)
+	point task3_pointC=TDT(task3_pointB, 00:20:00)
+	result task3_result=ANG3P(task2_marker,task3_pointB,task3_pointC)
+
+
+
+
+//	A: task 1 marker
+//	B: task 2 marker
+//	C: first track point farther than 3000m from B, before 10:30
+task task3 = ELB(3)
+
+	// Define the valid period for dropping the marker 
+	filter task3_filterTimeB=BEFORETIME(10:30)
+
+	// Get points A and B
+	point task3_markerA=TPT(task1_marker) MARKER(yellow)
+	point task3_markerB=TPT(task2_marker) MARKER(yellow)
+	
+	//point C is first valid track point >= 3000m from B
+	point task3_markerC=TDD(task3_markerB,3000m) MARKER(yellow)
+
+	// result is the angle between 3 points
+	result task3_result=ANG3P(task3_markerA,task3_markerB,task3_markerC)
+	
+
+//A,B,C: logger markers before 10:15
+//distance A-B and B-C between 1-3km
+task task17 = ELB(17)
+	filter task17_filter_time=BEFORETIME(10:15:00)
+
+	point task17_marker_a=MVMD(4) MARKER(red)
+	point task17_marker_b=MVMD(5) MARKER(red)
+	point task17_marker_c=MVMD(6) MARKER(red)
+	
+	result task17_result=ANG3P(task17_marker_a,task17_marker_b,task17_marker_c)
+	
+	restriction task17_pointbdmin=DMIN(task17_marker_a,task17_marker_b,1000m,"R15.12: point B too close to A")
+	restriction task17_pointbdmax=DMAX(task17_marker_a,task17_marker_b,3000m,"R15.12: point B too far from A")
+	restriction task17_pointcdmin=DMIN(task17_marker_b,task17_marker_c,1000m,"R15.12: point C too close to B")
+	restriction task17_pointcdmax=DMAX(task17_marker_b,task17_marker_c,3000m,"R15.12: point C too far from B")
+
+

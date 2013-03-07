@@ -1,0 +1,15 @@
+set title=Campionat de Catalunya d'Aerostació
+set subtitle=Lleida, 01-03 de març de 2013
+set DateTime = 2013/03/02,AM
+set utcoffset=01:00
+set Datum=WGS84
+set UTMZone=31T
+set tasksinorder=true
+set QNH = 1017
+set altitudeunits = meters
+set minspeed=0.3
+set altitudecorrectionsfile=..\..\Misc\Logger\insterr.cfg
+
+map competitionMap = bitmap(..\..\Maps\CompetitionMap.png) grid(1000)
+
+point launch=TLCH() NONE()

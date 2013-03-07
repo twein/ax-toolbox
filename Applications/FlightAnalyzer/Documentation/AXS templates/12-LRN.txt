@@ -1,0 +1,48 @@
+//	A: task 4 marker
+//  B: task 6 marker
+//  C: first track point farther than 5000m from B before 10:30
+task task7 = LRN(7)
+	// Define the valid period for dropping the marker 
+	filter task7_filterTimeB=BEFORETIME(10:30:00)
+
+	// Get points A and B
+	point task7_markerA=TPT(task4_marker) MARKER(yellow)
+	point task7_markerB=TPT(task6_marker) MARKER(yellow)
+	
+	//point C is first valid track point >= 5000m from B
+	point task7_markerC=TDD(task7_markerB,5000m) MARKER(yellow)
+
+	// result is the area between 3 points
+	result task7_result=ATRI(task7_markerA,task7_markerB,task7_markerC)
+	
+
+// A, B, C: logger markers before 10:30. Marker C before 20 min from A
+task task4 = LRN(4)
+	filter task4_filter_time=BEFORETIME(10:30:00)
+
+	point task4_marker_a=MVMD(4) MARKER(red)
+	point task4_marker_b=MVMD(5) MARKER(red)
+	point task4_marker_c=MVMD(6) MARKER(red)
+	
+	result task4_result=ATRI(task4_marker_a,task4_marker_b,task4_marker_c)
+	
+	restriction task4_timeinfraction=TMAX(task4_marker_a,task4_marker_c,30,"R15.12: point C out of time limit")
+	
+
+	
+//A, B, C: logger markers before 10:00, point A less tahn 30min from A
+//drop order checked
+task task23 = LRN(23)
+	filter task23_filter_time=BEFORETIME(10:00:00)
+
+	point task23_marker_a=MVMD(3) MARKER(red)
+	point task23_marker_b=MVMD(4) MARKER(red)
+	point task23_marker_c=MVMD(5) MARKER(red)
+	
+	result task23_result=ATRI(task23_marker_a,task23_marker_b,task23_marker_c)
+	
+	restriction task23_pointBtime=TMIN(task23_marker_a,task23_marker_b,0,"R15.12: point B before point A")
+	restriction task23_pointCtime=TMIN(task23_marker_b,task23_marker_c,0,"R15.12: point C before point B")
+	restriction task23_timeinfraction=TMAX(task23_marker_a,task23_marker_c,30,"R15.12: point C out of time limit")
+	
+

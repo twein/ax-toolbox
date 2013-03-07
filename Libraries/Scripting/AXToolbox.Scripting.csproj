@@ -107,8 +107,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Docs\AXS Specification.odt" />
-    <None Include="Docs\AXS Specification.pdf" />
+    <None Include="Documentation\AXS Specification.odt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="license.txt" />
