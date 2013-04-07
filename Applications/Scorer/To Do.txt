@@ -1,5 +1,6 @@
 ﻿BUGS:
 - Pilot disqualification not working
+- number format in task result edition window is not consistent
 
 - R10.1.5 In case the competitor suffering the collision is not able to fly further tasks after the collision, THE DIRECTOR MAY AWARD HIM POINTS for the lost tasks in that flight. (COH)
 ! don't import results if task status is not provisional
@@ -26,7 +27,6 @@ Marc André homework:
 * use "Published on" instead "Printed on"
 * Auto highlighting
 * Save all the published pdfs for future reference
-(* = done, + = review, ! = urgent)
 
 
 * Split scores in two tables if there are too many tasks.
@@ -35,3 +35,6 @@ Marc André homework:
 - PdfHelper: change all fixed spacing to relative (Ex: 10pt=>HeaderFont.size)
 
 - Unify Result in analyzer and scorer. Rename to Performance
+
+
+(* = done, + = review, ! = urgent)
