@@ -1,11 +1,11 @@
-﻿using System;
+﻿using AXToolbox.Common;
+using Netline.BalloonLogger.SignatureLib;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AXToolbox.Common;
-using Netline.BalloonLogger.SignatureLib;
 
 namespace AXToolbox.GpsLoggers
 {
@@ -21,7 +21,7 @@ namespace AXToolbox.GpsLoggers
             LogFileExtension = ".igc";
 
             //get signature info
-            var v = new Verifier();
+            var v = new Verifier() { AcceptOldKey = true };
             if (v.Verify(logFilePath))
                 SignatureStatus = SignatureStatus.Genuine;
             else
