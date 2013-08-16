@@ -2,6 +2,7 @@
 - Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
 
 TO DO
+- The options window does not save the bitmap scaling mode
 ! The automatic launch and landing points should not be shown as set by debriefer
 * Use contest landing if no marker has been produced for a given task.
 * R13.3.5 table of distance infringement penalties

@@ -2,6 +2,8 @@
 - Pilot disqualification not working
 - number format in task result edition window is not consistent
 
+
+- show flight date and pilot number in automatic flight report left footer
 - R10.1.5 In case the competitor suffering the collision is not able to fly further tasks after the collision, THE DIRECTOR MAY AWARD HIM POINTS for the lost tasks in that flight. (COH)
 ! don't import results if task status is not provisional
 - make a named backup at each publication.

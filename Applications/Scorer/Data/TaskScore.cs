@@ -66,11 +66,11 @@ namespace Scorer
             Task = task;
             Version = 1;
 
-            PilotScores = (from r in Task.PilotResults
-                           where competition.Pilots.Contains(r.Pilot)
-                           select new PilotScore(r)).ToArray();
+            //PilotScores = (from r in Task.PilotResults
+            //               where competition.Pilots.Select(p=>p.Number).Contains(r.Pilot.Number)
+            //               select new PilotScore(r)).ToArray();
 
-            Debug.Assert(PilotScores.Length == competition.Pilots.Count, "PilotScores should have as many elements as Competition.Pilots");
+            //Debug.Assert(PilotScores.Length == competition.Pilots.Count, "PilotScores should have as many elements as Competition.Pilots");
         }
 
         public void ComputeScores()
@@ -92,6 +92,12 @@ namespace Scorer
                 SM =  rounded score of the lowest ranking competitor in group A, calculated under Formula Two.
                 M =   lowest ranking competitor in group A.
             */
+
+            PilotScores = (from r in Task.PilotResults
+                           where competition.Pilots.Select(p => p.Number).Contains(r.Pilot.Number)
+                           select new PilotScore(r)).ToArray();
+
+            Debug.Assert(PilotScores.Length == competition.Pilots.Count, "PilotScores should have as many elements as Competition.Pilots");
 
             A = B = P = M = SM = 0;
             var N = PilotScores.Length;
