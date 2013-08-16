@@ -25,7 +25,7 @@
             <DockPanel>
                 <Label DockPanel.Dock="Left" Width="100">Bitmap scaling:</Label>
                 <ComboBox VerticalAlignment="Center"
-                    SelectedItem="{Binding Path=Default.BitmapScaling}" ItemsSource="{Binding Source={StaticResource RenderModes}}"/>
+                    SelectedItem="{Binding Path=Default.BitmapScaling,Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource RenderModes}}"/>
             </DockPanel>
             <Separator Visibility="Hidden" Height="5" DockPanel.Dock="Top"></Separator>
             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom">

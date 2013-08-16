@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AXToolbox.Common;
+using Microsoft.Win32;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,8 +10,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
-using AXToolbox.Common;
 
 namespace Scorer
 {
@@ -30,6 +30,7 @@ namespace Scorer
                 Event.Instance.Load(fileName);
             }
         }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (!ConfirmPossibleDataLoss())
@@ -61,6 +62,7 @@ namespace Scorer
 
             AddTab(new EditEvent(fakeCollection, editOptions), "Event");
         }
+
         private void menuEventLoadCsv_Click(object sender, RoutedEventArgs e)
         {
             var fileName = GetOpenFileName(".csv files (*.csv)|*.csv");
@@ -76,6 +78,7 @@ namespace Scorer
                 }
             }
         }
+
         private void menuEventSaveXml_Click(object sender, RoutedEventArgs e)
         {
             var fileName = GetSaveFileName(".xml files (*.xml)|*.xml");
@@ -115,15 +118,18 @@ namespace Scorer
         {
             Event.Instance.PilotListToPdf(true);
         }
+
         private void menuOutputPilotsWorkListToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Event.Instance.WorkListToPdf(true);
         }
+
         private void menuOutputPilotsListByCompetitionToPdf_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             foreach (var competition in Event.Instance.Competitions)
                 competition.PilotListToPdf(true);
         }
+
         private void menuOutputTaskScoresTo1Pdf_Click(object sender, RoutedEventArgs e)
         {
             var folder = GetFolderName();
@@ -131,21 +137,25 @@ namespace Scorer
                 foreach (var competition in Event.Instance.Competitions)
                     competition.TaskScoresTo1Pdf(folder, true);
         }
+
         private void menuOutputTaskScoresToNPdf_Click(object sender, RoutedEventArgs e)
         {
             foreach (var competition in Event.Instance.Competitions)
                 competition.TaskScoresToNPdf();
         }
+
         private void menuOutputTotalScoresPublicationToPdf_Click(object sender, RoutedEventArgs e)
         {
             foreach (var competition in Event.Instance.Competitions)
                 competition.TotalScoreToPdf(true, true);
         }
+
         private void menuOutputTotalScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
             foreach (var competition in Event.Instance.Competitions)
                 competition.TotalScoreToPdf(false, true);
         }
+
         private void menuAbout_Click(object sender, RoutedEventArgs e)
         {
             var assembly = GetType().Assembly;
@@ -169,11 +179,13 @@ namespace Scorer
 
             AddTab(new EditPilots(competition.Pilots, editOptions), competition.Name + " pilots");
         }
+
         private void menuCompetitionPilotsReset_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
             competition.ResetPilots();
         }
+
         private void menuCompetitionTasksEdit_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
@@ -181,6 +193,7 @@ namespace Scorer
 
             AddTab(new EditTasks(competition.Tasks, editOptions), competition.Name + " tasks");
         }
+
         private void menuCompetitionTasksReset_Click(object sender, RoutedEventArgs e)
         {
             var competition = ((MenuItem)sender).Tag as Competition;
@@ -192,6 +205,7 @@ namespace Scorer
             var task = ((TextBlock)sender).Tag as Task;
             textDescription.Text = task.ExtendedStatus;
         }
+
         private void listBoxTask_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             textDescription.Text = "";
@@ -208,6 +222,7 @@ namespace Scorer
 
             AddTab(new EditTaskResults(task, results, editOptions), string.Format("Task {0} Manual", task.ShortDescription));
         }
+
         private void menuTaskEditAutoResults_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
@@ -219,6 +234,7 @@ namespace Scorer
 
             AddTab(new EditTaskResults(task, results, editOptions), string.Format("Task {0} Auto", task.ShortDescription));
         }
+
         private void menuTaskResultsToPdf_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(Event.Instance.FilePath))
@@ -229,12 +245,14 @@ namespace Scorer
                 task.ResultsToPdf(true);
             }
         }
+
         private void menuTaskPublishScore_Click(object sender, RoutedEventArgs e)
         {
             var task = ((MenuItem)sender).Tag as Task;
             var dlg = new PublishWindow(task);
             dlg.ShowDialog();
         }
+
         private void menuTaskScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(Event.Instance.FilePath))
@@ -255,6 +273,7 @@ namespace Scorer
                 }
             }
         }
+
         private void menuTaskBookScoresToPdf_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(Event.Instance.FilePath))
@@ -275,9 +294,9 @@ namespace Scorer
                 }
             }
         }
+
         public void AddTab(UserControl control, string header)
         {
-
             // make sure the passed in arguments are good
             Debug.Assert(control != null, "UserControl control is null");
             Debug.Assert(header != null, "string header is null");
@@ -312,6 +331,7 @@ namespace Scorer
             // you get a blank tab
             itemsTab.SelectedItem = tab;
         }
+
         private void CloseTab(object source, RoutedEventArgs args)
         {
             var tabItem = args.Source as TabItem;
@@ -339,6 +359,7 @@ namespace Scorer
 
             return fileName;
         }
+
         private string GetSaveFileName(string filter)
         {
             var dlg = new SaveFileDialog();
@@ -361,6 +382,7 @@ namespace Scorer
 
             return fileName;
         }
+
         private string GetFolderName()
         {
             string folder = null;
@@ -384,6 +406,7 @@ namespace Scorer
             //TODO: add cases
             e.CanExecute = true;
         }
+
         private void CommandExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             if (e.Command.Equals(ApplicationCommands.Open))
@@ -406,6 +429,7 @@ namespace Scorer
                     Event.Instance.Load(fileName);
             }
         }
+
         private void SaveEvent()
         {
             if (string.IsNullOrEmpty(Event.Instance.FilePath))
@@ -413,6 +437,7 @@ namespace Scorer
             else
                 Event.Instance.Save(Event.Instance.FilePath);
         }
+
         private void SaveEventAs()
         {
             var fileName = GetSaveFileName("AX-Scorer files (*.sco)|*.sco");

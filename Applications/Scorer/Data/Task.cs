@@ -212,12 +212,16 @@ namespace Scorer
             //compute the scores
             foreach (var c in Event.Instance.Competitions)
             {
-                var ts = c.TaskScores.First(s => s.Task == this);
-                ts.ComputeScores();
 
-                //auto-increment version if needed
-                if (!preserveChanges)
-                    ts.Version++;
+                var ts = c.TaskScores.FirstOrDefault(s => s.Task == this);
+                if (ts != null)
+                {
+                    ts.ComputeScores();
+
+                    //auto-increment version if needed
+                    if (!preserveChanges)
+                        ts.Version++;
+                }
             }
 
             Phases |= CompletedPhases.Computed;

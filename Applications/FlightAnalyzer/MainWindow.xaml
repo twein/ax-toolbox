@@ -5,7 +5,7 @@
         xmlns:maps="clr-namespace:AXToolbox.MapViewer;assembly=AXToolbox.MapViewer"
         xmlns:scripting="clr-namespace:AXToolbox.Scripting;assembly=AXToolbox.Scripting"
         xmlns:converters="clr-namespace:AXToolbox.Model.Converters;assembly=AXToolbox.Model"    
-        Title="MainWindow" MinWidth="1024" MinHeight="576" WindowState="Maximized"
+        Title="AX Flight Analyzer" MinWidth="1024" MinHeight="576" WindowState="Maximized"
         Loaded="Window_Loaded"
         Closed="Window_Closed" Icon="/FlightAnalyzer;component/balloon.ico">
     <Window.Resources>

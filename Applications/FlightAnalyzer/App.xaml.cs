@@ -20,19 +20,25 @@ namespace AXToolbox.FlightAnalyzer
                 Properties["FileToOpen"] = e.Args[0];
             }
 
-            if (ApplicationDeployment.CurrentDeployment.IsFirstRun)
+            try
             {
-                var assembly = Assembly.GetExecutingAssembly();
-                var company = ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyCompanyAttribute), false)).Company;
+                if (ApplicationDeployment.CurrentDeployment.IsFirstRun)
+                {
+                    var assembly = Assembly.GetExecutingAssembly();
+                    var company = ((AssemblyCompanyAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyCompanyAttribute), false)).Company;
 
-                var shortcutName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), company, "FlightAnalyzer Documentation.lnk");
-                var targetPath = Path.Combine(Path.GetDirectoryName(assembly.Location), "Documentation");
+                    var shortcutName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), company, "FlightAnalyzer Documentation.lnk");
+                    var targetPath = Path.Combine(Path.GetDirectoryName(assembly.Location), "Documentation");
 
-                var shell = new WshShell();
-                var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutName);
-                shortcut.TargetPath = targetPath;
-                shortcut.Save();
+                    var shell = new WshShell();
+                    var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutName);
+                    shortcut.TargetPath = targetPath;
+                    shortcut.Save();
+                }
             }
+
+            catch (InvalidDeploymentException)
+            { }
         }
     }
 }
