@@ -17,7 +17,7 @@ namespace AXToolbox.Scripting
             : base(engine, definition)
         { }
 
-        
+
         protected string unit;
         protected ScriptingPoint A, B, C;
         protected double setDirection;
@@ -286,7 +286,7 @@ namespace AXToolbox.Scripting
                     case "TSEC":
                         //TSEC: time in seconds
                         //TSEC(<pointNameA>, <pointNameB>)
-                        Result = Task.NewResult(Math.Round((B.Point.Time - A.Point.Time).TotalSeconds, 0));
+                        Result = Task.NewResult(Math.Abs(Math.Round((B.Point.Time - A.Point.Time).TotalSeconds, 0)));
                         Result.UsedPoints.Add(A.Point);
                         Result.UsedPoints.Add(B.Point);
                         break;
