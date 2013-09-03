@@ -52,7 +52,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAEABAEAAAQAAAEAAAApAQAgAAUAIAEEAAICIACAAA=</HashCode>
+      <HashCode>AAAEAAAEAAAAAAAEAAAApAQAAAAUAIAEEACIAAAiCAA=</HashCode>
       <FileName>Data\Competition.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -63,23 +63,15 @@
   </Class>
   <Class Name="Scorer.Task">
     <Position X="8.5" Y="7.75" Width="2.25" />
-    <AssociationLine Name="PilotResults" Type="Scorer.PilotResult">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-1.976" Y="0.666" Height="0.182" Width="3.285" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AgEAAGAEAAggQAAEAEAAAAAAAEAYAARAAAAEAAAgDAg=</HashCode>
+      <HashCode>IoEAACAEAAggQAAEAEAAAAAAAAAYAAQBAAAEIQAgDCg=</HashCode>
       <FileName>Data\Task.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="PilotResults" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Scorer.Pilot">
     <Position X="0.75" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAABAAQQAUAEAAAAQAAAYUAAAGAAgAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAACBIAQAAUAEAAAAQAAAYUAAAGAAAAAEAAAAA=</HashCode>
       <FileName>Data\Pilot.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -98,7 +90,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>IEIBAAAGAAAAAAAAAAAAwAAAAACAAAggAEAAIANIAAA=</HashCode>
+      <HashCode>IAIBAAAEAAAAAAAAAAAAwoAAAAAAAAggQEAAJANIAAI=</HashCode>
       <FileName>Data\TaskScore.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -108,7 +100,7 @@
   <Class Name="Scorer.PilotScore">
     <Position X="0.75" Y="5.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAEAAAAAAAAAIgkAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAFAAAAAAAAAAgEAAAAAAAABgAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Data\PilotScore.cs</FileName>
     </TypeIdentifier>
   </Class>

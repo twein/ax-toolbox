@@ -76,6 +76,7 @@ namespace AXToolbox.Scripting
 
                 case "UNION":
                 case "INTERSECTION":
+                case "SUBTRACTION":
                     AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length > 1);
                     areas = new List<ScriptingArea>();
                     foreach (var areaName in Definition.ObjectParameters)
@@ -125,6 +126,7 @@ namespace AXToolbox.Scripting
                 case "PRISM":
                 case "UNION":
                 case "INTERSECTION":
+                case "SUBTRACTION":
                     //do nothing
                     break;
 
@@ -206,6 +208,24 @@ namespace AXToolbox.Scripting
                             if (!isInside)
                                 break;
                         }
+                        break;
+
+                    case "SUBTRACTION":
+                            foreach (var area in areas)
+                            {
+                                if (area.Contains(point))
+                                {
+                                    if (isInside)
+                                    {
+                                        isInside = false;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        isInside = true;
+                                    }
+                                }
+                            }
                         break;
 
                     default:

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using AXToolbox.Common;
+﻿using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.MapViewer;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace AXToolbox.Scripting
 {
@@ -17,7 +18,8 @@ namespace AXToolbox.Scripting
             : base(engine, definition)
         { }
 
-        protected ScriptingPoint A, B;
+        protected ScriptingPoint pointA, pointB;
+        protected ScriptingArea area;
         protected double distance = 0;
         protected int time = 0;
         protected TimeSpan timeOfDay;
@@ -52,8 +54,8 @@ namespace AXToolbox.Scripting
                 case "DVMIN":
                     {
                         AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 4);
-                        A = ResolveOrDie<ScriptingPoint>(0);
-                        B = ResolveOrDie<ScriptingPoint>(1);
+                        pointA = ResolveOrDie<ScriptingPoint>(0);
+                        pointB = ResolveOrDie<ScriptingPoint>(1);
                         distance = ParseOrDie<double>(2, Parsers.ParseLength);
                         description = ParseOrDie<string>(3, Parsers.ParseString);
                     }
@@ -68,8 +70,8 @@ namespace AXToolbox.Scripting
                     {
                         {
                             AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 4);
-                            A = ResolveOrDie<ScriptingPoint>(0);
-                            B = ResolveOrDie<ScriptingPoint>(1);
+                            pointA = ResolveOrDie<ScriptingPoint>(0);
+                            pointB = ResolveOrDie<ScriptingPoint>(1);
                             time = ParseOrDie<int>(2, Parsers.ParseInt);
                             description = ParseOrDie<string>(3, Parsers.ParseString);
                         }
@@ -84,8 +86,21 @@ namespace AXToolbox.Scripting
                 case "TATOD":
                     {
                         AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
-                        A = ResolveOrDie<ScriptingPoint>(0);
+                        pointA = ResolveOrDie<ScriptingPoint>(0);
                         timeOfDay = ParseOrDie<TimeSpan>(1, Parsers.ParseTimeSpan);
+                        description = ParseOrDie<string>(2, Parsers.ParseString);
+                    }
+                    break;
+                //PINSIDE: point inside area
+                //PINSIDE(<pointNameA>, <area>, <description>)
+                case "PINSIDE":
+                    {
+                        AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 3);
+                        pointA = ResolveOrDie<ScriptingPoint>(0);
+                        var areaName = ParseOrDie<string>(1, Parsers.ParseString);
+                        area = Engine.Heap.Values.FirstOrDefault(o => o is ScriptingArea && o.Definition.ObjectName == areaName) as ScriptingArea;
+                        if (area == null)
+                            throw new ArgumentException("undeclaread area " + areaName);
                         description = ParseOrDie<string>(2, Parsers.ParseString);
                     }
                     break;
@@ -127,7 +142,7 @@ namespace AXToolbox.Scripting
                 case "DMAX":
                     if (CheckParameters(2))
                     {
-                        var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
+                        var calcDistance = Math.Round(Physics.Distance2D(pointA.Point, pointB.Point), 0);
                         var pctInfringement = 100 * (calcDistance - distance) / distance;
                         var penalty = DistanceInfringementPenalty(calcDistance, pctInfringement, description);
                         if (penalty != null)
@@ -144,7 +159,7 @@ namespace AXToolbox.Scripting
                 case "DMIN":
                     if (CheckParameters(2))
                     {
-                        var calcDistance = Math.Round(Physics.Distance2D(A.Point, B.Point), 0);
+                        var calcDistance = Math.Round(Physics.Distance2D(pointA.Point, pointB.Point), 0);
                         var pctInfringement = 100 * (distance - calcDistance) / distance;
                         var penalty = DistanceInfringementPenalty(calcDistance, pctInfringement, description);
                         if (penalty != null)
@@ -161,7 +176,7 @@ namespace AXToolbox.Scripting
                 case "DVMAX":
                     if (CheckParameters(2))
                     {
-                        var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
+                        var calcDifference = Math.Round(Math.Abs(pointA.Point.Altitude - pointB.Point.Altitude), 0);
                         var pctInfringement = 100 * (calcDifference - distance) / distance;
                         var penalty = DistanceInfringementPenalty(calcDifference, pctInfringement, description);
                         if (penalty != null)
@@ -178,7 +193,7 @@ namespace AXToolbox.Scripting
                 case "DVMIN":
                     if (CheckParameters(2))
                     {
-                        var calcDifference = Math.Round(Math.Abs(A.Point.Altitude - B.Point.Altitude), 0);
+                        var calcDifference = Math.Round(Math.Abs(pointA.Point.Altitude - pointB.Point.Altitude), 0);
                         var pctInfringement = 100 * (distance - calcDifference) / distance;
                         var penalty = DistanceInfringementPenalty(calcDifference, pctInfringement, description);
                         if (penalty != null)
@@ -195,7 +210,7 @@ namespace AXToolbox.Scripting
                 case "TMAX":
                     if (CheckParameters(2))
                     {
-                        var calcTime = (B.Point.Time - A.Point.Time).TotalMinutes;
+                        var calcTime = (pointB.Point.Time - pointA.Point.Time).TotalMinutes;
                         if (calcTime > time)
                         {
                             infringed = true;
@@ -212,7 +227,7 @@ namespace AXToolbox.Scripting
                 case "TMIN":
                     if (CheckParameters(2))
                     {
-                        var calcTime = Math.Ceiling((B.Point.Time - A.Point.Time).TotalMinutes);
+                        var calcTime = Math.Ceiling((pointB.Point.Time - pointA.Point.Time).TotalMinutes);
                         if (calcTime < time)
                         {
                             infringed = true;
@@ -230,11 +245,11 @@ namespace AXToolbox.Scripting
                     if (CheckParameters(1))
                     {
                         var refTime = Engine.Settings.Date.Date + timeOfDay;
-                        if (A.Point.Time > refTime)
+                        if (pointA.Point.Time > refTime)
                         {
                             infringed = true;
-                            var reason = string.Format("{0}", description, MinToHms((A.Point.Time - refTime).TotalMinutes));
-                            AddNote(string.Format("time infringement: {0}", MinToHms((A.Point.Time - refTime).TotalMinutes)), true);
+                            var reason = string.Format("{0}", description, MinToHms((pointA.Point.Time - refTime).TotalMinutes));
+                            AddNote(string.Format("time infringement: {0}", MinToHms((pointA.Point.Time - refTime).TotalMinutes)), true);
                             Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
                             AddNote("No Result (group B): " + reason, true);
                         }
@@ -247,11 +262,28 @@ namespace AXToolbox.Scripting
                     if (CheckParameters(1))
                     {
                         var refTime = Engine.Settings.Date.Date + timeOfDay;
-                        if (A.Point.Time < refTime)
+                        if (pointA.Point.Time < refTime)
                         {
                             infringed = true;
-                            var reason = string.Format("{0}", description, MinToHms((refTime - A.Point.Time).TotalMinutes));
-                            AddNote(string.Format("time infringement: {0}", MinToHms((refTime - A.Point.Time).TotalMinutes)), true);
+                            var reason = string.Format("{0}", description, MinToHms((refTime - pointA.Point.Time).TotalMinutes));
+                            AddNote(string.Format("time infringement: {0}", MinToHms((refTime - pointA.Point.Time).TotalMinutes)), true);
+                            Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
+                            AddNote("No Result (group B): " + reason, true);
+                        }
+                        else
+                            AddNote("not infringed");
+                    }
+                    break;
+
+                case "PINSIDE":
+                    if (CheckParameters(1))
+                    {
+                        var refTime = Engine.Settings.Date.Date + timeOfDay;
+                        if (!area.Contains(pointA.Point))
+                        {
+                            infringed = true;
+                            var reason = string.Format("{0}", description);
+                            AddNote(string.Format("point not inside area infringement"), true);
                             Task.NewNoResult((Task.Result.Reason + "; " + reason).Trim(new char[] { ';', ' ' }));
                             AddNote("No Result (group B): " + reason, true);
                         }
@@ -274,9 +306,9 @@ namespace AXToolbox.Scripting
                     case "DVMIN":
                     case "TMAX":
                     case "TMIN":
-                        if (A.Point != null && B.Point != null)
+                        if (pointA.Point != null && pointB.Point != null)
                         {
-                            overlay = new DistanceOverlay(A.Point.ToWindowsPoint(), B.Point.ToWindowsPoint(),
+                            overlay = new DistanceOverlay(pointA.Point.ToWindowsPoint(), pointB.Point.ToWindowsPoint(),
                                 string.Format("{0} = {1}", Definition.ObjectType, description)) { Layer = (uint)OverlayLayers.Penalties };
                         }
                         break;
@@ -291,13 +323,13 @@ namespace AXToolbox.Scripting
         {
             Debug.Assert(nRequired == 1 || nRequired == 2);
 
-            if (A.Point == null || (nRequired == 2 && B.Point == null))
+            if (pointA.Point == null || (nRequired == 2 && pointB.Point == null))
             {
                 AddNote("restriction reference point is null");
                 AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
                 return false;
             }
-            else if (A.Point.Name == "Landing" && (nRequired == 2 && B.Point.Name == "Landing"))
+            else if (pointA.Point.Name == "Landing" && (nRequired == 2 && pointB.Point.Name == "Landing"))
             {
                 AddNote("restriction reference point is landing");
                 AddNote("WARNING! RESTRICTION HAS NOT BEEN COMPUTED!", true);
