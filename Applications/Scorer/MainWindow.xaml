@@ -1,0 +1,173 @@
+﻿<Window x:Class="Scorer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
+        xmlns:local="clr-namespace:Scorer"
+        DataContext="{Binding Source={x:Static local:Event.Instance}}"
+        Title="{Binding Path=Name}" Height="600" Width="1024" WindowState="Maximized" 
+        Loaded="Window_Loaded" Closing="Window_Closing" Drop="Window_Drop" AllowDrop="True"
+        Icon="/Scorer;component/balloon.ico">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                  Source="pack://application:,,,/AXToolbox.Common;component/GUI/RDCloseableTabItem.xaml">
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="Open" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+        <CommandBinding Command="Save" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+        <CommandBinding Command="SaveAs" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+        <CommandBinding Command="Close" CanExecute="CommandCanExecute" Executed="CommandExecuted" />
+    </Window.CommandBindings>
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open..." Command="Open"/>
+                <MenuItem Header="Open CSV File..." Click="menuEventLoadCsv_Click"/>
+                <MenuItem Header="Save" Visibility="{Binding Path=SaveVisibility}" Command="Save"/>
+                <MenuItem Header="Save As..." Visibility="{Binding Path=SaveVisibility}" Command="SaveAs"/>
+                <MenuItem Header="Save XML As..." Visibility="{Binding Path=SaveVisibility}" Click="menuEventSaveXml_Click"/>
+                <Separator/>
+                <MenuItem Header="Close" Command="Close"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Modify Event" Click="menuEventEdit_Click"/>
+                <MenuItem Header="Modify Competitions" Click="menuCompetitionsEdit_Click"/>
+                <MenuItem Header="Modify Pilots" Click="menuPilotsEdit_Click"/>
+                <MenuItem Header="Modify Tasks" Click="menuTasksEdit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Output" Visibility="{Binding Path=OutputVisibility}">
+                <MenuItem Header="Event pilot list to pdf" ToolTip="Pilot list." Click="menuOutputPilotsListToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Work spreadsheet to pdf" ToolTip="Work spreadsheet for officials." Click="menuOutputPilotsWorkListToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Pilot list by competition" ToolTip="For each competition, make a pdf with the pilot list." Click="menuOutputPilotsListByCompetitionToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Tag="{Binding}" Header="Task scores (1 file)" ToolTip="For each competition, make a pdf with all task scores." Click="menuOutputTaskScoresTo1Pdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Task scores (n files)" ToolTip="For each competition, make a pdf for each task score." Click="menuOutputTaskScoresToNPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Total scores" ToolTip="For each competition, make a pdf with the total score." Click="menuOutputTotalScoresPublicationToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Tag="{Binding}" Header="Total scores (with provisionals)" ToolTip="For each competition, make a pdf with the total score, including all provisional scores." Click="menuOutputTotalScoresToPdf_Click">
+                    <MenuItem.Icon>
+                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="About" Click="menuAbout_Click"></MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=Competitions.Count, StringFormat=Competitions: {0:0}}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=Pilots.Count, StringFormat=Pilots: {0:0}}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=Tasks.Count, StringFormat=Tasks: {0:0}}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Name="textDescription"/>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="0">
+                <StackPanel Orientation="Vertical">
+                    <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True">
+                        <Expander.Header>
+                            <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Competitions</TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Competitions}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Status}">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition pilots" Click="menuCompetitionPilotsEdit_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Reset competition pilots" Click="menuCompetitionPilotsReset_Click"/>
+                                                <Separator/>
+                                                <MenuItem Tag="{Binding}" Header="Edit competition tasks" Click="menuCompetitionTasksEdit_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Reset competition tasks" Click="menuCompetitionTasksReset_Click"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Expander>
+                    <!--<Expander ExpandDirection="Down" Background="LightGray">
+                        <Expander.Header>
+                            <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Pilots</TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Pilots}"/>
+                    </Expander>-->
+                    <Expander ExpandDirection="Down" Background="LightGray" IsExpanded="True">
+                        <Expander.Header>
+                            <TextBlock VerticalAlignment="Top" FontWeight="Bold" Margin="0,0,5,0">Tasks</TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Tasks}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Tag="{Binding}" Text="{Binding Path=Status}" MouseEnter="listBoxTask_MouseEnter" MouseLeave="listBoxTask_MouseLeave">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Tag="{Binding}" Header="Edit manual results" Click="menuTaskEditResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Edit auto results" Click="menuTaskEditAutoResults_Click"/>
+                                                <MenuItem Tag="{Binding}" Header="Results" Visibility="{Binding Path=ResultsVisibility}" Click="menuTaskResultsToPdf_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Tag="{Binding}" Header="Publish score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskPublishScore_Click" />
+                                                <MenuItem Tag="{Binding}" Header="Score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskScoresToPdf_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Tag="{Binding}" Header="Book Score" Visibility="{Binding Path=ScoresVisibility}" Click="menuTaskBookScoresToPdf_Click">
+                                                    <MenuItem.Icon>
+                                                        <Image Source="/Scorer;component/pdf.png" Height="16" />
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter Background="LightGray" Grid.Column="1" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <TabControl Name="ItemsTab" Grid.Column="2"/>
+        </Grid>
+    </DockPanel>
+</Window>

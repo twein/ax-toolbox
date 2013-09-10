@@ -1,0 +1,40 @@
+//logger goal declaration, logger marker from 6:10 to 9:00
+//declared goal between 3-5km from previous task marker
+//1km minimum distance from launch to declared goal
+task task4 = FON(4)
+
+	// Get the target declaration (LoggerDecaration #1)
+	point task4_target=MPDGD(1) TARGET(0m,blue)
+
+	// Define the valid period for dropping the marker 
+	filter task4_filterTimeA=AFTERTIME(06:10:00)	
+	filter task4_filterTimeB=BEFORETIME(09:00:00)
+
+	// Get LoggerMarker #4 (within the time of the filter)
+	point task4_marker=MVMD(4) MARKER(blue)
+
+	// Result is 3D distance from marker to target (2D if altitude of marker is 
+	// +-150ft of that of the goal) 
+	result task4_result=DRAD(task4_marker,task4_target,150ft)
+
+	//penalties
+	restriction task4_min_dist_m3=DMIN(task3_marker,task4_target,3000m,"Task4 min decl goal dist")
+	restriction task4_max_dist_m3=DMAX(task3_marker,task4_target,5000m,"Task4 max decl goal dist")
+	restriction task4_min_launch_dist=DMIN(launch,task4_target,1000m,"Min take off dist to task4 goal")
+
+
+	
+//logger declaration with forced altitude of 2000ft, before previous task marker drop
+//logger marker before 10:30, not before declaration
+task task11 = FON(11)
+	filter task11_filterTime=BEFORETIME(10:30:00)
+	
+	point task11_target=MPDGF(1,2000ft) TARGET(0m,blue)
+	point task11_marker=MVMD(6) MARKER(blue)
+	result task11_result=D3D(task11_marker,task11_target)
+  point task11_declarationpoint=TPT(task11_target) waypoint(blue)
+
+	restriction task11_declarationtime=TMIN(task11_target,task10_marker_c,0,"R15.5: late declaration")
+	restriction task11_timesequence=TMIN(task11_target,task11_marker,0,"R15.5: marker dropped before declaration")
+
+	

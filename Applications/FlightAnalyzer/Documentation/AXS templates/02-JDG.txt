@@ -1,0 +1,48 @@
+//best track point before 10:15, minimum distance from launch to goal 1000m
+task task2 = JDG(2)
+	filter task2_filterTime=BEFORETIME(10:15:00)
+	
+	point task2_target=SUTM(304798,4609486,172m) TARGET(100m,yellow)
+	point task2_marker=TNP(task2_target, 500ft) MARKER(pink)
+	result task2_result=DRAD(task2_marker,task2_target,500ft)
+	
+	restriction task2_dmin=DMIN(launch, task2_target, 1000m, "launch too close to goal")
+
+
+
+//best track point before 9:30,  minimum distance from launch to goal 1500m
+task task2 = JDG(2)
+
+	// Define the goal as a static point given by UTM coordinates
+	point task2_target=SUTM(506397,4712116,1624ft) TARGET(50m,green)
+
+	// Filter the portion of the track for the time the task is open
+	filter task2_filterTime=BEFORETIME(09:30:00)
+	
+	// Get best track point withint valid period
+	point task2_marker=TNP(task2_target,500ft) MARKER(green)
+
+	// Result is 3D distance from marker to target (2D if altitude of marker is 
+	// +-500ft of that of the goal) 
+	result task2_result=DRAD(task2_marker,task2_target,500ft,50m)
+
+	//penalties
+	restriction task2_min_launch_dist=DMIN(launch,task2_target,1500m,"Min take off dist to task2 goal")
+
+
+
+//logger marker from 8:00 to 9:30
+task task3 = JDG(3)
+
+	// Filter the portion of the track for the time the task is open
+	filter task3_filterTimeA=AFTERTIME(08:00:00)	
+	filter task3_filterTimeB=BEFORETIME(09:30:00)
+	
+	// Get LoggerMarker #3 (within the time of the filter)
+	point task3_marker=MVMD(3) MARKER(yellow)
+
+	// Define the goal as a static point given by UTM coordinates
+	point task3_target=SUTM(414733,5300246,343ft) TARGET(0m,yellow)
+	
+	// The result is the 3D distance between marker and target
+	result task3_result=DRAD(task3_marker,task3_target,500ft)

@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FlightAnalyzer.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Debriefer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Debriefer</Value>
+    </Setting>
+    <Setting Name="BitmapScaling" Type="System.Windows.Media.BitmapScalingMode" Scope="User">
+      <Value Profile="(Default)">NearestNeighbor</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

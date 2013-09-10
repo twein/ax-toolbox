@@ -1,0 +1,19 @@
+//logger marker befor 9:30 inside an area defined by a track file, 1000, minimum from launch to goal
+task task15=GBM(15)
+	//given goal
+	point task15_goal=SUTM(304180,4602450,683ft) none()
+	//exposed target
+	point task15_target=SUTM(304343,4602354,683ft) TARGET(100m,blue)
+
+	//time limit filter
+	filter task15_scoringtime=BEFORETIME(09:30:00)
+
+	//area filter
+	area task15_area=PRISM(task15_area.trk) DEFAULT(blue)
+	filter task1_filter_area = INSIDE(task15_area)
+	
+	point task15_marker=MVMD(2) MARKER(blue)
+	result task15_result=DRAD(task15_target,task15_marker,500ft,100m)
+	
+	restriction task15_dmin=DMIN(launch, task15_goal, 1000m, "launch too close to goal") 
+	
