@@ -28,9 +28,9 @@ namespace AXToolbox.GpsLoggers
 
             if (definition.Length == 9 && definition[4] == '/')
             {
-                // type 0000/0000
+                // type 0000/0000 or 00000/0000
                 Type = DeclarationType.CompetitionCoordinates;
-                var coords = definition.Split(new char[] { '/' });
+                var coords = definition.Split('/');
                 Easting4Digits = double.Parse(coords[0]);
                 Northing4Digits = double.Parse(coords[1]);
             }
