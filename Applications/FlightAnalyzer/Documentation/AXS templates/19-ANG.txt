@@ -1,0 +1,21 @@
+//	A, B: logger markers between 6:10 and 9:00
+//	set direction 60deg
+//valid period from 6:10 to 9:00
+//500m minimum distance between markers
+task task5 = ANG(5)
+
+	// Define the valid period for dropping the marker 
+	filter task5_filterTimeA=AFTERTIME(06:10:00)	
+	filter task5_filterTimeB=BEFORETIME(09:00:00)
+
+	// Get LoggerMarker #4 and #5 (within the time of the filter)
+	point task5_markerA=MVMD(4) MARKER(yellow)
+	point task5_markerB=MVMD(5) MARKER(yellow)
+	
+	// result is the angle to a set direction (60deg)
+	result task5_result=ANGSD(task5_markerA,task5_markerB,60)
+	
+	//penalties
+	restriction task5_min_dist=DMIN(task5_markerA,task5_markerB,500m,"Min dist between markers")
+
+

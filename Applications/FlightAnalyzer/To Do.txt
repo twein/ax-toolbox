@@ -1,0 +1,49 @@
+﻿BUGS
+- Vertical distance infraction: check CICR2011, task 9, pilot 2: the goal declaration track point is between track sample interval!!!
+
+TO DO
+- The options window does not save the bitmap scaling mode
+! The automatic launch and landing points should not be shown as set by debriefer
+* Use contest landing if no marker has been produced for a given task.
+* R13.3.5 table of distance infringement penalties
+- Update async workflow with .NET 4.5 (async/await instead of BackgroundWorker?)
+? the debriefer must enter all the physical marker performances before being allowed to save
+! Add/remove penalties.
+- full IsDirty management.
+? Don't score counterfeit logs.
+- Getting started with FlightAnalyzer
+* Fix the log files thing
+* Batch process flight reports.
+* Fix add/remove goal declarations. Support null altitude
+* take off and landing helper buttons in tools
+* pilot names in a file defined in settings (like instrument error file)
+* taskbar jump lists
+* multiple file section in batch processing
+* progressbar in batch processing
+* pdf report: add the same notes in goaldeclarations and markers as in take off and landing (modified by...)
+
+
+IDEAS
+- Steal ideas from http://boxy.fisch.lu
+
+
+PENALTIES:
+- R13
+
+
+
+Checklist:
+Pilot number
+Track log signature
+Max vertical speed
+Take off and landing
+Markers
+	Incorrect marker number
+Pilot declared goals
+	Incorrect declaration number
+	Incorrect allowed goal number
+	Road crossing distance
+
+
+RULES:
+Read all COH!

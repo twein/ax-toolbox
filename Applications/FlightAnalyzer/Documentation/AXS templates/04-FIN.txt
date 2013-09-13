@@ -1,0 +1,49 @@
+//best track point
+task task5 = FIN(5)
+	point task5_target=SUTM(304116,4602525,203m) TARGET(100m,pink)
+	point task5_marker=TNP(task5_target, 500ft) MARKER(pink)
+	
+	result task5_result=DRAD(task5_marker,task5_target,500ft)
+	
+	restriction task5_dmin=DMIN(launch, task5_target, 1000m, "launch too close to goal")
+
+
+
+
+//best track point before 9:30, 1000m minimum distance from launch to goal
+	task task8 = FIN(8)
+
+	// Define the goal as a static point given by UTM coordinates
+	point task8_target=SUTM(510140,4713520,479m) TARGET(50m,blue)
+
+	// Define the valid period for dropping the marker
+	filter task8_filterTime=BEFORETIME(09:30:00)
+
+	// Get best track point withint valid period
+	point task8_marker=TNP(task8_target,500ft) MARKER(blue)
+
+	// Result is 3D distance from marker to target (2D if altitude of marker is 
+	// +-500ft of that of the goal) 
+	result task8_result=DRAD(task8_marker,task8_target,500ft,50m)
+	
+	//penalties 
+	restriction task8_min_launch_dist=DMIN(launch,task8_target,1000m,"Min take off dist to task8 goal")
+
+
+
+//logger marker from 7:45 to 9:00
+task task1 = FIN(1)
+
+	// Define the goal, Static Point given in UTM Coordinates
+	point task1_target=SUTM(412934,5302577,285ft) TARGET(100m,orange)
+
+	// Define the valid period for dropping the marker 
+	filter task1_filterTimeA=AFTERTIME(07:45:00)	
+	filter task1_filterTimeB=BEFORETIME(09:00:00)
+
+	// Get the LoggerMarker #1 (only if it is within the valid period filtered above)
+	point task1_marker=MVMD(1) MARKER(orange)
+
+	// Result is 3D distance from marker to target (2D if altitude of marker is 
+	// +-500ft of that of the goal) 
+	result task1_result=DRAD(task1_marker,task1_target,500ft)

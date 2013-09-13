@@ -1,0 +1,10 @@
+// see 02-JDG
+
+
+//logger marker before 19:55
+task task20=WSD(20)
+	filter task20_scoringtime=BEFORETIME(19:55:00)
+	
+	point task20_target=SUTM(316239,4606846,241m) TARGET(50m,yellow)
+	point task20_marker=MVMD(2) MARKER(yellow)
+	result task20_result=DRAD(task20_target,task20_marker,500ft,50m)

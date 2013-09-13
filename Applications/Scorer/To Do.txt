@@ -1,0 +1,42 @@
+﻿BUGS:
+- Pilot disqualification not working
+- number format in task result edition window is not consistent
+
+
+- show flight date and pilot number in automatic flight report left footer
+- R10.1.5 In case the competitor suffering the collision is not able to fly further tasks after the collision, THE DIRECTOR MAY AWARD HIM POINTS for the lost tasks in that flight. (COH)
+! don't import results if task status is not provisional
+- make a named backup at each publication.
+- alternating row background color in listings
+- index.html for all official pdfs
++ Ties at the median (check and complete other options)
+- Option to choose method for resolving ties at the median
+* listing like scores but ordered by pilot number
+
+
+Marc André homework:
+* show country next to the pilot name 
++ substitute the header by a logo
+* put the director name in the signature space
+* don't show the program version
+* show the task status in the general score
+* show the final score in bold
+- use only one column for penalty points specifying T or C
+* use Notes/Rule instead of infringed rule
+* use Performance instead of Measure
+* use result pending instead of NF when no result is entered
+* put a big task number in a corner of task result sheet for easy recognition
+* use "Published on" instead "Printed on"
+* Auto highlighting
+* Save all the published pdfs for future reference
+
+
+* Split scores in two tables if there are too many tasks.
+
++ Check visibility of all menus and buttons
+- PdfHelper: change all fixed spacing to relative (Ex: 10pt=>HeaderFont.size)
+
+- Unify Result in analyzer and scorer. Rename to Performance
+
+
+(* = done, + = review, ! = urgent)

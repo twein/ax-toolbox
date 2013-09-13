@@ -1,0 +1,7 @@
+//minimum distance from previous task marker to first track point after 20 minutes
+task task3 = MDT(7)
+	point task7_marker6M=MPDGD(1)
+	point task7_marker6=LFNN(task7_marker6M,task6_marker)
+	point task7_marker=TDT(task7_marker6, 00:20:00)
+
+	result task7_result=DRAD(task7_marker,task6_marker,500ft)
