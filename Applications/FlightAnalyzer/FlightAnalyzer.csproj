@@ -41,20 +41,20 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Build\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Build\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,7 +64,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Build\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -74,7 +74,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>..\..\Build\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -250,28 +250,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Common\AXToolbox.Common.csproj">
-      <Project>{7FA1A995-EDA9-4F2F-828E-B8018011E9C6}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\GpsLoggers\AXToolbox.GpsLoggers.csproj">
-      <Project>{2A865EE6-8580-462A-ABC5-DC88177FEDC3}</Project>
-      <Name>AXToolbox.GpsLoggers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\MapViewer\AXToolbox.MapViewer.csproj">
-      <Project>{94F0165C-81F4-4C28-8745-1C60129E6772}</Project>
-      <Name>MapViewer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Model\AXToolbox.Model.csproj">
-      <Project>{1995DB1D-2B57-49B3-BD4A-AD7FDFCF47CD}</Project>
-      <Name>Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Scripting\AXToolbox.Scripting.csproj">
-      <Project>{A6C5392A-EEEB-4B86-AC83-F424F74A77FF}</Project>
-      <Name>Scripting</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="balloon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -311,6 +289,28 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Common\AXToolbox.Common.csproj">
+      <Project>{7fa1a995-eda9-4f2f-828e-b8018011e9c6}</Project>
+      <Name>AXToolbox.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\GpsLoggers\AXToolbox.GpsLoggers.csproj">
+      <Project>{2a865ee6-8580-462a-abc5-dc88177fedc3}</Project>
+      <Name>AXToolbox.GpsLoggers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\MapViewer\AXToolbox.MapViewer.csproj">
+      <Project>{94f0165c-81f4-4c28-8745-1c60129e6772}</Project>
+      <Name>AXToolbox.MapViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Model\AXToolbox.Model.csproj">
+      <Project>{1995db1d-2b57-49b3-bd4a-ad7fdfcf47cd}</Project>
+      <Name>AXToolbox.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Scripting\AXToolbox.Scripting.csproj">
+      <Project>{a6c5392a-eeeb-4b86-ac83-f424f74a77ff}</Project>
+      <Name>AXToolbox.Scripting</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
