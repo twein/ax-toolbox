@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<?define ProductName = "Scorer" ?>
+<?define ProductManufacturer = "balloonerds.com" ?>
+<!--do not touch again once set-->
+<?define UpgradeCode = "959ED725-A030-4ABD-B382-72F5C1612381" ?>
+<!-- use only three part codes for version! http://wixtoolset.org/documentation/manual/v3/howtos/updates/major_upgrade.html -->
+<?define ProductVersion = "13.8.1501" ?>
+<!--change at the same time as version-->
+<?define ProductCode = "0FCAD86A-F988-455C-B621-A83E72012CE0" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="$(var.ProductCode)"
+           UpgradeCode="$(var.UpgradeCode)"
+           Name="$(var.ProductName)"
+           Version="$(var.ProductVersion)"
+           Manufacturer="$(var.ProductManufacturer)"
+           Language="1033" Codepage="1252">
+    <Package Description="$(var.ProductName) setup"
+             InstallerVersion="200"
+             Compressed="yes" />
+
+    <Media Id="1" Cabinet="setup.cab" EmbedCab="yes" CompressionLevel="high" />
+
+    <MajorUpgrade DowngradeErrorMessage="A later version of $(var.ProductName) is already installed. Setup will now exit." />
+
+    <Property Id="ALLUSERS" Value="2" />
+    <Property Id="MSIINSTALLPERUSER" Value="1" />
+
+    <!--setup UI-->
+    <UI Id="WixUI_MySimple">
+      <UIRef Id="WixUI_InstallDir" />
+      <UIRef Id="WixUI_ErrorProgressText" />
+
+      <!-- Skip license dialog -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="InstallDirDlg"
+               Order="2">1</Publish>
+      <Publish Dialog="InstallDirDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="2">1</Publish>
+    </UI>
+    <Property Id="WIXUI_INSTALLDIR" Value="ProductDir" />
+
+    <!--check framework-->
+    <PropertyRef Id="NETFRAMEWORK40CLIENT" />
+    <Condition Message="This application requires .NET Framework 4.0 Client. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK40CLIENT]]>
+    </Condition>
+
+    <!--features-->
+    <Feature Id="DefaultFeature" Title="Main Application" Level="1">
+      <ComponentRef Id="AppFiles" />
+      <ComponentRef Id="DemoFiles" />
+      <ComponentRef Id="DocFiles" />
+      <ComponentRef Id="StartMenuDir" />
+    </Feature>
+
+    <!--add-remove-programs icon-->
+    <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+  </Product>
+
+  <!--use wixeditor to generate this part, then tune it up-->
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ManufacturerDir" Name="$(var.ProductManufacturer)">
+          <Directory Id="ProductDir" Name="$(var.ProductName)">
+            <Component Id="AppFiles" DiskId="1" Guid="D754B441-C0B2-4765-9F99-D5F441FCF58A">
+              <CreateFolder />
+              <RegistryValue Root="HKCU" Key="Software\$(var.ProductManufacturer)\$(var.ProductName)" Type="string" Value="" KeyPath="yes" />
+              <RemoveRegistryKey Root="HKCU" Key="Software\$(var.ProductManufacturer)\$(var.ProductName)" Action="removeOnUninstall" />
+
+              <File Id="SCORER.EXE" Name="Scorer.exe" Source="$(var.Scorer.TargetPath)">
+                <Shortcut Id="desktopShortcut" Directory="DesktopFolder" Name="$(var.ProductName)" Icon="Icon.exe" IconIndex="0" />
+                <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="$(var.ProductName)" Icon="Icon.exe" IconIndex="0" />
+              </File>
+
+              <File Id="AXTOOLBOX.COMMON.DLL" Name="AXToolbox.Common.dll" Source="$(var.Scorer.TargetDir)\AXToolbox.Common.dll" />
+              <File Id="AXTOOLBOX.PDFHELPERS.DLL" Name="AXToolbox.PdfHelpers.dll" Source="$(var.Scorer.TargetDir)\AXToolbox.PdfHelpers.dll" />
+              <File Id="ITEXTSHARP.DLL" Name="itextsharp.dll" Source="$(var.Scorer.TargetDir)\itextsharp.dll" />
+
+              <ProgId Id="Scorer.sco" Description="$(var.ProductName) script file" Icon="SCORER.EXE" IconIndex="0">
+                <Extension Id="sco" ContentType="application/sco">
+                  <Verb Id="open" Command="Open" TargetFile="SCORER.EXE" Argument='"%1"' />
+                </Extension>
+              </ProgId>
+            </Component>
+            <Directory Id="DEMO" Name="Demo">
+              <Component Id="DemoFiles" DiskId="1" Guid="3B786A24-3C7D-4DF6-857B-C40C7F90D34B">
+                <CreateFolder />
+                <RegistryValue Root="HKCU" Key="Software\$(var.ProductManufacturer)\$(var.ProductName)" Type="string" Value="" KeyPath="yes" />
+                <Shortcut Id="DemoFolderShortcut" Name="$(var.ProductName) demo" Directory="ProgramMenuDir" Icon="Icon.exe" IconIndex="0" />
+
+                <File Id="EUROPEANS_2011_TEST_EVENT.CSV" Name="Europeans 2011 Test event.csv" Source="$(var.Scorer.TargetDir)\Demo\Europeans 2011 Test event.csv" />
+              </Component>
+            </Directory>
+            <Directory Id="DOCUMENTATION" Name="Documentation">
+              <Component Id="DocFiles" DiskId="1" Guid="B3FAA557-48C9-408E-BD97-60863F683EE9">
+                <CreateFolder />
+                <RegistryValue Root="HKCU" Key="Software\$(var.ProductManufacturer)\$(var.ProductName)" Type="string" Value="" KeyPath="yes" />
+                <Shortcut Id="DocFolderShortcut" Name="$(var.ProductName) documentation" Directory="ProgramMenuDir" Icon="Icon.exe" IconIndex="0" />
+
+                <File Id="DATA_EXCHANGE_FILE_FORMAT.PDF" Name="Data Exchange File Format.pdf" Source="$(var.Scorer.TargetDir)\Documentation\Data Exchange File Format.pdf" />
+                <File Id="GETTING_STARTED.PDF" Name="Getting Started.pdf" Source="$(var.Scorer.TargetDir)\Documentation\Getting Started.pdf" />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+        <Directory Id="DesktopFolder" />
+        <Directory Id="ProgramMenuFolder">
+          <Directory Id="ProgramMenuDir" Name="$(var.ProductManufacturer)">
+            <Component Id="StartMenuDir" Guid="584CF143-4FD2-4694-B539-CBBC8F6BC19D">
+              <CreateFolder />
+              <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+              <RegistryValue Root="HKCU" Key="Software\$(var.ProductManufacturer)\$(var.ProductName)" Type="string" Value="" KeyPath="yes" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Icon Id="Icon.exe" SourceFile="$(var.Scorer.TargetDir)\Scorer.exe" />
+  </Fragment>
+</Wix>
+
+<!--
+  write debug log:
+  msiexec /i whatever.msi /lvoicewarmupx log.txt
+-->
