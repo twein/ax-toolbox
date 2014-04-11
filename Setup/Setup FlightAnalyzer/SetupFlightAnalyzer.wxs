@@ -5,9 +5,9 @@
 <!--do not touch again once set-->
 <?define UpgradeCode = "32322B21-39BC-4228-8A5C-057859DF5895" ?>
 <!-- use only three part codes for version! http://wixtoolset.org/documentation/manual/v3/howtos/updates/major_upgrade.html -->
-<?define ProductVersion = "13.8.1701" ?>
+<?define ProductVersion = "13.8.1702" ?>
 <!--change at the same time as version-->
-<?define ProductCode = "4E3B1637-88E4-4690-B571-11830303CC86" ?>
+<?define ProductCode = "95615D45-A934-483A-845D-210431164EA0" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="$(var.ProductCode)"
