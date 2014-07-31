@@ -1,11 +1,12 @@
-﻿using System;
+﻿using AXToolbox.Common;
+using AXToolbox.PdfHelpers;
+using iTextSharp.text;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
-using AXToolbox.Common;
-using AXToolbox.PdfHelpers;
-using iTextSharp.text;
 
 namespace Scorer
 {
@@ -19,7 +20,6 @@ namespace Scorer
         Computed = 0x8,
         Published = 0x10
     }
-
 
     [Serializable]
     public class Task : BindableObject
@@ -88,7 +88,6 @@ namespace Scorer
             }
         }
 
-
         public string Description
         {
             get { return string.Format("{0:00}: 15.{1} {2} {3}", Number, TypeNumber, Task.Types[TypeNumber - 1].ShortName, Task.Types[TypeNumber - 1].Name); }
@@ -105,7 +104,7 @@ namespace Scorer
         {
             get
             {
-                return Types[typeNumber - 1].LowerIsBetter; //array is zero based 
+                return Types[typeNumber - 1].LowerIsBetter; //array is zero based
             }
         }
         public int MeasurePenaltySign
@@ -212,7 +211,6 @@ namespace Scorer
             //compute the scores
             foreach (var c in Event.Instance.Competitions)
             {
-
                 var ts = c.TaskScores.FirstOrDefault(s => s.Task == this);
                 if (ts != null)
                 {
@@ -249,9 +247,9 @@ namespace Scorer
             document.Add(new Paragraph(date, config.BoldFont) { SpacingAfter = 10 });
 
             //table
-            var headers = new string[] { 
-                "Pilot", 
-                "Performance (M)", "Performance (A)", 
+            var headers = new string[] {
+                "Pilot",
+                "Performance (M)", "Performance (A)",
                 "Performance penalty (M)", "Performance penalty (A)",
                 "Task penalty (M)", "Task penalty (A)",
                 "Comp. penalty (M)", "Comp. penalty (A)",
@@ -284,7 +282,48 @@ namespace Scorer
             if (openAfterCreation)
                 helper.OpenPdf();
         }
+        public void ResultsToCsv()
+        {
+            var fileName = Path.Combine(Event.Instance.DraftsFolder, "Task " + UltraShortDescription + " results.csv");
+            var sb = new StringBuilder();
 
+            sb.AppendLine("Task " + Description + " results");
+            //sb.AppendLine(string.Format("{0:d} {1}", Date, Date.Hour < 12 ? "AM" : "PM"));
+
+            //table
+            sb.AppendLine(
+                String.Join("\t",
+                    "Pilot number",
+                    "Pilot name",
+                    "Performance",
+                    "Performance penalty",
+                    "Task penalty",
+                    "Comp. penalty",
+                    "Notes/Rules"
+                )
+                .Trim('\t')
+            );
+
+            foreach (var pilotResult in PilotResults.OrderBy(pr => pr.Pilot.Number))
+            {
+                var mr = pilotResult.ManualResultInfo;
+                var ar = pilotResult.AutoResultInfo;
+
+                sb.AppendLine(
+                    String.Join("\t",
+                        pilotResult.Pilot.Number.ToString(),
+                        pilotResult.Pilot.Name,
+                        ResultInfo.ToString(ResultInfo.MergeMeasure(mr.Measure, ar.Measure, 0)),
+                        ResultInfo.ToString(ResultInfo.MergeMeasure(mr.MeasurePenalty, ar.MeasurePenalty, 0)),
+                        ResultInfo.ToString(ResultInfo.MergePenalty(mr.TaskScorePenalty, ar.TaskScorePenalty, 1)),
+                        ResultInfo.ToString(ResultInfo.MergePenalty(mr.CompetitionScorePenalty, ar.CompetitionScorePenalty, 1)),
+                        String.Join(";", mr.InfringedRules, ar.InfringedRules).Trim(';')
+                    )
+                    .Trim('\t')
+                );
+            }
+            File.WriteAllText(fileName, sb.ToString());
+        }
         public override string ToString()
         {
             return Description;
