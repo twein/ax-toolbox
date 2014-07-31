@@ -245,6 +245,16 @@ namespace Scorer
                 task.ResultsToPdf(true);
             }
         }
+        private void menuTaskResultsToCsv_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(Event.Instance.FilePath))
+                MessageBox.Show("Please, save event before!");
+            else
+            {
+                var task = ((MenuItem)sender).Tag as Task;
+                task.ResultsToCsv();
+            }
+        }
 
         private void menuTaskPublishScore_Click(object sender, RoutedEventArgs e)
         {
