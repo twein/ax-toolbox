@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace AXToolbox.Scripting
 {
-    class ScriptingRestriction : ScriptingObject
+    internal class ScriptingRestriction : ScriptingObject
     {
         internal static ScriptingRestriction Create(ScriptingEngine engine, ObjectDefinition definition)
         {
@@ -25,7 +25,6 @@ namespace AXToolbox.Scripting
         protected TimeSpan timeOfDay;
         protected string description;
         protected bool infringed = false;
-
 
         public override void CheckConstructorSyntax()
         {
@@ -46,7 +45,7 @@ namespace AXToolbox.Scripting
                 //DMIN: minimum distance
                 //DMIN(<pointNameA>, <pointNameB>, <distance>, <description>)
                 case "DMIN":
-                //DVMAX: maximum vertical distance 
+                //DVMAX: maximum vertical distance
                 //DVMAX(<pointNameA>, <pointNameB>, <altitude>, <description>)
                 case "DVMAX":
                 //DVMIN: minimum vertical distance
@@ -106,6 +105,7 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
+
         public override void CheckDisplayModeSyntax()
         {
             switch (Definition.DisplayMode)
@@ -127,6 +127,7 @@ namespace AXToolbox.Scripting
             base.Reset();
             infringed = false;
         }
+
         public override void Process()
         {
             base.Process();
@@ -293,6 +294,7 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
+
         public override void Display()
         {
             MapOverlay overlay = null;
@@ -340,9 +342,10 @@ namespace AXToolbox.Scripting
                 return true;
             }
         }
+
         private Penalty DistanceInfringementPenalty(double calcDistance, double pctInfringement, string description)
         {
-            // Rule 13.3.5 
+            // Rule 13.3.5
 
             Penalty penalty;
 
@@ -350,29 +353,19 @@ namespace AXToolbox.Scripting
             {
                 penalty = null;
             }
-            else if (pctInfringement <= 2)
-            {
-                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 2%", calcDistance, description), PenaltyType.TaskPoints, 25);
-            }
-            else if (pctInfringement <= 5)
-            {
-                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 5%", calcDistance, description), PenaltyType.TaskPoints, 50);
-            }
-            else if (pctInfringement <= 10)
-            {
-                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 10%", calcDistance, description), PenaltyType.TaskPoints, 200);
-            }
             else if (pctInfringement <= 25)
             {
-                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 25%", calcDistance, description), PenaltyType.TaskPoints, 500);
+                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} <= 25%", calcDistance, description),
+                    PenaltyType.TaskPoints, (int)(Math.Round(2 * pctInfringement / 0.1, 0)));
             }
             else //if (pctInfringement > 25)
             {
-                penalty = new Penalty(string.Format("R13.3.5: {1} {0:0m} > 25%", calcDistance, description), PenaltyType.TaskPoints, 1000);
+                penalty = new Penalty(Result.NewNoResult(string.Format("R13.3.5: {1} {0:0m} > 25%", calcDistance, description)));
             }
 
             return penalty;
         }
+
         private string MinToHms(double minutes)
         {
             var d = Math.Floor(minutes / 1440);
