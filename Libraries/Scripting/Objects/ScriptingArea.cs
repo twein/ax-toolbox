@@ -26,6 +26,8 @@ namespace AXToolbox.Scripting
         protected double upperLimit = double.PositiveInfinity;
         protected double lowerLimit = double.NegativeInfinity;
         protected double maxHorizontalInfringement;
+        protected DateTime lowerTime;
+        protected DateTime upperTime;
         protected List<AXPoint> outline;
         protected List<ScriptingArea> areas;
 
@@ -72,6 +74,12 @@ namespace AXToolbox.Scripting
                     for (var i = 1; i < outline.Count; i++)
                         for (var j = 0; j < i; j++)
                             maxHorizontalInfringement = Math.Max(maxHorizontalInfringement, Physics.Distance2D(outline[i], outline[j]));
+                    break;
+
+                case "TIME":
+                    AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
+                    lowerTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(0, Parsers.ParseTimeSpan);
+                    upperTime = Engine.Settings.Date.Date + ParseOrDie<TimeSpan>(1, Parsers.ParseTimeSpan);
                     break;
 
                 case "UNION":
@@ -124,6 +132,7 @@ namespace AXToolbox.Scripting
                         AddNote("center point is null", true);
                     break;
                 case "PRISM":
+                case "TIME":
                 case "UNION":
                 case "INTERSECTION":
                 case "SUBTRACTION":
@@ -154,8 +163,10 @@ namespace AXToolbox.Scripting
                         overlay = new PolygonalAreaOverlay(list, Definition.ObjectName) { Layer = (uint)OverlayLayers.Areas, Color = this.Color };
                         break;
 
+                    case "TIME":
                     case "UNION":
                     case "INTERSECTION":
+                    case "SUBTRACTION":
                         //do nothing
                         break;
 
@@ -192,6 +203,10 @@ namespace AXToolbox.Scripting
                         isInside = point.Altitude >= lowerLimit && point.Altitude <= upperLimit && InPolygon(point);
                         break;
 
+                    case "TIME":
+                        isInside = point.Time >= lowerTime && point.Time <= upperTime;
+                        break;
+
                     case "UNION":
                         foreach (var area in areas)
                         {
@@ -211,21 +226,21 @@ namespace AXToolbox.Scripting
                         break;
 
                     case "SUBTRACTION":
-                            foreach (var area in areas)
+                        foreach (var area in areas)
+                        {
+                            if (area.Contains(point))
                             {
-                                if (area.Contains(point))
+                                if (isInside)
                                 {
-                                    if (isInside)
-                                    {
-                                        isInside = false;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        isInside = true;
-                                    }
+                                    isInside = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    isInside = true;
                                 }
                             }
+                        }
                         break;
 
                     default:
