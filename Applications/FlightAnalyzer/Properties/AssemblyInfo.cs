@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Balloonerds.com")]
 [assembly: AssemblyProduct("AX-Toolbox FlightAnalyzer")]
-[assembly: AssemblyCopyright("© 2009-2013 balloonerds.com")]
+[assembly: AssemblyCopyright("© 2009-2014 balloonerds.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -47,4 +47,4 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 // [assembly: AssemblyVersion("11.09.21.01")]
-[assembly: AssemblyVersionAttribute("13.08.17.1")]
+[assembly: AssemblyVersionAttribute("14.08.16.1")]
