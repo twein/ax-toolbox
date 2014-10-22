@@ -3,12 +3,15 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Data;
 using AXToolbox.Common;
+using System.Text.RegularExpressions;
 
 namespace AXToolbox.GpsLoggers
 {
     [Serializable]
     public class GoalDeclaration : ITime
     {
+        static Regex reCoords = new Regex(@"^\d{4,5}/\d{4}$");
+
         public enum DeclarationType { GoalName, CompetitionCoordinates };
 
         public DeclarationType Type { get; protected set; }
@@ -26,11 +29,11 @@ namespace AXToolbox.GpsLoggers
             Time = time;
             Altitude = altitude;
 
-            if (definition.Length == 9 && definition[4] == '/')
+            if (reCoords.Match(definition).Success)
             {
-                // type 0000/0000
+                // type 0000/0000 or 00000/0000
                 Type = DeclarationType.CompetitionCoordinates;
-                var coords = definition.Split(new char[] { '/' });
+                var coords = definition.Split('/');
                 Easting4Digits = double.Parse(coords[0]);
                 Northing4Digits = double.Parse(coords[1]);
             }
@@ -38,7 +41,7 @@ namespace AXToolbox.GpsLoggers
             {
                 //Type freeform
                 Type = DeclarationType.GoalName;
-                Name = definition.TrimEnd(new char[] { '/' });
+                Name = definition.TrimEnd('/');
             }
         }
 

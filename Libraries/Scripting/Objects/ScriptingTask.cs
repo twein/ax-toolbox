@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using AXToolbox.Common;
+﻿using AXToolbox.Common;
 using AXToolbox.GpsLoggers;
 using AXToolbox.PdfHelpers;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace AXToolbox.Scripting
 {
@@ -24,15 +24,16 @@ namespace AXToolbox.Scripting
             LoggerMarks = new List<string>();
         }
 
-
         public int Number { get; protected set; }
+
         protected string resultUnit;
         protected int resultPrecission;
+
         public Result Result { get; protected set; }
+
         public List<Penalty> Penalties { get; protected set; }
+
         public List<string> LoggerMarks { get; protected set; }
-
-
 
         public override void CheckConstructorSyntax()
         {
@@ -50,68 +51,89 @@ namespace AXToolbox.Scripting
                 case "PDG":
                     resultUnit = "m";
                     break;
+
                 case "JDG":
                     resultUnit = "m";
                     break;
+
                 case "HWZ":
                     resultUnit = "m";
                     break;
+
                 case "FIN":
                     resultUnit = "m";
                     break;
+
                 case "FON":
                     resultUnit = "m";
                     break;
+
                 case "HNH":
                     resultUnit = "m";
                     break;
+
                 case "WSD":
                     resultUnit = "m";
                     break;
+
                 case "GBM":
                     resultUnit = "m";
                     break;
+
                 case "CRT":
                     resultUnit = "m";
                     break;
+
                 case "RTA":
                     resultUnit = "s";
                     resultPrecission = 0;
                     break;
+
                 case "ELB":
                     resultUnit = "°";
                     break;
+
                 case "LRN":
                     resultUnit = "km^2";
                     break;
+
                 case "MDT":
                     resultUnit = "m";
                     break;
+
                 case "SFL":
                     resultUnit = "m";
                     break;
+
                 case "MDD":
                     resultUnit = "m";
                     break;
+
                 case "XDT":
                     resultUnit = "m";
                     break;
+
                 case "XDI":
                     resultUnit = "m";
                     break;
+
                 case "XDD":
                     resultUnit = "m";
                     break;
+
                 case "ANG":
                     resultUnit = "°";
                     break;
+
                 case "3DT":
                     resultUnit = "m";
                     break;
             }
         }
+
         public override void CheckDisplayModeSyntax()
         { }
+
         public override void Display()
         { }
 
@@ -122,6 +144,7 @@ namespace AXToolbox.Scripting
             Penalties.Clear();
             LoggerMarks.Clear();
         }
+
         public override void Process()
         {
             base.Process();
@@ -151,11 +174,13 @@ namespace AXToolbox.Scripting
         {
             return Result = Result.NewResult(value, resultUnit);
         }
+
         public Result NewNoResult(string reason)
         {
             Result = Result.NewNoResult(reason);
             return Result;
         }
+
         public Result NewNoFlight()
         {
             return Result = Result.NewNoFlight();
@@ -174,6 +199,8 @@ namespace AXToolbox.Scripting
             foreach (var p in Penalties)
             {
                 measurePenalty = Result.Merge(measurePenalty, p.Performance);
+                if (measurePenalty.Type == ResultType.No_Result)
+                    Result = p.Performance;
                 taskPoints += p.Type == PenaltyType.TaskPoints ? p.Points : 0;
                 competitionPoints += p.Type == PenaltyType.CompetitionPoints ? p.Points : 0;
                 infringedRules += p.ToString();

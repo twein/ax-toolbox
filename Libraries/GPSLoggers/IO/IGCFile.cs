@@ -14,6 +14,10 @@ namespace AXToolbox.GpsLoggers
     {
         private double altitudeCorrection;
 
+        private int dLatOffset = int.MinValue; //offset of the additional digit for latitude minutes relative to position data origin
+        private int dLonOffset = int.MinValue; //offset of the additional digit for latitude minutes relative to position data origin
+        private int vSpOffset = int.MinValue; //offset of the variometer vertical speed relative to position data origin
+
         public IGCFile(string logFilePath, TimeSpan utcOffset, string altitudeCorrectionsFilePath = null)
             : base(logFilePath, utcOffset)
         {
@@ -59,6 +63,26 @@ namespace AXToolbox.GpsLoggers
                 loggerDate = ParseDateAt(dateInfo, 11);
             }
             catch (InvalidOperationException) { }
+
+            //get IGC B record format
+            try
+            {
+                var format = TrackLogLines.Last(l => l.StartsWith("I"));
+                var BRecordVersion = int.Parse(format.Substring(1, 2));
+                if (BRecordVersion >= 5)
+                {
+                    var latInfoPos = format.IndexOf("LAD");
+                    dLatOffset = int.Parse(format.Substring(latInfoPos - 4, 2)) - 1 - 7; //7 is the offset to position data origin
+
+                    var lonInfoPos = format.IndexOf("LOD");
+                    dLonOffset = int.Parse(format.Substring(lonInfoPos - 4, 2)) - 1 - 7;
+
+                    var vspInfoPos = format.IndexOf("VAR");
+                    vSpOffset = int.Parse(format.Substring(vspInfoPos - 4, 2)) - 1 - 7;
+                }
+            }
+            catch (InvalidOperationException) { }
+
 
             //check datum
             try
@@ -169,16 +193,29 @@ namespace AXToolbox.GpsLoggers
             if (isValid)
             {
                 var time = ParseTimeAt(line, 1); // the time is always at pos 1
-                var latitude = (double.Parse(line.Substring(pos, 2)) +
-                    double.Parse(line.Substring(pos + 2, 5)) / 60000)
-                    * (line.Substring(pos + 7, 1) == "S" ? -1 : 1);
-                var longitude = (double.Parse(line.Substring(pos + 8, 3)) +
-                    double.Parse(line.Substring(pos + 11, 5)) / 60000)
-                    * (line.Substring(pos + 16, 1) == "W" ? -1 : 1);
+
+                var dLat = (dLatOffset == int.MinValue) ? "0" : line.Substring(pos + dLatOffset, 1); //additional digit for minutes
+                var latitude =
+                    (
+                    double.Parse(line.Substring(pos, 2)) + //degrees
+                    double.Parse(line.Substring(pos + 2, 5) + dLat) / (60 * 1e4) //minutes
+                    ) *
+                    (line.Substring(pos + 7, 1) == "S" ? -1 : 1); //sign
+
+                var dLon = (dLonOffset == int.MinValue) ? "0" : line.Substring(pos + dLonOffset, 1); //additional digit for minutes
+                var longitude =
+                    (
+                    double.Parse(line.Substring(pos + 8, 3)) + //degrees
+                    double.Parse(line.Substring(pos + 11, 5) + dLon) / (60 * 1e4) //minutes
+                    ) *
+                    (line.Substring(pos + 16, 1) == "W" ? -1 : 1); //sign
+
                 var altitude = double.Parse(line.Substring(pos + 18, 5)) + altitudeCorrection;
                 //var gpsAltitude = double.Parse(line.Substring(pos + 23, 5));
                 //var accuracy = int.Parse(line.Substring(pos + 28, 4));
                 //var satellites = int.Parse(line.Substring(pos + 32, 2));
+
+                double vspeed = (vSpOffset == int.MinValue) ? double.NaN : double.Parse(line.Substring(pos + vSpOffset, 4)) / 10; //vertical speed (variometer)
 
                 var p = new GeoPoint(
                     time: time,
@@ -186,7 +223,7 @@ namespace AXToolbox.GpsLoggers
                     latitude: latitude,
                     longitude: longitude,
                     altitude: altitude
-                    );
+                    ) { VSpeed = vspeed };
 
                 return p;
             }

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using AXToolbox.Common;
+using AXToolbox.GpsLoggers;
+using AXToolbox.MapViewer;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows;
 using System.Xml.Linq;
-using AXToolbox.Common;
-using AXToolbox.GpsLoggers;
-using AXToolbox.MapViewer;
 
 namespace AXToolbox.Scripting
 {
@@ -21,7 +21,6 @@ namespace AXToolbox.Scripting
         protected ScriptingPoint(ScriptingEngine engine, ObjectDefinition definition)
             : base(engine, definition)
         { }
-
 
         protected bool isStatic = false;
 
@@ -37,7 +36,6 @@ namespace AXToolbox.Scripting
 
         //display fields
         protected double radius;
-
 
         public override void CheckConstructorSyntax()
         {
@@ -116,7 +114,7 @@ namespace AXToolbox.Scripting
                     AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 1 && Definition.ObjectParameters[0] == "");
                     break;
 
-                case "TNL": //nearest to point list 
+                case "TNL": //nearest to point list
                     //LNP(<listPoint1>, <listPoint2>, ..., <altitudeThreshold>)
                     AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length >= 2);
                     ResolveNOrDie<ScriptingPoint>(0, Definition.ObjectParameters.Length - 1);
@@ -129,7 +127,7 @@ namespace AXToolbox.Scripting
                     ResolveOrDie<ScriptingPoint>(0);
                     break;
 
-                case "TNP": //nearest to point                
+                case "TNP": //nearest to point
                 case "TFP": //farthest from point
                     //XXX(<pointName>, <altitudeThreshold>)
                     AssertNumberOfParametersOrDie(Definition.ObjectParameters.Length == 2);
@@ -165,6 +163,7 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
+
         public override void CheckDisplayModeSyntax()
         {
             switch (Definition.DisplayMode)
@@ -200,6 +199,7 @@ namespace AXToolbox.Scripting
                     break;
             }
         }
+
         public override void Reset()
         {
             base.Reset();
@@ -210,6 +210,7 @@ namespace AXToolbox.Scripting
                 Notes.Clear();
             }
         }
+
         public override void Process()
         {
             base.Process();
@@ -382,10 +383,14 @@ namespace AXToolbox.Scripting
                         }
                         else
                         {
-                            if (Engine.Settings.ContestLanding)
+                            if (Engine.Settings.ContestLanding && Engine.Report.Markers.FirstOrDefault(m => int.Parse(m.Name) > number) != null)
                             {
-                                Point = new AXWaypoint("Landing", Engine.Report.LandingPoint);
-                                AddNote(string.Format("no marker #{0}: assuming contest landing", number), true);
+                                var validLanding = Engine.TaskValidTrack.Points.FirstOrDefault(p => Math.Abs((p.Time - Engine.Report.LandingPoint.Time).TotalSeconds) == 0);
+                                if (validLanding != null)
+                                {
+                                    Point = new AXWaypoint("Landing", Engine.Report.LandingPoint);
+                                    AddNote(string.Format("no marker #{0}: assuming contest landing", number), true);
+                                }
                             }
                             else
                             {
@@ -470,7 +475,6 @@ namespace AXToolbox.Scripting
                     if (Engine.Report != null)
                         Point = new AXWaypoint(Definition.ObjectName, Engine.Report.LandingPoint);
                     break;
-
 
                 case "TPT":
                     //TPT at point time
@@ -745,6 +749,7 @@ namespace AXToolbox.Scripting
             //if (!string.IsNullOrEmpty(Log))
             //    Notes = ObjectName + ":" + Notes;
         }
+
         public override void Display()
         {
             MapOverlay overlay = null;
@@ -836,6 +841,7 @@ namespace AXToolbox.Scripting
 
             return new AXWaypoint(string.Format("D{0:00}", goal.Number), goal.Time, tmpPoint.Easting, tmpPoint.Northing, altitude);
         }
+
         private double QueryEarthtoolsElevation(AXPoint point)
         {
             var altitude = 0.0;
@@ -858,6 +864,7 @@ namespace AXToolbox.Scripting
 
             return altitude;
         }
+
         private double QueryGoogleElevation(AXPoint point)
         {
             var altitude = 0.0;
